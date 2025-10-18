@@ -4,11 +4,14 @@ export interface TrainingPlan {
   _id?: string;
   name: string;
   description?: string;
+  level?: string;
+  duration?: number;
   exercises?: Array<{
     name: string;
     sets: number;
     reps: number;
     weight?: number;
+    rest?: number;
   }>;
   createdAt?: Date;
   updatedAt?: Date;
