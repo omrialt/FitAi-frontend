@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// React 19: No forwardRef needed - refs work directly on components
+import { useState, Activity } from 'react';
 import {
   AppShell,
   Burger,
@@ -157,32 +158,35 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Navbar */}
       <AppShell.Navbar p="md">
-        <AppShell.Section grow component={ScrollArea}>
-          <Stack gap="xs">
-            {navigationItems.map((item) => (
-              <UnstyledButton
-                key={item.label}
-                className={`nav-item ${item.active ? 'nav-item-active' : ''}`}
-                onClick={item.onClick}
-              >
-                <Group gap="sm">
-                  {item.icon}
-                  <Text size="sm" fw={500}>
-                    {item.label}
-                  </Text>
-                </Group>
-              </UnstyledButton>
-            ))}
-          </Stack>
-        </AppShell.Section>
+        {/* React 19: Activity keeps navbar state when collapsed on mobile */}
+        <Activity mode={opened ? 'visible' : 'hidden'}>
+          <AppShell.Section grow component={ScrollArea}>
+            <Stack gap="xs">
+              {navigationItems.map((item) => (
+                <UnstyledButton
+                  key={item.label}
+                  className={`nav-item ${item.active ? 'nav-item-active' : ''}`}
+                  onClick={item.onClick}
+                >
+                  <Group gap="sm">
+                    {item.icon}
+                    <Text size="sm" fw={500}>
+                      {item.label}
+                    </Text>
+                  </Group>
+                </UnstyledButton>
+              ))}
+            </Stack>
+          </AppShell.Section>
 
-        <AppShell.Section>
-          <Box className="navbar-footer">
-            <Text size="xs" c="dimmed" ta="center">
-              v1.0.0
-            </Text>
-          </Box>
-        </AppShell.Section>
+          <AppShell.Section>
+            <Box className="navbar-footer">
+              <Text size="xs" c="dimmed" ta="center">
+                v1.0.0
+              </Text>
+            </Box>
+          </AppShell.Section>
+        </Activity>
       </AppShell.Navbar>
 
       {/* Main Content */}

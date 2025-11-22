@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+// React 19: Using use() hook with Suspense for async data fetching
+import { use, Suspense } from 'react';
 import { AppLayout } from './components/AppLayout';
 import { trainingPlanService } from './services/training-plan.service';
-import type { TrainingPlan } from './services/training-plan.service';
+import { usePresetMetadata } from './hooks/useMetadata';
 import {
   Container,
   Title,
@@ -12,69 +13,29 @@ import {
   Group,
   Loader,
   Center,
-  Alert,
   Stack,
 } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
 
-function TrainingPlansPage() {
-  const [trainingPlans, setTrainingPlans] = useState<TrainingPlan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// React 19: Promise created outside render to work with use() hook
+const trainingPlansPromise = trainingPlanService.getAll();
 
-  useEffect(() => {
-    const fetchTrainingPlans = async () => {
-      try {
-        const response = await trainingPlanService.getAll();
-        setTrainingPlans(response.items);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch training plans');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+// React 19: Separate component that uses use() to unwrap the promise
+function TrainingPlansList() {
+  // React 19: use() hook unwraps the promise under Suspense boundary
+  const response = use(trainingPlansPromise);
+  const trainingPlans = response.items;
 
-    fetchTrainingPlans();
-  }, []);
-
-  if (loading) {
-    return (
-      <AppLayout>
-        <Center h="50vh">
-          <Loader size="xl" />
-        </Center>
-      </AppLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <AppLayout>
-        <Container size="md">
-          <Alert
-            icon={<IconAlertCircle size={16} />}
-            title="Error"
-            color="red"
-            variant="filled"
-          >
-            {error}
-          </Alert>
-        </Container>
-      </AppLayout>
-    );
-  }
-
+  // Render training plans (no loading state needed - handled by Suspense)
   return (
-    <AppLayout>
+    <>
+      {metadata}
       <Container size="xl">
         <Title order={1} mb="xl">
           Training Plans
         </Title>
 
-        <Grid>
-          {trainingPlans.map((plan) => (
+      <Grid>
+        {trainingPlans.map((plan) => (
             <Grid.Col key={plan._id} span={{ base: 12, md: 6, lg: 4 }}>
               <Card shadow="sm" padding="lg" radius="md" withBorder h="100%">
                 <Stack gap="md">
@@ -156,6 +117,31 @@ function TrainingPlansPage() {
           </Center>
         )}
       </Container>
+    </>
+  );
+}
+
+// React 19: Main component with Suspense boundary for loading states
+function TrainingPlansPage() {
+  // React 19: Clean metadata management
+  const metadata = usePresetMetadata('trainingPlans', {
+    preconnect: ['https://api.fitai.com'],
+    dnsPrefetch: ['https://cdn.fitai.com'],
+  });
+
+  return (
+    <AppLayout>
+      {metadata}
+      {/* React 19: Suspense handles loading state declaratively */}
+      <Suspense
+        fallback={
+          <Center h="50vh">
+            <Loader size="xl" />
+          </Center>
+        }
+      >
+        <TrainingPlansList />
+      </Suspense>
     </AppLayout>
   );
 }

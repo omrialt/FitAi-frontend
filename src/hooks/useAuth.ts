@@ -1,0 +1,182 @@
+/**
+ * useAuth Hook
+ * 
+ * Manages authentication, tokens, user info, role-based access, and redirects unauthorized users.
+ * Integrates with Zustand store and axios interceptors.
+ * 
+ * @example
+ * ```tsx
+ * function Dashboard() {
+ *   const { user, login, logout, isAuthenticated, isLoading } = useAuth();
+ * 
+ *   const handleLogin = async (email: string, password: string) => {
+ *     await login({ email, password });
+ *   };
+ * 
+ *   if (isLoading) return <Loader />;
+ *   if (!isAuthenticated) return <Navigate to="/login" />;
+ * 
+ *   return <div>Welcome, {user?.fullName}</div>;
+ * }
+ * ```
+ */
+
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useAuthStore } from '../store/authStore';
+import type { LoginCredentials, RegisterData, User, AuthTokens } from '../types/auth.types';
+import api from '../services/api';
+
+interface UseAuthReturn {
+  user: User | null;
+  tokens: AuthTokens | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => void;
+  refreshToken: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+}
+
+export function useAuth(): UseAuthReturn {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { 
+    user, 
+    tokens, 
+    isAuthenticated, 
+    login: setAuth, 
+    logout: clearAuth,
+    updateUser 
+  } = useAuthStore();
+
+  // Login function
+  const login = useCallback(async (credentials: LoginCredentials) => {
+    setIsLoading(true);
+    try {
+      const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/login', credentials);
+      
+      if (response.data.user && response.data.tokens) {
+        setAuth(response.data.user, response.data.tokens);
+        
+        // Set axios default header
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+        
+        toast.success(`Welcome back, ${response.data.user.fullName}!`);
+        navigate('/dashboard');
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : 'Login failed. Please check your credentials.';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate, setAuth]);
+
+  // Register function
+  const register = useCallback(async (data: RegisterData) => {
+    setIsLoading(true);
+    try {
+      const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/register', data);
+      
+      if (response.data.user && response.data.tokens) {
+        setAuth(response.data.user, response.data.tokens);
+        
+        // Set axios default header
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+        
+        toast.success('Account created successfully!');
+        navigate('/dashboard');
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : 'Registration failed. Please try again.';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate, setAuth]);
+
+  // Logout function
+  const logout = useCallback(() => {
+    clearAuth();
+    delete api.defaults.headers.common['Authorization'];
+    toast.info('You have been logged out');
+    navigate('/login');
+  }, [clearAuth, navigate]);
+
+  // Refresh token function
+  const refreshToken = useCallback(async () => {
+    if (!tokens?.refreshToken) {
+      logout();
+      return;
+    }
+
+    try {
+      const response = await api.post<{ tokens: AuthTokens }>('/auth/refresh', {
+        refreshToken: tokens.refreshToken,
+      });
+      
+      if (response.data.tokens) {
+        useAuthStore.getState().setTokens(response.data.tokens);
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      logout();
+    }
+  }, [tokens, logout]);
+
+  // Update profile function
+  const updateProfile = useCallback(async (data: Partial<User>) => {
+    if (!user?._id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await api.patch<{ user: User }>(`/users/${user._id}`, data);
+      
+      if (response.data.user) {
+        updateUser(response.data.user);
+        toast.success('Profile updated successfully!');
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
+        ? String(error.response.data.message)
+        : 'Failed to update profile';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, updateUser]);
+
+  // Set authorization header on mount if tokens exist
+  useEffect(() => {
+    if (tokens?.accessToken) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${tokens.accessToken}`;
+    }
+  }, [tokens]);
+
+  return {
+    user,
+    tokens,
+    isAuthenticated,
+    isLoading,
+    login,
+    register,
+    logout,
+    refreshToken,
+    updateProfile,
+  };
+}

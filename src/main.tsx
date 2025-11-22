@@ -6,6 +6,10 @@ import '@radix-ui/themes/styles.css'
 import '@mantine/core/styles.css'
 import './index.css'
 import App from './App.tsx'
+import { preloadCriticalResources } from './utils/resourcePreload'
+
+// React 19: Preload critical resources before rendering
+preloadCriticalResources();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
