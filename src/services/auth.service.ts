@@ -1,10 +1,5 @@
 import api from './api';
-import type { User, AuthTokens, LoginCredentials, RegisterData } from '../types/auth.types';
-
-interface AuthResponse {
-  user: User;
-  tokens: AuthTokens;
-}
+import type { User, AuthTokens, LoginCredentials, RegisterData, AuthResponse } from '../types/auth.types';
 
 class AuthService {
   /**

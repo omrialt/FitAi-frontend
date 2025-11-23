@@ -45,3 +45,8 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export interface AuthResponse {
+  user: User;
+  tokens: AuthTokens;
+}

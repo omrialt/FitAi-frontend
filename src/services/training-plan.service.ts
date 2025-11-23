@@ -1,36 +1,6 @@
 import api from './api';
-
-export interface TrainingPlan {
-  _id?: string;
-  name: string;
-  description?: string;
-  level?: string;
-  duration?: number;
-  exercises?: Array<{
-    name: string;
-    sets: number;
-    reps: number;
-    weight?: number;
-    rest?: number;
-  }>;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: 'asc' | 'desc';
-}
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-  pages: number;
-}
+import type { TrainingPlan, PaginationParams } from '../types/training-plan.types';
+import type { PaginatedResponse } from '../types/api.types';
 
 export const trainingPlanService = {
   // Get all training plans with pagination

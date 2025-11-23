@@ -3,6 +3,7 @@ export interface Exercise {
   sets: number;
   reps: number;
   rest?: number;
+  weight?: number;
 }
 
 export interface TrainingPlan {
@@ -25,4 +26,11 @@ export interface TrainingPlansResponse {
   page: number;
   limit: number;
   pages: number;
+}
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
 }
