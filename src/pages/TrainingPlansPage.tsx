@@ -1,8 +1,8 @@
 // React 19: Using use() hook with Suspense for async data fetching
 import { use, Suspense } from 'react';
-import { AppLayout } from './components/AppLayout';
-import { trainingPlanService } from './services/training-plan.service';
-import { usePresetMetadata } from './hooks/useMetadata';
+import { AppLayout } from '../components/AppLayout';
+import { trainingPlanService } from '../services/training-plan.service';
+import { usePresetMetadata } from '../hooks/useMetadata';
 import {
   Container,
   Title,
@@ -28,7 +28,6 @@ function TrainingPlansList() {
   // Render training plans (no loading state needed - handled by Suspense)
   return (
     <>
-      {metadata}
       <Container size="xl">
         <Title order={1} mb="xl">
           Training Plans
@@ -126,7 +125,6 @@ function TrainingPlansPage() {
   // React 19: Clean metadata management
   const metadata = usePresetMetadata('trainingPlans', {
     preconnect: ['https://api.fitai.com'],
-    dnsPrefetch: ['https://cdn.fitai.com'],
   });
 
   return (

@@ -1,5 +1,43 @@
 /* AppLayout Styles */
 
+/* Header Logo */
+.header-logo {
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Header Link for Login/Register */
+.header-link {
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: var(--mantine-color-gray-7);
+}
+
+[data-mantine-color-scheme='dark'] .header-link {
+  color: var(--mantine-color-dark-0);
+}
+
+.header-link:hover {
+  background-color: var(--mantine-color-gray-0);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme='dark'] .header-link:hover {
+  background-color: var(--mantine-color-dark-6);
+}
+
+.header-link:active {
+  transform: translateY(0);
+}
+
+/* User Button */
 .user-button {
   padding: 8px 12px;
   border-radius: 8px;
@@ -32,19 +70,27 @@
   transition: all 0.2s ease;
   color: var(--mantine-color-gray-7);
   text-decoration: none;
+  cursor: pointer;
 }
 
 [data-mantine-color-scheme='dark'] .nav-item {
   color: var(--mantine-color-dark-0);
 }
 
-.nav-item:hover {
+.nav-item:hover,
+.nav-item:focus-visible {
   background-color: var(--mantine-color-gray-0);
   transform: translateX(4px);
+  outline: none;
 }
 
-[data-mantine-color-scheme='dark'] .nav-item:hover {
+[data-mantine-color-scheme='dark'] .nav-item:hover,
+[data-mantine-color-scheme='dark'] .nav-item:focus-visible {
   background-color: var(--mantine-color-dark-6);
+}
+
+.nav-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--mantine-color-indigo-5);
 }
 
 .nav-item-active {
@@ -53,7 +99,8 @@
   font-weight: 600;
 }
 
-.nav-item-active:hover {
+.nav-item-active:hover,
+.nav-item-active:focus-visible {
   background: linear-gradient(135deg, var(--mantine-color-indigo-7) 0%, var(--mantine-color-cyan-7) 100%);
   transform: translateX(4px);
   color: white;

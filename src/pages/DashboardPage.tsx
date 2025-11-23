@@ -1,8 +1,8 @@
 // React 19: Using Activity component for performance optimization
 import { Activity } from 'react';
-import { AppLayout } from './components/AppLayout';
+import { AppLayout } from '../components/AppLayout';
 import { Container, Title, Text, Paper, Grid, Card, Badge, Group } from '@mantine/core';
-import { usePresetMetadata } from './hooks/useMetadata';
+import { usePresetMetadata } from '../hooks/useMetadata';
 
 function DashboardPage() {
   // React 19: Clean metadata management with custom hook
