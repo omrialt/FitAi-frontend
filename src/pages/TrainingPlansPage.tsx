@@ -1,5 +1,5 @@
 // React 19: Using use() hook with Suspense for async data fetching
-import { use, Suspense } from 'react';
+import { use, Suspense, useMemo } from 'react';
 import { AppLayout } from '../components/AppLayout';
 import { trainingPlanService } from '../services/training-plan.service';
 import { usePresetMetadata } from '../hooks/useMetadata';
@@ -16,11 +16,11 @@ import {
   Stack,
 } from '@mantine/core';
 
-// React 19: Promise created outside render to work with use() hook
-const trainingPlansPromise = trainingPlanService.getAll();
-
 // React 19: Separate component that uses use() to unwrap the promise
 function TrainingPlansList() {
+  // Create promise inside component so it only runs when this component renders
+  const trainingPlansPromise = useMemo(() => trainingPlanService.getAll(), []);
+  
   // React 19: use() hook unwraps the promise under Suspense boundary
   const response = use(trainingPlansPromise);
   const trainingPlans = response.items;

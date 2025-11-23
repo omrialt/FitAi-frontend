@@ -1,0 +1,92 @@
+/* Auth Pages Styles */
+
+/* Ensure full height and proper centering */
+.auth-container {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+[data-mantine-color-scheme='dark'] .auth-container {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+}
+
+/* Auth paper card */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  backdrop-filter: blur(10px);
+  margin: 0 auto;
+}
+
+/* Smooth transitions for inputs */
+.auth-input {
+  transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+  transform: translateY(-1px);
+}
+
+/* Button hover effects */
+.auth-button {
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+/* Google button specific styles */
+.google-button {
+  border: 2px solid var(--mantine-color-gray-3);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme='dark'] .google-button {
+  border-color: var(--mantine-color-dark-4);
+}
+
+.google-button:hover {
+  border-color: var(--mantine-color-indigo-5);
+  background-color: var(--mantine-color-indigo-0);
+}
+
+[data-mantine-color-scheme='dark'] .google-button:hover {
+  border-color: var(--mantine-color-indigo-6);
+  background-color: var(--mantine-color-dark-5);
+}
+
+/* Link styles */
+.auth-link {
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  text-decoration: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .auth-card {
+    max-width: 100%;
+  }
+}

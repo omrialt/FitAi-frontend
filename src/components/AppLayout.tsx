@@ -1,5 +1,5 @@
 // React 19: No forwardRef needed - refs work directly on components
-import { useMemo, Activity } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppShell,
@@ -259,11 +259,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Navbar */}
       <AppShell.Navbar p="md">
-        {/* React 19: Activity keeps navbar state when collapsed on mobile */}
-        <Activity mode={opened ? 'visible' : 'hidden'}>
-          <AppShell.Section grow component={ScrollArea}>
-            <Stack gap="xs">
-              {navigationItems.map((item) => {
+        <AppShell.Section grow component={ScrollArea}>
+          <Stack gap="xs">
+            {navigationItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
                   <UnstyledButton
@@ -295,7 +293,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               </Text>
             </Box>
           </AppShell.Section>
-        </Activity>
       </AppShell.Navbar>
 
       {/* Main Content */}

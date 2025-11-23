@@ -1,0 +1,99 @@
+import api from './api';
+import type { User, AuthTokens, LoginCredentials, RegisterData } from '../types/auth.types';
+
+interface AuthResponse {
+  user: User;
+  tokens: AuthTokens;
+}
+
+class AuthService {
+  /**
+   * Login with email and password
+   */
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/login', credentials);
+    return response.data;
+  }
+
+  /**
+   * Register new user
+   */
+  async register(data: RegisterData): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/register', data);
+    return response.data;
+  }
+
+  /**
+   * Logout user
+   */
+  async logout(): Promise<void> {
+    await api.post('/auth/logout');
+    localStorage.removeItem('fitai-auth-storage');
+  }
+
+  /**
+   * Refresh access token
+   */
+  async refreshToken(refreshToken: string): Promise<AuthTokens> {
+    const response = await api.post<AuthTokens>('/auth/refresh', { refreshToken });
+    return response.data;
+  }
+
+  /**
+   * Initiate Google OAuth login
+   */
+  loginWithGoogle(): void {
+    // Get the API base URL from environment or default
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    
+    // Redirect to Google OAuth endpoint
+    window.location.href = `${apiUrl}/auth/google`;
+  }
+
+  /**
+   * Handle Google OAuth callback
+   */
+  async handleGoogleCallback(code: string): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/google/callback', { code });
+    return response.data;
+  }
+
+  /**
+   * Get current user profile
+   */
+  async getProfile(): Promise<User> {
+    const response = await api.get<User>('/auth/profile');
+    return response.data;
+  }
+
+  /**
+   * Update user profile
+   */
+  async updateProfile(data: Partial<User>): Promise<User> {
+    const response = await api.patch<User>('/auth/profile', data);
+    return response.data;
+  }
+
+  /**
+   * Change password
+   */
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await api.post('/auth/change-password', { oldPassword, newPassword });
+  }
+
+  /**
+   * Request password reset
+   */
+  async forgotPassword(email: string): Promise<void> {
+    await api.post('/auth/forgot-password', { email });
+  }
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    await api.post('/auth/reset-password', { token, newPassword });
+  }
+}
+
+export const authService = new AuthService();

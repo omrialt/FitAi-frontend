@@ -10,10 +10,18 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    // You can add auth token here
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Get auth token from persisted Zustand store
+    const authStorage = localStorage.getItem('fitai-auth-storage');
+    if (authStorage) {
+      try {
+        const { state } = JSON.parse(authStorage);
+        const token = state?.tokens?.accessToken;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch (error) {
+        console.error('Failed to parse auth storage:', error);
+      }
     }
     return config;
   },

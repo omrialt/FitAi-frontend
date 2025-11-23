@@ -57,16 +57,16 @@ export function useAuth(): UseAuthReturn {
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/login', credentials);
+      const response = await api.post<{ data: { user: User; tokens: AuthTokens } }>('/auth/login', credentials);
       
-      if (response.data.user && response.data.tokens) {
-        setAuth(response.data.user, response.data.tokens);
+      if (response.data.data.user && response.data.data.tokens) {
+        setAuth(response.data.data.user, response.data.data.tokens);
         
         // Set axios default header
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.tokens.accessToken}`;
         
-        toast.success(`Welcome back, ${response.data.user.fullName}!`);
-        navigate('/dashboard');
+        toast.success(`Welcome back, ${response.data.data.user.fullName}!`);
+        navigate('/');
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
@@ -92,7 +92,7 @@ export function useAuth(): UseAuthReturn {
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
         
         toast.success('Account created successfully!');
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
