@@ -20,7 +20,7 @@ api.interceptors.request.use(
           config.headers.Authorization = `Bearer ${token}`;
         }
       } catch (error) {
-        console.error('Failed to parse auth storage:', error);
+        console.error('❌ Failed to parse auth storage:', error);
       }
     }
     return config;
