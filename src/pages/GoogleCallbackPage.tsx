@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Center, Loader, Text, Stack } from '@mantine/core';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
-import { authService } from '../services/auth.service';
 
 function GoogleCallbackPage() {
   const [searchParams] = useSearchParams();
@@ -12,8 +11,10 @@ function GoogleCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      const code = searchParams.get('code');
       const error = searchParams.get('error');
+      const accessToken = searchParams.get('accessToken');
+      const refreshToken = searchParams.get('refreshToken');
+      const userStr = searchParams.get('user');
 
       if (error) {
         toast.error('Google authentication failed');
@@ -21,19 +22,30 @@ function GoogleCallbackPage() {
         return;
       }
 
-      if (!code) {
-        toast.error('No authorization code received');
+      if (!accessToken || !refreshToken || !userStr) {
+        toast.error('Failed to authenticate with Google');
         navigate('/login');
         return;
       }
 
       try {
-        const response = await authService.handleGoogleCallback(code);
-        login(response.user, response.tokens);
-        toast.success('Successfully signed in with Google!');
-        navigate('/');
-      } catch {
-        toast.error('Failed to authenticate with Google');
+        const user = JSON.parse(userStr);
+        const tokens = { accessToken, refreshToken };
+        
+        // Check if user needs to complete profile (missing required fields)
+        const needsProfileCompletion = !user.gender || !user.birthDate || !user.role;
+        
+        login(user, tokens);
+        
+        if (needsProfileCompletion) {
+          toast.info('Please complete your profile');
+          navigate('/complete-profile');
+        } else {
+          toast.success('Successfully signed in with Google!');
+          navigate('/');
+        }
+      } catch (err) {
+        toast.error('Failed to process authentication data');
         navigate('/login');
       }
     };

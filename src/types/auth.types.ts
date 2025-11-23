@@ -35,6 +35,7 @@ export interface RegisterData {
   fullName: string;
   gender: Gender;
   birthDate: string;
+  role: UserRole;
   height?: number;
 }
 

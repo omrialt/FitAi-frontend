@@ -4,6 +4,7 @@ import TrainingPlansPage from './pages/TrainingPlansPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
+import CompleteProfilePage from './pages/CompleteProfilePage';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -47,6 +48,9 @@ function App() {
       
       {/* Auth callback - no protection needed */}
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+      
+      {/* Complete Profile - for Google OAuth users */}
+      <Route path="/complete-profile" element={<CompleteProfilePage />} />
     </Routes>
   );
 }

@@ -83,15 +83,15 @@ export function useAuth(): UseAuthReturn {
   const register = useCallback(async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/register', data);
+      const response = await api.post<{ data: { user: User; tokens: AuthTokens } }>('/auth/register', data);
       
-      if (response.data.user && response.data.tokens) {
-        setAuth(response.data.user, response.data.tokens);
+      if (response.data.data.user && response.data.data.tokens) {
+        setAuth(response.data.data.user, response.data.data.tokens);
         
         // Set axios default header
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.accessToken}`;
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.tokens.accessToken}`;
         
-        toast.success('Account created successfully!');
+        toast.success(`Welcome to FitAI, ${response.data.data.user.fullName}!`);
         navigate('/');
       }
     } catch (error: unknown) {

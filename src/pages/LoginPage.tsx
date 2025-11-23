@@ -12,23 +12,15 @@ import {
   Anchor,
 } from '@mantine/core';
 import { IconBrandGoogle, IconLogin } from '@tabler/icons-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useAuth } from '../hooks/useAuth';
+import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
 import { usePresetMetadata } from '../hooks/useMetadata';
+import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
 import './Auth.css';
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
 function LoginPage() {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const metadata = usePresetMetadata('login', {
     preconnect: ['https://accounts.google.com'],
   });
@@ -36,20 +28,16 @@ function LoginPage() {
   const {
     register,
     handleSubmit,
+    isSubmitting,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const onSubmit = async (data: LoginFormData) => {
-    try {
+  } = useFormHandler<LoginFormData>({
+    schema: loginSchema,
+    onSubmit: async (data) => {
       await login(data);
-      // Navigation is handled by useAuth hook
-    } catch (error) {
-      // Error handling is done by useAuth hook
-      console.error('Login error:', error);
-    }
-  };
+    },
+    showErrorToast: false, // useAuth handles toast notifications
+    mode: 'onTouched', // Validate on blur and submit
+  });
 
   const handleGoogleLogin = () => {
     // Initiate Google OAuth flow
@@ -106,12 +94,13 @@ function LoginPage() {
             <Divider label="Or continue with email" labelPosition="center" />
 
             {/* Login Form */}
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit}>
               <Stack gap="md">
                 <TextInput
                   label="Email"
                   placeholder="your@email.com"
                   required
+                  withAsterisk
                   {...register('email')}
                   error={errors.email?.message}
                 />
@@ -120,6 +109,7 @@ function LoginPage() {
                   label="Password"
                   placeholder="Your password"
                   required
+                  withAsterisk
                   {...register('password')}
                   error={errors.password?.message}
                 />
@@ -135,7 +125,7 @@ function LoginPage() {
                   fullWidth
                   size="md"
                   leftSection={<IconLogin size={18} />}
-                  loading={isLoading}
+                  loading={isSubmitting}
                   gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
                   variant="gradient"
                   className="auth-button"

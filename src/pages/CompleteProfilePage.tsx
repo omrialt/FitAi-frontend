@@ -1,60 +1,107 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Paper,
   Title,
   Text,
-  TextInput,
-  PasswordInput,
   Button,
   Stack,
-  Divider,
   Select,
-  Anchor,
+  TextInput,
 } from '@mantine/core';
-import { IconBrandGoogle, IconUserPlus } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
 import { Controller } from 'react-hook-form';
-import { useAuth } from '../hooks/useAuth';
+import { IconUserCheck } from '@tabler/icons-react';
+import { toast } from 'sonner';
+import { useAuthStore } from '../store/authStore';
 import { useFormHandler } from '../hooks/useFormHandler';
-import { authService } from '../services/auth.service';
-import { usePresetMetadata } from '../hooks/useMetadata';
-import { registerSchema, type RegisterFormData } from '../schemas/auth.schemas';
+import { useApiMutation } from '../hooks/useApi';
+import { completeProfileSchema, type CompleteProfileFormData } from '../schemas/auth.schemas';
+import type { AuthTokens, User } from '../types/auth.types';
 import './Auth.css';
 
-function RegisterPage() {
-  const { register: registerUser } = useAuth();
-  const metadata = usePresetMetadata('register', {
-    preconnect: ['https://accounts.google.com'],
+function CompleteProfilePage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user, login } = useAuthStore();
+
+  const { mutate, loading: isSubmitting } = useApiMutation<{ data: { user: User; tokens: AuthTokens } }>({
+    showSuccessToast: false,
   });
 
   const {
     register,
     handleSubmit,
     control,
-    isSubmitting,
+    setValue,
     formState: { errors },
-  } = useFormHandler<RegisterFormData>({
-    schema: registerSchema,
+  } = useFormHandler<CompleteProfileFormData>({
+    schema: completeProfileSchema,
+    mode: 'onTouched',
     onSubmit: async (data) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { confirmPassword, ...registerData } = data;
-      await registerUser({
-        ...registerData,
-        birthDate: data.birthDate.toISOString(),
+      if (!user?._id) {
+        toast.error('User not authenticated');
+        navigate('/login');
+        return;
+      }
+
+      const fullName = `${data.firstName} ${data.lastName}`;
+      
+      const response = await mutate('/auth/complete-profile', {
+        method: 'PATCH',
+        data: {
+          fullName,
+          gender: data.gender,
+          birthDate: data.birthDate.toISOString(),
+          role: data.role,
+          height: data.height,
+        },
       });
+
+      if (response?.data?.user && response?.data?.tokens) {
+        login(response.data.user, response.data.tokens);
+        toast.success('Profile completed successfully! Redirecting to dashboard...');
+        // Small delay to ensure state is updated before navigation
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 200);
+      }
     },
-    showErrorToast: false, // useAuth handles toast notifications
-    mode: 'onTouched', // Validate on blur and submit
   });
 
-  const handleGoogleSignup = () => {
-    // Initiate Google OAuth flow
-    authService.loginWithGoogle();
-  };
+  // Handle OAuth callback - store tokens and user from URL params
+  useEffect(() => {
+    const accessToken = searchParams.get('accessToken');
+    const refreshToken = searchParams.get('refreshToken');
+    const userParam = searchParams.get('user');
+
+    if (accessToken && refreshToken && userParam) {
+      try {
+        const userData = JSON.parse(userParam);
+        login(userData, { accessToken, refreshToken });
+        toast.success('Welcome! Please complete your profile to continue.');
+      } catch {
+        toast.error('Failed to process authentication data');
+        navigate('/login');
+      }
+    }
+  }, [searchParams, login, navigate]);
+
+  // Pre-fill first name and last name from user's full name if available
+  useEffect(() => {
+    if (user?.fullName) {
+      const names = user.fullName.split(' ');
+      if (names.length >= 2) {
+        setValue('firstName', names[0]);
+        setValue('lastName', names.slice(1).join(' '));
+      } else {
+        setValue('firstName', names[0] || '');
+      }
+    }
+  }, [user, setValue]);
 
   return (
     <>
-      {metadata}
       <div 
         className="auth-container"
         style={{
@@ -81,45 +128,30 @@ function RegisterPage() {
             {/* Header */}
             <div style={{ textAlign: 'center' }}>
               <Title order={2} mb="xs">
-                Create Account
+                Complete Your Profile
               </Title>
               <Text size="sm" c="dimmed">
-                Join FitAI and start your fitness journey
+                Just a few more details to get started
               </Text>
             </div>
 
-            {/* Google Signup Button */}
-            <Button
-              variant="default"
-              size="md"
-              leftSection={<IconBrandGoogle size={18} />}
-              onClick={handleGoogleSignup}
-              fullWidth
-            >
-              Sign up with Google
-            </Button>
-
-            <Divider label="Or sign up with email" labelPosition="center" />
-
-            {/* Register Form */}
+            {/* Complete Profile Form */}
             <form onSubmit={handleSubmit}>
               <Stack gap="md">
                 <TextInput
-                  label="Full Name"
-                  placeholder="John Doe"
+                  label="First Name"
+                  placeholder="John"
                   required
-                  withAsterisk
-                  {...register('fullName')}
-                  error={errors.fullName?.message}
+                  {...register('firstName')}
+                  error={errors.firstName?.message}
                 />
 
                 <TextInput
-                  label="Email"
-                  placeholder="your@email.com"
+                  label="Last Name"
+                  placeholder="Doe"
                   required
-                  withAsterisk
-                  {...register('email')}
-                  error={errors.email?.message}
+                  {...register('lastName')}
+                  error={errors.lastName?.message}
                 />
 
                 <Controller
@@ -130,7 +162,6 @@ function RegisterPage() {
                       label="Gender"
                       placeholder="Select your gender"
                       required
-                      withAsterisk
                       data={[
                         { value: 'male', label: 'Male' },
                         { value: 'female', label: 'Female' },
@@ -150,7 +181,6 @@ function RegisterPage() {
                       label="I am a"
                       placeholder="Select your role"
                       required
-                      withAsterisk
                       data={[
                         { value: 'user', label: 'Athlete / User' },
                         { value: 'trainer', label: 'Trainer / Coach' },
@@ -169,7 +199,6 @@ function RegisterPage() {
                       label="Birth Date"
                       placeholder="Pick date"
                       required
-                      withAsterisk
                       maxDate={new Date()}
                       {...field}
                       error={errors.birthDate?.message}
@@ -185,45 +214,19 @@ function RegisterPage() {
                   error={errors.height?.message}
                 />
 
-                <PasswordInput
-                  label="Password"
-                  placeholder="Your password"
-                  required
-                  withAsterisk
-                  {...register('password')}
-                  error={errors.password?.message}
-                />
-
-                <PasswordInput
-                  label="Confirm Password"
-                  placeholder="Confirm your password"
-                  required
-                  withAsterisk
-                  {...register('confirmPassword')}
-                  error={errors.confirmPassword?.message}
-                />
-
                 <Button
                   type="submit"
                   fullWidth
                   size="md"
-                  leftSection={<IconUserPlus size={18} />}
+                  leftSection={<IconUserCheck size={18} />}
                   loading={isSubmitting}
                   gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
                   variant="gradient"
                 >
-                  Create Account
+                  Complete Profile
                 </Button>
               </Stack>
             </form>
-
-            {/* Login Link */}
-            <Text size="sm" ta="center">
-              Already have an account?{' '}
-              <Anchor component={Link} to="/login" fw={600}>
-                Sign in
-              </Anchor>
-            </Text>
           </Stack>
         </Paper>
       </div>
@@ -231,4 +234,4 @@ function RegisterPage() {
   );
 }
 
-export default RegisterPage;
+export default CompleteProfilePage;

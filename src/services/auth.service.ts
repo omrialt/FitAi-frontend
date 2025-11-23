@@ -75,6 +75,20 @@ class AuthService {
   }
 
   /**
+   * Complete profile for OAuth users
+   */
+  async completeProfile(data: {
+    fullName: string;
+    gender: 'male' | 'female' | 'other';
+    birthDate: string;
+    role: 'user' | 'trainer';
+    height?: number;
+  }): Promise<AuthResponse> {
+    const response = await api.patch<AuthResponse>('/auth/complete-profile', data);
+    return response.data;
+  }
+
+  /**
    * Change password
    */
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
