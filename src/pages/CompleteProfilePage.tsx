@@ -18,7 +18,7 @@ import { useFormHandler } from '../hooks/useFormHandler';
 import { useApiMutation } from '../hooks/useApi';
 import { completeProfileSchema, type CompleteProfileFormData } from '../schemas/auth.schemas';
 import type { AuthTokens, User } from '../types/auth.types';
-import './Auth.css';
+import '../styles/Auth.css';
 
 function CompleteProfilePage() {
   const navigate = useNavigate();

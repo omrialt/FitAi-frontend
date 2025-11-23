@@ -19,7 +19,7 @@ import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { registerSchema, type RegisterFormData } from '../schemas/auth.schemas';
-import './Auth.css';
+import '../styles/Auth.css';
 
 function RegisterPage() {
   const { register: registerUser } = useAuth();

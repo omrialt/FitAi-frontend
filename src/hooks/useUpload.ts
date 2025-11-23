@@ -6,7 +6,7 @@
  * 
  * @example
  * ```tsx
- * function ProfileImageUpload() {
+ * function avatarUrlUpload() {
  *   const {
  *     uploadFiles,
  *     uploadedFiles,
@@ -24,7 +24,7 @@
  *     maxSize: 5 * 1024 * 1024, // 5MB
  *     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
  *     onSuccess: (files) => {
- *       updateProfile({ profileImage: files[0].url });
+ *       updateProfile({ avatarUrl: files[0].url });
  *     },
  *   });
  * 

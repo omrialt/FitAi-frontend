@@ -6,6 +6,8 @@ export type UserRole = 'admin' | 'trainer' | 'user';
 
 export type Gender = 'male' | 'female' | 'other';
 
+export type AuthProvider = 'email' | 'google';
+
 export interface User {
   _id: string;
   email: string;
@@ -14,7 +16,12 @@ export interface User {
   gender: Gender;
   birthDate: string;
   height?: number;
-  profileImage?: string;
+  avatarUrl?: string;
+  authProvider: AuthProvider;
+  isActive: boolean;
+  lastLogin?: string;
+  emailVerified?: boolean;
+  avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

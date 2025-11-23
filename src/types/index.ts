@@ -55,3 +55,10 @@ export type {
   UseRoleGuardReturn,
   BasicUser,
 } from './role.types';
+
+// User types
+export type {
+  UpdateProfileDto,
+  CreateUserDto,
+  UserResponse,
+} from './user.types';

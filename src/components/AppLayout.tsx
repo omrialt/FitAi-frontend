@@ -46,7 +46,7 @@ import {
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuthStore } from '../store/authStore';
 import type { UserRole } from '../types/auth.types';
-import './AppLayout.css';
+import '../styles/AppLayout.css'
 
 interface NavItem {
   icon: React.ReactNode;
@@ -87,7 +87,6 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
       { icon: <IconClipboardList size={20} stroke={1.5} />, label: 'Current Status', path: '/status' },
       { icon: <IconBrain size={20} stroke={1.5} />, label: 'AI Recommendations', path: '/ai-recommendations' },
       { icon: <IconCalendar size={20} stroke={1.5} />, label: 'Schedule', path: '/schedule' },
-      { icon: <IconSettings size={20} stroke={1.5} />, label: 'Settings', path: '/settings' },
     ];
   }
 
@@ -101,7 +100,6 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
       { icon: <IconNotebook size={20} stroke={1.5} />, label: 'Create Plan', path: '/create-plan' },
       { icon: <IconBrain size={20} stroke={1.5} />, label: 'AI Recommendations', path: '/ai-recommendations' },
       { icon: <IconChartLine size={20} stroke={1.5} />, label: 'Progress Analytics', path: '/analytics' },
-      { icon: <IconSettings size={20} stroke={1.5} />, label: 'Settings', path: '/settings' },
     ];
   }
 
@@ -117,7 +115,6 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
       { icon: <IconBrain size={20} stroke={1.5} />, label: 'AI Recommendations', path: '/ai-recommendations' },
       { icon: <IconReport size={20} stroke={1.5} />, label: 'Reports', path: '/reports' },
       { icon: <IconDatabase size={20} stroke={1.5} />, label: 'System', path: '/system' },
-      { icon: <IconSettings size={20} stroke={1.5} />, label: 'Settings', path: '/settings' },
     ];
   }
 
@@ -206,8 +203,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenu.Trigger asChild>
                   <UnstyledButton className="user-button">
                     <Group gap="xs">
-                      <Avatar color="indigo" radius="xl" size="md" src={user.profileImage}>
-                        {!user.profileImage && <IconUser size={18} />}
+                      <Avatar color="indigo" radius="xl" size="md" src={user.avatarUrl}>
+                        {!user.avatarUrl && <IconUser size={18} />}
                       </Avatar>
                       <Box visibleFrom="sm">
                         <Text size="sm" fw={500}>
@@ -223,10 +220,6 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <DropdownMenu.Item className="dropdown-item" onClick={() => navigate('/profile')}>
                       <IconUser size={16} />
                       <span>Profile</span>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item className="dropdown-item" onClick={() => navigate('/settings')}>
-                      <IconSettings size={16} />
-                      <span>Settings</span>
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator className="dropdown-separator" />
                     <DropdownMenu.Item className="dropdown-item dropdown-item-danger" onClick={handleLogout}>
@@ -297,13 +290,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main Content */}
       <AppShell.Main>
-        <ScrollArea h="calc(100vh - 110px)">
-          {children}
-        </ScrollArea>
+        {children}
       </AppShell.Main>
 
       {/* Footer */}
-      <AppShell.Footer p="md">
+      <AppShell.Footer p="md" style={{ position: 'relative' }}>
         <Group justify="center" h="100%">
           <Text size="sm" c="dimmed">
             © 2025 FitAI. All rights reserved.

@@ -17,7 +17,7 @@ import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
-import './Auth.css';
+import '../styles/Auth.css';
 
 function LoginPage() {
   const { login } = useAuth();

@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
+import ProfilePage from './pages/ProfilePage';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -51,6 +52,16 @@ function App() {
       
       {/* Complete Profile - for Google OAuth users */}
       <Route path="/complete-profile" element={<CompleteProfilePage />} />
+      
+      {/* Profile Page - requires authentication */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
