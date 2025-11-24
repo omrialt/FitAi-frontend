@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
 import TrainingPlansPage from './pages/TrainingPlansPage';
+import MyTrainingsPage from './pages/MyTrainingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
@@ -25,6 +26,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TrainingPlansPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-trainings"
+        element={
+          <ProtectedRoute>
+            <MyTrainingsPage />
           </ProtectedRoute>
         }
       />

@@ -77,6 +77,7 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
     return [
       { icon: <IconDashboard size={20} stroke={1.5} />, label: 'Dashboard', path: '/' },
       { icon: <IconBarbell size={20} stroke={1.5} />, label: 'Training Plans', path: '/training-plans' },
+      { icon: <IconNotebook size={20} stroke={1.5} />, label: 'My Trainings', path: '/my-trainings' },
       { icon: <IconApple size={20} stroke={1.5} />, label: 'Nutrition Plans', path: '/nutrition-plans' },
       { icon: <IconActivity size={20} stroke={1.5} />, label: 'Performance', path: '/performance' },
       { icon: <IconChartLine size={20} stroke={1.5} />, label: 'Progress Stats', path: '/progress' },
@@ -93,6 +94,7 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
       { icon: <IconDashboard size={20} stroke={1.5} />, label: 'Dashboard', path: '/' },
       { icon: <IconUsers size={20} stroke={1.5} />, label: 'Clients', path: '/clients' },
       { icon: <IconBarbell size={20} stroke={1.5} />, label: 'Training Plans', path: '/training-plans' },
+      { icon: <IconNotebook size={20} stroke={1.5} />, label: 'My Trainings', path: '/my-trainings' },
       { icon: <IconApple size={20} stroke={1.5} />, label: 'Nutrition Plans', path: '/nutrition-plans' },
       { icon: <IconNotebook size={20} stroke={1.5} />, label: 'Create Plan', path: '/create-plan' },
       { icon: <IconBrain size={20} stroke={1.5} />, label: 'AI Recommendations', path: '/ai-recommendations' },
