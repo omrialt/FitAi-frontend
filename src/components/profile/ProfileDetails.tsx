@@ -40,8 +40,6 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({ user, avatarPrev
       
       // Upload to Cloudinary
       const imageUrl = await cloudinaryService.uploadImage(file);
-      debugger;
-      
       // Update user profile with new avatar URL
       await userService.update(user._id, { avatarUrl: imageUrl });
       
@@ -77,7 +75,7 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({ user, avatarPrev
                 <span>{user.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
               )}
             </div>
-            {user.authProvider !== 'google' && (
+            
               <>
                 <input
                   ref={fileInputRef}
@@ -121,7 +119,7 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({ user, avatarPrev
                   )}
                 </button>
               </>
-            )}
+         
           </div>
 
           <h2 className="text-xl font-medium text-gray-900 text-center">{user.fullName || 'User'}</h2>
