@@ -1,8 +1,10 @@
 // React 19: Using Activity component for performance optimization
 import { Activity } from 'react';
 import { AppLayout } from '../components/AppLayout';
+import { LandingHero } from '../components/LandingHero';
 import { Container, Title, Text, Paper, Grid, Card, Badge, Group } from '@mantine/core';
 import { usePresetMetadata } from '../hooks/useMetadata';
+import { useAuthStore } from '../store/authStore';
 
 function DashboardPage() {
   // React 19: Clean metadata management with custom hook
@@ -10,11 +12,16 @@ function DashboardPage() {
     preconnect: ['https://api.fitai.com'],
   });
 
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <AppLayout>
       {metadata}
       
-      <Container size="xl">
+      {!isAuthenticated ? (
+        <LandingHero />
+      ) : (
+        <Container size="xl">
         <Title order={1} mb="xl">
           Dashboard
         </Title>
@@ -76,7 +83,8 @@ function DashboardPage() {
             </Text>
           </Paper>
         </Activity>
-      </Container>
+        </Container>
+      )}
     </AppLayout>
   );
 }

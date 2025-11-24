@@ -67,9 +67,6 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
   if (!isAuthenticated || !role) {
     return [
       { icon: <IconHome size={20} stroke={1.5} />, label: 'Home', path: '/' },
-      { icon: <IconInfoCircle size={20} stroke={1.5} />, label: 'About', path: '/about' },
-      { icon: <IconStar size={20} stroke={1.5} />, label: 'Features', path: '/features' },
-      { icon: <IconMail size={20} stroke={1.5} />, label: 'Contact', path: '/contact' },
       { icon: <IconLogin size={20} stroke={1.5} />, label: 'Login', path: '/login' },
       { icon: <IconUserPlus size={20} stroke={1.5} />, label: 'Register', path: '/register' },
     ];

@@ -57,7 +57,6 @@ export function useRoleGuard(options: UseRoleGuardOptions = {}): UseRoleGuardRet
     resourceId,
     resourceOwnerId,
   } = options;
-
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(true);
