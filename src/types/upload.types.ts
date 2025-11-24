@@ -48,6 +48,24 @@ export interface UseUploadReturn {
   previews: string[];
   getRootProps: ReturnType<typeof useDropzone>['getRootProps'];
   getInputProps: ReturnType<typeof useDropzone>['getInputProps'];
+}
+
+// Cloudinary API response types
+export interface UploadResponse {
+  success: boolean;
+  data: {
+    imageUrl: string;
+  };
+  message: string;
+}
+
+export interface MultipleUploadResponse {
+  success: boolean;
+  data: {
+    imageUrls: string[];
+    count: number;
+  };
+  message: string;
   isDragActive: boolean;
   reset: () => void;
 }

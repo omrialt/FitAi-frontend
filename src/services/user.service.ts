@@ -31,7 +31,6 @@ class UserService {
    * Update user profile
    */
   async update(id: string, data: UpdateProfileDto): Promise<User> {
-    debugger;
     const response = await api.patch<User>(`/users/${id}`, data);
     return response.data;
   }

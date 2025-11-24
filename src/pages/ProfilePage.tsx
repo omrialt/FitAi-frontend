@@ -191,9 +191,11 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleAvatarUrlChange = (url: string) => {
-    setValue('avatarUrl', url);
-    setAvatarPreview(url || null);
+  const handleAvatarUpdate = (avatarUrl: string) => {
+    // Update the user in the auth store
+    updateUser({ ...user, avatarUrl });
+    // Update the preview
+    setAvatarPreview(avatarUrl);
   };
 
   if (!user) {
@@ -216,7 +218,7 @@ const ProfilePage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Profile Overview - Left Column */}
-            <ProfileDetails user={user} avatarPreview={avatarPreview} />
+            <ProfileDetails user={user} avatarPreview={avatarPreview} onAvatarUpdate={handleAvatarUpdate} />
 
             {/* Editable Form Section - Right Column */}
             <div className="lg:col-span-2">
@@ -224,7 +226,6 @@ const ProfilePage: React.FC = () => {
                 control={control}
                 errors={errors}
                 isGoogleAuth={isGoogleAuth}
-                onAvatarUrlChange={handleAvatarUrlChange}
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
                 isLoading={isSubmitting || isLoading}

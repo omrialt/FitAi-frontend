@@ -10,7 +10,6 @@ interface ProfileFormProps {
   errors: FieldErrors<ProfileFormData>;
   control: Control<ProfileFormData>;
   isGoogleAuth: boolean;
-  onAvatarUrlChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   isLoading: boolean;
@@ -20,7 +19,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   errors,
   control,
   isGoogleAuth,
-  onAvatarUrlChange,
   onSubmit,
   onCancel,
   isLoading,
@@ -145,29 +143,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 )}
               />
             </Grid.Col>
-
-            {!isGoogleAuth && (
-              <Grid.Col span={12}>
-                <Controller
-                  name="avatarUrl"
-                  control={control}
-                  render={({ field }) => (
-                    <TextInput
-                      label="Avatar Image URL"
-                      placeholder="https://example.com/avatar.jpg"
-                      type="url"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        onAvatarUrlChange(e.target.value);
-                      }}
-                      error={errors.avatarUrl?.message}
-                      description="Enter a URL to your profile image"
-                    />
-                  )}
-                />
-              </Grid.Col>
-            )}
           </Grid>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
