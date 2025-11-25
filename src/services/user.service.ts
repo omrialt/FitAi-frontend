@@ -7,8 +7,8 @@ class UserService {
    * Get all users
    */
   async findAll(): Promise<User[]> {
-    const response = await api.get<User[]>('/users');
-    return response.data;
+    const response = await api.get<{ data: User[] }>('/users');
+    return response.data.data;
   }
 
   /**

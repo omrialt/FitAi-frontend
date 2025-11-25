@@ -1,18 +1,31 @@
 /**
- * EditTrainingModal - Modal for editing training
+ * EditTrainingModal - Modal for editing training plan
  */
 
-'use client';
+"use client";
 
-import { Modal, TextInput, Select, NumberInput, Textarea, Button, Stack, Group } from '@mantine/core';
-import { useState, useEffect } from 'react';
-import type { Training, TrainingType, TrainingStatus, TrainingDifficulty } from '../../types/training.types';
+import { Modal, Button, Stack, Group, Text } from "@mantine/core";
+import { useState, useEffect } from "react";
+import type {
+  TrainingPlan,
+  TrainingDay,
+  Difficulty,
+  ProgramType,
+  AccessLevel,
+} from "../../types/training-plan.types";
+import type { User } from "../../types/auth.types";
+import userService from "../../services/user.service";
+import { useAuth } from "../../hooks/useAuth";
+import { BasicInfoSection } from "./edit-modal/BasicInfoSection";
+import { ProgramDetailsSection } from "./edit-modal/ProgramDetailsSection";
+import { SharedAccessSection } from "./edit-modal/SharedAccessSection";
+import { TrainingDaysSection } from "./edit-modal/TrainingDaysSection";
 
 interface EditTrainingModalProps {
   opened: boolean;
   onClose: () => void;
-  training: Training | null;
-  onSave: (data: Partial<Training>) => void;
+  training: TrainingPlan | null;
+  onSave: (data: Partial<TrainingPlan>) => void;
 }
 
 export function EditTrainingModal({
@@ -21,113 +34,304 @@ export function EditTrainingModal({
   training,
   onSave,
 }: EditTrainingModalProps) {
-  const [formData, setFormData] = useState({
-    name: training?.name || '',
-    trainingType: training?.trainingType || 'strength',
-    workoutsPerWeek: training?.workoutsPerWeek || 3,
-    status: training?.status || 'active',
-    difficulty: training?.difficulty || 'medium',
-    description: training?.description || '',
-    duration: training?.duration || 8,
-  });
+  const { user: currentUser } = useAuth();
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Form field states
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+  const [programType, setProgramType] = useState<ProgramType>("fixedDays");
+  const [focus, setFocus] = useState("");
+  const [estimatedDuration, setEstimatedDuration] = useState<
+    number | undefined
+  >();
+  const [estimatedCalories, setEstimatedCalories] = useState<
+    number | undefined
+  >();
+  const [isActive, setIsActive] = useState(true);
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
+  const [rotationCycleLength, setRotationCycleLength] = useState<
+    number | undefined
+  >();
+  const [sharedAccess, setSharedAccess] = useState<
+    Array<{ accessLevel: string; userId: string }>
+  >([]);
+
+  // Fetch all users for shared access selection
   useEffect(() => {
-    if (training) {
-      setFormData({
-        name: training.name,
-        trainingType: training.trainingType,
-        workoutsPerWeek: training.workoutsPerWeek,
-        status: training.status,
-        difficulty: training.difficulty,
-        description: training.description || '',
-        duration: training.duration || 8,
-      });
+    const fetchUsers = async () => {
+      try {
+        const users = await userService.findAll();
+        setAllUsers(users);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+    if (opened) {
+      fetchUsers();
     }
-  }, [training]);
+  }, [opened]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Reset form when training changes
+  useEffect(() => {
+    if (training && opened) {
+      setTitle(training.title || "");
+      setDescription(training.description || "");
+      setDifficulty(training.difficulty || "beginner");
+      setProgramType(training.programType || "fixedDays");
+      setFocus(training.focus || "");
+      setEstimatedDuration(training.estimatedDuration);
+      setEstimatedCalories(training.estimatedCalories);
+      setIsActive(training.isActive ?? true);
+      setStartDate(training.startDate);
+      setEndDate(training.endDate);
+      setRotationCycleLength(training.rotationCycleLength);
+      setLocalDays(training.days || []);
+      setSharedAccess(training.sharedAccess || []);
+    }
+  }, [training, opened]);
+
+  // Training Days handlers - use local state
+  const addDay = () => {
+    const newDays = [
+      ...localDays,
+      {
+        dayName: `Day ${localDays.length + 1}`,
+        dayOfWeek: localDays.length % 7,
+        exercises: [],
+      },
+    ];
+    setLocalDays(newDays);
+  };
+
+  const removeDay = (index: number) => {
+    const newDays = [...localDays];
+    newDays.splice(index, 1);
+    setLocalDays(newDays);
+  };
+
+  const updateDay = (index: number, updates: Partial<TrainingDay>) => {
+    const newDays = [...localDays];
+    newDays[index] = { ...newDays[index], ...updates };
+    setLocalDays(newDays);
+  };
+
+  // Exercise handlers
+  const addExercise = (dayIndex: number) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises.push({
+      name: "",
+      muscleGroup: "",
+      type: "regular",
+      sets: [],
+    });
+    setLocalDays(newDays);
+  };
+
+  const removeExercise = (dayIndex: number, exerciseIndex: number) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises.splice(exerciseIndex, 1);
+    setLocalDays(newDays);
+  };
+
+  const updateExerciseField = (
+    dayIndex: number,
+    exerciseIndex: number,
+    field: string,
+    value: unknown
+  ) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises[exerciseIndex][field] = value;
+    setLocalDays(newDays);
+  };
+
+  // Set handlers
+  const addSet = (dayIndex: number, exerciseIndex: number) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises[exerciseIndex].sets.push({
+      targetReps: 10,
+      targetWeight: 0,
+      history: [],
+    });
+    setLocalDays(newDays);
+  };
+
+  const removeSet = (
+    dayIndex: number,
+    exerciseIndex: number,
+    setIndex: number
+  ) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises[exerciseIndex].sets.splice(setIndex, 1);
+    setLocalDays(newDays);
+  };
+
+  const updateSet = (
+    dayIndex: number,
+    exerciseIndex: number,
+    setIndex: number,
+    updates: Record<string, unknown>
+  ) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    newDays[dayIndex].exercises[exerciseIndex].sets[setIndex] = {
+      ...newDays[dayIndex].exercises[exerciseIndex].sets[setIndex],
+      ...updates,
+    };
+    setLocalDays(newDays);
+  };
+
+  // Shared access handlers
+  const handleViewAccessChange = (userIds: string[]) => {
+    const currentEditAccessUsers = sharedAccess
+      .filter((sa: { accessLevel: string }) => sa.accessLevel === "edit")
+      .map((sa: { userId: string }) => sa.userId);
+
+    const newSharedAccess = [
+      ...userIds.map((userId: string) => ({
+        userId,
+        accessLevel: "view" as AccessLevel,
+        objectType: "trainingPlan" as const,
+      })),
+      ...currentEditAccessUsers.map((userId: string) => ({
+        userId,
+        accessLevel: "edit" as AccessLevel,
+        objectType: "trainingPlan" as const,
+      })),
+    ];
+    setSharedAccess(newSharedAccess);
+  };
+
+  const handleEditAccessChange = (userIds: string[]) => {
+    const currentViewAccessUsers = sharedAccess
+      .filter((sa: { accessLevel: string }) => sa.accessLevel === "view")
+      .map((sa: { userId: string }) => sa.userId);
+
+    const newSharedAccess = [
+      ...currentViewAccessUsers.map((userId: string) => ({
+        userId,
+        accessLevel: "view" as AccessLevel,
+        objectType: "trainingPlan" as const,
+      })),
+      ...userIds.map((userId: string) => ({
+        userId,
+        accessLevel: "edit" as AccessLevel,
+        objectType: "trainingPlan" as const,
+      })),
+    ];
+    setSharedAccess(newSharedAccess);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Integrate with backend API
-    onSave(formData);
-    onClose();
+    setIsSubmitting(true);
+    try {
+      const cleanedData: Partial<TrainingPlan> = {
+        title,
+        description,
+        difficulty,
+        programType,
+        focus,
+        estimatedDuration,
+        estimatedCalories,
+        isActive,
+        startDate,
+        endDate,
+        rotationCycleLength,
+        days: localDays,
+        sharedAccess: sharedAccess.map((sa) => ({
+          userId: sa.userId,
+          accessLevel: sa.accessLevel as AccessLevel,
+          objectType: "trainingPlan" as const,
+        })),
+      };
+
+      // Remove undefined fields
+      Object.keys(cleanedData).forEach((key) => {
+        if (cleanedData[key as keyof TrainingPlan] === undefined) {
+          delete cleanedData[key as keyof TrainingPlan];
+        }
+      });
+
+      onSave(cleanedData);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Edit Training" size="lg">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={
+        <Text fw={700} size="lg">
+          Edit Training Plan
+        </Text>
+      }
+      size="xl"
+      styles={{ body: { maxHeight: "80vh", overflowY: "auto" } }}
+    >
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
-          <TextInput
-            label="Program Name"
-            placeholder="Enter training name"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.currentTarget.value })}
+          <BasicInfoSection
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+            difficulty={difficulty}
+            setDifficulty={setDifficulty}
+            programType={programType}
+            setProgramType={setProgramType}
+            focus={focus}
+            setFocus={setFocus}
+            rotationCycleLength={rotationCycleLength}
+            setRotationCycleLength={setRotationCycleLength}
           />
-
-          <Select
-            label="Training Type"
-            data={[
-              { value: 'strength', label: 'Strength' },
-              { value: 'cardio', label: 'Cardio' },
-              { value: 'hybrid', label: 'Hybrid' },
-              { value: 'flexibility', label: 'Flexibility' },
-              { value: 'sports', label: 'Sports' },
-            ]}
-            value={formData.trainingType}
-            onChange={(value) => value && setFormData({ ...formData, trainingType: value as TrainingType })}
+          <ProgramDetailsSection
+            estimatedDuration={estimatedDuration}
+            setEstimatedDuration={setEstimatedDuration}
+            estimatedCalories={estimatedCalories}
+            setEstimatedCalories={setEstimatedCalories}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            isActive={isActive}
+            setIsActive={setIsActive}
           />
-
-          <NumberInput
-            label="Workouts per Week"
-            min={1}
-            max={7}
-            value={formData.workoutsPerWeek}
-            onChange={(value) => typeof value === 'number' && setFormData({ ...formData, workoutsPerWeek: value })}
+          {(currentUser?.role === "admin" ||
+            training?.userId === currentUser?._id) && (
+            <SharedAccessSection
+              allUsers={allUsers}
+              sharedAccess={sharedAccess}
+              handleViewAccessChange={handleViewAccessChange}
+              handleEditAccessChange={handleEditAccessChange}
+            />
+          )}{" "}
+          <TrainingDaysSection
+            localDays={localDays}
+            addDay={addDay}
+            removeDay={removeDay}
+            updateDay={updateDay}
+            addExercise={addExercise}
+            removeExercise={removeExercise}
+            updateExerciseField={updateExerciseField}
+            addSet={addSet}
+            removeSet={removeSet}
+            updateSet={updateSet}
           />
-
-          <NumberInput
-            label="Duration (weeks)"
-            min={1}
-            max={52}
-            value={formData.duration}
-            onChange={(value) => typeof value === 'number' && setFormData({ ...formData, duration: value })}
-          />
-
-          <Select
-            label="Status"
-            data={[
-              { value: 'active', label: 'Active' },
-              { value: 'inactive', label: 'Inactive' },
-              { value: 'archived', label: 'Archived' },
-            ]}
-            value={formData.status}
-            onChange={(value) => value && setFormData({ ...formData, status: value as TrainingStatus })}
-          />
-
-          <Select
-            label="Difficulty"
-            data={[
-              { value: 'easy', label: 'Easy' },
-              { value: 'medium', label: 'Medium' },
-              { value: 'hard', label: 'Hard' },
-            ]}
-            value={formData.difficulty}
-            onChange={(value) => value && setFormData({ ...formData, difficulty: value as TrainingDifficulty })}
-          />
-
-          <Textarea
-            label="Description"
-            placeholder="Enter training description"
-            rows={4}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.currentTarget.value })}
-          />
-
+          {/* Action Buttons */}
           <Group justify="flex-end" gap="xs">
             <Button variant="light" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" loading={isSubmitting}>
+              Save Changes
+            </Button>
           </Group>
         </Stack>
       </form>

@@ -1,5 +1,5 @@
 /**
- * TrainingsCard - Mobile card view for a single training
+ * TrainingsCard - Mobile card view for a single training plan
  */
 
 'use client';
@@ -11,41 +11,28 @@ import {
   IconCopy,
 } from '@tabler/icons-react';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training-plan.types';
 
 interface TrainingsCardProps {
-  training: Training;
+  training: TrainingPlan;
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
-  onExportPDF: (training: Training) => void;
-  onExportExcel: (training: Training) => void;
+  onExportPDF: (training: TrainingPlan) => void;
+  onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
   onShare?: (id: string) => void;
   onMakePublic?: (id: string) => void;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'active':
-      return 'green';
-    case 'inactive':
-      return 'gray';
-    case 'archived':
-      return 'red';
-    default:
-      return 'blue';
-  }
-};
-
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
-    case 'easy':
+    case 'beginner':
       return 'teal';
-    case 'medium':
+    case 'intermediate':
       return 'yellow';
-    case 'hard':
+    case 'advanced':
       return 'red';
     default:
       return 'gray';
@@ -70,7 +57,7 @@ export function TrainingsCard({
         {/* Header */}
         <Group justify="space-between">
           <Text fw={600} size="lg">
-            {training.name}
+            {training.title}
           </Text>
           <TrainingsActionsMenu
             training={training}
@@ -90,46 +77,56 @@ export function TrainingsCard({
         <Stack gap="xs">
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Type:
+              Difficulty:
             </Text>
-            <Text size="sm" tt="capitalize">
-              {training.trainingType}
-            </Text>
+            <Badge color={getDifficultyColor(training.difficulty || 'beginner')} variant="light">
+              {training.difficulty || 'beginner'}
+            </Badge>
           </Group>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Workouts/Week:
+              Days:
             </Text>
-            <Text size="sm">{training.workoutsPerWeek}</Text>
+            <Text size="sm">{training.days?.length || 0}</Text>
           </Group>
+
+          {training.focus && (
+            <Group justify="space-between">
+              <Text size="sm" c="dimmed">
+                Focus:
+              </Text>
+              <Text size="sm">{training.focus}</Text>
+            </Group>
+          )}
+
+          {training.estimatedDuration && (
+            <Group justify="space-between">
+              <Text size="sm" c="dimmed">
+                Duration:
+              </Text>
+              <Text size="sm">{training.estimatedDuration} min</Text>
+            </Group>
+          )}
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Creator:
+              Status:
             </Text>
-            <Text size="sm" tt="capitalize">
-              {training.creator}
-            </Text>
+            <Badge color={training.isActive ? 'green' : 'gray'} variant="light">
+              {training.isActive ? 'Active' : 'Inactive'}
+            </Badge>
           </Group>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
               Created:
             </Text>
-            <Text size="sm">{new Date(training.createdAt).toLocaleDateString()}</Text>
+            <Text size="sm">
+              {training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'}
+            </Text>
           </Group>
         </Stack>
-
-        {/* Badges */}
-        <Group gap="xs">
-          <Badge color={getStatusColor(training.status)} variant="light">
-            {training.status}
-          </Badge>
-          <Badge color={getDifficultyColor(training.difficulty)} variant="light">
-            {training.difficulty}
-          </Badge>
-        </Group>
 
         {/* Quick Actions */}
         <Group gap="xs">
@@ -137,7 +134,7 @@ export function TrainingsCard({
             variant="light"
             size="xs"
             leftSection={<IconEye size={14} />}
-            onClick={() => onView(training.id)}
+            onClick={() => onView(training._id)}
             flex={1}
           >
             View
@@ -146,7 +143,7 @@ export function TrainingsCard({
             variant="light"
             size="xs"
             leftSection={<IconEdit size={14} />}
-            onClick={() => onEdit(training.id)}
+            onClick={() => onEdit(training._id)}
             flex={1}
           >
             Edit
@@ -155,7 +152,7 @@ export function TrainingsCard({
             variant="light"
             size="xs"
             leftSection={<IconCopy size={14} />}
-            onClick={() => onDuplicate(training.id)}
+            onClick={() => onDuplicate(training._id)}
             flex={1}
           >
             Duplicate

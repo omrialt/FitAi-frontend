@@ -1,17 +1,17 @@
 /**
- * DeleteTrainingModal - Confirmation modal for deleting training
+ * DeleteTrainingModal - Confirmation modal for deleting training plan
  */
 
 'use client';
 
 import { Modal, Text, Button, Group, Stack } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training-plan.types';
 
 interface DeleteTrainingModalProps {
   opened: boolean;
   onClose: () => void;
-  training: Training | null;
+  training: TrainingPlan | null;
   onConfirm: () => void;
 }
 
@@ -22,20 +22,19 @@ export function DeleteTrainingModal({
   onConfirm,
 }: DeleteTrainingModalProps) {
   const handleDelete = () => {
-    // TODO: Integrate with backend API
     onConfirm();
     onClose();
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Delete Training" size="md">
+    <Modal opened={opened} onClose={onClose} title="Delete Training Plan" size="md">
       <Stack gap="md">
         <Group gap="xs" align="flex-start">
           <IconAlertTriangle size={24} color="var(--mantine-color-red-6)" />
           <Stack gap="xs" style={{ flex: 1 }}>
-            <Text fw={500}>Are you sure you want to delete this training?</Text>
+            <Text fw={500}>Are you sure you want to delete this training plan?</Text>
             <Text size="sm" c="dimmed">
-              Training: <strong>{training?.name}</strong>
+              Training Plan: <strong>{training?.title}</strong>
             </Text>
             <Text size="sm" c="red">
               This action cannot be undone. All associated workouts and progress data will be
@@ -49,7 +48,7 @@ export function DeleteTrainingModal({
             Cancel
           </Button>
           <Button color="red" onClick={handleDelete}>
-            Delete Training
+            Delete Training Plan
           </Button>
         </Group>
       </Stack>

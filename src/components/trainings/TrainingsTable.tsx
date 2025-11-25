@@ -6,41 +6,28 @@
 
 import { Table, Badge, Text } from '@mantine/core';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training.types';
 
 interface TrainingsTableProps {
-  trainings: Training[];
+  trainings: TrainingPlan[];
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
-  onExportPDF: (training: Training) => void;
-  onExportExcel: (training: Training) => void;
+  onExportPDF: (training: TrainingPlan) => void;
+  onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
   onShare?: (id: string) => void;
   onMakePublic?: (id: string) => void;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'active':
-      return 'green';
-    case 'inactive':
-      return 'gray';
-    case 'archived':
-      return 'red';
-    default:
-      return 'blue';
-  }
-};
-
 const getDifficultyColor = (difficulty: string) => {
-  switch (difficulty) {
-    case 'easy':
+  switch (difficulty.toLowerCase()) {
+    case 'beginner':
       return 'teal';
-    case 'medium':
+    case 'intermediate':
       return 'yellow';
-    case 'hard':
+    case 'advanced':
       return 'red';
     default:
       return 'gray';
@@ -72,35 +59,20 @@ export function TrainingsTable({
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Program Name</Table.Th>
-            <Table.Th>Training Type</Table.Th>
-            <Table.Th>Workouts/Week</Table.Th>
-            <Table.Th>Status</Table.Th>
-            <Table.Th>Creator</Table.Th>
+            <Table.Th>Title</Table.Th>
             <Table.Th>Difficulty</Table.Th>
+            <Table.Th>Days</Table.Th>
+            <Table.Th>Status</Table.Th>
+            <Table.Th>Focus</Table.Th>
             <Table.Th>Created At</Table.Th>
             <Table.Th>Actions</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {trainings.map((training) => (
-            <Table.Tr key={training.id}>
+            <Table.Tr key={training._id}>
               <Table.Td>
-                <Text fw={500}>{training.name}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text tt="capitalize">{training.trainingType}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text>{training.workoutsPerWeek}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Badge color={getStatusColor(training.status)} variant="light">
-                  {training.status}
-                </Badge>
-              </Table.Td>
-              <Table.Td>
-                <Text tt="capitalize">{training.creator}</Text>
+                <Text fw={500}>{training.title}</Text>
               </Table.Td>
               <Table.Td>
                 <Badge color={getDifficultyColor(training.difficulty)} variant="light">
@@ -108,8 +80,19 @@ export function TrainingsTable({
                 </Badge>
               </Table.Td>
               <Table.Td>
+                <Text>{training.days?.length || 0}</Text>
+              </Table.Td>
+              <Table.Td>
+                <Badge color={training.isActive ? 'green' : 'gray'} variant="light">
+                  {training.isActive ? 'active' : 'inactive'}
+                </Badge>
+              </Table.Td>
+              <Table.Td>
+                <Text tt="capitalize">{training.focus || '-'}</Text>
+              </Table.Td>
+              <Table.Td>
                 <Text size="sm" c="dimmed">
-                  {new Date(training.createdAt).toLocaleDateString()}
+                  {training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'}
                 </Text>
               </Table.Td>
               <Table.Td>

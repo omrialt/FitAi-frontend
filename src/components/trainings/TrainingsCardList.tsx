@@ -6,16 +6,16 @@
 
 import { Stack, Text } from '@mantine/core';
 import { TrainingsCard } from './TrainingsCard';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training-plan.types';
 
 interface TrainingsCardListProps {
-  trainings: Training[];
+  trainings: TrainingPlan[];
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
-  onExportPDF: (training: Training) => void;
-  onExportExcel: (training: Training) => void;
+  onExportPDF: (training: TrainingPlan) => void;
+  onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
   onShare?: (id: string) => void;
   onMakePublic?: (id: string) => void;
@@ -36,7 +36,7 @@ export function TrainingsCardList({
   if (trainings.length === 0) {
     return (
       <Text c="dimmed" ta="center" py="xl">
-        No trainings found
+        No training plans found
       </Text>
     );
   }
@@ -45,7 +45,7 @@ export function TrainingsCardList({
     <Stack gap="md">
       {trainings.map((training) => (
         <TrainingsCard
-          key={training.id}
+          key={training._id}
           training={training}
           isCoach={isCoach}
           onView={onView}

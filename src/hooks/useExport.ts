@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import type { Training } from '../types/training.types';
+import type { TrainingPlan } from '../types/training-plan.types';
 
 interface UseExportOptions {
   filename?: string;
@@ -15,8 +15,8 @@ interface UseExportOptions {
 }
 
 interface UseExportReturn {
-  exportToPDF: (data: Training[], columns: string[]) => void;
-  exportToExcel: (data: Training[], columns: string[]) => void;
+  exportToPDF: (data: TrainingPlan[], columns: string[]) => void;
+  exportToExcel: (data: TrainingPlan[], columns: string[]) => void;
   isExporting: boolean;
   error: Error | null;
 }
@@ -26,7 +26,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const exportToPDF = (data: Training[], columns: string[]) => {
+  const exportToPDF = (data: TrainingPlan[], columns: string[]) => {
     try {
       setIsExporting(true);
       setError(null);
@@ -36,22 +36,22 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
 
       // Add title
       doc.setFontSize(18);
-      doc.text('My Trainings', 14, 20);
+      doc.text('My Training Plans', 14, 20);
 
       // Add date
       doc.setFontSize(10);
-      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, 14, 28);
 
       // Prepare table data
       const headers = [columns];
       const body = data.map((training) => [
-        training.name,
-        training.trainingType,
-        training.workoutsPerWeek.toString(),
-        training.status,
-        training.creator,
-        training.difficulty,
-        new Date(training.createdAt).toLocaleDateString(),
+        training.title,
+        training.difficulty || 'beginner',
+        training.days?.length?.toString() || '0',
+        training.isActive ? 'Active' : 'Inactive',
+        training.focus || '-',
+        training.difficulty || 'beginner',
+        training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-',
       ]);
 
       // Add table
@@ -76,7 +76,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
     }
   };
 
-  const exportToExcel = (data: Training[], columns: string[]) => {
+  const exportToExcel = (data: TrainingPlan[], columns: string[]) => {
     try {
       setIsExporting(true);
       setError(null);
@@ -85,13 +85,12 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
       const worksheetData = [
         columns,
         ...data.map((training) => [
-          training.name,
-          training.trainingType,
-          training.workoutsPerWeek,
-          training.status,
-          training.creator,
-          training.difficulty,
-          new Date(training.createdAt).toLocaleDateString(),
+          training.title,
+          training.difficulty || 'beginner',
+          training.days?.length || 0,
+          training.isActive ? 'Active' : 'Inactive',
+          training.focus || '-',
+          training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-',
         ]),
       ];
 

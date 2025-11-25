@@ -41,14 +41,14 @@ export default function MyTrainingsPage() {
   const pageSize = 10;
 
   // Data state
-  const [allTrainings, setAllTrainings] = useState<Training[]>([]);
+  const [allTrainings, setAllTrainings] = useState<TrainingPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Modals state
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [duplicateModalOpened, setDuplicateModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
-  const [selectedTraining, setSelectedTraining] = useState<Training | null>(null);
+  const [selectedTraining, setSelectedTraining] = useState<TrainingPlan | null>(null);
 
   // Export hook
   const { exportToPDF, exportToExcel } = useExport({
@@ -69,10 +69,7 @@ export default function MyTrainingsPage() {
 
         console.log('Fetched trainings:', response);
         
-        const mapped = response.items.map((plan) => 
-          mapTrainingPlanToTraining(plan, user?._id)
-        );
-        setAllTrainings(mapped);
+        setAllTrainings(response.items);
       } catch (error) {
         console.error('Failed to fetch trainings:', error);
         toast.error('Failed to load trainings');
@@ -93,10 +90,7 @@ export default function MyTrainingsPage() {
         limit: 100,
       });
       
-      const mapped = response.items.map((plan) => 
-        mapTrainingPlanToTraining(plan, user?._id)
-      );
-      setAllTrainings(mapped);
+      setAllTrainings(response.items);
     } catch (error) {
       console.error('Failed to refetch trainings:', error);
       toast.error('Failed to refresh trainings');
@@ -111,21 +105,28 @@ export default function MyTrainingsPage() {
 
     // Apply filters
     if (filters.status) {
-      filtered = filtered.filter((t) => t.status === filters.status);
+      const isActive = filters.status === 'active';
+      filtered = filtered.filter((t) => t.isActive === isActive);
     }
     if (filters.creator) {
-      filtered = filtered.filter((t) => t.creator === filters.creator);
+      filtered = filtered.filter((t) => {
+        const isOwnPlan = t.userId === user?._id;
+        const isCoachPlan = !!t.trainerId;
+        if (filters.creator === 'me') return isOwnPlan && !isCoachPlan;
+        if (filters.creator === 'coach') return isCoachPlan;
+        return !isOwnPlan && !isCoachPlan;
+      });
     }
     if (filters.difficulty) {
       filtered = filtered.filter((t) => t.difficulty === filters.difficulty);
     }
     if (filters.dateFrom) {
       filtered = filtered.filter(
-        (t) => new Date(t.createdAt) >= filters.dateFrom!
+        (t) => new Date(t.createdAt || '') >= filters.dateFrom!
       );
     }
     if (filters.dateTo) {
-      filtered = filtered.filter((t) => new Date(t.createdAt) <= filters.dateTo!);
+      filtered = filtered.filter((t) => new Date(t.createdAt || '') <= filters.dateTo!);
     }
 
     // Apply search
@@ -133,14 +134,14 @@ export default function MyTrainingsPage() {
       const query = debouncedSearch.toLowerCase();
       filtered = filtered.filter(
         (t) =>
-          t.name.toLowerCase().includes(query) ||
-          t.trainingType.toLowerCase().includes(query) ||
-          t.description?.toLowerCase().includes(query)
+          t.title.toLowerCase().includes(query) ||
+          t.description?.toLowerCase().includes(query) ||
+          t.focus?.toLowerCase().includes(query)
       );
     }
 
     return filtered;
-  }, [allTrainings, filters, debouncedSearch]);
+  }, [allTrainings, filters, debouncedSearch, user?._id]);
 
   // Pagination
   const totalPages = Math.ceil(trainings.length / pageSize);
@@ -160,25 +161,46 @@ export default function MyTrainingsPage() {
   };
 
   const handleEdit = (id: string) => {
-    const training = trainings.find((t) => t.id === id);
-    setSelectedTraining(training || null);
+    const training = trainings.find((t) => t._id === id);
+    if (!training) return;
+    
+    // Check if user has edit permission
+    const isOwner = training.userId === user?._id || training.trainerId === user?._id;
+    const hasEditAccess = training.sharedAccess?.some(
+      (access) => access.userId === user?._id && access.accessLevel === 'edit'
+    );
+    
+    if (!isOwner && !hasEditAccess) {
+      toast.error('You do not have permission to edit this training plan');
+      return;
+    }
+    
+    setSelectedTraining(training);
     setEditModalOpened(true);
   };
 
   const handleDuplicate = (id: string) => {
-    const training = trainings.find((t) => t.id === id);
+    const training = trainings.find((t) => t._id === id);
     setSelectedTraining(training || null);
     setDuplicateModalOpened(true);
   };
 
   const handleDelete = (id: string) => {
-    const training = trainings.find((t) => t.id === id);
-    setSelectedTraining(training || null);
+    const training = trainings.find((t) => t._id === id);
+    if (!training) return;
+    
+    // Only owner can delete
+    const isOwner = training.userId === user?._id || training.trainerId === user?._id;
+    if (!isOwner) {
+      toast.error('You do not have permission to delete this training plan');
+      return;
+    }
+    
+    setSelectedTraining(training);
     setDeleteModalOpened(true);
   };
 
   const handleShare = (id: string) => {
-    // TODO: Implement share modal/dialog
     toast.info(`Share training ${id} - Feature coming soon`);
   };
 
@@ -191,26 +213,11 @@ export default function MyTrainingsPage() {
     }
   };
 
-  const handleSaveEdit = async (data: Partial<Training>) => {
+  const handleSaveEdit = async (data: Partial<TrainingPlan>) => {
     if (!selectedTraining) return;
     
     try {
-      // Map UI difficulty to backend difficulty
-      let backendDifficulty: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
-      if (data.difficulty === 'easy' || data.difficulty === 'beginner') {
-        backendDifficulty = 'beginner';
-      } else if (data.difficulty === 'medium' || data.difficulty === 'intermediate') {
-        backendDifficulty = 'intermediate';
-      } else if (data.difficulty === 'hard' || data.difficulty === 'advanced') {
-        backendDifficulty = 'advanced';
-      }
-      
-      await trainingPlanService.update(selectedTraining.id, {
-        title: data.name,
-        description: data.description,
-        difficulty: backendDifficulty,
-        estimatedDuration: data.duration,
-      });
+      await trainingPlanService.update(selectedTraining._id, data);
       
       toast.success('Training updated successfully');
       await refetchTrainings();
@@ -221,13 +228,13 @@ export default function MyTrainingsPage() {
     }
   };
 
-  const handleConfirmDuplicate = async (name: string) => {
+  const handleConfirmDuplicate = async (title: string) => {
     if (!selectedTraining) return;
     
     try {
-      await trainingPlanService.duplicate(selectedTraining.id, name);
+      await trainingPlanService.duplicate(selectedTraining._id, title);
       
-      toast.success(`Training "${name}" duplicated successfully`);
+      toast.success(`Training "${title}" duplicated successfully`);
       await refetchTrainings();
       setDuplicateModalOpened(false);
     } catch (err) {
@@ -240,7 +247,7 @@ export default function MyTrainingsPage() {
     if (!selectedTraining) return;
     
     try {
-      await trainingPlanService.delete(selectedTraining.id);
+      await trainingPlanService.delete(selectedTraining._id);
       
       toast.success('Training deleted successfully');
       await refetchTrainings();
@@ -251,27 +258,25 @@ export default function MyTrainingsPage() {
     }
   };
 
-  const handleExportPDF = (training: Training) => {
+  const handleExportPDF = (training: TrainingPlan) => {
     const columns = [
-      'Name',
-      'Type',
-      'Workouts/Week',
-      'Status',
-      'Creator',
+      'Title',
       'Difficulty',
+      'Status',
+      'Days',
+      'Focus',
       'Created',
     ];
     exportToPDF([training], columns);
   };
 
-  const handleExportExcel = (training: Training) => {
+  const handleExportExcel = (training: TrainingPlan) => {
     const columns = [
-      'Name',
-      'Type',
-      'Workouts/Week',
-      'Status',
-      'Creator',
+      'Title',
       'Difficulty',
+      'Status',
+      'Days',
+      'Focus',
       'Created',
     ];
     exportToExcel([training], columns);

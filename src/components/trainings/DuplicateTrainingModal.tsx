@@ -1,18 +1,18 @@
 /**
- * DuplicateTrainingModal - Modal for duplicating training
+ * DuplicateTrainingModal - Modal for duplicating training plan
  */
 
 'use client';
 
 import { Modal, TextInput, Button, Stack, Group, Text } from '@mantine/core';
 import { useState } from 'react';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training-plan.types';
 
 interface DuplicateTrainingModalProps {
   opened: boolean;
   onClose: () => void;
-  training: Training | null;
-  onDuplicate: (name: string) => void;
+  training: TrainingPlan | null;
+  onDuplicate: (title: string) => void;
 }
 
 export function DuplicateTrainingModal({
@@ -21,36 +21,35 @@ export function DuplicateTrainingModal({
   training,
   onDuplicate,
 }: DuplicateTrainingModalProps) {
-  const [name, setName] = useState(training ? `${training.name} (Copy)` : '');
+  const [title, setTitle] = useState(training ? `${training.title} (Copy)` : '');
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (name.trim().length === 0) {
-      setError('Name is required');
+    if (title.trim().length === 0) {
+      setError('Title is required');
       return;
     }
 
-    // TODO: Integrate with backend API
-    onDuplicate(name);
+    onDuplicate(title);
     onClose();
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Duplicate Training" size="md">
+    <Modal opened={opened} onClose={onClose} title="Duplicate Training Plan" size="md">
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           <Text size="sm" c="dimmed">
-            Create a copy of "{training?.name}". All settings and workouts will be duplicated.
+            Create a copy of "{training?.title}". All settings and workouts will be duplicated.
           </Text>
 
           <TextInput
-            label="New Training Name"
-            placeholder="Enter name for duplicated training"
+            label="New Training Plan Title"
+            placeholder="Enter title for duplicated training plan"
             required
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
+            value={title}
+            onChange={(e) => setTitle(e.currentTarget.value)}
             error={error}
           />
 

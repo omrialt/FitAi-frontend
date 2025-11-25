@@ -17,17 +17,17 @@ import {
   IconShare,
   IconWorld,
 } from '@tabler/icons-react';
-import type { Training } from '../../types/training.types';
+import type { TrainingPlan } from '../../types/training.types';
 import '../../styles/DropdownMenu.css';
 
 interface TrainingsActionsMenuProps {
-  training: Training;
+  training: TrainingPlan;
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
-  onExportPDF: (training: Training) => void;
-  onExportExcel: (training: Training) => void;
+  onExportPDF: (training: TrainingPlan) => void;
+  onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
   onShare?: (id: string) => void;
   onMakePublic?: (id: string) => void;
@@ -58,7 +58,7 @@ export function TrainingsActionsMenu({
           {/* View */}
           <DropdownMenu.Item
             className="dropdown-menu-item"
-            onSelect={() => onView(training.id)}
+            onSelect={() => onView(training._id)}
           >
             <IconEye size={16} />
             <span>View</span>
@@ -67,7 +67,7 @@ export function TrainingsActionsMenu({
           {/* Edit */}
           <DropdownMenu.Item
             className="dropdown-menu-item"
-            onSelect={() => onEdit(training.id)}
+            onSelect={() => onEdit(training._id)}
           >
             <IconEdit size={16} />
             <span>Edit</span>
@@ -76,7 +76,7 @@ export function TrainingsActionsMenu({
           {/* Duplicate */}
           <DropdownMenu.Item
             className="dropdown-menu-item"
-            onSelect={() => onDuplicate(training.id)}
+            onSelect={() => onDuplicate(training._id)}
           >
             <IconCopy size={16} />
             <span>Duplicate</span>
@@ -123,7 +123,7 @@ export function TrainingsActionsMenu({
               {onShare && (
                 <DropdownMenu.Item
                   className="dropdown-menu-item"
-                  onSelect={() => onShare(training.id)}
+                  onSelect={() => onShare(training._id)}
                 >
                   <IconShare size={16} />
                   <span>Share</span>
@@ -134,7 +134,7 @@ export function TrainingsActionsMenu({
               {onMakePublic && (
                 <DropdownMenu.Item
                   className="dropdown-menu-item"
-                  onSelect={() => onMakePublic(training.id)}
+                  onSelect={() => onMakePublic(training._id)}
                 >
                   <IconWorld size={16} />
                   <span>Make Public</span>
@@ -147,7 +147,7 @@ export function TrainingsActionsMenu({
                   <DropdownMenu.Separator className="dropdown-menu-separator" />
                   <DropdownMenu.Item
                     className="dropdown-menu-item dropdown-menu-item-danger"
-                    onSelect={() => onDelete(training.id)}
+                    onSelect={() => onDelete(training._id)}
                   >
                     <IconTrash size={16} />
                     <span>Delete</span>
