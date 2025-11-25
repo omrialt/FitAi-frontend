@@ -57,7 +57,13 @@ export function ProgramDetailsSection({
             placeholder="Select start date"
             value={startDate ? new Date(startDate) : null}
             onChange={(date) => {
-              setStartDate(date ? (date as unknown as Date).toISOString() : undefined);
+              if (!date) {
+                setStartDate(undefined);
+              } else if (typeof date === 'object' && 'toISOString' in date) {
+                setStartDate((date as Date).toISOString());
+              } else {
+                setStartDate(date as string);
+              }
             }}
             clearable
           />
@@ -69,7 +75,13 @@ export function ProgramDetailsSection({
             placeholder="Select end date"
             value={endDate ? new Date(endDate) : null}
             onChange={(date) => {
-              setEndDate(date ? (date as unknown as Date).toISOString() : undefined);
+              if (!date) {
+                setEndDate(undefined);
+              } else if (typeof date === 'object' && 'toISOString' in date) {
+                setEndDate((date as Date).toISOString());
+              } else {
+                setEndDate(date as string);
+              }
             }}
             clearable
           />

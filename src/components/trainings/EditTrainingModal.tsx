@@ -4,7 +4,7 @@
 
 "use client";
 
-import { Modal, Button, Stack, Group, Text } from "@mantine/core";
+import { Modal, Button, Stack, Group, Text, Checkbox } from "@mantine/core";
 import { useState, useEffect } from "react";
 import type {
   TrainingPlan,
@@ -60,6 +60,7 @@ export function EditTrainingModal({
   const [sharedAccess, setSharedAccess] = useState<
     Array<{ accessLevel: string; userId: string }>
   >([]);
+  const [syncWithParent, setSyncWithParent] = useState(false);
 
   // Fetch all users for shared access selection
   useEffect(() => {
@@ -92,6 +93,7 @@ export function EditTrainingModal({
       setRotationCycleLength(training.rotationCycleLength);
       setLocalDays(training.days || []);
       setSharedAccess(training.sharedAccess || []);
+      setSyncWithParent(training.syncWithParent || false);
     }
   }, [training, opened]);
 
@@ -186,42 +188,11 @@ export function EditTrainingModal({
 
   // Shared access handlers
   const handleViewAccessChange = (userIds: string[]) => {
-    const currentEditAccessUsers = sharedAccess
-      .filter((sa: { accessLevel: string }) => sa.accessLevel === "edit")
-      .map((sa: { userId: string }) => sa.userId);
-
-    const newSharedAccess = [
-      ...userIds.map((userId: string) => ({
-        userId,
-        accessLevel: "view" as AccessLevel,
-        objectType: "trainingPlan" as const,
-      })),
-      ...currentEditAccessUsers.map((userId: string) => ({
-        userId,
-        accessLevel: "edit" as AccessLevel,
-        objectType: "trainingPlan" as const,
-      })),
-    ];
-    setSharedAccess(newSharedAccess);
-  };
-
-  const handleEditAccessChange = (userIds: string[]) => {
-    const currentViewAccessUsers = sharedAccess
-      .filter((sa: { accessLevel: string }) => sa.accessLevel === "view")
-      .map((sa: { userId: string }) => sa.userId);
-
-    const newSharedAccess = [
-      ...currentViewAccessUsers.map((userId: string) => ({
-        userId,
-        accessLevel: "view" as AccessLevel,
-        objectType: "trainingPlan" as const,
-      })),
-      ...userIds.map((userId: string) => ({
-        userId,
-        accessLevel: "edit" as AccessLevel,
-        objectType: "trainingPlan" as const,
-      })),
-    ];
+    const newSharedAccess = userIds.map((userId: string) => ({
+      userId,
+      accessLevel: "view" as AccessLevel,
+      objectType: "trainingPlan" as const,
+    }));
     setSharedAccess(newSharedAccess);
   };
 
@@ -242,6 +213,7 @@ export function EditTrainingModal({
         endDate,
         rotationCycleLength,
         days: localDays,
+        syncWithParent,
         sharedAccess: sharedAccess.map((sa) => ({
           userId: sa.userId,
           accessLevel: sa.accessLevel as AccessLevel,
@@ -304,14 +276,23 @@ export function EditTrainingModal({
             setIsActive={setIsActive}
           />
           {(currentUser?.role === "admin" ||
-            training?.userId === currentUser?._id) && (
+            training?.trainerId === currentUser?._id) && (
             <SharedAccessSection
               allUsers={allUsers}
               sharedAccess={sharedAccess}
               handleViewAccessChange={handleViewAccessChange}
-              handleEditAccessChange={handleEditAccessChange}
+              handleEditAccessChange={handleViewAccessChange}
             />
-          )}{" "}
+          )}
+          {/* Sync checkbox - only show for owners and if not a clone */}
+          {!training?.initialParentId && training?.userId === currentUser?._id && (
+            <Checkbox
+              label="Sync updates to shared copies"
+              description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
+              checked={syncWithParent}
+              onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
+            />
+          )}
           <TrainingDaysSection
             localDays={localDays}
             addDay={addDay}

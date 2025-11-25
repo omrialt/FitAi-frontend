@@ -49,6 +49,7 @@ export function ExerciseItem({
             value={exercise.muscleGroup || ''}
             onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'muscleGroup', e.currentTarget.value)}
             size="xs"
+            required
           />
         </Grid.Col>
         <Grid.Col span={6}>
@@ -93,6 +94,7 @@ export function ExerciseItem({
       {exercise.sets.map((set, setIndex: number) => (
         <Group key={setIndex} gap="xs">
           <Badge size="sm">{setIndex + 1}</Badge>
+          <Text size="xs" c="dimmed" style={{ width: 40 }}>Reps:</Text>
           <NumberInput
             placeholder="Reps"
             value={set.targetReps}
@@ -100,6 +102,7 @@ export function ExerciseItem({
             size="xs"
             style={{ width: 80 }}
           />
+          <Text size="xs" c="dimmed" style={{ width: 50 }}>Weight:</Text>
           <NumberInput
             placeholder="Weight"
             value={set.targetWeight}

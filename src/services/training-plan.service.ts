@@ -45,8 +45,8 @@ export const trainingPlanService = {
     return trainingPlanService.create(duplicated);
   },
 
-  // Share training plan with users
-  share: async (planId: string, userIds: string[]): Promise<TrainingPlan> => {
+  // Share training plan with users (creates deep clones)
+  share: async (planId: string, userIds: string[]): Promise<TrainingPlan[]> => {
     const response = await api.post(`/training-plans/${planId}/share`, { userIds });
     return response.data;
   },
@@ -60,6 +60,12 @@ export const trainingPlanService = {
   // Get plans with shared access for a user
   getByUserWithShared: async (userId: string): Promise<TrainingPlan[]> => {
     const response = await api.get(`/training-plans/user/${userId}/with-shared`);
+    return response.data;
+  },
+
+  // Get child clones of a parent plan
+  getChildClones: async (parentId: string): Promise<TrainingPlan[]> => {
+    const response = await api.get(`/training-plans/${parentId}/clones`);
     return response.data;
   },
 };

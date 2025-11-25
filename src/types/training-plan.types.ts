@@ -52,13 +52,16 @@ export interface TrainingPlan {
   difficulty: Difficulty;
   sharedWith: string[];
   sharedAccess: SharedAccessEntry[];
+  // Clone tracking fields
+  initialParentId?: string | null;
+  syncWithParent?: boolean;
   // Lifecycle fields
   startDate?: string;
-  endDate?: string;
+  endDate?: string | null;
   isActive: boolean;
   // Program meta fields
   programType?: ProgramType;
-  rotationCycleLength?: number;
+  rotationCycleLength?: number | null;
   focus?: string;
   estimatedDuration?: number;
   estimatedCalories?: number;
