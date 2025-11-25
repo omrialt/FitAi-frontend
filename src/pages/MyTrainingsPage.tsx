@@ -18,7 +18,6 @@ import { TrainingsTable } from '../components/trainings/TrainingsTable';
 import { TrainingsCardList } from '../components/trainings/TrainingsCardList';
 import { PaginationControls } from '../components/trainings/PaginationControls';
 import { EditTrainingModal } from '../components/trainings/EditTrainingModal';
-import { DuplicateTrainingModal } from '../components/trainings/DuplicateTrainingModal';
 import { DeleteTrainingModal } from '../components/trainings/DeleteTrainingModal';
 import { useExport } from '../hooks/useExport';
 import { useAuthStore } from '../store/authStore';
@@ -27,7 +26,7 @@ import type { TrainingPlan, TrainingFilters } from '../types/training.types';
 
 export default function MyTrainingsPage() {
   const { user } = useAuthStore();
-  const isCoach = user?.role === 'trainer';
+  const isCoach = user?.role === 'trainer' || user?.role === 'admin';
   const isMobile = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
 
@@ -46,7 +45,6 @@ export default function MyTrainingsPage() {
 
   // Modals state
   const [editModalOpened, setEditModalOpened] = useState(false);
-  const [duplicateModalOpened, setDuplicateModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState<TrainingPlan | null>(null);
 
@@ -179,11 +177,7 @@ export default function MyTrainingsPage() {
     setEditModalOpened(true);
   };
 
-  const handleDuplicate = (id: string) => {
-    const training = trainings.find((t) => t._id === id);
-    setSelectedTraining(training || null);
-    setDuplicateModalOpened(true);
-  };
+  
 
   const handleDelete = (id: string) => {
     const training = trainings.find((t) => t._id === id);
@@ -200,18 +194,6 @@ export default function MyTrainingsPage() {
     setDeleteModalOpened(true);
   };
 
-  const handleShare = (id: string) => {
-    toast.info(`Share training ${id} - Feature coming soon`);
-  };
-
-  const handleMakePublic = async (id: string) => {
-    try {
-      // For now, we'll use the share functionality
-      toast.info(`Make public feature coming soon for training ${id}`);
-    } catch {
-      toast.error('Failed to make training public');
-    }
-  };
 
   const handleSaveEdit = async (data: Partial<TrainingPlan>) => {
     if (!selectedTraining) return;
@@ -228,21 +210,7 @@ export default function MyTrainingsPage() {
     }
   };
 
-  const handleConfirmDuplicate = async (title: string) => {
-    if (!selectedTraining) return;
-    
-    try {
-      await trainingPlanService.duplicate(selectedTraining._id, title);
-      
-      toast.success(`Training "${title}" duplicated successfully`);
-      await refetchTrainings();
-      setDuplicateModalOpened(false);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to duplicate training';
-      toast.error(errorMessage);
-    }
-  };
-
+ 
   const handleConfirmDelete = async () => {
     if (!selectedTraining) return;
     
@@ -311,25 +279,21 @@ export default function MyTrainingsPage() {
                   isCoach={isCoach}
                   onView={handleView}
                   onEdit={handleEdit}
-                  onDuplicate={handleDuplicate}
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
                   onDelete={isCoach ? handleDelete : undefined}
-                  onShare={isCoach ? handleShare : undefined}
-                  onMakePublic={isCoach ? handleMakePublic : undefined}
                 />
               ) : (
                 <TrainingsTable
                   trainings={paginatedTrainings}
                   isCoach={isCoach}
+                  isAdmin={user?.role === 'admin'}
                   onView={handleView}
                   onEdit={handleEdit}
-                  onDuplicate={handleDuplicate}
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
                   onDelete={isCoach ? handleDelete : undefined}
-                  onShare={isCoach ? handleShare : undefined}
-                  onMakePublic={isCoach ? handleMakePublic : undefined}
+    
                 />
               )}
             </>
@@ -353,13 +317,7 @@ export default function MyTrainingsPage() {
         onSave={handleSaveEdit}
       />
 
-      <DuplicateTrainingModal
-        opened={duplicateModalOpened}
-        onClose={() => setDuplicateModalOpened(false)}
-        training={selectedTraining}
-        onDuplicate={handleConfirmDuplicate}
-      />
-
+    
       <DeleteTrainingModal
         opened={deleteModalOpened}
         onClose={() => setDeleteModalOpened(false)}

@@ -10,12 +10,9 @@ import {
   IconDotsVertical,
   IconEye,
   IconEdit,
-  IconCopy,
   IconFileTypePdf,
   IconFileTypeXls,
   IconTrash,
-  IconShare,
-  IconWorld,
 } from '@tabler/icons-react';
 import type { TrainingPlan } from '../../types/training.types';
 import '../../styles/DropdownMenu.css';
@@ -25,12 +22,9 @@ interface TrainingsActionsMenuProps {
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
-  onShare?: (id: string) => void;
-  onMakePublic?: (id: string) => void;
 }
 
 export function TrainingsActionsMenu({
@@ -38,12 +32,9 @@ export function TrainingsActionsMenu({
   isCoach = false,
   onView,
   onEdit,
-  onDuplicate,
   onExportPDF,
   onExportExcel,
   onDelete,
-  onShare,
-  onMakePublic,
 }: TrainingsActionsMenuProps) {
   return (
     <DropdownMenu.Root>
@@ -71,15 +62,6 @@ export function TrainingsActionsMenu({
           >
             <IconEdit size={16} />
             <span>Edit</span>
-          </DropdownMenu.Item>
-
-          {/* Duplicate */}
-          <DropdownMenu.Item
-            className="dropdown-menu-item"
-            onSelect={() => onDuplicate(training._id)}
-          >
-            <IconCopy size={16} />
-            <span>Duplicate</span>
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator className="dropdown-menu-separator" />
@@ -119,28 +101,7 @@ export function TrainingsActionsMenu({
             <>
               <DropdownMenu.Separator className="dropdown-menu-separator" />
 
-              {/* Share */}
-              {onShare && (
-                <DropdownMenu.Item
-                  className="dropdown-menu-item"
-                  onSelect={() => onShare(training._id)}
-                >
-                  <IconShare size={16} />
-                  <span>Share</span>
-                </DropdownMenu.Item>
-              )}
-
-              {/* Make Public */}
-              {onMakePublic && (
-                <DropdownMenu.Item
-                  className="dropdown-menu-item"
-                  onSelect={() => onMakePublic(training._id)}
-                >
-                  <IconWorld size={16} />
-                  <span>Make Public</span>
-                </DropdownMenu.Item>
-              )}
-
+            
               {/* Delete */}
               {onDelete && (
                 <>

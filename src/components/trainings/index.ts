@@ -11,5 +11,4 @@ export { TrainingsCardList } from './TrainingsCardList';
 export { TrainingsActionsMenu } from './TrainingsActionsMenu';
 export { PaginationControls } from './PaginationControls';
 export { EditTrainingModal } from './EditTrainingModal';
-export { DuplicateTrainingModal } from './DuplicateTrainingModal';
 export { DeleteTrainingModal } from './DeleteTrainingModal';

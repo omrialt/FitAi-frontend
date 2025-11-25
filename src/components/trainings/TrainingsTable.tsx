@@ -11,14 +11,12 @@ import type { TrainingPlan } from '../../types/training.types';
 interface TrainingsTableProps {
   trainings: TrainingPlan[];
   isCoach?: boolean;
+  isAdmin?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
-  onShare?: (id: string) => void;
-  onMakePublic?: (id: string) => void;
 }
 
 const getDifficultyColor = (difficulty: string) => {
@@ -37,14 +35,12 @@ const getDifficultyColor = (difficulty: string) => {
 export function TrainingsTable({
   trainings,
   isCoach = false,
+  isAdmin = false,
   onView,
   onEdit,
-  onDuplicate,
   onExportPDF,
   onExportExcel,
   onDelete,
-  onShare,
-  onMakePublic,
 }: TrainingsTableProps) {
   if (trainings.length === 0) {
     return (
@@ -64,6 +60,7 @@ export function TrainingsTable({
             <Table.Th>Days</Table.Th>
             <Table.Th>Status</Table.Th>
             <Table.Th>Focus</Table.Th>
+            {isAdmin && <Table.Th>Creator</Table.Th>}
             <Table.Th>Created At</Table.Th>
             <Table.Th>Actions</Table.Th>
           </Table.Tr>
@@ -90,6 +87,17 @@ export function TrainingsTable({
               <Table.Td>
                 <Text tt="capitalize">{training.focus || '-'}</Text>
               </Table.Td>
+              {isAdmin && (
+                <Table.Td>
+                  <Text size="sm">
+                    {training.trainerId && typeof training.trainerId === 'object'
+                      ? training.trainerId.fullName
+                      : training.userId && typeof training.userId === 'object'
+                      ? training.userId.fullName
+                      : '-'}
+                  </Text>
+                </Table.Td>
+              )}
               <Table.Td>
                 <Text size="sm" c="dimmed">
                   {training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'}
@@ -101,12 +109,9 @@ export function TrainingsTable({
                   isCoach={isCoach}
                   onView={onView}
                   onEdit={onEdit}
-                  onDuplicate={onDuplicate}
                   onExportPDF={onExportPDF}
                   onExportExcel={onExportExcel}
                   onDelete={onDelete}
-                  onShare={onShare}
-                  onMakePublic={onMakePublic}
                 />
               </Table.Td>
             </Table.Tr>

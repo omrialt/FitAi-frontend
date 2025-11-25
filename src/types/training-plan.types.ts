@@ -44,8 +44,8 @@ export interface SharedAccessEntry {
 
 export interface TrainingPlan {
   _id: string;
-  userId: string;
-  trainerId?: string | null;
+  userId: string | { _id: string; fullName: string; email: string };
+  trainerId?: string | { _id: string; fullName: string; email: string } | null;
   title: string;
   description: string;
   days: TrainingDay[];

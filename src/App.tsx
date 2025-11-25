@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
-import TrainingPlansPage from './pages/TrainingPlansPage';
 import MyTrainingsPage from './pages/MyTrainingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
 import ProfilePage from './pages/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -19,14 +19,6 @@ function App() {
      
             <DashboardPage />
   
-        }
-      />
-      <Route
-        path="/training-plans"
-        element={
-          <ProtectedRoute>
-            <TrainingPlansPage />
-          </ProtectedRoute>
         }
       />
       <Route
@@ -71,6 +63,9 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* 404 Not Found - catch all */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

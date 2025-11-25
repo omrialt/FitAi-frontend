@@ -21,7 +21,6 @@ export interface User {
   isActive: boolean;
   lastLogin?: string;
   emailVerified?: boolean;
-  avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -4,14 +4,18 @@
 
 import { Breadcrumbs, Anchor } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export function TrainingsBreadcrumbs() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   return (
     <Breadcrumbs mb="md">
       <Anchor component={Link} to="/">
         Home
       </Anchor>
-      <span>My Trainings</span>
+      <span>{isAdmin ? 'Training Plans' : 'My Trainings'}</span>
     </Breadcrumbs>
   );
 }

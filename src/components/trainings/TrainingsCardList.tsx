@@ -13,12 +13,9 @@ interface TrainingsCardListProps {
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
-  onShare?: (id: string) => void;
-  onMakePublic?: (id: string) => void;
 }
 
 export function TrainingsCardList({
@@ -26,12 +23,10 @@ export function TrainingsCardList({
   isCoach = false,
   onView,
   onEdit,
-  onDuplicate,
   onExportPDF,
   onExportExcel,
   onDelete,
-  onShare,
-  onMakePublic,
+
 }: TrainingsCardListProps) {
   if (trainings.length === 0) {
     return (
@@ -50,12 +45,9 @@ export function TrainingsCardList({
           isCoach={isCoach}
           onView={onView}
           onEdit={onEdit}
-          onDuplicate={onDuplicate}
           onExportPDF={onExportPDF}
           onExportExcel={onExportExcel}
           onDelete={onDelete}
-          onShare={onShare}
-          onMakePublic={onMakePublic}
         />
       ))}
     </Stack>

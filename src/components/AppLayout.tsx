@@ -105,7 +105,7 @@ const getNavigationItems = (isAuthenticated: boolean, role: UserRole | null): Na
     return [
       { icon: <IconDashboard size={20} stroke={1.5} />, label: 'Dashboard', path: '/' },
       { icon: <IconUsers size={20} stroke={1.5} />, label: 'Users', path: '/users' },
-      { icon: <IconBarbell size={20} stroke={1.5} />, label: 'Training Plans', path: '/training-plans' },
+      { icon: <IconBarbell size={20} stroke={1.5} />, label: 'Training Plans', path: '/my-trainings' },
       { icon: <IconApple size={20} stroke={1.5} />, label: 'Nutrition Plans', path: '/nutrition-plans' },
       { icon: <IconActivity size={20} stroke={1.5} />, label: 'Performance Data', path: '/performance' },
       { icon: <IconHeartRateMonitor size={20} stroke={1.5} />, label: 'Physical Data', path: '/physical-data' },

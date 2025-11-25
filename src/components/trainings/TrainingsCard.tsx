@@ -18,12 +18,9 @@ interface TrainingsCardProps {
   isCoach?: boolean;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
-  onShare?: (id: string) => void;
-  onMakePublic?: (id: string) => void;
 }
 
 const getDifficultyColor = (difficulty: string) => {
@@ -44,12 +41,9 @@ export function TrainingsCard({
   isCoach = false,
   onView,
   onEdit,
-  onDuplicate,
   onExportPDF,
   onExportExcel,
   onDelete,
-  onShare,
-  onMakePublic,
 }: TrainingsCardProps) {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -64,12 +58,9 @@ export function TrainingsCard({
             isCoach={isCoach}
             onView={onView}
             onEdit={onEdit}
-            onDuplicate={onDuplicate}
             onExportPDF={onExportPDF}
             onExportExcel={onExportExcel}
             onDelete={onDelete}
-            onShare={onShare}
-            onMakePublic={onMakePublic}
           />
         </Group>
 
@@ -148,15 +139,7 @@ export function TrainingsCard({
           >
             Edit
           </Button>
-          <Button
-            variant="light"
-            size="xs"
-            leftSection={<IconCopy size={14} />}
-            onClick={() => onDuplicate(training._id)}
-            flex={1}
-          >
-            Duplicate
-          </Button>
+       
         </Group>
       </Stack>
     </Card>
