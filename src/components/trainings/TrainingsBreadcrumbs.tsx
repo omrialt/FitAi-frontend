@@ -1,21 +1,18 @@
 /**
- * TrainingsBreadcrumbs - Breadcrumb navigation
+ * TrainingsBreadcrumbs - Breadcrumb navigation for trainings page
  */
 
-import { Breadcrumbs, Anchor } from '@mantine/core';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { AppBreadcrumbs } from '../common/AppBreadcrumbs';
 
 export function TrainingsBreadcrumbs() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
-  return (
-    <Breadcrumbs mb="md">
-      <Anchor component={Link} to="/">
-        Home
-      </Anchor>
-      <span>{isAdmin ? 'Training Plans' : 'My Trainings'}</span>
-    </Breadcrumbs>
-  );
+  const items = [
+    { label: 'Home', href: '/' },
+    { label: isAdmin ? 'Training Plans' : 'My Trainings' },
+  ];
+
+  return <AppBreadcrumbs items={items} />;
 }
