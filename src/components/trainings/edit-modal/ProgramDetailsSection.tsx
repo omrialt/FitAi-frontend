@@ -34,6 +34,7 @@ export function ProgramDetailsSection({
             label="Estimated Duration (minutes)"
             placeholder="Per session"
             min={0}
+            required
             value={estimatedDuration}
             onChange={(value) => setEstimatedDuration(typeof value === 'number' ? value : undefined)}
           />
@@ -44,6 +45,7 @@ export function ProgramDetailsSection({
             label="Estimated Calories"
             placeholder="Per session"
             min={0}
+            required
             value={estimatedCalories}
             onChange={(value) => setEstimatedCalories(typeof value === 'number' ? value : undefined)}
           />

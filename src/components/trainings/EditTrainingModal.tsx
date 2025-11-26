@@ -5,7 +5,7 @@
 "use client";
 
 import { Modal, Button, Stack, Group, Text, Checkbox } from "@mantine/core";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Activity } from "react";
 import type {
   TrainingPlan,
   TrainingDay,
@@ -16,16 +16,20 @@ import type {
 import type { User } from "../../types/auth.types";
 import userService from "../../services/user.service";
 import { useAuth } from "../../hooks/useAuth";
-import { BasicInfoSection } from "./edit-modal/BasicInfoSection";
-import { ProgramDetailsSection } from "./edit-modal/ProgramDetailsSection";
-import { SharedAccessSection } from "./edit-modal/SharedAccessSection";
-import { TrainingDaysSection } from "./edit-modal/TrainingDaysSection";
+import {
+  BasicInfoSection,
+  ProgramDetailsSection,
+  SharedAccessSection,
+  TrainingDaysSection,
+} from "./edit-modal/index";
 
 interface EditTrainingModalProps {
   opened: boolean;
   onClose: () => void;
   training: TrainingPlan | null;
   onSave: (data: Partial<TrainingPlan>) => void;
+  onCreate?: (data: Partial<TrainingPlan>) => void;
+  createMode?: boolean;
 }
 
 export function EditTrainingModal({
@@ -33,12 +37,15 @@ export function EditTrainingModal({
   onClose,
   training,
   onSave,
+  onCreate,
+  createMode = false,
 }: EditTrainingModalProps) {
+  const titleText = createMode ? "Create Training Plan" : "Edit Training Plan";
+  const submitButtonText = createMode ? "Create" : "Save Changes";
   const { user: currentUser } = useAuth();
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   // Form field states
   const [title, setTitle] = useState("");
@@ -62,6 +69,17 @@ export function EditTrainingModal({
     Array<{ accessLevel: string; userId: string }>
   >([]);
   const [syncWithParent, setSyncWithParent] = useState(false);
+  const canShowSharedAccess =
+    createMode ||
+    currentUser?.role === "admin" ||
+    (typeof training?.trainerId === "object" &&
+      training?.trainerId?._id === currentUser?._id);
+  const canShowSyncCheckbox =
+    !createMode &&
+    !training?.initialParentId &&
+    (typeof training?.userId === "string"
+      ? training?.userId
+      : training?.userId?._id) === currentUser?._id;
 
   // Fetch all users for shared access selection
   useEffect(() => {
@@ -78,23 +96,41 @@ export function EditTrainingModal({
     }
   }, [opened]);
 
-  // Reset form when training changes
+  // Reset form when training changes or when switching to create mode
   useEffect(() => {
-    if (training && opened) {
-      setTitle(training.title || "");
-      setDescription(training.description || "");
-      setDifficulty(training.difficulty || "beginner");
-      setProgramType(training.programType || "fixedDays");
-      setFocus(training.focus || "");
-      setEstimatedDuration(training.estimatedDuration);
-      setEstimatedCalories(training.estimatedCalories);
-      setIsActive(training.isActive ?? true);
-      setStartDate(training.startDate);
-      setEndDate(training.endDate);
-      setRotationCycleLength(training.rotationCycleLength);
-      setLocalDays(training.days || []);
-      setSharedAccess(training.sharedAccess || []);
-      setSyncWithParent(training.syncWithParent || false);
+    if (opened) {
+      if (training) {
+        setTitle(training.title || "");
+        setDescription(training.description || "");
+        setDifficulty(training.difficulty || "beginner");
+        setProgramType(training.programType || "fixedDays");
+        setFocus(training.focus || "");
+        setEstimatedDuration(training.estimatedDuration);
+        setEstimatedCalories(training.estimatedCalories);
+        setIsActive(training.isActive ?? true);
+        setStartDate(training.startDate);
+        setEndDate(training.endDate);
+        setRotationCycleLength(training.rotationCycleLength);
+        setLocalDays(training.days || []);
+        setSharedAccess(training.sharedAccess || []);
+        setSyncWithParent(training.syncWithParent || false);
+      } else {
+        // Reset to defaults for create mode
+        setTitle("");
+        setDescription("");
+        setDifficulty("beginner");
+        setProgramType("fixedDays");
+        setFocus("");
+        setEstimatedDuration(undefined);
+        setEstimatedCalories(undefined);
+        setIsActive(true);
+        setStartDate(undefined);
+        setEndDate(undefined);
+        setRotationCycleLength(undefined);
+        setLocalDays([]);
+        setSharedAccess([]);
+        setSyncWithParent(false);
+      }
     }
   }, [training, opened]);
 
@@ -228,8 +264,11 @@ export function EditTrainingModal({
           delete cleanedData[key as keyof TrainingPlan];
         }
       });
-
-      onSave(cleanedData);
+      if (createMode && onCreate) {
+        onCreate(cleanedData);
+      } else {
+        onSave(cleanedData);
+      }
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -242,7 +281,7 @@ export function EditTrainingModal({
       onClose={onClose}
       title={
         <Text fw={700} size="lg">
-          Edit Training Plan
+          {titleText}
         </Text>
       }
       size="xl"
@@ -276,25 +315,23 @@ export function EditTrainingModal({
             isActive={isActive}
             setIsActive={setIsActive}
           />
-          {(currentUser?.role === "admin" ||
-            (typeof training?.trainerId === 'object' && training?.trainerId?._id === currentUser?._id)) && (
+          <Activity mode={canShowSharedAccess ? "visible" : "hidden"}>
             <SharedAccessSection
               allUsers={allUsers}
               sharedAccess={sharedAccess}
               handleViewAccessChange={handleViewAccessChange}
               handleEditAccessChange={handleViewAccessChange}
             />
-          )}
+          </Activity>
           {/* Sync checkbox - only show for owners and if not a clone */}
-          {!training?.initialParentId &&
-            (typeof training?.userId === 'string' ? training?.userId : training?.userId?._id) === currentUser?._id && (
-              <Checkbox
-                label="Sync updates to shared copies"
-                description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
-                checked={syncWithParent}
-                onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
-              />
-            )}
+          <Activity mode={canShowSyncCheckbox ? "visible" : "hidden"}>
+            <Checkbox
+              label="Sync updates to shared copies"
+              description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
+              checked={syncWithParent}
+              onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
+            />
+          </Activity>
           <TrainingDaysSection
             localDays={localDays}
             addDay={addDay}
@@ -313,7 +350,7 @@ export function EditTrainingModal({
               Cancel
             </Button>
             <Button type="submit" loading={isSubmitting}>
-              Save Changes
+              {submitButtonText}
             </Button>
           </Group>
         </Stack>

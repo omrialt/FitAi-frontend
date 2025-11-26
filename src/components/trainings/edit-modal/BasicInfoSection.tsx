@@ -83,6 +83,7 @@ export function BasicInfoSection({
         <Grid.Col span={programType === 'rotation' ? 8 : 12}>
           <TextInput
             label="Focus"
+            required
             placeholder="e.g., Upper Body, Cardio, Full Body"
             value={focus}
             onChange={(e) => setFocus(e.currentTarget.value)}
