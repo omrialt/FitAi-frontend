@@ -44,6 +44,7 @@ export function BasicInfoSection({
       <Textarea
         label="Description"
         placeholder="Enter training plan description"
+        required
         rows={4}
         value={description}
         onChange={(e) => setDescription(e.currentTarget.value)}
@@ -60,12 +61,14 @@ export function BasicInfoSection({
             ]}
             value={difficulty}
             onChange={(value) => setDifficulty(value as Difficulty)}
+            required
           />
         </Grid.Col>
 
         <Grid.Col span={6}>
           <Select
             label="Program Type"
+            required
             data={[
               { value: 'fixedDays', label: 'Fixed Days' },
               { value: 'rotation', label: 'Rotation' },
@@ -91,7 +94,7 @@ export function BasicInfoSection({
             <NumberInput
               label="Rotation Cycle Length"
               placeholder="Days"
-              value={rotationCycleLength}
+              value={rotationCycleLength ?? undefined}
               onChange={(value) => setRotationCycleLength(typeof value === 'number' ? value : undefined)}
             />
           </Grid.Col>

@@ -279,8 +279,7 @@ export function EditTrainingModal({
             setIsActive={setIsActive}
           />
           {(currentUser?.role === "admin" ||
-            (typeof training?.trainerId === 'object' && training?.trainerId?._id === currentUser?._id) ||
-            currentUser?._id === (typeof training?.userId === 'string' ? training?.userId : training?.userId?._id)) && (
+            (typeof training?.trainerId === 'object' && training?.trainerId?._id === currentUser?._id)) && (
             <SharedAccessSection
               allUsers={allUsers}
               sharedAccess={sharedAccess}
@@ -290,7 +289,7 @@ export function EditTrainingModal({
           )}
           {/* Sync checkbox - only show for owners and if not a clone */}
           {!training?.initialParentId &&
-            training?.userId === currentUser?._id && (
+            (typeof training?.userId === 'string' ? training?.userId : training?.userId?._id) === currentUser?._id && (
               <Checkbox
                 label="Sync updates to shared copies"
                 description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
