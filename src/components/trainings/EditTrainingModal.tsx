@@ -53,9 +53,9 @@ export function EditTrainingModal({
   >();
   const [isActive, setIsActive] = useState(true);
   const [startDate, setStartDate] = useState<string | undefined>();
-  const [endDate, setEndDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined | null>();
   const [rotationCycleLength, setRotationCycleLength] = useState<
-    number | undefined
+    number | undefined | null
   >();
   const [sharedAccess, setSharedAccess] = useState<
     Array<{ accessLevel: string; userId: string }>

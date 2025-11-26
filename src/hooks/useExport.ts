@@ -15,8 +15,8 @@ interface UseExportOptions {
 }
 
 interface UseExportReturn {
-  exportToPDF: (data: TrainingPlan[], columns: string[]) => void;
-  exportToExcel: (data: TrainingPlan[], columns: string[]) => void;
+  exportToPDF: (data: TrainingPlan[]) => void;
+  exportToExcel: (data: TrainingPlan[]) => void;
   isExporting: boolean;
   error: Error | null;
 }
@@ -26,46 +26,106 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const exportToPDF = (data: TrainingPlan[], columns: string[]) => {
+  const formatTrainerName = (training: TrainingPlan): string => {
+    if (typeof training.trainerId === 'object' && training.trainerId?.fullName) {
+      return training.trainerId.fullName;
+    }
+    return '-';
+  };
+
+
+  const exportToPDF = (data: TrainingPlan[]) => {
     try {
       setIsExporting(true);
       setError(null);
 
-      // Create new PDF document
       const doc = new jsPDF();
 
-      // Add title
-      doc.setFontSize(18);
-      doc.text('My Training Plans', 14, 20);
+      data.forEach((training, index) => {
+        if (index > 0) doc.addPage();
 
-      // Add date
-      doc.setFontSize(10);
-      doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, 14, 28);
+        // Title
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text(training.title, 14, 20);
 
-      // Prepare table data
-      const headers = [columns];
-      const body = data.map((training) => [
-        training.title,
-        training.difficulty || 'beginner',
-        training.days?.length?.toString() || '0',
-        training.isActive ? 'Active' : 'Inactive',
-        training.focus || '-',
-        training.difficulty || 'beginner',
-        training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-',
-      ]);
+        // Basic Info
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        let yPos = 30;
 
-      // Add table
-      autoTable(doc, {
-        head: headers,
-        body: body,
-        startY: 35,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [102, 126, 234] },
+        const info = [
+          ['Trainer:', formatTrainerName(training)],
+          ['Difficulty:', (training.difficulty || 'beginner').toUpperCase()],
+          ['Focus:', training.focus || '-'],
+          ['Program Type:', training.programType || '-'],
+          ['Estimated Duration:', training.estimatedDuration ? `${training.estimatedDuration} minutes` : '-'],
+          ['Estimated Calories:', training.estimatedCalories ? `${training.estimatedCalories} kcal` : '-'],
+          ['Rotation Cycle:', training.rotationCycleLength ? `${training.rotationCycleLength} days` : '-'],
+          ['Created:', training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'],
+          ['Updated:', training.updatedAt ? new Date(training.updatedAt).toLocaleDateString('en-GB') : '-'],
+        ];
+
+        info.forEach(([label, value]) => {
+          doc.setFont('helvetica', 'bold');
+          doc.text(label, 14, yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.text(value, 55, yPos);
+          yPos += 6;
+        });
+
+        // Training Days
+        yPos += 5;
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Training Days', 14, yPos);
+        yPos += 8;
+
+        if (training.days && training.days.length > 0) {
+          training.days.forEach(day => {
+            // Check if we need a new page
+            if (yPos > 270) {
+              doc.addPage();
+              yPos = 20;
+            }
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${day.dayName}`, 14, yPos);
+            yPos += 6;
+
+          
+            // Exercises table
+            const exerciseData = day.exercises.map(ex => [
+              ex.name,
+              ex.muscleGroup,
+              ex.type,
+              ex.sets.length.toString(),
+              ex.notes || '-'
+            ]);
+
+            autoTable(doc, {
+              head: [['Exercise', 'Muscle Group', 'Type', 'Sets', 'Notes']],
+              body: exerciseData,
+              startY: yPos,
+              styles: { fontSize: 8 },
+              headStyles: { fillColor: [102, 126, 234] },
+              margin: { left: 14 },
+              didDrawPage: (data) => {
+                yPos = data.cursor?.y || yPos;
+              }
+            });
+
+            yPos = (doc as any).lastAutoTable.finalY + 8;
+          });
+        } else {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'italic');
+          doc.text('No training days defined', 14, yPos);
+        }
       });
 
-      // Save PDF
       doc.save(`${filename}_${Date.now()}.pdf`);
-
       onSuccess?.();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('PDF export failed');
@@ -76,43 +136,105 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
     }
   };
 
-  const exportToExcel = (data: TrainingPlan[], columns: string[]) => {
+  const exportToExcel = (data: TrainingPlan[]) => {
     try {
       setIsExporting(true);
       setError(null);
 
-      // Prepare data for Excel
-      const worksheetData = [
-        columns,
-        ...data.map((training) => [
-          training.title,
-          training.difficulty || 'beginner',
-          training.days?.length || 0,
-          training.isActive ? 'Active' : 'Inactive',
-          training.focus || '-',
-          training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-',
-        ]),
-      ];
-
-      // Create worksheet and workbook
-      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Trainings');
 
-      // Set column widths
-      worksheet['!cols'] = [
-        { wch: 30 }, // Name
-        { wch: 15 }, // Type
-        { wch: 12 }, // Workouts/Week
-        { wch: 10 }, // Status
-        { wch: 10 }, // Creator
-        { wch: 10 }, // Difficulty
-        { wch: 12 }, // Created At
+      data.forEach((training) => {
+        // Main sheet for each training
+        const mainData = [
+          ['Training Plan Details'],
+          [],
+          ['Title', training.title],
+          ['Trainer', formatTrainerName(training)],
+          ['Difficulty', (training.difficulty || 'beginner').toUpperCase()],
+          ['Focus', training.focus || '-'],
+          ['Program Type', training.programType || '-'],
+          ['Estimated Duration', training.estimatedDuration ? `${training.estimatedDuration} weeks` : '-'],
+          ['Estimated Calories', training.estimatedCalories ? `${training.estimatedCalories} kcal` : '-'],
+          ['Rotation Cycle', training.rotationCycleLength ? `${training.rotationCycleLength} days` : '-'],
+          ['Created', training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'],
+          ['Updated', training.updatedAt ? new Date(training.updatedAt).toLocaleDateString('en-GB') : '-'],
+          [],
+          ['Training Days'],
+          []
+        ];
+
+        // Add days and exercises
+        if (training.days && training.days.length > 0) {
+          training.days.forEach(day => {
+            mainData.push([day.dayName]);
+            if (day.plannedDate) {
+              mainData.push(['Planned Date', new Date(day.plannedDate).toLocaleDateString('en-GB')]);
+            }
+            mainData.push(['Exercise', 'Muscle Group', 'Type', 'Sets', 'Notes']);
+            
+            day.exercises.forEach(ex => {
+              mainData.push([
+                ex.name,
+                ex.muscleGroup,
+                ex.type,
+                ex.sets.length.toString(),
+                ex.notes || '-'
+              ]);
+            });
+            
+            mainData.push([]);
+          });
+        } else {
+          mainData.push(['No training days defined']);
+        }
+
+        const worksheet = XLSX.utils.aoa_to_sheet(mainData);
+
+        // Set column widths
+        worksheet['!cols'] = [
+          { wch: 20 },
+          { wch: 35 },
+          { wch: 15 },
+          { wch: 10 },
+          { wch: 30 }
+        ];
+
+        // Add worksheet with training title as sheet name
+        const sheetName = training.title.substring(0, 31); // Excel sheet name limit
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+      });
+
+      // Summary sheet
+      const summaryData = [
+        ['Training Plans Summary'],
+        [],
+        ['Title', 'Trainer', 'Difficulty', 'Focus', 'Days', 'Program Type', 'Created'],
+        ...data.map(training => [
+          training.title,
+          formatTrainerName(training),
+          (training.difficulty || 'beginner').toUpperCase(),
+          training.focus || '-',
+          training.days?.length || 0,
+          training.programType || '-',
+          training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'
+        ])
       ];
 
-      // Save Excel file
-      XLSX.writeFile(workbook, `${filename}_${Date.now()}.xlsx`);
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      summarySheet['!cols'] = [
+        { wch: 30 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 8 },
+        { wch: 15 },
+        { wch: 12 }
+      ];
 
+      // Insert summary sheet at the beginning
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+
+      XLSX.writeFile(workbook, `${filename}_${Date.now()}.xlsx`);
       onSuccess?.();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Excel export failed');

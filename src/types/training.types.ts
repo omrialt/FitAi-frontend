@@ -9,16 +9,11 @@ import type { TrainingPlan } from './training-plan.types';
 export type { TrainingPlan, Difficulty, ProgramType } from './training-plan.types';
 
 // UI-only filter types
-export type TrainingStatus = 'active' | 'inactive' | 'archived';
 export type TrainingCreator = 'me' | 'coach' | 'system';
 
 export interface TrainingFilters {
-  status?: TrainingStatus;
   creator?: TrainingCreator;
   difficulty?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-  search?: string;
 }
 
 export interface TrainingTableData {

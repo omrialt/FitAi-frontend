@@ -2,11 +2,11 @@
  * TrainingsTable - Desktop table view for trainings
  */
 
-'use client';
+"use client";
 
-import { Table, Badge, Text } from '@mantine/core';
-import { TrainingsActionsMenu } from './TrainingsActionsMenu';
-import type { TrainingPlan } from '../../types/training.types';
+import { Table, Badge, Text } from "@mantine/core";
+import { TrainingsActionsMenu } from "./TrainingsActionsMenu";
+import type { TrainingPlan } from "../../types/training.types";
 
 interface TrainingsTableProps {
   trainings: TrainingPlan[];
@@ -21,21 +21,20 @@ interface TrainingsTableProps {
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty.toLowerCase()) {
-    case 'beginner':
-      return 'teal';
-    case 'intermediate':
-      return 'yellow';
-    case 'advanced':
-      return 'red';
+    case "beginner":
+      return "teal";
+    case "intermediate":
+      return "yellow";
+    case "advanced":
+      return "red";
     default:
-      return 'gray';
+      return "gray";
   }
 };
 
 export function TrainingsTable({
   trainings,
   isCoach = false,
-  isAdmin = false,
   onView,
   onEdit,
   onExportPDF,
@@ -60,7 +59,7 @@ export function TrainingsTable({
             <Table.Th>Days</Table.Th>
             <Table.Th>Status</Table.Th>
             <Table.Th>Focus</Table.Th>
-            {isAdmin && <Table.Th>Creator</Table.Th>}
+            <Table.Th>Creator</Table.Th>
             <Table.Th>Created At</Table.Th>
             <Table.Th>Actions</Table.Th>
           </Table.Tr>
@@ -72,7 +71,10 @@ export function TrainingsTable({
                 <Text fw={500}>{training.title}</Text>
               </Table.Td>
               <Table.Td>
-                <Badge color={getDifficultyColor(training.difficulty)} variant="light">
+                <Badge
+                  color={getDifficultyColor(training.difficulty)}
+                  variant="light"
+                >
                   {training.difficulty}
                 </Badge>
               </Table.Td>
@@ -80,27 +82,32 @@ export function TrainingsTable({
                 <Text>{training.days?.length || 0}</Text>
               </Table.Td>
               <Table.Td>
-                <Badge color={training.isActive ? 'green' : 'gray'} variant="light">
-                  {training.isActive ? 'active' : 'inactive'}
+                <Badge
+                  color={training.isActive ? "green" : "gray"}
+                  variant="light"
+                >
+                  {training.isActive ? "active" : "inactive"}
                 </Badge>
               </Table.Td>
               <Table.Td>
-                <Text tt="capitalize">{training.focus || '-'}</Text>
+                <Text tt="capitalize">{training.focus || "-"}</Text>
               </Table.Td>
-              {isAdmin && (
-                <Table.Td>
-                  <Text size="sm">
-                    {training.trainerId && typeof training.trainerId === 'object'
-                      ? training.trainerId.fullName
-                      : training.userId && typeof training.userId === 'object'
-                      ? training.userId.fullName
-                      : '-'}
-                  </Text>
-                </Table.Td>
-              )}
+
+              <Table.Td>
+                <Text size="sm">
+                  {training.trainerId && typeof training.trainerId === "object"
+                    ? training.trainerId.fullName
+                    : training.userId && typeof training.userId === "object"
+                    ? training.userId.fullName
+                    : "-"}
+                </Text>
+              </Table.Td>
+
               <Table.Td>
                 <Text size="sm" c="dimmed">
-                  {training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'}
+                  {training.createdAt
+                    ? new Date(training.createdAt).toLocaleDateString("en-GB")
+                    : "-"}
                 </Text>
               </Table.Td>
               <Table.Td>

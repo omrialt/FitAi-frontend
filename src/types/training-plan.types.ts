@@ -70,6 +70,9 @@ export interface TrainingPlan {
 }
 
 export interface TrainingPlansResponse {
+data: TrainingPlansResponseData;
+}
+export interface TrainingPlansResponseData {
   items: TrainingPlan[];
   total: number;
   page: number;
