@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useState, Activity } from "react";
 import {
   Paper,
   Title,
@@ -10,19 +11,21 @@ import {
   Divider,
   Group,
   Anchor,
-} from '@mantine/core';
-import { IconBrandGoogle, IconLogin } from '@tabler/icons-react';
-import { useAuth } from '../hooks/useAuth';
-import { useFormHandler } from '../hooks/useFormHandler';
-import { authService } from '../services/auth.service';
-import { usePresetMetadata } from '../hooks/useMetadata';
-import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
-import '../styles/Auth.css';
+  Loader,
+} from "@mantine/core";
+import { IconBrandGoogle, IconLogin } from "@tabler/icons-react";
+import { useAuth } from "../hooks/useAuth";
+import { useApi } from "../hooks/useApi";
+import { useFormHandler } from "../hooks/useFormHandler";
+import { authService } from "../services/auth.service";
+import { usePresetMetadata } from "../hooks/useMetadata";
+import { loginSchema, type LoginFormData } from "../schemas/auth.schemas";
+import "../styles/Auth.css";
 
 function LoginPage() {
   const { login } = useAuth();
-  const metadata = usePresetMetadata('login', {
-    preconnect: ['https://accounts.google.com'],
+  const metadata = usePresetMetadata("login", {
+    preconnect: ["https://accounts.google.com"],
   });
 
   const {
@@ -36,7 +39,20 @@ function LoginPage() {
       await login(data);
     },
     showErrorToast: false, // useAuth handles toast notifications
-    mode: 'onTouched', // Validate on blur and submit
+    mode: "onTouched", // Validate on blur and submit
+  });
+
+  // State for showing reset password form
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const {
+    execute: resetPassword,
+    loading: resetLoading,
+    error: resetError,
+    data: resetData,
+  } = useApi<void>({
+    showSuccessToast: true,
+    successMessage: "If this email exists, a reset link was sent.",
   });
 
   const handleGoogleLogin = () => {
@@ -44,17 +60,26 @@ function LoginPage() {
     authService.loginWithGoogle();
   };
 
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) return;
+    await resetPassword("/auth/forgot-password", {
+      method: "POST",
+      data: { email: resetEmail },
+    });
+  };
+
   return (
     <>
       {metadata}
-      <div 
+      <div
         className="auth-container"
         style={{
-          width: '100%',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          width: "100%",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Paper
@@ -64,14 +89,14 @@ function LoginPage() {
           withBorder
           className="auth-card"
           style={{
-            width: '100%',
-            maxWidth: '420px',
-            margin: '0 auto',
+            width: "100%",
+            maxWidth: "420px",
+            margin: "0 auto",
           }}
         >
           <Stack gap="md">
             {/* Header */}
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: "center" }}>
               <Title order={2} mb="xs">
                 Welcome Back
               </Title>
@@ -79,65 +104,108 @@ function LoginPage() {
                 Sign in to your FitAI account
               </Text>
             </div>
+            <Activity mode={!showReset ? "visible" : "hidden"}>
+              <Button
+                variant="default"
+                size="md"
+                leftSection={<IconBrandGoogle size={18} />}
+                onClick={handleGoogleLogin}
+                fullWidth
+              >
+                Continue with Google
+              </Button>
 
-            {/* Google Login Button */}
-            <Button
-              variant="default"
-              size="md"
-              leftSection={<IconBrandGoogle size={18} />}
-              onClick={handleGoogleLogin}
-              fullWidth
-            >
-              Continue with Google
-            </Button>
+              <Divider label="Or continue with email" labelPosition="center" />
+              <form onSubmit={handleSubmit}>
+                <Stack gap="md">
+                  <TextInput
+                    label="Email"
+                    placeholder="your@email.com"
+                    required
+                    withAsterisk
+                    {...register("email")}
+                    error={errors.email?.message}
+                  />
 
-            <Divider label="Or continue with email" labelPosition="center" />
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Your password"
+                    required
+                    withAsterisk
+                    {...register("password")}
+                    error={errors.password?.message}
+                  />
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit}>
-              <Stack gap="md">
-                <TextInput
-                  label="Email"
-                  placeholder="your@email.com"
-                  required
-                  withAsterisk
-                  {...register('email')}
-                  error={errors.email?.message}
-                />
+                  <Group justify="space-between">
+                    <Anchor
+                      component="button"
+                      type="button"
+                      size="sm"
+                      onClick={() => setShowReset(true)}
+                    >
+                      Forgot password?
+                    </Anchor>
+                  </Group>
 
-                <PasswordInput
-                  label="Password"
-                  placeholder="Your password"
-                  required
-                  withAsterisk
-                  {...register('password')}
-                  error={errors.password?.message}
-                />
+                  <Button
+                    type="submit"
+                    fullWidth
+                    size="md"
+                    leftSection={<IconLogin size={18} />}
+                    loading={isSubmitting}
+                    gradient={{ from: "indigo", to: "cyan", deg: 45 }}
+                    variant="gradient"
+                    className="auth-button"
+                  >
+                    Sign In
+                  </Button>
+                </Stack>
+              </form>
+            </Activity>
 
-                <Group justify="space-between">
-                  <Anchor component={Link} to="/forgot-password" size="sm">
-                    Forgot password?
-                  </Anchor>
-                </Group>
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  size="md"
-                  leftSection={<IconLogin size={18} />}
-                  loading={isSubmitting}
-                  gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                  variant="gradient"
-                  className="auth-button"
-                >
-                  Sign In
-                </Button>
-              </Stack>
-            </form>
+            <Activity mode={showReset ? "visible" : "hidden"}>
+              <form onSubmit={handleResetSubmit}>
+                <Stack gap="md">
+                  <TextInput
+                    label="Email"
+                    placeholder="your@email.com"
+                    required
+                    withAsterisk
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    error={resetError?.message}
+                  />
+                  {resetLoading && (
+                    <Group justify="center">
+                      <Loader size="sm" />
+                    </Group>
+                  )}
+                  <Button
+                    type="submit"
+                    fullWidth
+                    size="md"
+                    disabled={resetLoading}
+                    variant="gradient"
+                    gradient={{ from: "indigo", to: "cyan", deg: 45 }}
+                  >
+                    Reset Password
+                  </Button>
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    fullWidth
+                    onClick={() => setShowReset(false)}
+                    type="button"
+                  >
+                    Back to Login
+                  </Button>
+                </Stack>
+              </form>
+            </Activity>
 
             {/* Register Link */}
             <Text size="sm" ta="center">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Anchor component={Link} to="/register" fw={600}>
                 Sign up
               </Anchor>

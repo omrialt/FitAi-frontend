@@ -7,6 +7,7 @@ import GoogleCallbackPage from './pages/GoogleCallbackPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       
       {/* Complete Profile - for Google OAuth users */}
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/complete-profile" element={<CompleteProfilePage />} />
       
       {/* Profile Page - requires authentication */}
