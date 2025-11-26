@@ -39,8 +39,6 @@ export function EditTrainingModal({
   const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log("current user:", currentUser);
-  console.log("editing training:", training);
 
   // Form field states
   const [title, setTitle] = useState("");

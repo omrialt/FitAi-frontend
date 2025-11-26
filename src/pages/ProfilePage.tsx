@@ -37,57 +37,33 @@ const ProfilePage: React.FC = () => {
     onSubmit: async (formData) => {
       if (!user?._id) return;
 
-      console.log('=== FORM SUBMISSION DEBUG ===');
-      console.log('Form data received:', formData);
-      console.log('Form data type:', typeof formData);
-      console.log('Form data keys:', Object.keys(formData));
-      console.log('fullName from formData:', formData.fullName);
-      console.log('fullName type:', typeof formData.fullName);
-      console.log('Current user data:', user);
-      console.log('Current user fullName:', user.fullName);
-      console.log('=============================');
-
-      // Prepare data for submission - only include changed fields
       const submitData: UpdateProfileDto = {};
-
-      // Check each field and only add if changed (trim strings for comparison)
       const formFullName = formData.fullName?.trim() || '';
       const userFullName = user.fullName?.trim() || '';
-      console.log('Comparing fullName:', { 
-        formFullName, 
-        userFullName, 
-        equal: formFullName === userFullName,
-        formLength: formFullName.length,
-        userLength: userFullName.length 
-      });
+  
       
       if (formFullName !== userFullName) {
         submitData.fullName = formData.fullName;
-        console.log('✓ fullName changed from', user.fullName, 'to', formData.fullName);
       }
       
       const formEmail = formData.email?.trim() || '';
       const userEmail = user.email?.trim() || '';
       if (formEmail !== userEmail) {
         submitData.email = formData.email;
-        console.log('✓ email changed from', user.email, 'to', formData.email);
       }
       
       const formBirthDate = formData.birthDate || '';
       const userBirthDate = user.birthDate ? user.birthDate.split('T')[0] : '';
       if (formBirthDate !== userBirthDate) {
         submitData.birthDate = formData.birthDate;
-        console.log('✓ birthDate changed');
       }
       
       if (formData.gender !== user.gender) {
         submitData.gender = formData.gender;
-        console.log('✓ gender changed');
       }
       
       if (formData.isActive !== user.isActive) {
         submitData.isActive = formData.isActive;
-        console.log('✓ isActive changed');
       }
       
       // Add height if changed (handle both number and empty string)
@@ -116,17 +92,13 @@ const ProfilePage: React.FC = () => {
         return;
       }
 
-      console.log('Submit data being sent (changed fields only):', submitData);
 
       try {
         setIsLoading(true);
         
-        // Make API call using userService
         const updatedUser = await userService.update(user._id, submitData);
 
-        console.log('Updated user received:', updatedUser);
 
-        // Update local auth store - merge with existing user data to avoid undefined fields
         updateUser({
           ...user,
           fullName: updatedUser.fullName ?? user.fullName,
