@@ -10,7 +10,6 @@ import {
   Stack,
   Divider,
   Group,
-  Anchor,
   Loader,
 } from '@mantine/core';
 import { IconLogin } from '@tabler/icons-react';

@@ -27,8 +27,15 @@ import { useExport } from "../hooks/useExport";
 import { useAuthStore } from "../store/authStore";
 import type { TrainingPlan, TrainingFilters } from "../types/training.types";
 import type { TrainingPlansResponse } from "../types/training-plan.types";
+import userService from "../services/user.service";
 
 export default function MyTrainingsPage() {
+    const [allUsers, setAllUsers] = useState([]);
+
+    // Fetch all users once on page load
+    useEffect(() => {
+      userService.findAll().then(setAllUsers).catch(() => setAllUsers([]));
+    }, []);
   const { user } = useAuthStore();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
@@ -352,6 +359,7 @@ export default function MyTrainingsPage() {
         onSave={handleSaveEdit}
         onCreate={handleSaveCreate}
         createMode={!selectedTraining}
+        allUsers={allUsers}
       />
 
       <DeleteTrainingModal

@@ -14,7 +14,6 @@ import type {
   AccessLevel,
 } from "../../types/training-plan.types";
 import type { User } from "../../types/auth.types";
-import userService from "../../services/user.service";
 import { useAuth } from "../../hooks/useAuth";
 import {
   BasicInfoSection,
@@ -30,6 +29,7 @@ interface EditTrainingModalProps {
   onSave: (data: Partial<TrainingPlan>) => void;
   onCreate?: (data: Partial<TrainingPlan>) => void;
   createMode?: boolean;
+  allUsers: User[];
 }
 
 export function EditTrainingModal({
@@ -39,11 +39,11 @@ export function EditTrainingModal({
   onSave,
   onCreate,
   createMode = false,
+  allUsers,
 }: EditTrainingModalProps) {
   const titleText = createMode ? "Create Training Plan" : "Edit Training Plan";
   const submitButtonText = createMode ? "Create" : "Save Changes";
   const { user: currentUser } = useAuth();
-  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,20 +81,6 @@ export function EditTrainingModal({
       ? training?.userId
       : training?.userId?._id) === currentUser?._id;
 
-  // Fetch all users for shared access selection
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await userService.findAll();
-        setAllUsers(users);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-    if (opened) {
-      fetchUsers();
-    }
-  }, [opened]);
 
   // Reset form when training changes or when switching to create mode
   useEffect(() => {
