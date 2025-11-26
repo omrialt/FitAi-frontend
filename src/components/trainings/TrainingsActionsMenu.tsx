@@ -19,7 +19,8 @@ import '../../styles/DropdownMenu.css';
 
 interface TrainingsActionsMenuProps {
   training: TrainingPlan;
-  isCoach?: boolean;
+  isAdmin?: boolean;
+  currentUserId?: string;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
@@ -29,13 +30,18 @@ interface TrainingsActionsMenuProps {
 
 export function TrainingsActionsMenu({
   training,
-  isCoach = false,
+  isAdmin = false,
+  currentUserId,
   onView,
   onEdit,
   onExportPDF,
   onExportExcel,
   onDelete,
 }: TrainingsActionsMenuProps) {
+  // Check if current user is the owner of the training
+  const trainingUserId = typeof training.userId === 'string' ? training.userId : training.userId?._id;
+  const isOwner = currentUserId === trainingUserId;
+  const canDelete = isAdmin || isOwner;
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -96,25 +102,17 @@ export function TrainingsActionsMenu({
             </DropdownMenu.Portal>
           </DropdownMenu.Sub>
 
-          {/* Coach-only actions */}
-          {isCoach && (
+          {/* Delete - only for admin or owner */}
+          {onDelete && canDelete && (
             <>
               <DropdownMenu.Separator className="dropdown-menu-separator" />
-
-            
-              {/* Delete */}
-              {onDelete && (
-                <>
-                  <DropdownMenu.Separator className="dropdown-menu-separator" />
-                  <DropdownMenu.Item
-                    className="dropdown-menu-item dropdown-menu-item-danger"
-                    onSelect={() => onDelete(training._id)}
-                  >
-                    <IconTrash size={16} />
-                    <span>Delete</span>
-                  </DropdownMenu.Item>
-                </>
-              )}
+              <DropdownMenu.Item
+                className="dropdown-menu-item dropdown-menu-item-danger"
+                onSelect={() => onDelete(training._id)}
+              >
+                <IconTrash size={16} />
+                <span>Delete</span>
+              </DropdownMenu.Item>
             </>
           )}
         </DropdownMenu.Content>

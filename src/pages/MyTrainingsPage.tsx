@@ -27,7 +27,6 @@ import type { TrainingPlansResponse } from "../types/training-plan.types";
 
 export default function MyTrainingsPage() {
   const { user } = useAuthStore();
-  const isCoach = user?.role === "trainer" || user?.role === "admin";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
 
@@ -171,7 +170,8 @@ export default function MyTrainingsPage() {
     // Only owner can delete
     const userId = typeof training.userId === 'string' ? training.userId : training.userId?._id;
     const trainerId = typeof training.trainerId === 'string' ? training.trainerId : training.trainerId?._id;
-    const isOwner = userId === user?._id || trainerId === user?._id;
+    const isOwner = userId === user?._id || trainerId === user?._id || user?.role === 'admin';
+
     if (!isOwner) {
       toast.error("You do not have permission to delete this training plan");
       return;
@@ -243,23 +243,24 @@ export default function MyTrainingsPage() {
               {isMobile ? (
                 <TrainingsCardList
                   trainings={paginatedTrainings}
-                  isCoach={isCoach}
+                  isAdmin={user?.role === "admin"}
+                  currentUserId={user?._id}
                   onView={handleView}
                   onEdit={handleEdit}
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
-                  onDelete={isCoach ? handleDelete : undefined}
+                  onDelete={handleDelete}
                 />
               ) : (
                 <TrainingsTable
                   trainings={paginatedTrainings}
-                  isCoach={isCoach}
                   isAdmin={user?.role === "admin"}
+                  currentUserId={user?._id}
                   onView={handleView}
                   onEdit={handleEdit}
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
-                  onDelete={isCoach ? handleDelete : undefined}
+                  onDelete={handleDelete}
                 />
               )}
             </>

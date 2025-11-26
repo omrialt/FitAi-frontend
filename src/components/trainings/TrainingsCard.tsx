@@ -8,7 +8,6 @@ import { Card, Text, Badge, Group, Stack, Button } from '@mantine/core';
 import {
   IconEye,
   IconEdit,
-  IconCopy,
 } from '@tabler/icons-react';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
 import type { TrainingPlan } from '../../types/training-plan.types';
@@ -16,6 +15,8 @@ import type { TrainingPlan } from '../../types/training-plan.types';
 interface TrainingsCardProps {
   training: TrainingPlan;
   isCoach?: boolean;
+  isAdmin?: boolean;
+  currentUserId?: string;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
@@ -39,6 +40,8 @@ const getDifficultyColor = (difficulty: string) => {
 export function TrainingsCard({
   training,
   isCoach = false,
+  isAdmin = false,
+  currentUserId,
   onView,
   onEdit,
   onExportPDF,
@@ -55,7 +58,8 @@ export function TrainingsCard({
           </Text>
           <TrainingsActionsMenu
             training={training}
-            isCoach={isCoach}
+            isAdmin={isAdmin}
+            currentUserId={currentUserId}
             onView={onView}
             onEdit={onEdit}
             onExportPDF={onExportPDF}

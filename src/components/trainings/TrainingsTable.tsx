@@ -10,8 +10,8 @@ import type { TrainingPlan } from "../../types/training.types";
 
 interface TrainingsTableProps {
   trainings: TrainingPlan[];
-  isCoach?: boolean;
   isAdmin?: boolean;
+  currentUserId?: string;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
@@ -34,7 +34,8 @@ const getDifficultyColor = (difficulty: string) => {
 
 export function TrainingsTable({
   trainings,
-  isCoach = false,
+  isAdmin = false,
+  currentUserId,
   onView,
   onEdit,
   onExportPDF,
@@ -113,7 +114,8 @@ export function TrainingsTable({
               <Table.Td>
                 <TrainingsActionsMenu
                   training={training}
-                  isCoach={isCoach}
+                  isAdmin={isAdmin}
+                  currentUserId={currentUserId}
                   onView={onView}
                   onEdit={onEdit}
                   onExportPDF={onExportPDF}

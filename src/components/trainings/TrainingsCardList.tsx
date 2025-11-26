@@ -11,6 +11,8 @@ import type { TrainingPlan } from '../../types/training-plan.types';
 interface TrainingsCardListProps {
   trainings: TrainingPlan[];
   isCoach?: boolean;
+  isAdmin?: boolean;
+  currentUserId?: string;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onExportPDF: (training: TrainingPlan) => void;
@@ -21,6 +23,8 @@ interface TrainingsCardListProps {
 export function TrainingsCardList({
   trainings,
   isCoach = false,
+  isAdmin = false,
+  currentUserId,
   onView,
   onEdit,
   onExportPDF,
@@ -43,6 +47,8 @@ export function TrainingsCardList({
           key={training._id}
           training={training}
           isCoach={isCoach}
+          isAdmin={isAdmin}
+          currentUserId={currentUserId}
           onView={onView}
           onEdit={onEdit}
           onExportPDF={onExportPDF}
