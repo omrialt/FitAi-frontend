@@ -39,6 +39,9 @@ export function EditTrainingModal({
   const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  console.log("current user:", currentUser);
+  console.log("editing training:", training);
+
   // Form field states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -276,7 +279,8 @@ export function EditTrainingModal({
             setIsActive={setIsActive}
           />
           {(currentUser?.role === "admin" ||
-            training?.trainerId === currentUser?._id) && (
+            (typeof training?.trainerId === 'object' && training?.trainerId?._id === currentUser?._id) ||
+            currentUser?._id === (typeof training?.userId === 'string' ? training?.userId : training?.userId?._id)) && (
             <SharedAccessSection
               allUsers={allUsers}
               sharedAccess={sharedAccess}
@@ -285,14 +289,15 @@ export function EditTrainingModal({
             />
           )}
           {/* Sync checkbox - only show for owners and if not a clone */}
-          {!training?.initialParentId && training?.userId === currentUser?._id && (
-            <Checkbox
-              label="Sync updates to shared copies"
-              description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
-              checked={syncWithParent}
-              onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
-            />
-          )}
+          {!training?.initialParentId &&
+            training?.userId === currentUser?._id && (
+              <Checkbox
+                label="Sync updates to shared copies"
+                description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
+                checked={syncWithParent}
+                onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
+              />
+            )}
           <TrainingDaysSection
             localDays={localDays}
             addDay={addDay}

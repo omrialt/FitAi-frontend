@@ -8,8 +8,8 @@ interface ProgramDetailsSectionProps {
   setEstimatedCalories: (value: number | undefined) => void;
   startDate: string | undefined;
   setStartDate: (value: string | undefined) => void;
-  endDate: string | undefined;
-  setEndDate: (value: string | undefined) => void;
+  endDate: string | undefined | null;
+  setEndDate: (value: string | undefined | null) => void;
   isActive: boolean;
   setIsActive: (value: boolean) => void;
 }
@@ -29,7 +29,7 @@ export function ProgramDetailsSection({
   return (
     <>
       <Grid gutter="md">
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <NumberInput
             label="Estimated Duration (minutes)"
             placeholder="Per session"
@@ -39,7 +39,7 @@ export function ProgramDetailsSection({
           />
         </Grid.Col>
 
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <NumberInput
             label="Estimated Calories"
             placeholder="Per session"
@@ -51,7 +51,7 @@ export function ProgramDetailsSection({
       </Grid>
 
       <Grid gutter="md">
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <DateInput
             label="Start Date"
             placeholder="Select start date"
@@ -69,7 +69,7 @@ export function ProgramDetailsSection({
           />
         </Grid.Col>
 
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <DateInput
             label="End Date"
             placeholder="Select end date"

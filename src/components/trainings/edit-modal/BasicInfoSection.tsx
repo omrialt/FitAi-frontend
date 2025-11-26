@@ -12,8 +12,8 @@ interface BasicInfoSectionProps {
   setProgramType: (value: ProgramType) => void;
   focus: string;
   setFocus: (value: string) => void;
-  rotationCycleLength: number | undefined;
-  setRotationCycleLength: (value: number | undefined) => void;
+  rotationCycleLength: number | undefined | null;
+  setRotationCycleLength: (value: number | undefined | null) => void;
 }
 
 export function BasicInfoSection({ 

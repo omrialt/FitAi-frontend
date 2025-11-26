@@ -34,7 +34,7 @@ export function ExerciseItem({
       </Group>
 
       <Grid gutter="xs">
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
             label="Name"
             value={exercise.name || ''}
@@ -43,7 +43,7 @@ export function ExerciseItem({
             required
           />
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
             label="Muscle Group"
             value={exercise.muscleGroup || ''}
@@ -52,7 +52,7 @@ export function ExerciseItem({
             required
           />
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <Select
             label="Type"
             data={[
@@ -65,7 +65,7 @@ export function ExerciseItem({
             size="xs"
           />
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
             label="Notes"
             value={exercise.notes || ''}
@@ -92,28 +92,34 @@ export function ExerciseItem({
       </Group>
 
       {exercise.sets.map((set, setIndex: number) => (
-        <Group key={setIndex} gap="xs">
-          <Badge size="sm">{setIndex + 1}</Badge>
-          <Text size="xs" c="dimmed" style={{ width: 40 }}>Reps:</Text>
-          <NumberInput
-            placeholder="Reps"
-            value={set.targetReps}
-            onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetReps: value })}
-            size="xs"
-            style={{ width: 80 }}
-          />
-          <Text size="xs" c="dimmed" style={{ width: 50 }}>Weight:</Text>
-          <NumberInput
-            placeholder="Weight"
-            value={set.targetWeight}
-            onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetWeight: value })}
-            size="xs"
-            style={{ width: 80 }}
-          />
-          <ActionIcon size="xs" color="red" variant="subtle" onClick={() => removeSet(dayIndex, exerciseIndex, setIndex)}>
-            <IconTrash size={12} />
-          </ActionIcon>
-        </Group>
+        <Stack key={setIndex} gap="xs" p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)', borderRadius: '4px' }}>
+          <Group gap="xs" wrap="nowrap">
+            <Badge size="sm">Set {setIndex + 1}</Badge>
+            <ActionIcon size="xs" color="red" variant="subtle" onClick={() => removeSet(dayIndex, exerciseIndex, setIndex)} ml="auto">
+              <IconTrash size={12} />
+            </ActionIcon>
+          </Group>
+          <Group gap="xs" grow>
+            <Stack gap={4}>
+              <Text size="xs" c="dimmed">Reps</Text>
+              <NumberInput
+                placeholder="Reps"
+                value={set.targetReps}
+                onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetReps: value })}
+                size="xs"
+              />
+            </Stack>
+            <Stack gap={4}>
+              <Text size="xs" c="dimmed">Weight (kg)</Text>
+              <NumberInput
+                placeholder="Weight"
+                value={set.targetWeight}
+                onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetWeight: value })}
+                size="xs"
+              />
+            </Stack>
+          </Group>
+        </Stack>
       ))}
     </Stack>
   );

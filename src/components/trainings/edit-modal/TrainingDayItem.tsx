@@ -39,7 +39,7 @@ export function TrainingDayItem({
       <Accordion.Panel>
         <Stack gap="sm">
           <Grid gutter="xs">
-            <Grid.Col span={8}>
+            <Grid.Col span={{ base: 12, sm: 8 }}>
               <TextInput
                 label="Day Name"
                 value={day.dayName}
@@ -47,7 +47,7 @@ export function TrainingDayItem({
                 size="xs"
               />
             </Grid.Col>
-            <Grid.Col span={3}>
+            <Grid.Col span={{ base: 12, sm: 3 }}>
               <Select
                 label="Day of Week"
                 value={day.dayOfWeek.toString()}
@@ -64,7 +64,7 @@ export function TrainingDayItem({
                 size="xs"
               />
             </Grid.Col>
-            <Grid.Col span={1}>
+            <Grid.Col span={{ base: 12, sm: 1 }}>
               <ActionIcon color="red" variant="light" onClick={onRemove} mt={20}>
                 <IconTrash size={16} />
               </ActionIcon>
