@@ -26,8 +26,9 @@ export const trainingPlanService = {
     return response.data;
   },
 
-  // Delete a training plan
-  delete: async (id: string): Promise<{ message: string }> => {
+
+  // Delete a training plan (calls backend endpoint)
+  deletePlan: async (id: string): Promise<{ message: string }> => {
     const response = await api.delete(`/training-plans/${id}`);
     return response.data;
   },

@@ -9,7 +9,7 @@ import { Container, Box, Center, Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
-import { useApi, useApiMutation } from "../hooks/useApi";
+import { useApi } from "../hooks/useApi";
 import { toast } from "sonner";
 import { AppLayout } from "../components/AppLayout";
 import { TrainingsBreadcrumbs } from "../components/trainings/TrainingsBreadcrumbs";
@@ -43,11 +43,11 @@ export default function MyTrainingsPage() {
   const { data: trainingsData, loading: isLoading, execute: fetchTrainings } = useApi<TrainingPlansResponse>({
     showErrorToast: true,
   });
-  const { mutate: updateTraining } = useApiMutation<TrainingPlan>({
+  const { execute: updateTraining } = useApi<TrainingPlan>({
     showSuccessToast: true,
     successMessage: 'Training updated successfully',
   });
-  const { mutate: deleteTraining } = useApiMutation<{ message: string }>({
+  const { execute: deleteTraining } = useApi<{ message: string }>({
     showSuccessToast: true,
     successMessage: 'Training deleted successfully',
   });
@@ -184,27 +184,29 @@ export default function MyTrainingsPage() {
   const handleSaveEdit = async (data: Partial<TrainingPlan>) => {
     if (!selectedTraining) return;
 
-    const result = await updateTraining(`/training-plans/${selectedTraining._id}`, {
-      method: 'PUT',
-      data,
-    });
-
-    if (result) {
+    try {
+      await updateTraining(`/training-plans/${selectedTraining._id}`, {
+        method: 'PUT',
+        data,
+      });
       await refetchTrainings();
       setEditModalOpened(false);
+    } catch (error) {
+      console.error('Failed to update training:', error);
     }
   };
 
   const handleConfirmDelete = async () => {
     if (!selectedTraining) return;
 
-    const result = await deleteTraining(`/training-plans/${selectedTraining._id}`, {
-      method: 'DELETE',
-    });
-
-    if (result) {
+    try {
+      await deleteTraining(`/training-plans/${selectedTraining._id}`, {
+        method: 'DELETE',
+      });
       await refetchTrainings();
       setDeleteModalOpened(false);
+    } catch (error) {
+      console.error('Failed to delete training:', error);
     }
   };
 
