@@ -1,27 +1,21 @@
-import { Routes, Route } from 'react-router-dom';
-import DashboardPage from './pages/DashboardPage';
-import MyTrainingsPage from './pages/MyTrainingsPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import GoogleCallbackPage from './pages/GoogleCallbackPage';
-import CompleteProfilePage from './pages/CompleteProfilePage';
-import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
+import { Routes, Route } from "react-router-dom";
+import DashboardPage from "./pages/DashboardPage";
+import MyTrainingsPage from "./pages/MyTrainingsPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import GoogleCallbackPage from "./pages/GoogleCallbackPage";
+import CompleteProfilePage from "./pages/CompleteProfilePage";
+import ProfilePage from "./pages/ProfilePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
       {/* Protected Routes - require authentication */}
-      <Route
-        path="/"
-        element={
-     
-            <DashboardPage />
-  
-        }
-      />
+      <Route path="/" element={<DashboardPage />} />
       <Route
         path="/my-trainings"
         element={
@@ -48,14 +42,16 @@ function App() {
           </PublicRoute>
         }
       />
-      
+
       {/* Auth callback - no protection needed */}
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
-      
+
       {/* Complete Profile - for Google OAuth users */}
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      {/* Admin Users Page */}
+      <Route path="/users" element={<AdminUsersPage />} />
       <Route path="/complete-profile" element={<CompleteProfilePage />} />
-      
+
       {/* Profile Page - requires authentication */}
       <Route
         path="/profile"

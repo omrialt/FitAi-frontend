@@ -144,8 +144,8 @@ const ProfilePage: React.FC = () => {
       });
       setAvatarPreview(user.avatarUrl || null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id]); // Only reset when user ID changes (different user), not on every user update
+
+  }, [user, resetForm, isLoading]);
 
   const handleCancel = () => {
     if (user) {

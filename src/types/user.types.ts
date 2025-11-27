@@ -1,4 +1,4 @@
-import type { User } from './auth.types';
+export type { User } from './auth.types';
 
 export interface UpdateProfileDto {
   fullName?: string;

@@ -23,6 +23,9 @@ export interface User {
   emailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
+  // Admin stats
+  trainingPlansCount?: number;
+  nutritionPlansCount?: number;
 }
 
 export interface AuthTokens {

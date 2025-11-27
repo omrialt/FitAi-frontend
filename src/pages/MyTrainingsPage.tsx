@@ -16,21 +16,22 @@ import { trainingPlanService } from "../services/training-plan.service";
 import {
   DeleteTrainingModal,
   EditTrainingModal,
-  PaginationControls,
   TrainingsCardList,
   TrainingsTable,
   TrainingsFilters,
   TrainingsHeader,
   TrainingsBreadcrumbs,
 } from "../components/trainings/index";
+import { PaginationControls } from "../components/common/PaginationControls";
 import { useExport } from "../hooks/useExport";
 import { useAuthStore } from "../store/authStore";
 import type { TrainingPlan, TrainingFilters } from "../types/training.types";
 import type { TrainingPlansResponse } from "../types/training-plan.types";
 import userService from "../services/user.service";
+import type { User } from "../types/user.types";
 
 export default function MyTrainingsPage() {
-    const [allUsers, setAllUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState<User[]>([]);
 
     // Fetch all users once on page load
     useEffect(() => {
@@ -112,8 +113,8 @@ export default function MyTrainingsPage() {
   // Fetch trainings from API
   useEffect(() => {
     fetchTrainings("/training-plans?page=1&limit=100");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?._id]);
+
+  }, [user?._id, fetchTrainings]);
 
   // Filter and search trainings
   const trainings = useMemo(() => {

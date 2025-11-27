@@ -9,6 +9,5 @@ export { TrainingsTable } from './TrainingsTable';
 export { TrainingsCard } from './TrainingsCard';
 export { TrainingsCardList } from './TrainingsCardList';
 export { TrainingsActionsMenu } from './TrainingsActionsMenu';
-export { PaginationControls } from './PaginationControls';
 export { EditTrainingModal } from './EditTrainingModal';
 export { DeleteTrainingModal } from './DeleteTrainingModal';

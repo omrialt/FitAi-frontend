@@ -210,7 +210,7 @@ export function useUpload(options: UseUploadOptions): UseUploadReturn {
   );
 
   // Setup react-dropzone
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles,
     maxSize,
@@ -218,14 +218,6 @@ export function useUpload(options: UseUploadOptions): UseUploadReturn {
     multiple,
   });
 
-  // Reset state
-  const reset = useCallback(() => {
-    setUploadedFiles([]);
-    setProgress({ loaded: 0, total: 0, percentage: 0 });
-    setStatus('idle');
-    setError(null);
-    setPreviews([]);
-  }, []);
 
   return {
     uploadFiles,
@@ -236,8 +228,6 @@ export function useUpload(options: UseUploadOptions): UseUploadReturn {
     previews,
     getRootProps,
     getInputProps,
-    isDragActive,
-    reset,
   };
 }
 
@@ -272,20 +262,5 @@ export function useUpload(options: UseUploadOptions): UseUploadReturn {
  * ```
  */
 
-type MultipleUploadConfig = Record<string, UseUploadOptions>;
-type MultipleUploadReturn<T extends MultipleUploadConfig> = {
-  [K in keyof T]: UseUploadReturn;
-};
 
-export function useMultipleUpload<T extends MultipleUploadConfig>(
-  config: T
-): MultipleUploadReturn<T> {
-  const uploads = {} as MultipleUploadReturn<T>;
 
-  for (const key in config) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    uploads[key] = useUpload(config[key]) as UseUploadReturn;
-  }
-
-  return uploads;
-}
