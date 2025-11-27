@@ -134,6 +134,9 @@ export default function MyTrainingsPage() {
     if (filters.difficulty) {
       filtered = filtered.filter((t) => t.difficulty === filters.difficulty);
     }
+    if (filters.target) {
+      filtered = filtered.filter((t) => t.target === filters.target);
+    }
 
     // Apply search
     if (debouncedSearch) {

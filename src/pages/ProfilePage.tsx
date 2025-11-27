@@ -30,6 +30,7 @@ const ProfilePage: React.FC = () => {
       birthDate: user?.birthDate ? user.birthDate.split('T')[0] : '',
       gender: user?.gender || 'male',
       height: user?.height || '',
+      target: user?.target || undefined,
       isActive: user?.isActive ?? true,
       password: '',
       avatarUrl: user?.avatarUrl || '',
@@ -62,6 +63,10 @@ const ProfilePage: React.FC = () => {
         submitData.gender = formData.gender;
       }
       
+      if (formData.target !== user.target) {
+        submitData.target = formData.target;
+      }
+
       if (formData.isActive !== user.isActive) {
         submitData.isActive = formData.isActive;
       }
@@ -106,6 +111,7 @@ const ProfilePage: React.FC = () => {
           birthDate: updatedUser.birthDate ?? user.birthDate,
           gender: updatedUser.gender ?? user.gender,
           height: updatedUser.height ?? user.height,
+          target: updatedUser.target ?? user.target,
           isActive: updatedUser.isActive ?? user.isActive,
           avatarUrl: updatedUser.avatarUrl ?? user.avatarUrl,
         });
@@ -138,6 +144,7 @@ const ProfilePage: React.FC = () => {
         birthDate: user.birthDate ? user.birthDate.split('T')[0] : '',
         gender: user.gender || 'male',
         height: user.height || '',
+        target: user.target || undefined,
         isActive: user.isActive ?? true,
         password: '',
         avatarUrl: user.avatarUrl || '',
@@ -155,6 +162,7 @@ const ProfilePage: React.FC = () => {
         birthDate: user.birthDate ? user.birthDate.split('T')[0] : '',
         gender: user.gender || 'male',
         height: user.height || '',
+        target: user.target || undefined,
         isActive: user.isActive ?? true,
         password: '',
         avatarUrl: user.avatarUrl || '',

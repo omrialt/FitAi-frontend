@@ -14,6 +14,7 @@ export type TrainingCreator = 'me' | 'coach' | 'system';
 export interface TrainingFilters {
   creator?: TrainingCreator;
   difficulty?: string;
+  target?: string;
 }
 
 export interface TrainingTableData {

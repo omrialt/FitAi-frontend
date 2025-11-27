@@ -6,6 +6,7 @@ export interface UpdateProfileDto {
   birthDate?: string;
   gender?: 'male' | 'female' | 'other';
   height?: number;
+  target?: 'maintain' | 'cut' | 'bulk';
   isActive?: boolean;
   password?: string;
   avatarUrl?: string;
@@ -20,6 +21,7 @@ export interface CreateUserDto {
   gender?: 'male' | 'female' | 'other';
   birthDate?: string;
   height?: number;
+  target?: 'maintain' | 'cut' | 'bulk';
 }
 
 export interface UserResponse {

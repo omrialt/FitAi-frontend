@@ -10,6 +10,7 @@ import type {
   TrainingPlan,
   TrainingDay,
   Difficulty,
+  Target,
   ProgramType,
   AccessLevel,
 } from "../../types/training-plan.types";
@@ -51,6 +52,7 @@ export function EditTrainingModal({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+  const [target, setTarget] = useState<Target | undefined>();
   const [programType, setProgramType] = useState<ProgramType>("fixedDays");
   const [focus, setFocus] = useState("");
   const [estimatedDuration, setEstimatedDuration] = useState<
@@ -89,6 +91,7 @@ export function EditTrainingModal({
         setTitle(training.title || "");
         setDescription(training.description || "");
         setDifficulty(training.difficulty || "beginner");
+        setTarget(training.target);
         setProgramType(training.programType || "fixedDays");
         setFocus(training.focus || "");
         setEstimatedDuration(training.estimatedDuration);
@@ -105,6 +108,7 @@ export function EditTrainingModal({
         setTitle("");
         setDescription("");
         setDifficulty("beginner");
+        setTarget(undefined);
         setProgramType("fixedDays");
         setFocus("");
         setEstimatedDuration(undefined);
@@ -227,6 +231,7 @@ export function EditTrainingModal({
         title,
         description,
         difficulty,
+        target,
         programType,
         focus,
         estimatedDuration,
@@ -282,6 +287,8 @@ export function EditTrainingModal({
             setDescription={setDescription}
             difficulty={difficulty}
             setDifficulty={setDifficulty}
+            target={target}
+            setTarget={setTarget}
             programType={programType}
             setProgramType={setProgramType}
             focus={focus}

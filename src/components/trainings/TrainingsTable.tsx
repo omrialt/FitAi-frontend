@@ -57,6 +57,7 @@ export function TrainingsTable({
           <Table.Tr>
             <Table.Th>Title</Table.Th>
             <Table.Th>Difficulty</Table.Th>
+            <Table.Th>Goal</Table.Th>
             <Table.Th>Days</Table.Th>
             <Table.Th>Status</Table.Th>
             <Table.Th>Focus</Table.Th>
@@ -78,6 +79,9 @@ export function TrainingsTable({
                 >
                   {training.difficulty}
                 </Badge>
+              </Table.Td>
+              <Table.Td>
+                <Text tt="capitalize">{training.target || "-"}</Text>
               </Table.Td>
               <Table.Td>
                 <Text>{training.days?.length || 0}</Text>

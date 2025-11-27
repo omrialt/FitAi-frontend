@@ -185,6 +185,26 @@ function RegisterPage() {
                   error={errors.height?.message}
                 />
 
+                <Controller
+                  name="target"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      label="Fitness Goal"
+                      placeholder="Select your goal"
+                      required
+                      withAsterisk
+                      data={[
+                        { value: 'maintain', label: 'Maintain Weight' },
+                        { value: 'cut', label: 'Cut (Lose Weight)' },
+                        { value: 'bulk', label: 'Bulk (Gain Weight)' },
+                      ]}
+                      {...field}
+                      error={errors.target?.message}
+                    />
+                  )}
+                />
+
                 <PasswordInput
                   label="Password"
                   placeholder="Your password"

@@ -1,6 +1,7 @@
 // Backend schema types (matching training-plan.schema.ts exactly)
 export type ExerciseType = 'regular' | 'dropset' | 'superset';
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
+export type Target = 'maintain' | 'cut' | 'bulk';
 export type AccessLevel = 'view' | 'edit';
 export type ObjectType = 'trainingPlan' | 'nutritionPlan';
 export type ProgramType = 'fixedDays' | 'rotation';
@@ -50,6 +51,7 @@ export interface TrainingPlan {
   description: string;
   days: TrainingDay[];
   difficulty: Difficulty;
+  target?: Target;
   sharedWith: string[];
   sharedAccess: SharedAccessEntry[];
   // Clone tracking fields

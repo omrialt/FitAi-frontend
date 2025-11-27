@@ -55,6 +55,7 @@ function CompleteProfilePage() {
           birthDate: data.birthDate.toISOString(),
           role: data.role,
           height: data.height,
+          target: data.target,
         },
       });
 
@@ -212,6 +213,25 @@ function CompleteProfilePage() {
                   type="number"
                   {...register('height', { valueAsNumber: true })}
                   error={errors.height?.message}
+                />
+
+                <Controller
+                  name="target"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      label="Fitness Goal"
+                      placeholder="Select your goal"
+                      required
+                      data={[
+                        { value: 'maintain', label: 'Maintain Weight' },
+                        { value: 'cut', label: 'Cut (Lose Weight)' },
+                        { value: 'bulk', label: 'Bulk (Gain Weight)' },
+                      ]}
+                      {...field}
+                      error={errors.target?.message}
+                    />
+                  )}
                 />
 
                 <Button

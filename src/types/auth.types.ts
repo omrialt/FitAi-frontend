@@ -6,6 +6,8 @@ export type UserRole = 'admin' | 'trainer' | 'user';
 
 export type Gender = 'male' | 'female' | 'other';
 
+export type Target = 'maintain' | 'cut' | 'bulk';
+
 export type AuthProvider = 'email' | 'google';
 
 export interface User {
@@ -16,6 +18,7 @@ export interface User {
   gender: Gender;
   birthDate: string;
   height?: number;
+  target?: Target;
   avatarUrl?: string;
   authProvider: AuthProvider;
   isActive: boolean;
@@ -46,6 +49,7 @@ export interface RegisterData {
   birthDate: string;
   role: UserRole;
   height?: number;
+  target?: Target;
 }
 
 export interface AuthState {

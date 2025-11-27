@@ -33,7 +33,7 @@ export function TrainingsFilters({
     <Paper shadow="xs" p="md" radius="md" mb="lg">
       <Grid gutter="md">
         {/* Search Input */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
           <TextInput
             placeholder="Search trainings..."
             leftSection={<IconSearch size={16} />}
@@ -43,7 +43,7 @@ export function TrainingsFilters({
         </Grid.Col>
 
         {/* Creator Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
           <Select
             placeholder="Creator"
             data={[
@@ -58,7 +58,7 @@ export function TrainingsFilters({
         </Grid.Col>
 
         {/* Difficulty Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
           <Select
             placeholder="Difficulty"
             data={[
@@ -69,6 +69,22 @@ export function TrainingsFilters({
             ]}
             value={filters.difficulty || ''}
             onChange={(value) => handleFilterChange('difficulty', value || undefined)}
+            clearable
+          />
+        </Grid.Col>
+
+        {/* Target Filter */}
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+          <Select
+            placeholder="Fitness Goal"
+            data={[
+              { value: '', label: 'All Goals' },
+              { value: 'maintain', label: 'Maintain' },
+              { value: 'cut', label: 'Cut' },
+              { value: 'bulk', label: 'Bulk' },
+            ]}
+            value={filters.target || ''}
+            onChange={(value) => handleFilterChange('target', value || undefined)}
             clearable
           />
         </Grid.Col>

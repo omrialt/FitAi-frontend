@@ -57,6 +57,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
         const info = [
           ['Trainer:', formatTrainerName(training)],
           ['Difficulty:', (training.difficulty || 'beginner').toUpperCase()],
+          ['Goal:', training.target ? training.target.toUpperCase() : '-'],
           ['Focus:', training.focus || '-'],
           ['Program Type:', training.programType || '-'],
           ['Estimated Duration:', training.estimatedDuration ? `${training.estimatedDuration} minutes` : '-'],
@@ -151,6 +152,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
           ['Title', training.title],
           ['Trainer', formatTrainerName(training)],
           ['Difficulty', (training.difficulty || 'beginner').toUpperCase()],
+          ['Goal', training.target ? training.target.toUpperCase() : '-'],
           ['Focus', training.focus || '-'],
           ['Program Type', training.programType || '-'],
           ['Estimated Duration', training.estimatedDuration ? `${training.estimatedDuration} weeks` : '-'],
@@ -208,11 +210,12 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
       const summaryData = [
         ['Training Plans Summary'],
         [],
-        ['Title', 'Trainer', 'Difficulty', 'Focus', 'Days', 'Program Type', 'Created'],
+        ['Title', 'Trainer', 'Difficulty', 'Goal', 'Focus', 'Days', 'Program Type', 'Created'],
         ...data.map(training => [
           training.title,
           formatTrainerName(training),
           (training.difficulty || 'beginner').toUpperCase(),
+          training.target ? training.target.toUpperCase() : '-',
           training.focus || '-',
           training.days?.length || 0,
           training.programType || '-',
@@ -225,6 +228,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
         { wch: 30 },
         { wch: 20 },
         { wch: 15 },
+        { wch: 12 },
         { wch: 20 },
         { wch: 8 },
         { wch: 15 },

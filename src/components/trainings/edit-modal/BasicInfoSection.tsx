@@ -1,5 +1,5 @@
 import { TextInput, Textarea, Select, Grid, NumberInput } from '@mantine/core';
-import type { Difficulty, ProgramType } from '../../../types/training-plan.types';
+import type { Difficulty, Target, ProgramType } from '../../../types/training-plan.types';
 
 interface BasicInfoSectionProps {
   title: string;
@@ -8,6 +8,8 @@ interface BasicInfoSectionProps {
   setDescription: (value: string) => void;
   difficulty: Difficulty;
   setDifficulty: (value: Difficulty) => void;
+  target: Target | undefined;
+  setTarget: (value: Target | undefined) => void;
   programType: ProgramType;
   setProgramType: (value: ProgramType) => void;
   focus: string;
@@ -23,6 +25,8 @@ export function BasicInfoSection({
   setDescription,
   difficulty,
   setDifficulty,
+  target,
+  setTarget,
   programType,
   setProgramType,
   focus,
@@ -65,6 +69,22 @@ export function BasicInfoSection({
           />
         </Grid.Col>
 
+        <Grid.Col span={6}>
+          <Select
+            label="Fitness Goal"
+            data={[
+              { value: 'maintain', label: 'Maintain Weight' },
+              { value: 'cut', label: 'Cut (Lose Weight)' },
+              { value: 'bulk', label: 'Bulk (Gain Weight)' },
+            ]}
+            value={target}
+            onChange={(value) => setTarget(value as Target | undefined)}
+            clearable
+          />
+        </Grid.Col>
+      </Grid>
+
+      <Grid gutter="md">
         <Grid.Col span={6}>
           <Select
             label="Program Type"

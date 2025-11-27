@@ -9,6 +9,7 @@ export const profileSchema = z.object({
   birthDate: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']),
   height: z.number().min(0).max(300).optional().or(z.literal('')),
+  target: z.enum(['maintain', 'cut', 'bulk']).optional(),
   isActive: z.boolean(),
   password: z.string().min(6, 'Password must be at least 6 characters').optional().or(z.literal('')),
   avatarUrl: z.string().url('Invalid URL').optional().or(z.literal('')),

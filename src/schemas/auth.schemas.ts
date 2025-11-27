@@ -28,6 +28,7 @@ export const registerSchema = z.object({
   }),
   role: z.enum(['user', 'trainer'], { message: 'Please select your role' }),
   height: z.number().min(50).max(300).optional(),
+  target: z.enum(['maintain', 'cut', 'bulk'], { message: 'Please select your target' }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -51,6 +52,7 @@ export const completeProfileSchema = z.object({
   }),
   role: z.enum(['user', 'trainer'], { message: 'Please select your role' }),
   height: z.number().min(50).max(300).optional(),
+  target: z.enum(['maintain', 'cut', 'bulk'], { message: 'Please select your target' }),
 });
 
 export type CompleteProfileFormData = z.infer<typeof completeProfileSchema>;

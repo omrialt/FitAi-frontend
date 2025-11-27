@@ -129,6 +129,26 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
             <Grid.Col span={{ base: 12, sm: 6 }}>
               <Controller
+                name="target"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="Fitness Goal"
+                    placeholder="Select your goal"
+                    data={[
+                      { value: 'maintain', label: 'Maintain Weight' },
+                      { value: 'cut', label: 'Cut (Lose Weight)' },
+                      { value: 'bulk', label: 'Bulk (Gain Weight)' },
+                    ]}
+                    {...field}
+                    error={errors.target?.message}
+                  />
+                )}
+              />
+            </Grid.Col>
+
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <Controller
                 name="password"
                 control={control}
                 render={({ field }) => (
