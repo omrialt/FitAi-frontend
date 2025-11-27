@@ -19,15 +19,11 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconDashboard,
-  IconSettings,
   IconSun,
   IconMoon,
   IconLogout,
   IconUser,
   IconHome,
-  IconInfoCircle,
-  IconStar,
-  IconMail,
   IconLogin,
   IconUserPlus,
   IconBarbell,
@@ -137,8 +133,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   );
 
   // Handle logout
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 

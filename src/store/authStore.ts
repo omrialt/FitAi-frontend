@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, AuthTokens } from '../types/auth.types';
+import api from '../services/api';
 
 interface AuthStore {
   user: User | null;
@@ -15,7 +16,7 @@ interface AuthStore {
   setUser: (user: User | null) => void;
   setTokens: (tokens: AuthTokens | null) => void;
   login: (user: User, tokens: AuthTokens) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
 }
 
@@ -36,11 +37,24 @@ export const useAuthStore = create<AuthStore>()(
         isAuthenticated: true 
       }),
       
-      logout: () => set({ 
-        user: null, 
-        tokens: null, 
-        isAuthenticated: false 
-      }),
+      logout: async () => {
+        try {
+          // Send logout request to backend to blacklist the token
+          await api.post('/auth/logout');
+        } catch (error) {
+          // Log error but continue with logout on client side
+          console.error('Backend logout failed:', error);
+        } finally {
+          // Always clear local auth state
+          set({ 
+            user: null, 
+            tokens: null, 
+            isAuthenticated: false 
+          });
+          // Clear axios default header
+          delete api.defaults.headers.common['Authorization'];
+        }
+      },
       
       updateUser: (userData) => set((state) => ({
         user: state.user ? { ...state.user, ...userData } : null

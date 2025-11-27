@@ -35,7 +35,7 @@ interface UseAuthReturn {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
@@ -106,9 +106,8 @@ export function useAuth(): UseAuthReturn {
   }, [navigate, setAuth]);
 
   // Logout function
-  const logout = useCallback(() => {
-    clearAuth();
-    delete api.defaults.headers.common['Authorization'];
+  const logout = useCallback(async () => {
+    await clearAuth();
     toast.info('You have been logged out');
     navigate('/login');
   }, [clearAuth, navigate]);
