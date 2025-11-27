@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import MyTrainingsPage from "./pages/MyTrainingsPage";
+import MyNutritionsPage from "./pages/MyNutritionsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import GoogleCallbackPage from "./pages/GoogleCallbackPage";
@@ -21,6 +22,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MyTrainingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/nutrition-plans"
+        element={
+          <ProtectedRoute>
+            <MyNutritionsPage />
           </ProtectedRoute>
         }
       />

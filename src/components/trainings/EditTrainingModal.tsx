@@ -19,9 +19,9 @@ import { useAuth } from "../../hooks/useAuth";
 import {
   BasicInfoSection,
   ProgramDetailsSection,
-  SharedAccessSection,
   TrainingDaysSection,
 } from "./edit-modal/index";
+import { SharedAccessSection } from "../common/SharedAccessSection";
 
 interface EditTrainingModalProps {
   opened: boolean;
@@ -313,7 +313,7 @@ export function EditTrainingModal({
               allUsers={allUsers}
               sharedAccess={sharedAccess}
               handleViewAccessChange={handleViewAccessChange}
-              handleEditAccessChange={handleViewAccessChange}
+              objectType="trainingPlan"
             />
           </Activity>
           {/* Sync checkbox - only show for owners and if not a clone */}
