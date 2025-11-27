@@ -55,4 +55,22 @@ export const nutritionPlanService = {
     const response = await api.get(`/nutrition-plans/user/${userId}/with-shared`);
     return response.data;
   },
+
+  // Add rating to a nutrition plan
+  addRating: async (planId: string, rating: number, comment?: string): Promise<NutritionPlan> => {
+    const response = await api.post(`/nutrition-plans/${planId}/ratings`, { rating, comment });
+    return response.data;
+  },
+
+  // Share nutrition plan (with access level)
+  shareWithAccess: async (
+    planId: string,
+    data: { userId: string; accessLevel: string }
+  ): Promise<NutritionPlan> => {
+    const response = await api.post(`/share/nutrition-plan`, {
+      planId,
+      ...data,
+    });
+    return response.data;
+  },
 };

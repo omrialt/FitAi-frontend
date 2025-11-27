@@ -1,15 +1,18 @@
 import { Routes, Route } from "react-router-dom";
-import DashboardPage from "./pages/DashboardPage";
-import MyTrainingsPage from "./pages/MyTrainingsPage";
-import MyNutritionsPage from "./pages/MyNutritionsPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import GoogleCallbackPage from "./pages/GoogleCallbackPage";
-import CompleteProfilePage from "./pages/CompleteProfilePage";
-import ProfilePage from "./pages/ProfilePage";
-import NotFoundPage from "./pages/NotFoundPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import AdminUsersPage from "./pages/AdminUsersPage";
+import {
+  AdminUsersPage,
+  CompleteProfilePage,
+  DashboardPage,
+  GoogleCallbackPage,
+  LoginPage,
+  MyNutritionsPage,
+  MyTrainingsPage,
+  NotFoundPage,
+  NutritionPlanDetailsPage,
+  ProfilePage,
+  RegisterPage,
+  ResetPasswordPage,
+} from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -30,6 +33,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MyNutritionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/nutrition-plans/:id"
+        element={
+          <ProtectedRoute>
+            <NutritionPlanDetailsPage />
           </ProtectedRoute>
         }
       />

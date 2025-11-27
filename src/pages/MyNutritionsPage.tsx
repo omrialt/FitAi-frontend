@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, Activity } from "react";
 import { Container, Box, Center, Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,10 @@ export default function MyNutritionsPage() {
 
   // Fetch all users once on page load
   useEffect(() => {
-    userService.findAll().then(setAllUsers).catch(() => setAllUsers([]));
+    userService
+      .findAll()
+      .then(setAllUsers)
+      .catch(() => setAllUsers([]));
   }, []);
 
   const { user } = useAuthStore();
@@ -81,9 +84,8 @@ export default function MyNutritionsPage() {
   // Modals state
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
-  const [selectedNutritionPlan, setSelectedNutritionPlan] = useState<NutritionPlan | null>(
-    null
-  );
+  const [selectedNutritionPlan, setSelectedNutritionPlan] =
+    useState<NutritionPlan | null>(null);
 
   // Refetch nutrition plans function
   const refetchNutritionPlans = useCallback(async () => {
@@ -133,13 +135,19 @@ export default function MyNutritionsPage() {
       filtered = filtered.filter((plan) => plan.target === filters.target);
     }
     if (filters.minRating !== undefined) {
-      filtered = filtered.filter((plan) => plan.averageRating >= (filters.minRating || 0));
+      filtered = filtered.filter(
+        (plan) => plan.averageRating >= (filters.minRating || 0)
+      );
     }
     if (filters.minCalories !== undefined) {
-      filtered = filtered.filter((plan) => plan.totalCalories >= (filters.minCalories || 0));
+      filtered = filtered.filter(
+        (plan) => plan.totalCalories >= (filters.minCalories || 0)
+      );
     }
     if (filters.maxCalories !== undefined) {
-      filtered = filtered.filter((plan) => plan.totalCalories <= (filters.maxCalories || Infinity));
+      filtered = filtered.filter(
+        (plan) => plan.totalCalories <= (filters.maxCalories || Infinity)
+      );
     }
 
     // Apply search
@@ -147,7 +155,9 @@ export default function MyNutritionsPage() {
       const query = debouncedSearch.toLowerCase();
       filtered = filtered.filter((plan) => {
         const titleMatch = plan.title.toLowerCase().includes(query);
-        const descriptionMatch = plan.description?.toLowerCase().includes(query);
+        const descriptionMatch = plan.description
+          ?.toLowerCase()
+          .includes(query);
 
         // Search in creator name
         let creatorMatch = false;
@@ -189,7 +199,8 @@ export default function MyNutritionsPage() {
       if (!plan) return;
 
       // Check if user has edit permission (only owner can edit)
-      const userId = typeof plan.userId === "string" ? plan.userId : plan.userId?._id;
+      const userId =
+        typeof plan.userId === "string" ? plan.userId : plan.userId?._id;
       const isOwner = userId === user?._id || user?.role === "admin";
 
       if (!isOwner) {
@@ -209,7 +220,8 @@ export default function MyNutritionsPage() {
       if (!plan) return;
 
       // Only owner can delete
-      const userId = typeof plan.userId === "string" ? plan.userId : plan.userId?._id;
+      const userId =
+        typeof plan.userId === "string" ? plan.userId : plan.userId?._id;
       const isOwner = userId === user?._id || user?.role === "admin";
 
       if (!isOwner) {
@@ -228,10 +240,13 @@ export default function MyNutritionsPage() {
       if (!selectedNutritionPlan) return;
 
       try {
-        await updateNutritionPlan(`/nutrition-plans/${selectedNutritionPlan._id}`, {
-          method: "PUT",
-          data,
-        });
+        await updateNutritionPlan(
+          `/nutrition-plans/${selectedNutritionPlan._id}`,
+          {
+            method: "PUT",
+            data,
+          }
+        );
         await refetchNutritionPlans();
         setEditModalOpened(false);
       } catch (error) {
@@ -245,9 +260,12 @@ export default function MyNutritionsPage() {
     if (!selectedNutritionPlan) return;
 
     try {
-      await deleteNutritionPlan(`/nutrition-plans/${selectedNutritionPlan._id}`, {
-        method: "DELETE",
-      });
+      await deleteNutritionPlan(
+        `/nutrition-plans/${selectedNutritionPlan._id}`,
+        {
+          method: "DELETE",
+        }
+      );
       await refetchNutritionPlans();
       setDeleteModalOpened(false);
     } catch (error) {
@@ -295,7 +313,7 @@ export default function MyNutritionsPage() {
           ) : (
             <>
               {/* Responsive View */}
-              {isMobile ? (
+              <Activity mode={isMobile ? "visible" : "hidden"}>
                 <NutritionsCardList
                   nutritionPlans={paginatedNutritionPlans}
                   isAdmin={user?.role === "admin"}
@@ -306,7 +324,9 @@ export default function MyNutritionsPage() {
                   onExportExcel={handleExportExcel}
                   onDelete={handleDelete}
                 />
-              ) : (
+              </Activity>
+
+              <Activity mode={isMobile ? "hidden" : "visible"}>
                 <NutritionsTable
                   nutritionPlans={paginatedNutritionPlans}
                   isAdmin={user?.role === "admin"}
@@ -317,7 +337,7 @@ export default function MyNutritionsPage() {
                   onExportExcel={handleExportExcel}
                   onDelete={handleDelete}
                 />
-              )}
+              </Activity>
             </>
           )}
         </Box>
