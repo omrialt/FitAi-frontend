@@ -4,7 +4,7 @@
  */
 
 import { Stack, Title, Card, Text, Avatar, Group, Box, Button, Modal, Select } from '@mantine/core';
-import { useState } from 'react';
+import { useState, Activity } from 'react';
 import { IconUser } from '@tabler/icons-react';
 import type { User } from '../../types/auth.types';
 
@@ -79,11 +79,13 @@ export function SharedWithSection({
           )}
         </Group>
 
-        {sharedAccess.length === 0 ? (
+        <Activity mode={sharedAccess.length === 0 ? "visible" : "hidden"}>
           <Text c="dimmed" size="sm" ta="center">
             {emptyMessage}
           </Text>
-        ) : (
+        </Activity>
+
+        <Activity mode={sharedAccess.length > 0 ? "visible" : "hidden"}>
           <Stack gap="sm">
             {sharedAccess.map((entry, index) => {
               const user = getUserDetails(entry.userId);
@@ -121,10 +123,10 @@ export function SharedWithSection({
               );
             })}
           </Stack>
-        )}
+        </Activity>
       </Stack>
 
-      {showActions && (
+      <Activity mode={showActions ? "visible" : "hidden"}>
         <Modal
           opened={modalOpened}
           onClose={() => setModalOpened(false)}
@@ -172,7 +174,7 @@ export function SharedWithSection({
             </Group>
           </Stack>
         </Modal>
-      )}
+      </Activity>
     </>
   );
 }

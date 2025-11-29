@@ -3,6 +3,7 @@
  */
 
 import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantine/core';
+import { Activity } from 'react';
 import type { TrainingDay, Exercise } from '../../../types/training-plan.types';
 import { ExerciseCard } from './ExerciseCard';
 
@@ -19,11 +20,13 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
     <Stack gap="lg" mb="xl">
       <Title order={2}>Training Days</Title>
 
-      {days.length === 0 ? (
+      <Activity mode={days.length === 0 ? "visible" : "hidden"}>
         <Text c="dimmed" size="sm" ta="center">
           No training days added to this plan yet
         </Text>
-      ) : (
+      </Activity>
+
+      <Activity mode={days.length > 0 ? "visible" : "hidden"}>
         <Accordion variant="contained" defaultValue={`day-0`}>
           {days.map((day, dayIndex) => {
             const dayName = dayNames[day.dayOfWeek] || `Day ${day.dayOfWeek}`;
@@ -48,11 +51,13 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
                   </Group>
                 </Accordion.Control>
                 <Accordion.Panel>
-                  {day.exercises.length === 0 ? (
+                  <Activity mode={day.exercises.length === 0 ? "visible" : "hidden"}>
                     <Text c="dimmed" size="sm" ta="center" py="md">
                       No exercises added yet
                     </Text>
-                  ) : (
+                  </Activity>
+
+                  <Activity mode={day.exercises.length > 0 ? "visible" : "hidden"}>
                     <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
                       {day.exercises.map((exercise, exIndex) => (
                         <ExerciseCard
@@ -64,13 +69,13 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
                         />
                       ))}
                     </SimpleGrid>
-                  )}
+                  </Activity>
                 </Accordion.Panel>
               </Accordion.Item>
             );
           })}
         </Accordion>
-      )}
+      </Activity>
     </Stack>
   );
 }

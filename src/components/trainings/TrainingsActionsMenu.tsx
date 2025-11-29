@@ -4,6 +4,8 @@
 
 'use client';
 
+import { Activity } from 'react';
+
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
 import {
@@ -103,18 +105,16 @@ export function TrainingsActionsMenu({
           </DropdownMenu.Sub>
 
           {/* Delete - only for admin or owner */}
-          {onDelete && canDelete && (
-            <>
-              <DropdownMenu.Separator className="dropdown-menu-separator" />
-              <DropdownMenu.Item
-                className="dropdown-menu-item dropdown-menu-item-danger"
-                onSelect={() => onDelete(training._id)}
-              >
-                <IconTrash size={16} />
-                <span>Delete</span>
-              </DropdownMenu.Item>
-            </>
-          )}
+          <Activity mode={onDelete && canDelete ? "visible" : "hidden"}>
+            <DropdownMenu.Separator className="dropdown-menu-separator" />
+            <DropdownMenu.Item
+              className="dropdown-menu-item dropdown-menu-item-danger"
+              onSelect={() => onDelete && onDelete(training._id)}
+            >
+              <IconTrash size={16} />
+              <span>Delete</span>
+            </DropdownMenu.Item>
+          </Activity>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

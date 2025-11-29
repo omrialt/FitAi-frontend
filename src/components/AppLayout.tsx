@@ -1,5 +1,5 @@
 // React 19: No forwardRef needed - refs work directly on components
-import { useMemo } from 'react';
+import { useMemo, Activity } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppShell,
@@ -191,17 +191,19 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Tooltip>
 
             {/* Conditional User Menu - only show when authenticated */}
-            {isAuthenticated && user ? (
+            <Activity mode={isAuthenticated && !!user ? "visible" : "hidden"}>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <UnstyledButton className="user-button">
                     <Group gap="xs">
-                      <Avatar color="indigo" radius="xl" size="md" src={user.avatarUrl}>
-                        {!user.avatarUrl && <IconUser size={18} />}
+                      <Avatar color="indigo" radius="xl" size="md" src={user?.avatarUrl}>
+                        <Activity mode={!user?.avatarUrl ? "visible" : "hidden"}>
+                          <IconUser size={18} />
+                        </Activity>
                       </Avatar>
                       <Box visibleFrom="sm">
                         <Text size="sm" fw={500}>
-                          {user.fullName}
+                          {user?.fullName}
                         </Text>
                       </Box>
                     </Group>
@@ -223,7 +225,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </DropdownMenu.Content>
                 </DropdownMenu.Portal>
               </DropdownMenu.Root>
-            ) : (
+            </Activity>
+            <Activity mode={!isAuthenticated || !user ? "visible" : "hidden"}>
               <Group gap="xs">
                 <UnstyledButton className="header-link" onClick={() => navigate('/login')}>
                   <Text size="sm" fw={500}>Login</Text>
@@ -238,7 +241,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <IconUserPlus size={18} />
                 </ActionIcon>
               </Group>
-            )}
+            </Activity>
           </Group>
         </Group>
       </AppShell.Header>
@@ -269,11 +272,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           <AppShell.Section>
             <Box className="navbar-footer">
-              {isAuthenticated && user && (
+              <Activity mode={isAuthenticated && !!user ? "visible" : "hidden"}>
                 <Text size="xs" c="dimmed" ta="center" mb="xs">
-                  Role: {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  Role: {user?.role.charAt(0).toUpperCase()}{user?.role.slice(1)}
                 </Text>
-              )}
+              </Activity>
               <Text size="xs" c="dimmed" ta="center">
                 v1.0.0
               </Text>

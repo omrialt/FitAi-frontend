@@ -2,6 +2,8 @@
  * MealSection - Display meals grouped by meal type with food details
  */
 
+import { Activity } from 'react';
+
 import { Stack, Title, Card, Text, Group, Badge, Table, Box, SimpleGrid } from '@mantine/core';
 import type { Meal, MealType } from '../../../types/nutrition.types';
 
@@ -61,7 +63,7 @@ export function MealSection({ meals }: MealSectionProps) {
                 </Group>
               </Group>
 
-              {meal.foods.length > 0 ? (
+              <Activity mode={meal.foods.length > 0 ? "visible" : "hidden"}>
                 <Box style={{ overflowX: 'auto' }}>
                   <Table striped highlightOnHover>
                     <Table.Thead>
@@ -94,21 +96,22 @@ export function MealSection({ meals }: MealSectionProps) {
                     </Table.Tbody>
                   </Table>
                 </Box>
-              ) : (
+              </Activity>
+              <Activity mode={meal.foods.length === 0 ? "visible" : "hidden"}>
                 <Text c="dimmed" size="sm">
                   No foods added yet
                 </Text>
-              )}
+              </Activity>
             </Card>
           );
         })}
       </SimpleGrid>
 
-      {meals.length === 0 && (
+      <Activity mode={meals.length === 0 ? "visible" : "hidden"}>
         <Text c="dimmed" size="sm" ta="center">
           No meals added to this plan yet
         </Text>
-      )}
+      </Activity>
     </Stack>
   );
 }

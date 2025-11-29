@@ -1,3 +1,4 @@
+import { Activity } from 'react';
 import { TextInput, Textarea, Select, Grid, NumberInput } from '@mantine/core';
 import type { Difficulty, Target, ProgramType } from '../../../types/training-plan.types';
 
@@ -110,7 +111,7 @@ export function BasicInfoSection({
           />
         </Grid.Col>
 
-        {programType === 'rotation' && (
+        <Activity mode={programType === 'rotation' ? "visible" : "hidden"}>
           <Grid.Col span={4}>
             <NumberInput
               label="Rotation Cycle Length"
@@ -119,7 +120,7 @@ export function BasicInfoSection({
               onChange={(value) => setRotationCycleLength(typeof value === 'number' ? value : undefined)}
             />
           </Grid.Col>
-        )}
+        </Activity>
       </Grid>
     </>
   );

@@ -4,7 +4,7 @@
 
 import { Card, Text, Group, Badge, Table, Box, Button } from '@mantine/core';
 import { IconVideo, IconHistory, IconPlus } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useState, Activity } from 'react';
 import type { Exercise, WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryModal } from './SetHistoryModal';
 
@@ -97,13 +97,13 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
         )}
       </Group>
 
-      {exercise.notes && (
+      <Activity mode={exercise.notes ? "visible" : "hidden"}>
         <Text size="sm" c="dimmed" mb="sm">
           📝 {exercise.notes}
         </Text>
-      )}
+      </Activity>
 
-      {exercise.sets.length > 0 ? (
+      <Activity mode={exercise.sets.length > 0 ? "visible" : "hidden"}>
         <Box style={{ overflowX: 'auto' }}>
           <Table striped highlightOnHover>
             <Table.Thead>
@@ -144,24 +144,28 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
             </Table.Tbody>
           </Table>
         </Box>
-      ) : (
+      </Activity>
+
+      <Activity mode={exercise.sets.length === 0 ? "visible" : "hidden"}>
         <Text c="dimmed" size="sm">
           No sets defined
         </Text>
-      )}
+      </Activity>
 
-      {selectedSetIndex !== null && (
-        <SetHistoryModal
-          opened={historyModalOpened}
-          onClose={closeHistoryModal}
-          history={exercise.sets[selectedSetIndex]?.history || []}
-          onHistoryChange={handleHistoryChange}
-          setNumber={selectedSetIndex + 1}
-          exerciseName={exercise.name}
-          targetWeight={exercise.sets[selectedSetIndex]?.targetWeight || 0}
-          targetReps={exercise.sets[selectedSetIndex]?.targetReps || 0}
-        />
-      )}
+      <Activity mode={selectedSetIndex !== null ? "visible" : "hidden"}>
+        {selectedSetIndex !== null && (
+          <SetHistoryModal
+            opened={historyModalOpened}
+            onClose={closeHistoryModal}
+            history={exercise.sets[selectedSetIndex]?.history || []}
+            onHistoryChange={handleHistoryChange}
+            setNumber={selectedSetIndex + 1}
+            exerciseName={exercise.name}
+            targetWeight={exercise.sets[selectedSetIndex]?.targetWeight || 0}
+            targetReps={exercise.sets[selectedSetIndex]?.targetReps || 0}
+          />
+        )}
+      </Activity>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Activity } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Paper,
@@ -117,13 +117,17 @@ function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                 />
-                {formError && <Text c="red" size="sm">{formError}</Text>}
-                {error && <Text c="red" size="sm">{error.message}</Text>}
-                {loading && (
+                <Activity mode={formError ? "visible" : "hidden"}>
+                  <Text c="red" size="sm">{formError}</Text>
+                </Activity>
+                <Activity mode={error ? "visible" : "hidden"}>
+                  <Text c="red" size="sm">{error && error.message}</Text>
+                </Activity>
+                <Activity mode={loading ? "visible" : "hidden"}>
                   <Group justify="center">
                     <Loader size="sm" />
                   </Group>
-                )}
+                </Activity>
                 <Button
                   type="submit"
                   fullWidth

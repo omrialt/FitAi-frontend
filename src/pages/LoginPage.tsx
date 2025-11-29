@@ -175,11 +175,11 @@ function LoginPage() {
                     onChange={(e) => setResetEmail(e.target.value)}
                     error={resetError?.message}
                   />
-                  {resetLoading && (
+                  <Activity mode={resetLoading ? "visible" : "hidden"}>
                     <Group justify="center">
                       <Loader size="sm" />
                     </Group>
-                  )}
+                  </Activity>
                   <Button
                     type="submit"
                     fullWidth

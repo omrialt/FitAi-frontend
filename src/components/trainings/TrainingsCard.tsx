@@ -4,6 +4,8 @@
 
 'use client';
 
+import { Activity } from 'react';
+
 import { Card, Text, Badge, Group, Stack, Button } from '@mantine/core';
 import {
   IconEye,
@@ -86,23 +88,23 @@ export function TrainingsCard({
             <Text size="sm">{training.days?.length || 0}</Text>
           </Group>
 
-          {training.focus && (
+          <Activity mode={training.focus ? "visible" : "hidden"}>
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
                 Focus:
               </Text>
               <Text size="sm">{training.focus}</Text>
             </Group>
-          )}
+          </Activity>
 
-          {training.estimatedDuration && (
+          <Activity mode={training.estimatedDuration ? "visible" : "hidden"}>
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
                 Duration:
               </Text>
               <Text size="sm">{training.estimatedDuration} min</Text>
             </Group>
-          )}
+          </Activity>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">

@@ -15,7 +15,7 @@ import {
   Select,
   Text,
 } from "@mantine/core";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Activity } from "react";
 import type {
   NutritionPlan,
   Meal,
@@ -261,14 +261,14 @@ export function EditNutritionModal({
         />
 
         {/* Shared Access Section */}
-        {canShowSharedAccess && (
+        <Activity mode={canShowSharedAccess ? "visible" : "hidden"}>
           <SharedAccessSection
             allUsers={allUsers}
             sharedAccess={sharedAccess}
             handleViewAccessChange={handleViewAccessChange}
             objectType="nutritionPlan"
           />
-        )}
+        </Activity>
 
         {/* Meals Section */}
         <MealsSection

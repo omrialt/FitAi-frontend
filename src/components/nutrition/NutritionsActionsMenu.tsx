@@ -4,6 +4,8 @@
 
 'use client';
 
+import { Activity } from 'react';
+
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
 import {
@@ -64,7 +66,7 @@ export function NutritionsActionsMenu({
           </DropdownMenu.Item>
 
           {/* Edit - only for owner */}
-          {isOwner && (
+          <Activity mode={isOwner ? "visible" : "hidden"}>
             <DropdownMenu.Item
               className="dropdown-menu-item"
               onSelect={() => onEdit(nutritionPlan._id)}
@@ -72,7 +74,7 @@ export function NutritionsActionsMenu({
               <IconEdit size={16} />
               <span>Edit</span>
             </DropdownMenu.Item>
-          )}
+          </Activity>
 
           <DropdownMenu.Separator className="dropdown-menu-separator" />
 
@@ -107,18 +109,16 @@ export function NutritionsActionsMenu({
           </DropdownMenu.Sub>
 
           {/* Delete - only for owner */}
-          {onDelete && isOwner && (
-            <>
-              <DropdownMenu.Separator className="dropdown-menu-separator" />
-              <DropdownMenu.Item
-                className="dropdown-menu-item dropdown-menu-item-danger"
-                onSelect={() => onDelete(nutritionPlan._id)}
-              >
-                <IconTrash size={16} />
-                <span>Delete</span>
-              </DropdownMenu.Item>
-            </>
-          )}
+          <Activity mode={onDelete && isOwner ? "visible" : "hidden"}>
+            <DropdownMenu.Separator className="dropdown-menu-separator" />
+            <DropdownMenu.Item
+              className="dropdown-menu-item dropdown-menu-item-danger"
+              onSelect={() => onDelete && onDelete(nutritionPlan._id)}
+            >
+              <IconTrash size={16} />
+              <span>Delete</span>
+            </DropdownMenu.Item>
+          </Activity>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
