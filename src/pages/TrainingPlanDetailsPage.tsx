@@ -252,16 +252,16 @@ export default function TrainingPlanDetailsPage() {
         </Activity>
 
         {/* Edit Modal */}
-        {plan && (
+        <Activity mode={plan ? "visible" : "hidden"}>
           <EditTrainingModal
             opened={editModalOpened}
             onClose={() => setEditModalOpened(false)}
-            training={plan}
+            training={plan!}
             onSave={handleEditPlan}
             createMode={false}
             allUsers={allUsers}
           />
-        )}
+        </Activity>
 
         {/* Video Modal */}
         <VideoModal
