@@ -132,6 +132,35 @@ export default function TrainingPlanDetailsPage() {
     setVideoModalOpened(true);
   };
 
+  // Handle exercise update (for history changes)
+  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: any) => {
+    if (!plan || !id) return;
+
+    // Create updated days array
+    const updatedDays = [...plan.days];
+    updatedDays[dayIndex] = {
+      ...updatedDays[dayIndex],
+      exercises: [
+        ...updatedDays[dayIndex].exercises.slice(0, exerciseIndex),
+        updatedExercise,
+        ...updatedDays[dayIndex].exercises.slice(exerciseIndex + 1),
+      ],
+    };
+
+    try {
+      const updated = await updatePlan(`/training-plans/${id}`, {
+        method: 'PUT',
+        data: { days: updatedDays },
+      });
+      if (updated?.data) {
+        setPlan(updated.data);
+        toast.success('Exercise history updated successfully');
+      }
+    } catch {
+      toast.error('Failed to update exercise history');
+    }
+  };
+
   // Export handlers
   const handleExportPDF = () => {
     if (plan) {
@@ -205,7 +234,11 @@ export default function TrainingPlanDetailsPage() {
         />
 
         {/* Days Section */}
-        <DaysSection days={plan.days} onVideoClick={handleVideoClick} />
+        <DaysSection 
+          days={plan.days} 
+          onVideoClick={handleVideoClick}
+          onExerciseUpdate={canEdit ? handleExerciseUpdate : undefined}
+        />
 
         {/* Shared With Section (Trainer Only) */}
         <Activity mode={canViewShared ? "visible" : "hidden"}>

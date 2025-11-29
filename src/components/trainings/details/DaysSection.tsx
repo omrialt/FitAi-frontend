@@ -3,17 +3,18 @@
  */
 
 import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantine/core';
-import type { TrainingDay } from '../../../types/training-plan.types';
+import type { TrainingDay, Exercise } from '../../../types/training-plan.types';
 import { ExerciseCard } from './ExerciseCard';
 
 interface DaysSectionProps {
   days: TrainingDay[];
   onVideoClick: (videoUrl: string) => void;
+  onExerciseUpdate?: (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => void;
 }
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
+export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectionProps) {
   return (
     <Stack gap="lg" mb="xl">
       <Title order={2}>Training Days</Title>
@@ -59,6 +60,7 @@ export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
                           exercise={exercise}
                           exerciseNumber={exIndex + 1}
                           onVideoClick={onVideoClick}
+                          onExerciseUpdate={onExerciseUpdate ? (updatedExercise) => onExerciseUpdate(dayIndex, exIndex, updatedExercise) : undefined}
                         />
                       ))}
                     </SimpleGrid>
