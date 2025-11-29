@@ -66,6 +66,20 @@ export function NutritionsCard({
   onExportExcel,
   onDelete,
 }: NutritionsCardProps) {
+  // Calculate total macros from all foods in all meals
+  const totalProtein = nutritionPlan.meals?.reduce(
+    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.protein || 0), 0),
+    0
+  ) || 0;
+  const totalCarbs = nutritionPlan.meals?.reduce(
+    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.carbs || 0), 0),
+    0
+  ) || 0;
+  const totalFats = nutritionPlan.meals?.reduce(
+    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.fat || 0), 0),
+    0
+  ) || 0;
+
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder>
       <Stack gap="sm">
@@ -98,6 +112,19 @@ export function NutritionsCard({
           <IconFlame size={16} style={{ color: '#FF6B35' }} />
           <Text size="sm" fw={500}>
             {nutritionPlan.totalCalories} kcal
+          </Text>
+        </Group>
+
+        {/* Macros */}
+        <Group gap="md">
+          <Text size="xs" c="dimmed">
+            Protein: <Text component="span" fw={500} c="dark">{totalProtein.toFixed(0)}g</Text>
+          </Text>
+          <Text size="xs" c="dimmed">
+            Carbs: <Text component="span" fw={500} c="dark">{totalCarbs.toFixed(0)}g</Text>
+          </Text>
+          <Text size="xs" c="dimmed">
+            Fats: <Text component="span" fw={500} c="dark">{totalFats.toFixed(0)}g</Text>
           </Text>
         </Group>
 

@@ -1,5 +1,8 @@
 import { Accordion, Stack, Grid, TextInput, Select, ActionIcon, Group, Text, Button } from '@mantine/core';
-import { IconTrash, IconPlus } from '@tabler/icons-react';
+import { IconTrash, IconPlus, IconCopy } from '@tabler/icons-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { TrainingDay } from '../../../types/training-plan.types';
 import { ExerciseItem } from './ExerciseItem';
 
@@ -7,6 +10,7 @@ interface TrainingDayItemProps {
   day: TrainingDay;
   dayIndex: number;
   onRemove: () => void;
+  onDuplicate: () => void;
   onUpdate: (updates: Partial<TrainingDay>) => void;
   addExercise: (dayIndex: number) => void;
   removeExercise: (dayIndex: number, exerciseIndex: number) => void;
@@ -20,6 +24,7 @@ export function TrainingDayItem({
   day, 
   dayIndex, 
   onRemove, 
+  onDuplicate, 
   onUpdate, 
   addExercise,
   removeExercise,
@@ -28,6 +33,28 @@ export function TrainingDayItem({
   removeSet,
   updateSet
 }: TrainingDayItemProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = day.exercises.findIndex((_, i) => `exercise-${dayIndex}-${i}` === active.id);
+      const newIndex = day.exercises.findIndex((_, i) => `exercise-${dayIndex}-${i}` === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newExercises = arrayMove(day.exercises, oldIndex, newIndex);
+        onUpdate({ exercises: newExercises });
+      }
+    }
+  };
+
+  const exerciseIds = day.exercises.map((_, index) => `exercise-${dayIndex}-${index}`);
 
   return (
     <Accordion.Item value={`day-${dayIndex}`}>
@@ -65,9 +92,14 @@ export function TrainingDayItem({
               />
             </Grid.Col>
             <Grid.Col span={{ base: 12, sm: 1 }}>
-              <ActionIcon color="red" variant="light" onClick={onRemove} mt={20}>
-                <IconTrash size={16} />
-              </ActionIcon>
+              <Group gap="xs" mt={20}>
+                <ActionIcon color="blue" variant="light" onClick={onDuplicate}>
+                  <IconCopy size={16} />
+                </ActionIcon>
+                <ActionIcon color="red" variant="light" onClick={onRemove}>
+                  <IconTrash size={16} />
+                </ActionIcon>
+              </Group>
             </Grid.Col>
           </Grid>
 
@@ -78,19 +110,28 @@ export function TrainingDayItem({
             </Button>
           </Group>
 
-          {day.exercises.map((exercise, exIndex) => (
-            <ExerciseItem
-              key={exIndex}
-              exercise={exercise}
-              exerciseIndex={exIndex}
-              dayIndex={dayIndex}
-              onRemove={() => removeExercise(dayIndex, exIndex)}
-              updateExerciseField={updateExerciseField}
-              addSet={addSet}
-              removeSet={removeSet}
-              updateSet={updateSet}
-            />
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={exerciseIds} strategy={verticalListSortingStrategy}>
+              {day.exercises.map((exercise, exIndex) => (
+                <ExerciseItem
+                  key={`exercise-${dayIndex}-${exIndex}`}
+                  id={`exercise-${dayIndex}-${exIndex}`}
+                  exercise={exercise}
+                  exerciseIndex={exIndex}
+                  dayIndex={dayIndex}
+                  onRemove={() => removeExercise(dayIndex, exIndex)}
+                  updateExerciseField={updateExerciseField}
+                  addSet={addSet}
+                  removeSet={removeSet}
+                  updateSet={updateSet}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         </Stack>
       </Accordion.Panel>
     </Accordion.Item>

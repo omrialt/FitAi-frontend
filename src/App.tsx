@@ -12,6 +12,7 @@ import {
   ProfilePage,
   RegisterPage,
   ResetPasswordPage,
+  TrainingPlanDetailsPage,
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 
@@ -25,6 +26,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MyTrainingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/training-plans/:id"
+        element={
+          <ProtectedRoute>
+            <TrainingPlanDetailsPage />
           </ProtectedRoute>
         }
       />

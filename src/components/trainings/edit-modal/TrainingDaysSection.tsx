@@ -7,6 +7,7 @@ interface TrainingDaysSectionProps {
   localDays: TrainingDay[];
   addDay: () => void;
   removeDay: (index: number) => void;
+  duplicateDay: (index: number) => void;
   updateDay: (index: number, updates: Partial<TrainingDay>) => void;
   addExercise: (dayIndex: number) => void;
   removeExercise: (dayIndex: number, exerciseIndex: number) => void;
@@ -20,6 +21,7 @@ export function TrainingDaysSection({
   localDays,
   addDay,
   removeDay,
+  duplicateDay,
   updateDay,
   addExercise,
   removeExercise,
@@ -45,6 +47,7 @@ export function TrainingDaysSection({
             day={day}
             dayIndex={dayIndex}
             onRemove={() => removeDay(dayIndex)}
+            onDuplicate={() => duplicateDay(dayIndex)}
             onUpdate={(updates: Partial<TrainingDay>) => updateDay(dayIndex, updates)}
             addExercise={addExercise}
             removeExercise={removeExercise}

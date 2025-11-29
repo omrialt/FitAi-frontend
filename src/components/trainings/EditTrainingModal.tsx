@@ -143,6 +143,14 @@ export function EditTrainingModal({
     setLocalDays(newDays);
   };
 
+  const duplicateDay = (index: number) => {
+    const newDays = [...localDays];
+    const dayToDuplicate = JSON.parse(JSON.stringify(newDays[index]));
+    dayToDuplicate.dayName = `${dayToDuplicate.dayName} (Copy)`;
+    newDays.splice(index + 1, 0, dayToDuplicate);
+    setLocalDays(newDays);
+  };
+
   const updateDay = (index: number, updates: Partial<TrainingDay>) => {
     const newDays = [...localDays];
     newDays[index] = { ...newDays[index], ...updates };
@@ -329,6 +337,7 @@ export function EditTrainingModal({
             localDays={localDays}
             addDay={addDay}
             removeDay={removeDay}
+            duplicateDay={duplicateDay}
             updateDay={updateDay}
             addExercise={addExercise}
             removeExercise={removeExercise}
