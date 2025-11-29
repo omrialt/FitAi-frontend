@@ -8,6 +8,7 @@ import { Container, Box, Center, Loader, Alert, Button } from '@mantine/core';
 import { IconAlertCircle, IconArrowLeft } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { AppLayout } from '../components/AppLayout';
+import { AppBreadcrumbs } from '../components/common/AppBreadcrumbs';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
 import userService from '../services/user.service';
@@ -198,6 +199,15 @@ export default function NutritionPlanDetailsPage() {
   return (
     <AppLayout>
       <Container size="xl" py="xl">
+        {/* Breadcrumbs */}
+        <AppBreadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Nutrition Plans', href: '/nutrition-plans' },
+            { label: plan.title },
+          ]}
+        />
+
         <Box mb="lg">
           <Button
             variant="subtle"
