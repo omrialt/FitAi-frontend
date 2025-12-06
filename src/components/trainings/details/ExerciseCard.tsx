@@ -111,7 +111,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
                 <Table.Th>Set</Table.Th>
                 <Table.Th>Target Reps</Table.Th>
                 <Table.Th>Target Weight</Table.Th>
-                <Table.Th>History</Table.Th>
+                <Table.Th>Sets History</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>

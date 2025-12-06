@@ -11,6 +11,7 @@ export { default as MyNutritionsPage } from './MyNutritionsPage';
 export { default as MyTrainingsPage } from './MyTrainingsPage';
 export { default as NotFoundPage } from './NotFoundPage';
 export { default as NutritionPlanDetailsPage } from './NutritionPlanDetailsPage';
+export { default as PhysicalDataPage } from './PhysicalDataPage';
 export { default as ProfilePage } from './ProfilePage';
 export { default as TrainingPlanDetailsPage } from './TrainingPlanDetailsPage';
 export { default as RegisterPage } from './RegisterPage';

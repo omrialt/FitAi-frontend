@@ -13,6 +13,7 @@ import {
   RegisterPage,
   ResetPasswordPage,
   TrainingPlanDetailsPage,
+  PhysicalDataPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 
@@ -87,6 +88,16 @@ function App() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Physical Data Page - requires authentication */}
+      <Route
+        path="/physical-data"
+        element={
+          <ProtectedRoute>
+            <PhysicalDataPage />
           </ProtectedRoute>
         }
       />
