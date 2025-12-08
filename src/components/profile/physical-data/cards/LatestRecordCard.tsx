@@ -14,6 +14,14 @@ import {
 } from '@tabler/icons-react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatDate, calcImprovement } from '../helpers/calcImprovement';
+import { MetricInfoTooltip } from './MetricInfoTooltip';
+import { 
+  calculateBMIRanges, 
+  calculateWeightRanges, 
+  calculateBodyFatRanges,
+  calculateAge
+} from '../helpers/calcRanges';
+import { useAuth } from '../../../../hooks/useAuth';
 
 interface LatestRecordCardProps {
   record: PhysicalData;
@@ -22,20 +30,31 @@ interface LatestRecordCardProps {
 }
 
 export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCardProps) {
-  const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg);
-  const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent);
-  const chestImprovement = calcImprovement(record.measurements?.chest, previousRecord?.measurements?.chest);
-  const waistImprovement = calcImprovement(record.measurements?.waist, previousRecord?.measurements?.waist);
-  const hipsImprovement = calcImprovement(record.measurements?.hips, previousRecord?.measurements?.hips);
-  const armsImprovement = calcImprovement(record.measurements?.arms, previousRecord?.measurements?.arms);
-  const legsImprovement = calcImprovement(record.measurements?.legs, previousRecord?.measurements?.legs);
+  const { user } = useAuth();
+  
+  const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg, true);
+  const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent, true);
+  const chestImprovement = calcImprovement(record.measurements?.chest, previousRecord?.measurements?.chest, false);
+  const waistImprovement = calcImprovement(record.measurements?.waist, previousRecord?.measurements?.waist, true);
+  const hipsImprovement = calcImprovement(record.measurements?.hips, previousRecord?.measurements?.hips, true);
+  const armsImprovement = calcImprovement(record.measurements?.arms, previousRecord?.measurements?.arms, false);
+  const legsImprovement = calcImprovement(record.measurements?.legs, previousRecord?.measurements?.legs, false);
 
   // Calculate BMI for previous record if available
   const previousBmi = previousRecord 
     ? previousRecord.weightKg / Math.pow(previousRecord.heightCm / 100, 2)
     : undefined;
   const currentBmi = bmi?.bmi;
-  const bmiImprovement = currentBmi && previousBmi ? calcImprovement(currentBmi, previousBmi) : '—';
+  const bmiImprovement = currentBmi && previousBmi ? calcImprovement(currentBmi, previousBmi, true) : '—';
+
+  // Get user metrics for range calculations
+  const userAge = user?.birthDate ? calculateAge(user.birthDate) : 30;
+  const userGender = user?.gender || 'male';
+  
+  // Calculate ranges
+  const bmiRanges = calculateBMIRanges();
+  const weightRanges = calculateWeightRanges(record.heightCm);
+  const bodyFatRanges = calculateBodyFatRanges(userGender, userAge);
 
   const calculateAbsoluteChange = (current: number | undefined, previous: number | undefined): string => {
     if (!current || !previous) return '—';
@@ -102,6 +121,14 @@ export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCa
             <Group gap="xs">
               <IconScale size={20} style={{ color: 'var(--mantine-color-green-6)' }} />
               <Text size="sm" c="dimmed">Weight</Text>
+              <MetricInfoTooltip
+                metricName="Weight"
+                explanation={weightRanges.explanation}
+                ranges={weightRanges.ranges}
+                userValue={record.weightKg}
+                unit=" kg"
+                iconColor="var(--mantine-color-green-6)"
+              />
             </Group>
             <Text size="xl" fw={700}>
               {record.weightKg} kg
@@ -114,6 +141,14 @@ export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCa
               <Group gap="xs">
                 <IconDroplet size={20} style={{ color: 'var(--mantine-color-orange-6)' }} />
                 <Text size="sm" c="dimmed">Body Fat</Text>
+                <MetricInfoTooltip
+                  metricName="Body Fat %"
+                  explanation={bodyFatRanges.explanation}
+                  ranges={bodyFatRanges.ranges}
+                  userValue={record.bodyFatPercent || 0}
+                  unit="%"
+                  iconColor="var(--mantine-color-orange-6)"
+                />
               </Group>
               <Text size="xl" fw={700}>
                 {record.bodyFatPercent}%
@@ -128,6 +163,14 @@ export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCa
                 <Group gap="xs">
                   <IconUserCircle size={20} style={{ color: 'var(--mantine-color-violet-6)' }} />
                   <Text size="sm" c="dimmed">BMI</Text>
+                  <MetricInfoTooltip
+                    metricName="BMI"
+                    explanation={bmiRanges.explanation}
+                    ranges={bmiRanges.ranges}
+                    userValue={bmi.bmi}
+                    unit=""
+                    iconColor="var(--mantine-color-violet-6)"
+                  />
                 </Group>
                 <Text size="xl" fw={700}>
                   {bmi.bmi.toFixed(1)}

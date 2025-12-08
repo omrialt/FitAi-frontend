@@ -1,8 +1,16 @@
 /**
  * Helper function to calculate improvement percentage between measurements
+ * @param current - Current measurement value
+ * @param previous - Previous measurement value
+ * @param lowerIsBetter - If true, decrease shows as positive (for weight, body fat, etc.)
+ *                        If false, increase shows as positive (for arms, legs, chest, etc.)
  */
 
-export function calcImprovement(current: number | undefined, previous: number | undefined): string {
+export function calcImprovement(
+  current: number | undefined, 
+  previous: number | undefined,
+  lowerIsBetter: boolean = true
+): string {
   // Return em dash if this is the first record or values are missing
   if (!previous || !current) {
     return '—';
@@ -13,8 +21,12 @@ export function calcImprovement(current: number | undefined, previous: number | 
     return '—';
   }
 
-  // Calculate percentage change: (previous - current) / previous * 100
-  const improvement = ((previous - current) / previous) * 100;
+  // Calculate percentage change
+  // If lowerIsBetter=true: (previous - current) / previous * 100 (decrease is positive)
+  // If lowerIsBetter=false: (current - previous) / previous * 100 (increase is positive)
+  const improvement = lowerIsBetter 
+    ? ((previous - current) / previous) * 100
+    : ((current - previous) / previous) * 100;
 
   // Format with sign and 2 decimal places
   const formatted = improvement.toFixed(2);

@@ -58,8 +58,8 @@ export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableP
                 const previousRecord = index < sortedData.length - 1 ? sortedData[index + 1] : null;
                 
                 // Calculate improvements
-                const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg);
-                const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent);
+                const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg, true);
+                const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent, true);
 
                 return (
                   <Table.Tr key={record._id}>
