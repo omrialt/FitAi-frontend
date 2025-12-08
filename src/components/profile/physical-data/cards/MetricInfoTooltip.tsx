@@ -29,12 +29,18 @@ export function MetricInfoTooltip({
 
   return (
     <Popover
-      width={480}
+      width={320}
       position="bottom"
       withArrow
       shadow="lg"
       opened={opened}
       onChange={setOpened}
+      withinPortal
+      styles={{
+        dropdown: {
+          maxWidth: '95vw',
+        }
+      }}
     >
       <Popover.Target>
         <ActionIcon
@@ -49,15 +55,15 @@ export function MetricInfoTooltip({
       </Popover.Target>
 
       <Popover.Dropdown>
-        <Paper p="lg">
-          <Stack gap="lg">
+        <Paper p="md">
+          <Stack gap="md">
             {/* Metric name */}
             <Text size="lg" fw={700}>
               {metricName}
             </Text>
 
             {/* Explanation */}
-            <Text size="sm" c="dimmed">
+            <Text size="sm" c="dimmed" style={{ fontSize: '13px' }}>
               {explanation}
             </Text>
 

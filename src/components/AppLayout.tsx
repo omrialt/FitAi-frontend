@@ -396,8 +396,8 @@ export function AppLayout({ children }: AppLayoutProps) {
       </AppShell.Header>
 
       {/* Navbar */}
-      <AppShell.Navbar p="md">
-        <AppShell.Section grow component={ScrollArea}>
+      <AppShell.Navbar p="md" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <AppShell.Section grow component={ScrollArea} style={{ flex: 1 }}>
           <Stack gap="xs">
             {navigationItems.map((item) => {
               const isActive = location.pathname === item.path;

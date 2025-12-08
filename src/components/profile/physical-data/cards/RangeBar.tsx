@@ -36,21 +36,22 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
       {/* Range labels with numbers */}
       <Stack gap="xs">
         {segmentsWithWidth.map((segment, index) => (
-          <Group key={index} justify="space-between" gap="xs">
-            <Group gap="xs">
+          <Group key={index} justify="space-between" gap="xs" wrap="nowrap">
+            <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
               <Box
                 style={{
-                  width: 16,
-                  height: 16,
+                  width: 14,
+                  height: 14,
                   backgroundColor: segment.color,
                   borderRadius: 4,
+                  flexShrink: 0,
                 }}
               />
-              <Text size="sm" fw={500}>
+              <Text size="sm" fw={500} style={{ fontSize: '12px' }}>
                 {segment.label}
               </Text>
             </Group>
-            <Text size="sm" c="dimmed" fw={500}>
+            <Text size="sm" c="dimmed" fw={500} style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>
               {segment.min.toFixed(1)}{unit} - {index === segmentsWithWidth.length - 1 ? segment.max.toFixed(1) + '+' : segment.max.toFixed(1)}{unit}
             </Text>
           </Group>
@@ -59,7 +60,7 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
 
       {/* Range bar with segments */}
       <Box style={{ position: 'relative', height: 50 }}>
-        <Group gap={0} style={{ height: 40, borderRadius: 6, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <Group gap={0} style={{ height: 35, borderRadius: 6, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
           {segmentsWithWidth.map((segment, index) => (
             <Box
               key={index}
@@ -72,7 +73,16 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
                 justifyContent: 'center',
               }}
             >
-              <Text size="xs" c="white" fw={600} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+              <Text 
+                size="xs" 
+                c="white" 
+                fw={600} 
+                style={{ 
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                  fontSize: '9px',
+                  display: segment.widthPercent < 8 ? 'none' : 'block'
+                }}
+              >
                 {segment.label}
               </Text>
             </Box>
@@ -86,7 +96,7 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
             top: 0,
             left: `${userPositionPercent}%`,
             transform: 'translateX(-50%)',
-            height: 50,
+            height: 45,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -95,8 +105,8 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
           {/* Vertical line */}
           <Box
             style={{
-              width: 4,
-              height: 45,
+              width: 3,
+              height: 40,
               backgroundColor: '#000',
               borderRadius: 2,
               boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
@@ -107,9 +117,9 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
             style={{
               width: 0,
               height: 0,
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid #000',
+              borderLeft: '5px solid transparent',
+              borderRight: '5px solid transparent',
+              borderTop: '5px solid #000',
               marginTop: -1,
             }}
           />
@@ -117,7 +127,7 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
       </Box>
 
       {/* User value label */}
-      <Text size="md" fw={700} ta="center" c="dark" style={{ marginTop: 8 }}>
+      <Text size="md" fw={700} ta="center" c="dark" style={{ marginTop: 4 }}>
         You are here: {userValue.toFixed(1)}{unit}
       </Text>
     </Stack>
