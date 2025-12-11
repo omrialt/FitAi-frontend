@@ -18,6 +18,7 @@ interface NutritionsTableProps {
   onExportPDF: (nutritionPlan: NutritionPlan) => void;
   onExportExcel: (nutritionPlan: NutritionPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 // Star rating component
@@ -65,6 +66,7 @@ export function NutritionsTable({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: NutritionsTableProps) {
   if (nutritionPlans.length === 0) {
     return (
@@ -133,6 +135,7 @@ export function NutritionsTable({
                   onExportPDF={onExportPDF}
                   onExportExcel={onExportExcel}
                   onDelete={onDelete}
+                  onActivate={onActivate}
                 />
               </Table.Td>
             </Table.Tr>

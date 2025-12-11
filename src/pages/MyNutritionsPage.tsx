@@ -292,6 +292,20 @@ export default function MyNutritionsPage() {
     [exportToExcel]
   );
 
+  const handleActivate = useCallback(
+    async (id: string) => {
+      try {
+        await nutritionPlanService.activate(id);
+        await refetchNutritionPlans();
+        toast.success("Nutrition plan activated successfully");
+      } catch (error) {
+        toast.error("Failed to activate nutrition plan");
+        console.error("Failed to activate nutrition plan:", error);
+      }
+    },
+    [refetchNutritionPlans]
+  );
+
   return (
     <AppLayout>
       <Container size="xl" py="xl">
@@ -323,6 +337,7 @@ export default function MyNutritionsPage() {
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
                   onDelete={handleDelete}
+                  onActivate={handleActivate}
                 />
               </Activity>
 
@@ -336,6 +351,7 @@ export default function MyNutritionsPage() {
                   onExportPDF={handleExportPDF}
                   onExportExcel={handleExportExcel}
                   onDelete={handleDelete}
+                  onActivate={handleActivate}
                 />
               </Activity>
             </>

@@ -15,6 +15,7 @@ import {
   IconFileTypePdf,
   IconFileTypeXls,
   IconTrash,
+  IconCircleCheck,
 } from '@tabler/icons-react';
 import type { NutritionPlan } from '../../types/nutrition.types';
 import '../../styles/DropdownMenu.css';
@@ -28,6 +29,7 @@ interface NutritionsActionsMenuProps {
   onExportPDF: (nutritionPlan: NutritionPlan) => void;
   onExportExcel: (nutritionPlan: NutritionPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 export function NutritionsActionsMenu({
@@ -39,12 +41,19 @@ export function NutritionsActionsMenu({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: NutritionsActionsMenuProps) {
   // Check if current user is the owner of the nutrition plan
   const nutritionUserId = typeof nutritionPlan.userId === 'string' 
     ? nutritionPlan.userId 
     : nutritionPlan.userId?._id;
   const isOwner = currentUserId === nutritionUserId || isAdmin;
+
+  // Check if this plan is active for current user
+  const isActive = nutritionPlan.activeByUsers?.some((userId) => {
+    const id = typeof userId === 'string' ? userId : userId._id;
+    return id === currentUserId;
+  });
 
   return (
     <DropdownMenu.Root>
@@ -64,6 +73,17 @@ export function NutritionsActionsMenu({
             <IconEye size={16} />
             <span>View</span>
           </DropdownMenu.Item>
+
+          {/* Make Active */}
+          <Activity mode={onActivate && !isActive ? "visible" : "hidden"}>
+            <DropdownMenu.Item
+              className="dropdown-menu-item"
+              onSelect={() => onActivate && onActivate(nutritionPlan._id)}
+            >
+              <IconCircleCheck size={16} />
+              <span>Make Active</span>
+            </DropdownMenu.Item>
+          </Activity>
 
           {/* Edit - only for owner */}
           <Activity mode={isOwner ? "visible" : "hidden"}>

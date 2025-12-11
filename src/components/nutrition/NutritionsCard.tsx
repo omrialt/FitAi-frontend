@@ -18,6 +18,7 @@ interface NutritionsCardProps {
   onExportPDF: (nutritionPlan: NutritionPlan) => void;
   onExportExcel: (nutritionPlan: NutritionPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 // Star rating component
@@ -65,6 +66,7 @@ export function NutritionsCard({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: NutritionsCardProps) {
   // Calculate total macros from all foods in all meals
   const totalProtein = nutritionPlan.meals?.reduce(
@@ -97,6 +99,7 @@ export function NutritionsCard({
             onExportPDF={onExportPDF}
             onExportExcel={onExportExcel}
             onDelete={onDelete}
+            onActivate={onActivate}
           />
         </Group>
 

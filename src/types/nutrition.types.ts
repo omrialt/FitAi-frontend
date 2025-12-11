@@ -57,6 +57,7 @@ export interface NutritionPlan {
   totalRatings: number;
   sharedWith: string[];
   sharedAccess: SharedAccessEntry[];
+  activeByUsers: string[] | User[];
   createdAt: Date | string;
   updatedAt: Date | string;
 }

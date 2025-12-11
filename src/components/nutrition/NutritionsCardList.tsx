@@ -17,6 +17,7 @@ interface NutritionsCardListProps {
   onExportPDF: (nutritionPlan: NutritionPlan) => void;
   onExportExcel: (nutritionPlan: NutritionPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 export function NutritionsCardList({
@@ -28,6 +29,7 @@ export function NutritionsCardList({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: NutritionsCardListProps) {
   if (nutritionPlans.length === 0) {
     return (
@@ -50,6 +52,7 @@ export function NutritionsCardList({
           onExportPDF={onExportPDF}
           onExportExcel={onExportExcel}
           onDelete={onDelete}
+          onActivate={onActivate}
         />
       ))}
     </Stack>

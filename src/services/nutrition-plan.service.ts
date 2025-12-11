@@ -73,4 +73,10 @@ export const nutritionPlanService = {
     });
     return response.data;
   },
+
+  // Activate a nutrition plan for the current user
+  activate: async (planId: string): Promise<NutritionPlan> => {
+    const response = await api.post(`/nutrition-plans/${planId}/activate`);
+    return response.data;
+  },
 };
