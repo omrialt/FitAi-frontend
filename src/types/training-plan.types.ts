@@ -54,6 +54,7 @@ export interface TrainingPlan {
   target?: Target;
   sharedWith: string[];
   sharedAccess: SharedAccessEntry[];
+  activeByUsers: string[] | Array<{ _id: string; fullName: string; email: string }>;
   // Clone tracking fields
   initialParentId?: string | null;
   syncWithParent?: boolean;

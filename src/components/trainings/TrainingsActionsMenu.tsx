@@ -15,6 +15,7 @@ import {
   IconFileTypePdf,
   IconFileTypeXls,
   IconTrash,
+  IconCircleCheck,
 } from '@tabler/icons-react';
 import type { TrainingPlan } from '../../types/training.types';
 import '../../styles/DropdownMenu.css';
@@ -28,6 +29,7 @@ interface TrainingsActionsMenuProps {
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 export function TrainingsActionsMenu({
@@ -39,11 +41,18 @@ export function TrainingsActionsMenu({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: TrainingsActionsMenuProps) {
   // Check if current user is the owner of the training
   const trainingUserId = typeof training.userId === 'string' ? training.userId : training.userId?._id;
   const isOwner = currentUserId === trainingUserId;
   const canDelete = isAdmin || isOwner;
+
+  // Check if this plan is active for current user
+  const isActive = training.activeByUsers?.some((userId) => {
+    const id = typeof userId === 'string' ? userId : userId._id;
+    return id === currentUserId;
+  });
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -62,6 +71,17 @@ export function TrainingsActionsMenu({
             <IconEye size={16} />
             <span>View</span>
           </DropdownMenu.Item>
+
+          {/* Make Active */}
+          <Activity mode={onActivate && !isActive ? "visible" : "hidden"}>
+            <DropdownMenu.Item
+              className="dropdown-menu-item"
+              onSelect={() => onActivate && onActivate(training._id)}
+            >
+              <IconCircleCheck size={16} />
+              <span>Make Active</span>
+            </DropdownMenu.Item>
+          </Activity>
 
           {/* Edit */}
           <DropdownMenu.Item

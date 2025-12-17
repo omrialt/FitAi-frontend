@@ -17,6 +17,7 @@ interface TrainingsTableProps {
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 const getDifficultyColor = (difficulty: string) => {
@@ -41,6 +42,7 @@ export function TrainingsTable({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: TrainingsTableProps) {
   if (trainings.length === 0) {
     return (
@@ -125,6 +127,7 @@ export function TrainingsTable({
                   onExportPDF={onExportPDF}
                   onExportExcel={onExportExcel}
                   onDelete={onDelete}
+                  onActivate={onActivate}
                 />
               </Table.Td>
             </Table.Tr>

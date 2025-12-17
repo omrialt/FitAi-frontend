@@ -4,8 +4,8 @@
 
 import { useState, useEffect, useCallback, Activity } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Box, Center, Loader, Alert, Button } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
+import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge } from "@mantine/core";
+import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { AppLayout } from "../components/AppLayout";
 import { AppBreadcrumbs } from "../components/common/AppBreadcrumbs";
@@ -239,6 +239,52 @@ export default function TrainingPlanDetailsPage() {
           onVideoClick={handleVideoClick}
           onExerciseUpdate={canEdit ? handleExerciseUpdate : undefined}
         />
+
+        {/* Active Users Section - visible to trainers/admins */}
+        <Activity mode={currentUser?.role === 'trainer' || currentUser?.role === 'admin' ? "visible" : "hidden"}>
+          {plan.activeByUsers && plan.activeByUsers.length > 0 && (
+            <Stack gap="lg" mb="xl">
+              <Group gap="xs" align="center">
+                <IconCircleCheck size={24} color="green" />
+                <Title order={2}>Active Users</Title>
+                <Badge color="green" variant="light">
+                  {plan.activeByUsers.length}
+                </Badge>
+              </Group>
+              <Stack gap="sm">
+                {plan.activeByUsers.map((user, index) => {
+                  const userName = typeof user === 'string' 
+                    ? allUsers.find(u => u._id === user)?.fullName || 'Unknown User'
+                    : user.fullName || 'Unknown User';
+                  const userEmail = typeof user === 'string'
+                    ? allUsers.find(u => u._id === user)?.email || ''
+                    : user.email || '';
+                  
+                  return (
+                    <Card key={index} shadow="sm" p="md" withBorder>
+                      <Group gap="md">
+                        <Avatar color="green" radius="xl">
+                          <IconUser size={24} />
+                        </Avatar>
+                        <Box style={{ flex: 1 }}>
+                          <Text fw={500}>{userName}</Text>
+                          {userEmail && (
+                            <Text size="sm" c="dimmed">
+                              {userEmail}
+                            </Text>
+                          )}
+                        </Box>
+                        <Badge color="green" variant="light">
+                          Active
+                        </Badge>
+                      </Group>
+                    </Card>
+                  );
+                })}
+              </Stack>
+            </Stack>
+          )}
+        </Activity>
 
         {/* Shared With Section (Trainer Only) */}
         <Activity mode={canViewShared ? "visible" : "hidden"}>

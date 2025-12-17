@@ -18,6 +18,7 @@ interface TrainingsCardListProps {
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 export function TrainingsCardList({
@@ -30,7 +31,7 @@ export function TrainingsCardList({
   onExportPDF,
   onExportExcel,
   onDelete,
-
+  onActivate,
 }: TrainingsCardListProps) {
   if (trainings.length === 0) {
     return (
@@ -54,6 +55,7 @@ export function TrainingsCardList({
           onExportPDF={onExportPDF}
           onExportExcel={onExportExcel}
           onDelete={onDelete}
+          onActivate={onActivate}
         />
       ))}
     </Stack>

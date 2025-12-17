@@ -24,6 +24,7 @@ interface TrainingsCardProps {
   onExportPDF: (training: TrainingPlan) => void;
   onExportExcel: (training: TrainingPlan) => void;
   onDelete?: (id: string) => void;
+  onActivate?: (id: string) => void;
 }
 
 const getDifficultyColor = (difficulty: string) => {
@@ -49,6 +50,7 @@ export function TrainingsCard({
   onExportPDF,
   onExportExcel,
   onDelete,
+  onActivate,
 }: TrainingsCardProps) {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -67,6 +69,7 @@ export function TrainingsCard({
             onExportPDF={onExportPDF}
             onExportExcel={onExportExcel}
             onDelete={onDelete}
+            onActivate={onActivate}
           />
         </Group>
 

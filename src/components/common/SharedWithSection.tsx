@@ -73,7 +73,7 @@ export function SharedWithSection({
         <Group justify="space-between" align="center">
           <Title order={2}>{title}</Title>
           {showActions && (
-            <Button size="sm" onClick={() => setModalOpened(true)} disabled={loading}>
+            <Button size="sm" onClick={() => setModalOpened(true)} disabled={loading} my="sm">
               Share Plan
             </Button>
           )}

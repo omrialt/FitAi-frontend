@@ -297,6 +297,21 @@ export default function MyTrainingsPage() {
     [exportToExcel]
   );
 
+  const handleActivate = useCallback(
+    async (id: string) => {
+      try {
+        const updatedPlan = await trainingPlanService.activate(id);
+        // Force a fresh fetch to ensure activeByUsers is properly updated
+        await fetchTrainings("/training-plans?page=1&limit=100");
+        toast.success("Training plan activated successfully");
+      } catch (error) {
+        toast.error("Failed to activate training plan");
+        console.error("Failed to activate training plan:", error);
+      }
+    },
+    [fetchTrainings]
+  );
+
   return (
     <AppLayout>
       <Container size="xl" py="xl">
@@ -329,6 +344,7 @@ export default function MyTrainingsPage() {
                 onExportPDF={handleExportPDF}
                 onExportExcel={handleExportExcel}
                 onDelete={handleDelete}
+                onActivate={handleActivate}
               />
             </Activity>
             <Activity mode={isMobile ? "hidden" : "visible"}>
@@ -341,6 +357,7 @@ export default function MyTrainingsPage() {
                 onExportPDF={handleExportPDF}
                 onExportExcel={handleExportExcel}
                 onDelete={handleDelete}
+                onActivate={handleActivate}
               />
             </Activity>
           </Activity>

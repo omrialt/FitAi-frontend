@@ -69,4 +69,10 @@ export const trainingPlanService = {
     const response = await api.get(`/training-plans/${parentId}/clones`);
     return response.data;
   },
+
+  // Activate a training plan for the current user
+  activate: async (planId: string): Promise<TrainingPlan> => {
+    const response = await api.post(`/training-plans/${planId}/activate`);
+    return response.data;
+  },
 };
