@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import {
   AdminUsersPage,
+  CalendarPage,
   CompleteProfilePage,
   DashboardPage,
   GoogleCallbackPage,
@@ -98,6 +99,16 @@ function App() {
         element={
           <ProtectedRoute>
             <PhysicalDataPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Calendar Page - requires authentication */}
+      <Route
+        path="/schedule"
+        element={
+          <ProtectedRoute>
+            <CalendarPage />
           </ProtectedRoute>
         }
       />

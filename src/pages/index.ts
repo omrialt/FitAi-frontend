@@ -16,3 +16,4 @@ export { default as ProfilePage } from './ProfilePage';
 export { default as TrainingPlanDetailsPage } from './TrainingPlanDetailsPage';
 export { default as RegisterPage } from './RegisterPage';
 export { default as ResetPasswordPage } from './ResetPasswordPage';
+export { default as CalendarPage } from './CalendarPage';
