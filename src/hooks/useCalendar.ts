@@ -27,7 +27,7 @@ export function useGoogleCalendar() {
     try {
       setLoading(true);
       const authUrl = await calendarSyncService.getGoogleAuthUrl();
-      // Open OAuth window
+      // Redirect to Google OAuth - backend handles the callback
       window.location.href = authUrl;
     } catch (err: any) {
       setError(err.message || 'Failed to initiate Google Calendar connection');
@@ -48,19 +48,6 @@ export function useGoogleCalendar() {
     }
   }, []);
 
-  const handleCallback = useCallback(async (code: string) => {
-    try {
-      setLoading(true);
-      await calendarSyncService.handleGoogleCallback(code);
-      await checkStatus();
-      setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Failed to complete Google Calendar connection');
-    } finally {
-      setLoading(false);
-    }
-  }, [checkStatus]);
-
   useEffect(() => {
     checkStatus();
   }, [checkStatus]);
@@ -71,7 +58,6 @@ export function useGoogleCalendar() {
     error,
     connect,
     disconnect,
-    handleCallback,
     refetch: checkStatus,
   };
 }

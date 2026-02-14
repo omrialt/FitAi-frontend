@@ -8,41 +8,30 @@ class CalendarSyncService {
    * Get Google Calendar OAuth URL
    */
   async getGoogleAuthUrl(): Promise<string> {
-    const response = await api.get<{ authUrl: string }>(
+    const response = await api.get<{ data: { authUrl: string } }>(
       '/calendar-sync/google/auth-url',
     );
-    return response.data.authUrl;
-  }
-
-  /**
-   * Handle Google OAuth callback
-   */
-  async handleGoogleCallback(code: string): Promise<{ message: string; connected: boolean }> {
-    const response = await api.post<{ message: string; connected: boolean }>(
-      '/calendar-sync/google/callback',
-      { code },
-    );
-    return response.data;
+    return response.data.data.authUrl;
   }
 
   /**
    * Get Google Calendar connection status
    */
   async getConnectionStatus(): Promise<GoogleCalendarStatus> {
-    const response = await api.get<GoogleCalendarStatus>(
+    const response = await api.get<{ data: GoogleCalendarStatus }>(
       '/calendar-sync/google/status',
     );
-    return response.data;
+    return response.data.data;
   }
 
   /**
    * Disconnect Google Calendar
    */
   async disconnectGoogle(): Promise<{ message: string }> {
-    const response = await api.post<{ message: string }>(
+    const response = await api.post<{ data: { message: string } }>(
       '/calendar-sync/google/disconnect',
     );
-    return response.data;
+    return response.data.data;
   }
 
   /**
@@ -64,21 +53,21 @@ class CalendarSyncService {
   }
 
   /**
-   * Sync training plan to Google Calendar
+   * Sync training plan to Google Calendar (full month)
    */
   async syncTrainingPlan(
     trainingPlanId: string,
-    weekStart?: Date,
+    referenceDate?: Date,
   ): Promise<SyncResult> {
     const body = {
       trainingPlanId,
-      weekStart: weekStart?.toISOString(),
+      referenceDate: referenceDate?.toISOString(),
     };
-    const response = await api.post<SyncResult>(
+    const response = await api.post<{ data: SyncResult }>(
       '/calendar-sync/sync-training-plan',
       body,
     );
-    return response.data;
+    return response.data.data;
   }
 }
 

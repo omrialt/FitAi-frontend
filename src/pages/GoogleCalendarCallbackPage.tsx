@@ -16,14 +16,14 @@ const GoogleCalendarCallbackPage: React.FC = () => {
     if (error) {
       setStatus('error');
       setMessage('Failed to connect Google Calendar. Access was denied.');
-      setTimeout(() => navigate('/calendar'), 3000);
+      setTimeout(() => navigate('/schedule'), 3000);
       return;
     }
 
     if (!code) {
       setStatus('error');
       setMessage('Missing authorization code.');
-      setTimeout(() => navigate('/calendar'), 3000);
+      setTimeout(() => navigate('/schedule'), 3000);
       return;
     }
 
@@ -32,12 +32,12 @@ const GoogleCalendarCallbackPage: React.FC = () => {
       .then(() => {
         setStatus('success');
         setMessage('Google Calendar connected successfully! Redirecting...');
-        setTimeout(() => navigate('/calendar'), 2000);
+        setTimeout(() => navigate('/schedule'), 2000);
       })
       .catch((err) => {
         setStatus('error');
         setMessage(`Failed to connect: ${err.message}`);
-        setTimeout(() => navigate('/calendar'), 3000);
+        setTimeout(() => navigate('/schedule'), 3000);
       });
   }, [searchParams, handleCallback, navigate]);
 

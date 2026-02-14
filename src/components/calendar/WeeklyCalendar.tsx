@@ -1,17 +1,20 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useWeeklyCalendar, useGoogleCalendar, useTrainingPlanSync } from '../../hooks/useCalendar';
 import type { CalendarEvent } from '../../types/calendar.types';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
+import { toast } from 'sonner';
 import TrainingDayModal from './TrainingDayModal';
 import '../../styles/WeeklyCalendar.css';
 
 interface WeeklyCalendarProps {
   activeTrainingPlanId?: string;
+  autoSyncOnConnect?: boolean;
+  onAutoSyncComplete?: () => void;
 }
 
 
 
-const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId }) => {
+const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, autoSyncOnConnect, onAutoSyncComplete }) => {
   const DAYS_OF_WEEK = [
   'Sunday',
   'Monday',
@@ -31,6 +34,33 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId })
   const { events, loading, error, refetch } = useWeeklyCalendar(currentWeekStart);
   const { status: googleStatus, connect, disconnect } = useGoogleCalendar();
   const { syncPlan, syncing } = useTrainingPlanSync();
+
+  const handleSyncToGoogle = useCallback(async () => {
+    if (!activeTrainingPlanId) {
+      toast.warning('No active training plan to sync');
+      return;
+    }
+
+    try {
+      // Sync the full month that contains the current view
+      const result = await syncPlan(activeTrainingPlanId, currentWeekStart);
+      toast.success(
+        `Month synced! Created: ${result.created}, Updated: ${result.updated}, Deleted: ${result.deleted}`,
+      );
+      refetch();
+    } catch {
+      toast.error('Failed to sync training plan to Google Calendar');
+    }
+  }, [activeTrainingPlanId, currentWeekStart, syncPlan, refetch]);
+
+  // Auto-sync to Google Calendar after connecting
+  useEffect(() => {
+    if (autoSyncOnConnect && googleStatus?.connected && activeTrainingPlanId && !syncing) {
+      handleSyncToGoogle().then(() => {
+        onAutoSyncComplete?.();
+      });
+    }
+  }, [autoSyncOnConnect, googleStatus?.connected, activeTrainingPlanId, syncing, handleSyncToGoogle, onAutoSyncComplete]);
 
   // Group events by day
   const eventsByDay = useMemo(() => {
@@ -67,23 +97,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId })
 
   const handleToday = () => {
     setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
-  };
-
-  const handleSyncToGoogle = async () => {
-    if (!activeTrainingPlanId) {
-      alert('No active training plan selected');
-      return;
-    }
-
-    try {
-      const result = await syncPlan(activeTrainingPlanId, currentWeekStart);
-      alert(
-        `Sync complete!\nCreated: ${result.created}\nUpdated: ${result.updated}\nDeleted: ${result.deleted}`,
-      );
-      refetch();
-    } catch (err) {
-      alert('Failed to sync training plan');
-    }
   };
 
   const handleEventClick = (event: CalendarEvent) => {
@@ -154,15 +167,14 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId })
               <button onClick={disconnect} className="btn-disconnect">
                 Disconnect Google
               </button>
-              {activeTrainingPlanId && (
-                <button
-                  onClick={handleSyncToGoogle}
-                  disabled={syncing}
-                  className="btn-sync"
-                >
-                  {syncing ? 'Syncing...' : 'Sync to Google'}
-                </button>
-              )}
+              <button
+                onClick={handleSyncToGoogle}
+                disabled={syncing || !activeTrainingPlanId}
+                className="btn-sync"
+                title={!activeTrainingPlanId ? 'No active training plan' : 'Sync training plan to Google Calendar'}
+              >
+                {syncing ? 'Syncing...' : 'Sync to Google'}
+              </button>
             </>
           ) : (
             <button onClick={connect} className="btn-connect">
@@ -202,18 +214,18 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId })
 
       {!googleStatus?.connected && (
         <div className="calendar-info">
-
-      <TrainingDayModal
-        opened={modalOpened}
-        onClose={handleCloseModal}
-        event={selectedEvent}
-      />
           <p>
             💡 Connect your Google Calendar to see all your events in one place and
             automatically sync your training schedule!
           </p>
         </div>
       )}
+
+      <TrainingDayModal
+        opened={modalOpened}
+        onClose={handleCloseModal}
+        event={selectedEvent}
+      />
     </div>
   );
 };
