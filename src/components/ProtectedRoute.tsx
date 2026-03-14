@@ -1,9 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
+import type { ProtectedRouteProps, PublicRouteProps } from '../types/layout.types';
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated } = useAuthStore();
@@ -14,10 +11,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   return <>{children}</>;
-}
-
-interface PublicRouteProps {
-  children: React.ReactNode;
 }
 
 export function PublicRoute({ children }: PublicRouteProps) {

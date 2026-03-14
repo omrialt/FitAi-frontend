@@ -11,12 +11,8 @@ import {
   IconEye,
 } from '@tabler/icons-react';
 import type { User } from '../../types/auth.types';
+import type { AdminUsersActionsMenuProps } from '../../types/admin.types';
 import '../../styles/DropdownMenu.css';
-
-interface AdminUsersActionsMenuProps {
-  user: User;
-  onView: (user: User) => void;
-}
 
 export function AdminUsersActionsMenu({
   user,

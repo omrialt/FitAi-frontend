@@ -16,10 +16,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import type { NutritionPlan } from '../../types/nutrition.types';
-
-interface NutritionOverviewProps {
-  plans: NutritionPlan[];
-}
+import type { NutritionOverviewProps } from '../../types/dashboard-components.types';
 
 const targetColor: Record<string, string> = {
   bulk: 'orange',

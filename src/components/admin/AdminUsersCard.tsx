@@ -5,11 +5,7 @@
 import { Card, Group, Stack, Text, Badge, Button, Avatar } from '@mantine/core';
 import { IconEye } from '@tabler/icons-react';
 import type { User } from '../../types/auth.types';
-
-interface AdminUsersCardProps {
-  user: User;
-  onView: (user: User) => void;
-}
+import type { AdminUsersCardProps } from '../../types/admin.types';
 
 export function AdminUsersCard({ user, onView }: AdminUsersCardProps) {
   return (

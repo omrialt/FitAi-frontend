@@ -7,18 +7,7 @@
 import { Table, Badge, Text } from "@mantine/core";
 import { TrainingsActionsMenu } from "./TrainingsActionsMenu";
 import type { TrainingPlan } from "../../types/training.types";
-
-interface TrainingsTableProps {
-  trainings: TrainingPlan[];
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (training: TrainingPlan) => void;
-  onExportExcel: (training: TrainingPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { TrainingsTableProps } from '../../types/trainings-components.types';
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty.toLowerCase()) {

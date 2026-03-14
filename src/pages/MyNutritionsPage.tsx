@@ -25,16 +25,9 @@ import {
 } from "../components/nutrition/index";
 import { PaginationControls } from "../components/common/PaginationControls";
 import { useAuthStore } from "../store/authStore";
-import type { NutritionPlan, NutritionFilters } from "../types/nutrition.types";
+import type { NutritionPlan, NutritionFilters, NutritionPlansArrayResponse } from "../types/nutrition.types";
 import userService from "../services/user.service";
 import type { User } from "../types/user.types";
-
-// API response wrapper type for array endpoints
-interface NutritionPlansArrayResponse {
-  data: NutritionPlan[];
-  timestamp: string;
-  path: string;
-}
 
 export default function MyNutritionsPage() {
   const [allUsers, setAllUsers] = useState<User[]>([]);

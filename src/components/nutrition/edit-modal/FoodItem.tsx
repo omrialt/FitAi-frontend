@@ -7,12 +7,7 @@
 import { Group, TextInput, NumberInput, ActionIcon, Paper, Select } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import type { Food } from "../../../types/nutrition.types";
-
-interface FoodItemProps {
-  food: Food;
-  onRemove: () => void;
-  onUpdate: (updates: Partial<Food>) => void;
-}
+import type { FoodItemProps } from '../../../types/nutrition-components.types';
 
 export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
   return (

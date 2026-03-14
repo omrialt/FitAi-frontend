@@ -22,16 +22,7 @@ import {
   TrainingDaysSection,
 } from "./edit-modal/index";
 import { SharedAccessSection } from "../common/SharedAccessSection";
-
-interface EditTrainingModalProps {
-  opened: boolean;
-  onClose: () => void;
-  training: TrainingPlan | null;
-  onSave: (data: Partial<TrainingPlan>) => void;
-  onCreate?: (data: Partial<TrainingPlan>) => void;
-  createMode?: boolean;
-  allUsers: User[];
-}
+import type { EditTrainingModalProps } from '../../types/trainings-components.types';
 
 export function EditTrainingModal({
   opened,

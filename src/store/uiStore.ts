@@ -3,29 +3,7 @@
  */
 
 import { create } from 'zustand';
-
-interface UIStore {
-  // Modals
-  activeModal: string | null;
-  modalData: unknown;
-  
-  // Sidebar
-  isSidebarOpen: boolean;
-  
-  // Theme
-  theme: 'light' | 'dark';
-  
-  // Loading states
-  globalLoading: boolean;
-  
-  // Actions
-  openModal: (modalId: string, data?: unknown) => void;
-  closeModal: () => void;
-  toggleSidebar: () => void;
-  setSidebarOpen: (isOpen: boolean) => void;
-  toggleTheme: () => void;
-  setGlobalLoading: (loading: boolean) => void;
-}
+import type { UIStore } from '../types/store.types';
 
 export const useUIStore = create<UIStore>((set) => ({
   activeModal: null,

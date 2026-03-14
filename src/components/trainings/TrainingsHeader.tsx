@@ -7,10 +7,7 @@ import { Activity } from 'react';
 import { Group, Title, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useAuth } from '../../hooks/useAuth';
-
-interface TrainingsHeaderProps {
-  onCreateNew?: () => void;
-}
+import type { TrainingsHeaderProps } from '../../types/trainings-components.types';
 
 export function TrainingsHeader({ onCreateNew }: TrainingsHeaderProps) {
   const { user } = useAuth();

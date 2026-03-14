@@ -2,20 +2,7 @@ import { Stack, Group, Text, Button, Accordion } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import type { TrainingDay } from '../../../types/training-plan.types';
 import { TrainingDayItem } from './TrainingDayItem';
-
-interface TrainingDaysSectionProps {
-  localDays: TrainingDay[];
-  addDay: () => void;
-  removeDay: (index: number) => void;
-  duplicateDay: (index: number) => void;
-  updateDay: (index: number, updates: Partial<TrainingDay>) => void;
-  addExercise: (dayIndex: number) => void;
-  removeExercise: (dayIndex: number, exerciseIndex: number) => void;
-  updateExerciseField: (dayIndex: number, exerciseIndex: number, field: string, value: unknown) => void;
-  addSet: (dayIndex: number, exerciseIndex: number) => void;
-  removeSet: (dayIndex: number, exerciseIndex: number, setIndex: number) => void;
-  updateSet: (dayIndex: number, exerciseIndex: number, setIndex: number, updates: Record<string, unknown>) => void;
-}
+import type { TrainingDaysSectionProps } from '../../../types/trainings-components.types';
 
 export function TrainingDaysSection({ 
   localDays,

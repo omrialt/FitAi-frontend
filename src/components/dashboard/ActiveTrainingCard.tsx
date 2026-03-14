@@ -18,11 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type { TrainingPlan } from '../../types/training-plan.types';
 import type { CurrentStatus } from '../../types/current-status.types';
-
-interface ActiveTrainingCardProps {
-  plan: TrainingPlan | null;
-  currentStatus: CurrentStatus | null;
-}
+import type { ActiveTrainingCardProps } from '../../types/dashboard-components.types';
 
 const difficultyColor: Record<string, string> = {
   beginner: 'green',

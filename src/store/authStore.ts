@@ -5,20 +5,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, AuthTokens } from '../types/auth.types';
+import type { AuthStore } from '../types/store.types';
 import api from '../services/api';
-
-interface AuthStore {
-  user: User | null;
-  tokens: AuthTokens | null;
-  isAuthenticated: boolean;
-  
-  // Actions
-  setUser: (user: User | null) => void;
-  setTokens: (tokens: AuthTokens | null) => void;
-  login: (user: User, tokens: AuthTokens) => void;
-  logout: () => Promise<void>;
-  updateUser: (userData: Partial<User>) => void;
-}
 
 export const useAuthStore = create<AuthStore>()(
   persist(

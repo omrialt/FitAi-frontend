@@ -26,21 +26,7 @@ import axios from 'axios';
 import type { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import { toast } from 'sonner';
 import api from '../services/api';
-import type { ApiError } from '../types/api.types';
-
-interface UseApiOptions {
-  showErrorToast?: boolean;
-  showSuccessToast?: boolean;
-  successMessage?: string;
-}
-
-interface UseApiReturn<T> {
-  data: T | null;
-  loading: boolean;
-  error: ApiError | null;
-  execute: (url: string, config?: AxiosRequestConfig) => Promise<T | null>;
-  reset: () => void;
-}
+import type { ApiError, UseApiOptions, UseApiReturn } from '../types/api.types';
 
 export function useApi<T>(options: UseApiOptions = {}): UseApiReturn<T> {
   const {
@@ -159,13 +145,7 @@ export function useApi<T>(options: UseApiOptions = {}): UseApiReturn<T> {
  * ```
  */
 
-interface UseApiMutationReturn<T> {
-  data: T | null;
-  loading: boolean;
-  error: ApiError | null;
-  mutate: (url: string, config?: AxiosRequestConfig) => Promise<T | null>;
-  reset: () => void;
-}
+import type { UseApiMutationReturn } from '../types/api.types';
 
 export function useApiMutation<T>(
   options: UseApiOptions = {}

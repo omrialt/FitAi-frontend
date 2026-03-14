@@ -3,12 +3,7 @@ import type { User } from '../../types';
 import { toast } from 'sonner';
 import cloudinaryService from '../../services/cloudinary.service';
 import userService from '../../services/user.service';
-
-interface ProfileDetailsProps {
-  user: User;
-  avatarPreview: string | null;
-  onAvatarUpdate: (avatarUrl: string) => void;
-}
+import type { ProfileDetailsProps } from '../../types/profile.types';
 
 export const ProfileDetails: React.FC<ProfileDetailsProps> = ({ user, avatarPreview, onAvatarUpdate }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);

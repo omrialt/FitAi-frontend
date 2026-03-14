@@ -42,18 +42,8 @@ import {
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useAuthStore } from "../store/authStore";
 import type { UserRole } from "../types/auth.types";
+import type { NavItem, AppLayoutProps } from '../types/layout.types';
 import "../styles/AppLayout.css";
-
-interface NavItem {
-  icon: React.ReactNode;
-  label: string;
-  path: string;
-  active?: boolean;
-}
-
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
 
 /**
  * Get navigation items based on user authentication status and role

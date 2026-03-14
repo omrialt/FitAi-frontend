@@ -7,15 +7,7 @@ import { DateInput } from '@mantine/dates';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../../hooks/useAuth';
 import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../../../../types/physical-data.types';
-
-interface MeasurementModalProps {
-  opened: boolean;
-  onClose: () => void;
-  measurement?: PhysicalData | null;
-  lastRecord?: PhysicalData | null;
-  onSave: (data: CreatePhysicalDataDto) => Promise<void>;
-  onUpdate?: (id: string, data: UpdatePhysicalDataDto) => Promise<void>;
-}
+import type { MeasurementModalProps } from '../../../../types/physical-data-components.types';
 
 export function MeasurementModal({ 
   opened, 

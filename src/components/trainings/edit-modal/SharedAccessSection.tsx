@@ -1,13 +1,7 @@
 import { MultiSelect, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import type { User } from "../../../types/auth.types";
-
-interface SharedAccessSectionProps {
-  allUsers: User[];
-  sharedAccess: Array<{ accessLevel: string; userId: string }>;
-  handleViewAccessChange: (userIds: string[]) => void;
-  handleEditAccessChange: (userIds: string[]) => void;
-}
+import type { SharedAccessSectionProps } from '../../../types/trainings-components.types';
 
 export function SharedAccessSection({
   allUsers,

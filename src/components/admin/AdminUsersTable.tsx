@@ -7,11 +7,7 @@
 import { Table, Badge, Text } from "@mantine/core";
 import { AdminUsersActionsMenu } from "./AdminUsersActionsMenu";
 import type { User } from "../../types/auth.types";
-
-interface AdminUsersTableProps {
-  users: User[];
-  onView: (user: User) => void;
-}
+import type { AdminUsersTableProps } from '../../types/admin.types';
 
 const getRoleColor = (role: string) => {
   switch (role.toLowerCase()) {

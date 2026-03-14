@@ -14,11 +14,8 @@ import {
   IconApple,
   IconInfoCircle,
 } from '@tabler/icons-react';
-import type { AiRecommendation } from '../../hooks/useDashboard';
-
-interface RecentRecommendationsProps {
-  recommendations: AiRecommendation[];
-}
+import type { AiRecommendation } from '../../types/dashboard.types';
+import type { RecentRecommendationsProps } from '../../types/dashboard-components.types';
 
 const categoryConfig: Record<
   string,

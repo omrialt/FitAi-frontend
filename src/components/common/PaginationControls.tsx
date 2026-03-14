@@ -3,14 +3,7 @@
  */
 
 import { Pagination, Group, Text } from '@mantine/core';
-
-interface PaginationControlsProps {
-  currentPage: number;
-  totalPages: number;
-  total: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
-}
+import type { PaginationControlsProps } from '../../types/common.types';
 
 export function PaginationControls({
   currentPage,

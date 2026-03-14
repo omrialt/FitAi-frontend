@@ -8,17 +8,7 @@ import { useState, Activity } from 'react';
 import { DateInput } from '@mantine/dates';
 import type { WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryChart } from './SetHistoryChart';
-
-interface SetHistoryModalProps {
-  opened: boolean;
-  onClose: () => void;
-  history: WeightHistoryEntry[];
-  onHistoryChange: (newHistory: WeightHistoryEntry[], syncToAllSets?: boolean) => void;
-  setNumber: number;
-  exerciseName: string;
-  targetWeight: number;
-  targetReps: number;
-}
+import type { SetHistoryModalProps } from '../../../types/trainings-components.types';
 
 export function SetHistoryModal({
   opened,

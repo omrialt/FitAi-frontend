@@ -1,11 +1,5 @@
 import React from 'react';
-
-interface ProfileAvatarProps {
-  avatarUrl?: string;
-  userName: string;
-  authProvider: string;
-  isActive: boolean;
-}
+import type { ProfileAvatarProps } from '../../types/profile.types';
 
 export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   avatarUrl,

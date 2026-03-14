@@ -15,11 +15,7 @@ import {
 } from '@tabler/icons-react';
 import type { User } from '../../types/auth.types';
 import type { CurrentStatus } from '../../types/current-status.types';
-
-interface WelcomeSectionProps {
-  user: User;
-  currentStatus: CurrentStatus | null;
-}
+import type { WelcomeSectionProps } from '../../types/dashboard-components.types';
 
 function getGreeting(): string {
   const hour = new Date().getHours();

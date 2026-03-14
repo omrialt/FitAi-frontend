@@ -8,13 +8,7 @@
 import { Grid, Select, TextInput, Paper, NumberInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import type { NutritionFilters } from '../../types/nutrition.types';
-
-interface NutritionsFiltersProps {
-  filters: NutritionFilters;
-  onFiltersChange: (filters: NutritionFilters) => void;
-  search: string;
-  onSearchChange: (search: string) => void;
-}
+import type { NutritionsFiltersProps } from '../../types/nutrition-components.types';
 
 export function NutritionsFilters({
   filters,

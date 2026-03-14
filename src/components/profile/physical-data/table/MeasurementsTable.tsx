@@ -8,12 +8,7 @@ import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatDate } from '../helpers/calcImprovement';
 import { calcImprovement } from '../helpers/calcImprovement';
 import { TableImprovementCell } from './TableImprovementCell';
-
-interface MeasurementsTableProps {
-  data: PhysicalData[];
-  onEdit: (measurement: PhysicalData) => void;
-  onDelete: (measurement: PhysicalData) => void;
-}
+import type { MeasurementsTableProps } from '../../../../types/physical-data-components.types';
 
 export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableProps) {
   // Sort by date (newest first)

@@ -6,10 +6,7 @@ import { Activity } from 'react';
 
 import { Stack, Title, Card, Text, Group, Badge, Table, Box, SimpleGrid } from '@mantine/core';
 import type { Meal, MealType } from '../../../types/nutrition.types';
-
-interface MealSectionProps {
-  meals: Meal[];
-}
+import type { MealSectionProps } from '../../../types/nutrition-components.types';
 
 const mealTypeLabels: Record<MealType, string> = {
   breakfast: 'Breakfast',

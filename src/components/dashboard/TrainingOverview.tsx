@@ -15,10 +15,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import type { TrainingPlan } from '../../types/training-plan.types';
-
-interface TrainingOverviewProps {
-  plans: TrainingPlan[];
-}
+import type { TrainingOverviewProps } from '../../types/dashboard-components.types';
 
 const difficultyColor: Record<string, string> = {
   beginner: 'green',

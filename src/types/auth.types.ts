@@ -63,3 +63,15 @@ export interface AuthResponse {
   user: User;
   tokens: AuthTokens;
 }
+
+export interface UseAuthReturn {
+  user: User | null;
+  tokens: AuthTokens | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshToken: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+}

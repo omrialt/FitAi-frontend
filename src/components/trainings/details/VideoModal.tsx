@@ -3,12 +3,7 @@
  */
 
 import { Modal } from '@mantine/core';
-
-interface VideoModalProps {
-  opened: boolean;
-  onClose: () => void;
-  videoUrl: string;
-}
+import type { VideoModalProps } from '../../../types/trainings-components.types';
 
 export function VideoModal({ opened, onClose, videoUrl }: VideoModalProps) {
   // Check if it's a YouTube URL and extract video ID

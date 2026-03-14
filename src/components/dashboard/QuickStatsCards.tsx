@@ -9,14 +9,8 @@ import {
 } from '@tabler/icons-react';
 import type { TrainingPlan } from '../../types/training-plan.types';
 import type { NutritionPlan } from '../../types/nutrition.types';
-import type { ProgressStats } from '../../hooks/useDashboard';
-
-interface QuickStatsCardsProps {
-  trainingPlans: TrainingPlan[];
-  nutritionPlans: NutritionPlan[];
-  progressStats: ProgressStats | null;
-  bmi: { bmi: number; category: string } | null;
-}
+import type { ProgressStats } from '../../types/dashboard.types';
+import type { QuickStatsCardsProps } from '../../types/dashboard-components.types';
 
 export function QuickStatsCards({
   trainingPlans,

@@ -1,10 +1,5 @@
 import React, { Activity } from 'react';
-
-interface ProfileHeaderProps {
-  isEditing: boolean;
-  onEdit: () => void;
-  onCancel: () => void;
-}
+import type { ProfileHeaderProps } from '../../types/profile.types';
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isEditing, onEdit, onCancel }) => {
   return (

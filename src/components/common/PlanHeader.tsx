@@ -25,48 +25,7 @@ import {
 } from "@tabler/icons-react";
 import { StarRating } from "./StarRating";
 import { Activity } from "react";
-
-type PlanType = "nutrition" | "training";
-
-interface BasePlanData {
-  title: string;
-  description: string;
-  target?: "maintain" | "cut" | "bulk";
-  createdAt?: string | Date;
-}
-
-interface NutritionPlanData extends BasePlanData {
-  totalCalories: number;
-  averageRating: number;
-  totalRatings: number;
-  meals: Array<{
-    foods: Array<{
-      protein: number;
-      carbs: number;
-      fat: number;
-    }>;
-  }>;
-}
-
-interface TrainingPlanData extends BasePlanData {
-  difficulty: "beginner" | "intermediate" | "advanced";
-  isActive: boolean;
-  estimatedCalories?: number;
-  estimatedDuration?: number;
-  focus?: string;
-  programType?: "fixedDays" | "rotation";
-  rotationCycleLength?: number | null;
-}
-
-interface PlanHeaderProps {
-  planType: PlanType;
-  plan: NutritionPlanData | TrainingPlanData;
-  isOwner: boolean;
-  onEdit: () => void;
-  onExportPDF: () => void;
-  onExportExcel: () => void;
-  creatorName?: string;
-}
+import type { PlanType, BasePlanData, NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
 
 const targetColors: Record<string, string> = {
   maintain: "blue",

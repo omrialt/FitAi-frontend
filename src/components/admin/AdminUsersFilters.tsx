@@ -4,6 +4,7 @@
 
 import { Grid, Select, TextInput, Paper } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
+import type { AdminUsersFiltersProps } from '../../types/admin.types';
 
 const ROLES = [
   { value: "", label: "All Roles" },
@@ -11,13 +12,6 @@ const ROLES = [
   { value: "trainer", label: "Trainer" },
   { value: "admin", label: "Admin" },
 ];
-
-interface AdminUsersFiltersProps {
-  roleFilter: string | null;
-  setRoleFilter: (role: string | null) => void;
-  nameFilter: string;
-  setNameFilter: (name: string) => void;
-}
 
 export function AdminUsersFilters({
   roleFilter,

@@ -1,18 +1,11 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useWeeklyCalendar, useGoogleCalendar, useTrainingPlanSync } from '../../hooks/useCalendar';
 import type { CalendarEvent } from '../../types/calendar.types';
+import type { WeeklyCalendarProps } from '../../types/calendar-components.types';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { toast } from 'sonner';
 import TrainingDayModal from './TrainingDayModal';
 import '../../styles/WeeklyCalendar.css';
-
-interface WeeklyCalendarProps {
-  activeTrainingPlanId?: string;
-  autoSyncOnConnect?: boolean;
-  onAutoSyncComplete?: () => void;
-}
-
-
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, autoSyncOnConnect, onAutoSyncComplete }) => {
   const DAYS_OF_WEEK = [

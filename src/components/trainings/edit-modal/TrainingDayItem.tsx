@@ -5,20 +5,7 @@ import type { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { TrainingDay } from '../../../types/training-plan.types';
 import { ExerciseItem } from './ExerciseItem';
-
-interface TrainingDayItemProps {
-  day: TrainingDay;
-  dayIndex: number;
-  onRemove: () => void;
-  onDuplicate: () => void;
-  onUpdate: (updates: Partial<TrainingDay>) => void;
-  addExercise: (dayIndex: number) => void;
-  removeExercise: (dayIndex: number, exerciseIndex: number) => void;
-  updateExerciseField: (dayIndex: number, exerciseIndex: number, field: string, value: unknown) => void;
-  addSet: (dayIndex: number, exerciseIndex: number) => void;
-  removeSet: (dayIndex: number, exerciseIndex: number, setIndex: number) => void;
-  updateSet: (dayIndex: number, exerciseIndex: number, setIndex: number, updates: Record<string, unknown>) => void;
-}
+import type { TrainingDayItemProps } from '../../../types/trainings-components.types';
 
 export function TrainingDayItem({ 
   day, 

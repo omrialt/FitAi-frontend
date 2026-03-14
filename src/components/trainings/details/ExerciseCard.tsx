@@ -7,13 +7,7 @@ import { IconVideo, IconHistory, IconPlus } from '@tabler/icons-react';
 import { useState, Activity } from 'react';
 import type { Exercise, WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryModal } from './SetHistoryModal';
-
-interface ExerciseCardProps {
-  exercise: Exercise;
-  exerciseNumber: number;
-  onVideoClick: (videoUrl: string) => void;
-  onExerciseUpdate?: (updatedExercise: Exercise) => void;
-}
+import type { ExerciseCardProps } from '../../../types/trainings-components.types';
 
 const exerciseTypeLabels: Record<string, string> = {
   regular: 'Regular',

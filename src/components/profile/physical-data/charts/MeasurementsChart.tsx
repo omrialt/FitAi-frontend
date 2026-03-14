@@ -7,10 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useMemo, Activity } from 'react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatChartDate } from '../helpers/calcImprovement';
-
-interface MeasurementsChartProps {
-  data: PhysicalData[];
-}
+import type { MeasurementsChartProps } from '../../../../types/physical-data-components.types';
 
 export function MeasurementsChart({ data }: MeasurementsChartProps) {
 

@@ -1,23 +1,7 @@
 import { Activity } from 'react';
 import { TextInput, Textarea, Select, Grid, NumberInput } from '@mantine/core';
 import type { Difficulty, Target, ProgramType } from '../../../types/training-plan.types';
-
-interface BasicInfoSectionProps {
-  title: string;
-  setTitle: (value: string) => void;
-  description: string;
-  setDescription: (value: string) => void;
-  difficulty: Difficulty;
-  setDifficulty: (value: Difficulty) => void;
-  target: Target | undefined;
-  setTarget: (value: Target | undefined) => void;
-  programType: ProgramType;
-  setProgramType: (value: ProgramType) => void;
-  focus: string;
-  setFocus: (value: string) => void;
-  rotationCycleLength: number | undefined | null;
-  setRotationCycleLength: (value: number | undefined | null) => void;
-}
+import type { BasicInfoSectionProps } from '../../../types/trainings-components.types';
 
 export function BasicInfoSection({ 
   title,
