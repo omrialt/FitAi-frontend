@@ -1,13 +1,33 @@
-// React 19: Using Activity component for performance optimization
 import { Activity } from 'react';
 import { AppLayout } from '../components/AppLayout';
 import { LandingHero } from '../components/LandingHero';
-import { Container, Title, Text, Paper, Grid, Card, Badge, Group } from '@mantine/core';
+import {
+  Container,
+  Stack,
+  Center,
+  Loader,
+  Text,
+  Alert,
+} from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { useAuthStore } from '../store/authStore';
+import { useDashboard } from '../hooks/useDashboard';
+import {
+  WelcomeSection,
+  QuickStatsCards,
+  ActiveTrainingCard,
+  ActiveNutritionCard,
+  BodyProgressCard,
+  RecentRecommendations,
+  UpcomingSchedule,
+  QuickActions,
+  TrainingOverview,
+  NutritionOverview,
+} from '../components/dashboard';
+import '../styles/Dashboard.css';
 
 function DashboardPage() {
-  // React 19: Clean metadata management with custom hook
   const metadata = usePresetMetadata('dashboard', {
     preconnect: ['https://api.fitai.com'],
   });
@@ -17,75 +37,139 @@ function DashboardPage() {
   return (
     <AppLayout>
       {metadata}
-      
+
       {!isAuthenticated ? (
         <LandingHero />
       ) : (
-        <Container size="xl">
-        <Title order={1} mb="xl">
-          Dashboard
-        </Title>
-
-        {/* React 19: Activity components keep state but pause effects when hidden */}
-        <Grid>
-          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-            {/* React 19: Activity - card stays mounted when hidden, preserving state */}
-            <Activity mode="visible">
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Group justify="space-between" mb="xs">
-                  <Text fw={500}>Active Workouts</Text>
-                  <Badge color="indigo">12</Badge>
-                </Group>
-                <Text size="sm" c="dimmed">
-                  Your current training plans
-                </Text>
-              </Card>
-            </Activity>
-          </Grid.Col>
-
-          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-            <Activity mode="visible">
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Group justify="space-between" mb="xs">
-                  <Text fw={500}>Completed Sessions</Text>
-                  <Badge color="green">45</Badge>
-                </Group>
-                <Text size="sm" c="dimmed">
-                  Total workouts completed
-                </Text>
-              </Card>
-            </Activity>
-          </Grid.Col>
-
-          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-            <Activity mode="visible">
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Group justify="space-between" mb="xs">
-                  <Text fw={500}>AI Recommendations</Text>
-                  <Badge color="cyan">3</Badge>
-                </Group>
-                <Text size="sm" c="dimmed">
-                  Personalized suggestions
-                </Text>
-              </Card>
-            </Activity>
-          </Grid.Col>
-        </Grid>
-
-        {/* React 19: Activity - recent activity section stays mounted when not visible */}
-        <Activity mode="visible">
-          <Paper shadow="xs" p="xl" mt="xl" radius="md">
-            <Title order={2} size="h3" mb="md">
-              Recent Activity
-            </Title>
-            <Text c="dimmed">
-              Your recent workout history and AI-generated insights will appear here.
-            </Text>
-          </Paper>
-        </Activity>
-        </Container>
+        <DashboardContent />
       )}
     </AppLayout>
+  );
+}
+
+function DashboardContent() {
+  const {
+    user,
+    loading,
+    error,
+    currentStatus,
+    activeTrainingPlan,
+    activeNutritionPlan,
+    trainingPlans,
+    nutritionPlans,
+    latestPhysicalData,
+    weightProgress,
+    bmi,
+    progressStats,
+    aiRecommendations,
+  } = useDashboard();
+
+  if (loading) {
+    return (
+      <Center py={100}>
+        <Stack align="center" gap="md">
+          <Loader color="indigo" size="lg" />
+          <Text c="dimmed" size="sm">
+            Loading your dashboard...
+          </Text>
+        </Stack>
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container size="xl" py="xl">
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          title="Failed to load dashboard"
+          color="red"
+          variant="light"
+        >
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!user) return null;
+
+  return (
+    <Container size="xl" py="md">
+      <Stack gap="lg">
+        {/* Welcome Banner */}
+        <div className="dashboard-section">
+          <Activity mode="visible">
+            <WelcomeSection user={user} currentStatus={currentStatus} />
+          </Activity>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="dashboard-section">
+          <Activity mode="visible">
+            <QuickStatsCards
+              trainingPlans={trainingPlans}
+              nutritionPlans={nutritionPlans}
+              progressStats={progressStats}
+              bmi={bmi}
+            />
+          </Activity>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="dashboard-section">
+          <Activity mode="visible">
+            <QuickActions />
+          </Activity>
+        </div>
+
+        {/* Active Plans Row */}
+        <div className="dashboard-section">
+          <div className="dashboard-grid-main">
+            <Activity mode="visible">
+              <ActiveTrainingCard
+                plan={activeTrainingPlan}
+                currentStatus={currentStatus}
+              />
+            </Activity>
+            <Activity mode="visible">
+              <ActiveNutritionCard plan={activeNutritionPlan} />
+            </Activity>
+            <Activity mode="visible">
+              <BodyProgressCard
+                latestPhysicalData={latestPhysicalData}
+                weightProgress={weightProgress}
+                progressStats={progressStats}
+              />
+            </Activity>
+          </div>
+        </div>
+
+        {/* Overview + Recommendations Row */}
+        <div className="dashboard-section">
+          <div className="dashboard-grid-bottom">
+            <Activity mode="visible">
+              <TrainingOverview plans={trainingPlans} />
+            </Activity>
+            <Activity mode="visible">
+              <NutritionOverview plans={nutritionPlans} />
+            </Activity>
+          </div>
+        </div>
+
+        {/* Recommendations + Schedule Row */}
+        <div className="dashboard-section">
+          <div className="dashboard-grid-bottom">
+            <Activity mode="visible">
+              <RecentRecommendations recommendations={aiRecommendations} />
+            </Activity>
+            <Activity mode="visible">
+              <UpcomingSchedule />
+            </Activity>
+          </div>
+        </div>
+      </Stack>
+    </Container>
   );
 }
 

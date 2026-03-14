@@ -1,0 +1,237 @@
+/* ============================================
+   Dashboard Styles
+   Follows the app's Mantine + CSS approach
+   with dark mode support and responsive design
+   ============================================ */
+
+/* Welcome Section */
+.dashboard-welcome {
+  background: linear-gradient(135deg, var(--mantine-color-indigo-6) 0%, var(--mantine-color-cyan-6) 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-welcome::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.dashboard-welcome::after {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: -10%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+.dashboard-welcome-name {
+  color: white;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.dashboard-welcome-streak {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 12px;
+}
+
+/* Stat Cards */
+.dashboard-stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-stat-value {
+  line-height: 1.2;
+}
+
+/* Main Dashboard Cards */
+.dashboard-card {
+  transition: box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Metric Cards inside Body Progress */
+.dashboard-metric-card {
+  background: var(--mantine-color-gray-0);
+  border-radius: 8px;
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-metric-card {
+  background: var(--mantine-color-dark-6);
+}
+
+/* Plan Row Items */
+.dashboard-plan-row {
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.dashboard-plan-row:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-plan-row:hover {
+  background-color: var(--mantine-color-dark-6);
+}
+
+/* Schedule Items */
+.dashboard-schedule-item {
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.dashboard-schedule-item:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-schedule-item:hover {
+  background-color: var(--mantine-color-dark-6);
+}
+
+/* Quick Action Buttons */
+.dashboard-quick-action {
+  transition: transform 0.15s ease;
+}
+
+.dashboard-quick-action:hover {
+  transform: translateY(-1px);
+}
+
+/* Loading Skeleton */
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Grid layout helper for dashboard */
+.dashboard-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.dashboard-grid-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid-main {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboard-grid-main {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.dashboard-grid-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Smooth fade-in animation */
+@keyframes dashboardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-section {
+  animation: dashboardFadeIn 0.4s ease forwards;
+}
+
+.dashboard-section:nth-child(1) { animation-delay: 0ms; }
+.dashboard-section:nth-child(2) { animation-delay: 60ms; }
+.dashboard-section:nth-child(3) { animation-delay: 120ms; }
+.dashboard-section:nth-child(4) { animation-delay: 180ms; }
+.dashboard-section:nth-child(5) { animation-delay: 240ms; }
+.dashboard-section:nth-child(6) { animation-delay: 300ms; }
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .dashboard-welcome {
+    padding: 16px !important;
+  }
+
+  .dashboard-welcome-name {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-welcome-streak {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-stat-card {
+    padding: 12px !important;
+  }
+
+  .dashboard-stat-value {
+    font-size: 1.1rem !important;
+  }
+
+  .dashboard-quick-action {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .dashboard-quick-action .mantine-Button-section {
+    display: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .dashboard-quick-action,
+  .dashboard-welcome-streak {
+    display: none !important;
+  }
+}

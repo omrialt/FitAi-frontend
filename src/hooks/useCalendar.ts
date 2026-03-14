@@ -74,6 +74,7 @@ export function useWeeklyCalendar(weekStart?: Date) {
     try {
       setLoading(true);
       const calendarEvents = await calendarSyncService.getWeeklyCalendar(weekStart);
+      console.log('Fetched calendar events:', calendarEvents);
       setEvents(calendarEvents);
       setError(null);
     } catch (err: any) {

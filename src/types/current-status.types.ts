@@ -3,8 +3,9 @@ export type Phase = 'bulk' | 'cut' | 'maintain';
 export interface CurrentStatus {
   _id: string;
   userId: string;
-  activeTrainingPlanId: string | null;
-  activeMenuId: string | null;
+  // Backend populates these refs — can be string ID or full populated object
+  activeTrainingPlanId: string | Record<string, unknown> | null;
+  activeMenuId: string | Record<string, unknown> | null;
   lastWorkoutDate: Date | null;
   nextWorkoutDate: Date | null;
   phase: Phase;
