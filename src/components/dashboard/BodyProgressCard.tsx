@@ -7,6 +7,7 @@ import {
   Badge,
   SimpleGrid,
   ThemeIcon,
+  Button,
 } from '@mantine/core';
 import {
   IconScale,
@@ -15,10 +16,13 @@ import {
   IconTrendingUp,
   IconTrendingDown,
   IconMinus,
+  IconPlus,
 } from '@tabler/icons-react';
-import type { PhysicalData, WeightProgressData } from '../../types/physical-data.types';
-import type { ProgressStats } from '../../types/dashboard.types';
+import { useState } from 'react';
 import type { BodyProgressCardProps } from '../../types/dashboard-components.types';
+import type { CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../../types/physical-data.types';
+import { MeasurementModal } from '../profile/physical-data/modals/MeasurementModal';
+import { physicalDataService } from '../../services/physical-data.service';
 
 function TrendIcon({ value }: { value: number }) {
   if (value > 0)
@@ -32,14 +36,38 @@ export function BodyProgressCard({
   latestPhysicalData,
   weightProgress,
   progressStats,
+  onDataUpdate,
 }: BodyProgressCardProps) {
   const hasData = latestPhysicalData != null;
+  const [modalOpened, setModalOpened] = useState(false);
+
+  const handleSave = async (data: CreatePhysicalDataDto) => {
+    await physicalDataService.create(data);
+    onDataUpdate?.();
+  };
+
+  const handleUpdate = async (id: string, data: UpdatePhysicalDataDto) => {
+    await physicalDataService.update(id, data);
+    onDataUpdate?.();
+  };
 
   return (
+    <>
     <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-      <Group gap="xs" mb="lg">
-        <IconScale size={20} color="var(--mantine-color-cyan-5)" />
-        <Title order={4}>Body Progress</Title>
+      <Group justify="space-between" mb="lg">
+        <Group gap="xs">
+          <IconScale size={20} color="var(--mantine-color-cyan-5)" />
+          <Title order={4}>Body Progress</Title>
+        </Group>
+        <Button
+          variant="light"
+          color="cyan"
+          size="xs"
+          leftSection={<IconPlus size={14} />}
+          onClick={() => setModalOpened(true)}
+        >
+          {hasData ? 'Update' : 'Add Record'}
+        </Button>
       </Group>
 
       {!hasData ? (
@@ -185,5 +213,14 @@ export function BodyProgressCard({
         </Stack>
       )}
     </Paper>
+
+    <MeasurementModal
+      opened={modalOpened}
+      onClose={() => setModalOpened(false)}
+      lastRecord={latestPhysicalData}
+      onSave={handleSave}
+      onUpdate={handleUpdate}
+    />
+  </>
   );
 }

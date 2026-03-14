@@ -16,12 +16,14 @@ export interface ActiveNutritionCardProps {
 export interface ActiveTrainingCardProps {
   plan: TrainingPlan | null;
   currentStatus: CurrentStatus | null;
+  onPlanUpdate?: (updatedPlan: TrainingPlan) => void;
 }
 
 export interface BodyProgressCardProps {
   latestPhysicalData: PhysicalData | null;
   weightProgress: WeightProgressData | null;
   progressStats: ProgressStats | null;
+  onDataUpdate?: () => void;
 }
 
 export interface NutritionOverviewProps {

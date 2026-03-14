@@ -7,6 +7,8 @@ import {
   Stack,
   Button,
   Divider,
+  Modal,
+  ScrollArea,
 } from '@mantine/core';
 import {
   IconBarbell,
@@ -15,10 +17,14 @@ import {
   IconFlame,
   IconChevronRight,
 } from '@tabler/icons-react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { TrainingPlan } from '../../types/training-plan.types';
-import type { CurrentStatus } from '../../types/current-status.types';
+import type { TrainingPlan, Exercise } from '../../types/training-plan.types';
 import type { ActiveTrainingCardProps } from '../../types/dashboard-components.types';
+import { DaysSection } from '../trainings/details/DaysSection';
+import { VideoModal } from '../trainings/details/VideoModal';
+import { trainingPlanService } from '../../services/training-plan.service';
+import { toast } from 'sonner';
 
 const difficultyColor: Record<string, string> = {
   beginner: 'green',
@@ -29,8 +35,46 @@ const difficultyColor: Record<string, string> = {
 export function ActiveTrainingCard({
   plan,
   currentStatus,
+  onPlanUpdate,
 }: ActiveTrainingCardProps) {
   const navigate = useNavigate();
+  const [modalOpened, setModalOpened] = useState(false);
+  const [videoModalOpened, setVideoModalOpened] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+  const [localPlan, setLocalPlan] = useState<TrainingPlan | null>(plan);
+
+  useEffect(() => {
+    setLocalPlan(plan);
+  }, [plan]);
+
+  const handleVideoClick = (videoUrl: string) => {
+    setCurrentVideoUrl(videoUrl);
+    setVideoModalOpened(true);
+  };
+
+  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => {
+    if (!localPlan) return;
+
+    const updatedDays = [...localPlan.days];
+    updatedDays[dayIndex] = {
+      ...updatedDays[dayIndex],
+      exercises: [
+        ...updatedDays[dayIndex].exercises.slice(0, exerciseIndex),
+        updatedExercise,
+        ...updatedDays[dayIndex].exercises.slice(exerciseIndex + 1),
+      ],
+    };
+
+    try {
+      await trainingPlanService.update(localPlan._id, { days: updatedDays });
+      const updatedPlan = { ...localPlan, days: updatedDays };
+      setLocalPlan(updatedPlan);
+      onPlanUpdate?.(updatedPlan);
+      toast.success('Exercise history updated');
+    } catch {
+      toast.error('Failed to update exercise history');
+    }
+  };
 
   if (!plan) {
     return (
@@ -66,6 +110,7 @@ export function ActiveTrainingCard({
     : null;
 
   return (
+    <>
     <Paper className="dashboard-card" radius="md" p="lg" withBorder>
       <Group justify="space-between" mb="md">
         <Group gap="xs">
@@ -135,12 +180,52 @@ export function ActiveTrainingCard({
           color="indigo"
           size="xs"
           rightSection={<IconChevronRight size={14} />}
-          onClick={() => navigate(`/training-plans/${plan._id}`)}
+          onClick={() => setModalOpened(true)}
           ml="auto"
         >
           View Plan
         </Button>
       </Group>
     </Paper>
+
+    {/* Plan Details Modal */}
+    <Modal
+      opened={modalOpened}
+      onClose={() => setModalOpened(false)}
+      title={
+        <Group gap="xs">
+          <IconBarbell size={18} color="var(--mantine-color-indigo-5)" />
+          <Text fw={600} size="lg">{localPlan?.title}</Text>
+          {localPlan && (
+            <Badge color={difficultyColor[localPlan.difficulty] || 'gray'} size="sm">
+              {localPlan.difficulty}
+            </Badge>
+          )}
+        </Group>
+      }
+      size="xl"
+      scrollAreaComponent={ScrollArea.Autosize}
+    >
+      {localPlan && (
+        <Stack gap="md">
+          {localPlan.description && (
+            <Text size="sm" c="dimmed">{localPlan.description}</Text>
+          )}
+          <DaysSection
+            days={localPlan.days}
+            onVideoClick={handleVideoClick}
+            onExerciseUpdate={handleExerciseUpdate}
+          />
+        </Stack>
+      )}
+    </Modal>
+
+    {/* Video Modal */}
+    <VideoModal
+      opened={videoModalOpened}
+      onClose={() => setVideoModalOpened(false)}
+      videoUrl={currentVideoUrl}
+    />
+  </>
   );
 }
