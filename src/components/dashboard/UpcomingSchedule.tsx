@@ -6,32 +6,56 @@ import {
   Stack,
   Badge,
   ThemeIcon,
+  Button,
 } from '@mantine/core';
 import {
   IconCalendarEvent,
   IconBarbell,
   IconBrandGoogle,
+  IconChevronRight,
 } from '@tabler/icons-react';
-import { startOfWeek } from 'date-fns';
+import { startOfWeek, startOfDay, addDays, addWeeks } from 'date-fns';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useWeeklyCalendar } from '../../hooks/useCalendar';
 
 export function UpcomingSchedule() {
+  const navigate = useNavigate();
   const weekStart = useMemo(() => startOfWeek(new Date(), { weekStartsOn: 0 }), []);
-  const { events, loading } = useWeeklyCalendar(weekStart);
+  const nextWeekStart = useMemo(() => addWeeks(weekStart, 1), [weekStart]);
 
-  // Get upcoming events (from now onwards), sorted by start time
-  const now = new Date();
-  const upcoming = events
-    .filter((e) => new Date(e.start) >= now)
-    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-    .slice(0, 5);
+  const { events: thisWeekEvents, loading: loadingThis } = useWeeklyCalendar(weekStart);
+  const { events: nextWeekEvents, loading: loadingNext } = useWeeklyCalendar(nextWeekStart);
+
+  const loading = loadingThis || loadingNext;
+
+  // Show events from start of today through end of day+4 (5 days total)
+  const today = startOfDay(new Date());
+  const endRange = addDays(today, 5);
+
+  const upcoming = [...thisWeekEvents, ...nextWeekEvents]
+    .filter((e) => {
+      const start = new Date(e.start);
+      return start >= today && start < endRange;
+    })
+    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
   return (
     <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-      <Group gap="xs" mb="lg">
-        <IconCalendarEvent size={20} color="var(--mantine-color-blue-5)" />
-        <Title order={4}>Upcoming Schedule</Title>
+      <Group justify="space-between" mb="lg">
+        <Group gap="xs">
+          <IconCalendarEvent size={20} color="var(--mantine-color-blue-5)" />
+          <Title order={4}>Upcoming Schedule</Title>
+        </Group>
+        <Button
+          variant="subtle"
+          color="blue"
+          size="xs"
+          rightSection={<IconChevronRight size={14} />}
+          onClick={() => navigate('/calendar')}
+        >
+          View All
+        </Button>
       </Group>
 
       {loading ? (
