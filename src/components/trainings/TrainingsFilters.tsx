@@ -8,13 +8,7 @@
 import { Grid, Select, TextInput, Paper } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import type { TrainingFilters } from '../../types/training.types';
-
-interface TrainingsFiltersProps {
-  filters: TrainingFilters;
-  onFiltersChange: (filters: TrainingFilters) => void;
-  search: string;
-  onSearchChange: (search: string) => void;
-}
+import type { TrainingsFiltersProps } from '../../types/trainings-components.types';
 
 export function TrainingsFilters({
   filters,

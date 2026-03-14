@@ -3,18 +3,7 @@ import { IconTrash, IconGripVertical } from '@tabler/icons-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Exercise } from '../../../types/training-plan.types';
-
-interface ExerciseItemProps {
-  exercise: Exercise;
-  exerciseIndex: number;
-  dayIndex: number;
-  onRemove: () => void;
-  updateExerciseField: (dayIndex: number, exerciseIndex: number, field: string, value: unknown) => void;
-  addSet: (dayIndex: number, exerciseIndex: number) => void;
-  removeSet: (dayIndex: number, exerciseIndex: number, setIndex: number) => void;
-  updateSet: (dayIndex: number, exerciseIndex: number, setIndex: number, updates: Record<string, unknown>) => void;
-  id: string;
-}
+import type { ExerciseItemProps } from '../../../types/trainings-components.types';
 
 export function ExerciseItem({ 
   exercise,

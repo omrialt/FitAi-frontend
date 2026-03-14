@@ -5,15 +5,7 @@
 import { MultiSelect, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import type { User } from "../../types/auth.types";
-
-type ObjectType = "trainingPlan" | "nutritionPlan";
-
-interface SharedAccessSectionProps {
-  allUsers: User[];
-  sharedAccess: Array<{ accessLevel: string; userId: string }>;
-  handleViewAccessChange: (userIds: string[]) => void;
-  objectType: ObjectType;
-}
+import type { SharedAccessSectionProps, SharedObjectType as ObjectType } from '../../types/common.types';
 
 const getShareDescription = (objectType: ObjectType): { title: string; description: string } => {
   switch (objectType) {

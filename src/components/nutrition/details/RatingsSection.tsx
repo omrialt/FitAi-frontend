@@ -6,10 +6,7 @@ import { Stack, Title, Card, Text, Group, Box, Divider, Avatar } from '@mantine/
 import { StarRating } from '../../common/StarRating';
 import type { Rating } from '../../../types/nutrition.types';
 import type { User } from '../../../types/auth.types';
-
-interface RatingsSectionProps {
-  ratings: Rating[];
-}
+import type { RatingsSectionProps } from '../../../types/nutrition-components.types';
 
 export function RatingsSection({ ratings }: RatingsSectionProps) {
   // Format date as dd/mm/yyyy

@@ -5,16 +5,7 @@
 import { Box, Text } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-interface ChartDataPoint {
-  date: string;
-  weight: number;
-  reps: number;
-  isTarget?: boolean;
-}
-
-interface SetHistoryChartProps {
-  chartData: ChartDataPoint[];
-}
+import type { ChartDataPoint, SetHistoryChartProps } from '../../../types/trainings-components.types';
 
 export function SetHistoryChart({ chartData }: SetHistoryChartProps) {
   return (

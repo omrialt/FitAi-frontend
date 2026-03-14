@@ -4,10 +4,7 @@
 
 import { Group, Button, Title } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-
-interface PhysicalDataHeaderProps {
-  onAddMeasurement: () => void;
-}
+import type { PhysicalDataHeaderProps } from '../../../types/physical-data-components.types';
 
 export function PhysicalDataHeader({ onAddMeasurement }: PhysicalDataHeaderProps) {
   return (

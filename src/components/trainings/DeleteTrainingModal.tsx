@@ -7,13 +7,7 @@
 import { Modal, Text, Button, Group, Stack } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import type { TrainingPlan } from '../../types/training-plan.types';
-
-interface DeleteTrainingModalProps {
-  opened: boolean;
-  onClose: () => void;
-  training: TrainingPlan | null;
-  onConfirm: () => void;
-}
+import type { DeleteTrainingModalProps } from '../../types/trainings-components.types';
 
 export function DeleteTrainingModal({
   opened,

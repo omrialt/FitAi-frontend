@@ -25,20 +25,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
-import type { LoginCredentials, RegisterData, User, AuthTokens } from '../types/auth.types';
+import type { LoginCredentials, RegisterData, User, AuthTokens, UseAuthReturn } from '../types/auth.types';
 import api from '../services/api';
-
-interface UseAuthReturn {
-  user: User | null;
-  tokens: AuthTokens | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshToken: () => Promise<void>;
-  updateProfile: (data: Partial<User>) => Promise<void>;
-}
 
 export function useAuth(): UseAuthReturn {
   const navigate = useNavigate();

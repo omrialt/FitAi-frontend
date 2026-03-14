@@ -7,18 +7,7 @@
 import { Stack, Text } from "@mantine/core";
 import { NutritionsCard } from "./NutritionsCard";
 import type { NutritionPlan } from "../../types/nutrition.types";
-
-interface NutritionsCardListProps {
-  nutritionPlans: NutritionPlan[];
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (nutritionPlan: NutritionPlan) => void;
-  onExportExcel: (nutritionPlan: NutritionPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { NutritionsCardListProps } from '../../types/nutrition-components.types';
 
 export function NutritionsCardList({
   nutritionPlans,

@@ -22,12 +22,7 @@ import {
   calculateAge
 } from '../helpers/calcRanges';
 import { useAuth } from '../../../../hooks/useAuth';
-
-interface LatestRecordCardProps {
-  record: PhysicalData;
-  previousRecord?: PhysicalData | null;
-  bmi?: { bmi: number; category: string };
-}
+import type { LatestRecordCardProps } from '../../../../types/physical-data-components.types';
 
 export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCardProps) {
   const { user } = useAuth();

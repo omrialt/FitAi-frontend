@@ -13,19 +13,7 @@ import {
 } from '@tabler/icons-react';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
 import type { TrainingPlan } from '../../types/training-plan.types';
-
-interface TrainingsCardProps {
-  training: TrainingPlan;
-  isCoach?: boolean;
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (training: TrainingPlan) => void;
-  onExportExcel: (training: TrainingPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { TrainingsCardProps } from '../../types/trainings-components.types';
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {

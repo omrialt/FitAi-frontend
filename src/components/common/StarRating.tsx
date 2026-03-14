@@ -5,15 +5,7 @@
 import { Group, ActionIcon, Text } from '@mantine/core';
 import { IconStar, IconStarFilled } from '@tabler/icons-react';
 import { useState } from 'react';
-
-interface StarRatingProps {
-  rating: number;
-  onChange?: (rating: number) => void;
-  readonly?: boolean;
-  size?: number;
-  showValue?: boolean;
-  color?: string;
-}
+import type { StarRatingProps } from '../../types/common.types';
 
 export function StarRating({
   rating,

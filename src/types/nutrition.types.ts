@@ -5,11 +5,12 @@
 
 import type { User } from './user.types';
 
+import type { AccessLevel, ObjectType, SharedAccessEntry } from './training-plan.types';
+export type { AccessLevel, ObjectType, SharedAccessEntry };
+
 // Enums
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 export type Target = 'maintain' | 'cut' | 'bulk';
-export type AccessLevel = 'view' | 'edit';
-export type ObjectType = 'trainingPlan' | 'nutritionPlan';
 
 // Food item
 export interface Food {
@@ -36,12 +37,7 @@ export interface Rating {
   createdAt: Date | string;
 }
 
-// Shared access entry
-export interface SharedAccessEntry {
-  userId: string;
-  accessLevel: AccessLevel;
-  objectType: ObjectType;
-}
+// SharedAccessEntry is re-exported from training-plan.types
 
 // Main nutrition plan interface
 export interface NutritionPlan {
@@ -89,6 +85,13 @@ export interface NutritionPlansResponse {
 // API Response wrapper (backend uses TransformInterceptor)
 export interface NutritionPlansApiResponse {
   data: NutritionPlansResponse;
+  timestamp: string;
+  path: string;
+}
+
+// API response wrapper for array endpoints (TransformInterceptor)
+export interface NutritionPlansArrayResponse {
+  data: NutritionPlan[];
   timestamp: string;
   path: string;
 }

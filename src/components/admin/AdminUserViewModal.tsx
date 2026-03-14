@@ -1,12 +1,7 @@
 import { Modal, Stack, Group, Avatar, Text, Badge, Button, Divider } from "@mantine/core";
 import { IconUserCircle } from "@tabler/icons-react";
 import type { User } from "../../types/auth.types";
-
-interface AdminUserViewModalProps {
-  opened: boolean;
-  onClose: () => void;
-  user: User | null;
-}
+import type { AdminUserViewModalProps } from '../../types/admin.types';
 
 const getRoleColor = (role: string) => {
   switch (role.toLowerCase()) {

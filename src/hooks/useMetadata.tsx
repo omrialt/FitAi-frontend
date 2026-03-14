@@ -4,20 +4,7 @@
  */
 
 import { useMemo } from 'react';
-
-interface MetadataOptions {
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  preconnect?: string[];
-  prefetchDNS?: string[];
-  preload?: Array<{
-    href: string;
-    as: string;
-    type?: string;
-    crossOrigin?: "" | "anonymous" | "use-credentials";
-  }>;
-}
+import type { MetadataOptions } from '../types/metadata.types';
 
 // Preset metadata for common pages
 const PRESET_METADATA: Record<string, MetadataOptions> = {

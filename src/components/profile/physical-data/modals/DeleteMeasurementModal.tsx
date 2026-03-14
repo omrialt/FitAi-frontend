@@ -6,13 +6,7 @@ import { Modal, Text, Group, Button, Stack } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatDate } from '../helpers/calcImprovement';
-
-interface DeleteMeasurementModalProps {
-  opened: boolean;
-  onClose: () => void;
-  measurement: PhysicalData | null;
-  onConfirm: () => Promise<void>;
-}
+import type { DeleteMeasurementModalProps } from '../../../../types/physical-data-components.types';
 
 export function DeleteMeasurementModal({
   opened,

@@ -1,9 +1,6 @@
 import React from 'react';
 import type { User } from '../../types';
-
-interface ProfileInfoProps {
-  user: User;
-}
+import type { ProfileInfoProps, InfoItemProps } from '../../types/profile.types';
 
 export const ProfileInfo: React.FC<ProfileInfoProps> = ({ user }) => {
   return (
@@ -26,11 +23,6 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ user }) => {
     </div>
   );
 };
-
-interface InfoItemProps {
-  label: string;
-  value?: string;
-}
 
 const InfoItem: React.FC<InfoItemProps> = ({ label, value }) => {
   return (

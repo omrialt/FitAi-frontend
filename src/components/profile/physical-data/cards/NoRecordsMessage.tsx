@@ -4,10 +4,7 @@
 
 import { Paper, Stack, Text, Button } from '@mantine/core';
 import { IconRuler } from '@tabler/icons-react';
-
-interface NoRecordsMessageProps {
-  onAddMeasurement: () => void;
-}
+import type { NoRecordsMessageProps } from '../../../../types/physical-data-components.types';
 
 export function NoRecordsMessage({ onAddMeasurement }: NoRecordsMessageProps) {
   return (

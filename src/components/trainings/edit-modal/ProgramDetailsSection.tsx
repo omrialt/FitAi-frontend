@@ -1,18 +1,6 @@
 import { NumberInput, Grid, Checkbox } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-
-interface ProgramDetailsSectionProps {
-  estimatedDuration: number | undefined;
-  setEstimatedDuration: (value: number | undefined) => void;
-  estimatedCalories: number | undefined;
-  setEstimatedCalories: (value: number | undefined) => void;
-  startDate: string | undefined;
-  setStartDate: (value: string | undefined) => void;
-  endDate: string | undefined | null;
-  setEndDate: (value: string | undefined | null) => void;
-  isActive: boolean;
-  setIsActive: (value: boolean) => void;
-}
+import type { ProgramDetailsSectionProps } from '../../../types/trainings-components.types';
 
 export function ProgramDetailsSection({ 
   estimatedDuration,

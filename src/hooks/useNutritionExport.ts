@@ -7,19 +7,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import type { NutritionPlan, Meal } from '../types/nutrition.types';
-
-interface UseNutritionExportOptions {
-  filename?: string;
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-}
-
-interface UseNutritionExportReturn {
-  exportToPDF: (data: NutritionPlan[]) => void;
-  exportToExcel: (data: NutritionPlan[]) => void;
-  isExporting: boolean;
-  error: Error | null;
-}
+import type { UseNutritionExportOptions, UseNutritionExportReturn } from '../types/export.types';
 
 export function useNutritionExport(options: UseNutritionExportOptions = {}): UseNutritionExportReturn {
   const { filename = 'nutrition-plan', onSuccess, onError } = options;

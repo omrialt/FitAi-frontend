@@ -3,13 +3,8 @@ import { Modal } from '@mantine/core';
 import { format } from 'date-fns';
 import type { CalendarEvent } from '../../types/calendar.types';
 import type { Exercise, ExerciseSet } from '../../types/training-plan.types';
+import type { TrainingDayModalProps } from '../../types/calendar-components.types';
 import '../../styles/TrainingDayModal.css';
-
-interface TrainingDayModalProps {
-  opened: boolean;
-  onClose: () => void;
-  event: CalendarEvent | null;
-}
 
 const TrainingDayModal: React.FC<TrainingDayModalProps> = ({ opened, onClose, event }) => {
   if (!event) return null;

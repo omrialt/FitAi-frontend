@@ -5,11 +5,7 @@
 import { Stack, Textarea, Button, Card, Title, Group } from '@mantine/core';
 import { useState } from 'react';
 import { StarRating } from '../../common/StarRating';
-
-interface AddRatingProps {
-  onSubmit: (rating: number, comment: string) => Promise<void>;
-  loading?: boolean;
-}
+import type { AddRatingProps } from '../../../types/nutrition-components.types';
 
 export function AddRating({ onSubmit, loading = false }: AddRatingProps) {
   const [rating, setRating] = useState(0);

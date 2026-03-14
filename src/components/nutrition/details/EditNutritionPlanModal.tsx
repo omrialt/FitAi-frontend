@@ -5,13 +5,7 @@
 import { Modal, Button, Stack, Group, TextInput, Textarea, NumberInput, Select } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import type { NutritionPlan, Target } from '../../../types/nutrition.types';
-
-interface EditNutritionPlanModalProps {
-  opened: boolean;
-  onClose: () => void;
-  plan: NutritionPlan;
-  onSave: (data: Partial<NutritionPlan>) => Promise<void>;
-}
+import type { EditNutritionPlanModalProps } from '../../../types/nutrition-components.types';
 
 export function EditNutritionPlanModal({
   opened,

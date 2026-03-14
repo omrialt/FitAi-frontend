@@ -7,23 +7,7 @@ import { Stack, Title, Card, Text, Avatar, Group, Box, Button, Modal, Select } f
 import { useState, Activity } from 'react';
 import { IconUser } from '@tabler/icons-react';
 import type { User } from '../../types/auth.types';
-
-interface SharedAccessEntry {
-  userId: string;
-  accessLevel?: string;
-  objectType?: string;
-}
-
-interface SharedWithSectionProps {
-  sharedAccess: SharedAccessEntry[];
-  allUsers: User[];
-  title?: string;
-  emptyMessage?: string;
-  showActions?: boolean;
-  onShare?: (userId: string, accessLevel: string) => Promise<void>;
-  onRevoke?: (userId: string) => Promise<void>;
-  loading?: boolean;
-}
+import type { SharedWithEntry as SharedAccessEntry, SharedWithSectionProps } from '../../types/common.types';
 
 export function SharedWithSection({
   sharedAccess,

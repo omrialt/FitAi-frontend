@@ -16,10 +16,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import type { NutritionPlan } from '../../types/nutrition.types';
-
-interface ActiveNutritionCardProps {
-  plan: NutritionPlan | null;
-}
+import type { ActiveNutritionCardProps } from '../../types/dashboard-components.types';
 
 export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
   const navigate = useNavigate();

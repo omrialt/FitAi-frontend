@@ -5,11 +5,7 @@
 import { Stack, Text } from '@mantine/core';
 import { AdminUsersCard } from './AdminUsersCard';
 import type { User } from '../../types/auth.types';
-
-interface AdminUsersCardListProps {
-  users: User[];
-  onView: (user: User) => void;
-}
+import type { AdminUsersCardListProps } from '../../types/admin.types';
 
 export function AdminUsersCardList({
   users,

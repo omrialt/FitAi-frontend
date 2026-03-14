@@ -62,3 +62,165 @@ export type {
   CreateUserDto,
   UserResponse,
 } from './user.types';
+
+// Dashboard types
+export type {
+  ProgressStats,
+  AiRecommendation,
+  DashboardData,
+} from './dashboard.types';
+
+// Store types
+export type {
+  AuthStore,
+  UIStore,
+} from './store.types';
+
+// Export hook types
+export type {
+  UseExportOptions,
+  UseExportReturn,
+  UseNutritionExportOptions,
+  UseNutritionExportReturn,
+} from './export.types';
+
+// Metadata types
+export type { MetadataOptions } from './metadata.types';
+
+// API hook types
+export type {
+  UseApiOptions,
+  UseApiReturn,
+  UseApiMutationReturn,
+} from './api.types';
+
+// Auth hook types
+export type { UseAuthReturn } from './auth.types';
+
+// Physical data range types
+export type {
+  RangeSegment,
+  BMIRanges,
+  WeightRanges,
+  BodyFatRanges,
+} from './physical-data.types';
+
+// Layout component prop types
+export type {
+  NavItem,
+  AppLayoutProps,
+  ProtectedRouteProps,
+  PublicRouteProps,
+} from './layout.types';
+
+// Admin component prop types
+export type {
+  AdminUsersActionsMenuProps,
+  AdminUsersCardProps,
+  AdminUsersCardListProps,
+  AdminUsersFiltersProps,
+  AdminUsersTableProps,
+  AdminUserViewModalProps,
+} from './admin.types';
+
+// Calendar component prop types
+export type {
+  TrainingDayModalProps,
+  WeeklyCalendarProps,
+} from './calendar-components.types';
+
+// Common component prop types
+export type {
+  BreadcrumbItem,
+  AppBreadcrumbsProps,
+  PaginationControlsProps,
+  PlanType,
+  BasePlanData,
+  NutritionPlanData,
+  TrainingPlanData,
+  PlanHeaderProps,
+  SharedObjectType,
+  SharedAccessSectionProps,
+  SharedWithEntry,
+  SharedWithSectionProps,
+  StarRatingProps,
+} from './common.types';
+
+// Dashboard component prop types
+export type {
+  ActiveNutritionCardProps,
+  ActiveTrainingCardProps,
+  BodyProgressCardProps,
+  NutritionOverviewProps,
+  QuickStatsCardsProps,
+  RecentRecommendationsProps,
+  TrainingOverviewProps,
+  WelcomeSectionProps,
+} from './dashboard-components.types';
+
+// Nutrition component prop types
+export type {
+  DeleteNutritionModalProps,
+  EditNutritionModalProps,
+  NutritionsActionsMenuProps,
+  NutritionsCardProps,
+  NutritionsCardListProps,
+  NutritionsFiltersProps,
+  NutritionsHeaderProps,
+  NutritionsTableProps,
+  AddRatingProps,
+  EditNutritionPlanModalProps,
+  MealSectionProps,
+  RatingsSectionProps,
+  FoodItemProps,
+  MealCardProps,
+  MealsSectionProps,
+} from './nutrition-components.types';
+
+// Training component prop types
+export type {
+  DeleteTrainingModalProps,
+  EditTrainingModalProps,
+  TrainingsActionsMenuProps,
+  TrainingsCardProps,
+  TrainingsCardListProps,
+  TrainingsFiltersProps,
+  TrainingsHeaderProps,
+  TrainingsTableProps,
+  DaysSectionProps,
+  ExerciseCardProps,
+  ChartDataPoint,
+  SetHistoryChartProps,
+  SetHistoryModalProps,
+  VideoModalProps,
+  BasicInfoSectionProps,
+  ExerciseItemProps,
+  ProgramDetailsSectionProps,
+  TrainingDayItemProps,
+  TrainingDaysSectionProps,
+} from './trainings-components.types';
+
+// Profile component prop types
+export type {
+  ProfileAvatarProps,
+  ProfileDetailsProps,
+  ProfileFormProps,
+  ProfileHeaderProps,
+  ProfileInfoProps,
+  InfoItemProps,
+} from './profile.types';
+
+// Physical data component prop types
+export type {
+  PhysicalDataHeaderProps,
+  LatestRecordCardProps,
+  MetricInfoTooltipProps,
+  NoRecordsMessageProps,
+  RangeBarProps,
+  MeasurementsChartProps,
+  DeleteMeasurementModalProps,
+  MeasurementModalProps,
+  MeasurementsTableProps,
+  TableImprovementCellProps,
+} from './physical-data-components.types';
+

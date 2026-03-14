@@ -19,18 +19,7 @@ import {
 } from '@tabler/icons-react';
 import type { NutritionPlan } from '../../types/nutrition.types';
 import '../../styles/DropdownMenu.css';
-
-interface NutritionsActionsMenuProps {
-  nutritionPlan: NutritionPlan;
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (nutritionPlan: NutritionPlan) => void;
-  onExportExcel: (nutritionPlan: NutritionPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { NutritionsActionsMenuProps } from '../../types/nutrition-components.types';
 
 export function NutritionsActionsMenu({
   nutritionPlan,

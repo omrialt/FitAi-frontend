@@ -7,19 +7,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import type { TrainingPlan } from '../types/training-plan.types';
-
-interface UseExportOptions {
-  filename?: string;
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-}
-
-interface UseExportReturn {
-  exportToPDF: (data: TrainingPlan[]) => void;
-  exportToExcel: (data: TrainingPlan[]) => void;
-  isExporting: boolean;
-  error: Error | null;
-}
+import type { UseExportOptions, UseExportReturn } from '../types/export.types';
 
 export function useExport(options: UseExportOptions = {}): UseExportReturn {
   const { filename = 'export', onSuccess, onError } = options;

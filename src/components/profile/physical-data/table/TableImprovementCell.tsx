@@ -4,10 +4,7 @@
 
 import { Text } from '@mantine/core';
 import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react';
-
-interface TableImprovementCellProps {
-  value: string;
-}
+import type { TableImprovementCellProps } from '../../../../types/physical-data-components.types';
 
 export function TableImprovementCell({ value }: TableImprovementCellProps) {
   if (value === '—') {

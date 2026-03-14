@@ -6,12 +6,7 @@ import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantin
 import { Activity } from 'react';
 import type { TrainingDay, Exercise } from '../../../types/training-plan.types';
 import { ExerciseCard } from './ExerciseCard';
-
-interface DaysSectionProps {
-  days: TrainingDay[];
-  onVideoClick: (videoUrl: string) => void;
-  onExerciseUpdate?: (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => void;
-}
+import type { DaysSectionProps } from '../../../types/trainings-components.types';
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 

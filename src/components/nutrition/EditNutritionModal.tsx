@@ -27,16 +27,7 @@ import type { User } from "../../types/auth.types";
 import { useAuth } from "../../hooks/useAuth";
 import { MealsSection } from "./edit-modal/MealsSection";
 import { SharedAccessSection } from "../common/SharedAccessSection";
-
-interface EditNutritionModalProps {
-  opened: boolean;
-  onClose: () => void;
-  nutritionPlan: NutritionPlan | null;
-  onSave: (data: Partial<NutritionPlan>) => void;
-  onCreate?: (data: Partial<NutritionPlan>) => void;
-  createMode?: boolean;
-  allUsers: User[];
-}
+import type { EditNutritionModalProps } from '../../types/nutrition-components.types';
 
 export function EditNutritionModal({
   opened,

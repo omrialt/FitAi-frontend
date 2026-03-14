@@ -5,10 +5,7 @@
 import { Group, Title, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useAuth } from '../../hooks/useAuth';
-
-interface NutritionsHeaderProps {
-  onCreateNew?: () => void;
-}
+import type { NutritionsHeaderProps } from '../../types/nutrition-components.types';
 
 export function NutritionsHeader({ onCreateNew }: NutritionsHeaderProps) {
   const { user } = useAuth();

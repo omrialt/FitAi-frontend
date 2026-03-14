@@ -43,3 +43,27 @@ export interface WeightProgressData {
   data: Array<{ date: Date; weight: number }>;
   change: number;
 }
+
+export interface RangeSegment {
+  label: string;
+  min: number;
+  max: number;
+  color: string;
+}
+
+export interface BMIRanges {
+  ranges: RangeSegment[];
+  explanation: string;
+}
+
+export interface WeightRanges {
+  minWeight: number;
+  maxWeight: number;
+  ranges: RangeSegment[];
+  explanation: string;
+}
+
+export interface BodyFatRanges {
+  ranges: RangeSegment[];
+  explanation: string;
+}

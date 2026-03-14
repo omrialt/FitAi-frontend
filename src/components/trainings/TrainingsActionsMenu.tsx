@@ -19,18 +19,7 @@ import {
 } from '@tabler/icons-react';
 import type { TrainingPlan } from '../../types/training.types';
 import '../../styles/DropdownMenu.css';
-
-interface TrainingsActionsMenuProps {
-  training: TrainingPlan;
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (training: TrainingPlan) => void;
-  onExportExcel: (training: TrainingPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { TrainingsActionsMenuProps } from '../../types/trainings-components.types';
 
 export function TrainingsActionsMenu({
   training,

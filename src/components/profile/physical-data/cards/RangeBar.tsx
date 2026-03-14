@@ -4,12 +4,7 @@
 
 import { Box, Group, Stack, Text } from '@mantine/core';
 import type { RangeSegment } from '../helpers/calcRanges';
-
-interface RangeBarProps {
-  ranges: RangeSegment[];
-  userValue: number;
-  unit?: string;
-}
+import type { RangeBarProps } from '../../../../types/physical-data-components.types';
 
 export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
   // Calculate the total range span

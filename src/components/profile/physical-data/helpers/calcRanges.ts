@@ -2,29 +2,8 @@
  * Helper functions to calculate health metric ranges
  */
 
-export interface RangeSegment {
-  label: string;
-  min: number;
-  max: number;
-  color: string;
-}
-
-export interface BMIRanges {
-  ranges: RangeSegment[];
-  explanation: string;
-}
-
-export interface WeightRanges {
-  minWeight: number;
-  maxWeight: number;
-  ranges: RangeSegment[];
-  explanation: string;
-}
-
-export interface BodyFatRanges {
-  ranges: RangeSegment[];
-  explanation: string;
-}
+import type { RangeSegment, BMIRanges, WeightRanges, BodyFatRanges } from '../../../../types/physical-data.types';
+export type { RangeSegment, BMIRanges, WeightRanges, BodyFatRanges };
 
 /**
  * Calculate BMI ranges (same for all genders)

@@ -7,13 +7,7 @@
 import { Modal, Text, Group, Button, Stack } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import type { NutritionPlan } from "../../types/nutrition.types";
-
-interface DeleteNutritionModalProps {
-  opened: boolean;
-  onClose: () => void;
-  nutritionPlan: NutritionPlan | null;
-  onConfirm: () => void;
-}
+import type { DeleteNutritionModalProps } from '../../types/nutrition-components.types';
 
 export function DeleteNutritionModal({
   opened,

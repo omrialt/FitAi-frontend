@@ -8,18 +8,7 @@ import { Card, Text, Group, Badge, Stack, Divider } from "@mantine/core";
 import { IconStar, IconStarFilled, IconCalendarEvent, IconFlame } from "@tabler/icons-react";
 import { NutritionsActionsMenu } from "./NutritionsActionsMenu";
 import type { NutritionPlan } from "../../types/nutrition.types";
-
-interface NutritionsCardProps {
-  nutritionPlan: NutritionPlan;
-  isAdmin?: boolean;
-  currentUserId?: string;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onExportPDF: (nutritionPlan: NutritionPlan) => void;
-  onExportExcel: (nutritionPlan: NutritionPlan) => void;
-  onDelete?: (id: string) => void;
-  onActivate?: (id: string) => void;
-}
+import type { NutritionsCardProps } from '../../types/nutrition-components.types';
 
 // Star rating component
 function StarRating({ rating, totalRatings }: { rating: number; totalRatings: number }) {

@@ -11,17 +11,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FoodItem } from "./FoodItem";
 import type { Meal, Food, MealType } from "../../../types/nutrition.types";
-
-interface MealCardProps {
-  id: string;
-  meal: Meal;
-  mealIndex: number;
-  onRemove: () => void;
-  onUpdate: (updates: Partial<Meal>) => void;
-  onAddFood: () => void;
-  onRemoveFood: (foodIndex: number) => void;
-  onUpdateFood: (foodIndex: number, updates: Partial<Food>) => void;
-}
+import type { MealCardProps } from '../../../types/nutrition-components.types';
 
 const mealTypeOptions = [
   { value: "breakfast", label: "Breakfast" },

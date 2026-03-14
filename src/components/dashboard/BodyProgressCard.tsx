@@ -17,13 +17,8 @@ import {
   IconMinus,
 } from '@tabler/icons-react';
 import type { PhysicalData, WeightProgressData } from '../../types/physical-data.types';
-import type { ProgressStats } from '../../hooks/useDashboard';
-
-interface BodyProgressCardProps {
-  latestPhysicalData: PhysicalData | null;
-  weightProgress: WeightProgressData | null;
-  progressStats: ProgressStats | null;
-}
+import type { ProgressStats } from '../../types/dashboard.types';
+import type { BodyProgressCardProps } from '../../types/dashboard-components.types';
 
 function TrendIcon({ value }: { value: number }) {
   if (value > 0)

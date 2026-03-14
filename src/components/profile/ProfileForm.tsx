@@ -5,15 +5,7 @@ import { TextInput, PasswordInput, Select, Button, Stack, NumberInput, Grid, Pap
 import { DateInput } from '@mantine/dates';
 import { Controller } from 'react-hook-form';
 import type { Control } from 'react-hook-form';
-
-interface ProfileFormProps {
-  errors: FieldErrors<ProfileFormData>;
-  control: Control<ProfileFormData>;
-  isGoogleAuth: boolean;
-  onSubmit: (e: React.FormEvent) => void;
-  onCancel: () => void;
-  isLoading: boolean;
-}
+import type { ProfileFormProps } from '../../types/profile.types';
 
 export const ProfileForm: React.FC<ProfileFormProps> = ({
   errors,
