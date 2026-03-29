@@ -151,7 +151,7 @@ export function SetHistoryModal({
           History - {exerciseName} (Set {setNumber})
         </Text>
       }
-      size="lg"
+      size="700"
     >
       <Stack gap="md">
         {/* Always show chart if there's target data */}
@@ -174,7 +174,7 @@ export function SetHistoryModal({
           </Box>
         </Box>
 
-        <Activity mode={history.length > 0 ? "visible" : "hidden"}>
+        <Activity mode={(history.length > 0 || isAdding) ? "visible" : "hidden"}>
           <Box style={{ overflowX: 'auto' }}>
             <Table striped highlightOnHover>
               <Table.Thead>

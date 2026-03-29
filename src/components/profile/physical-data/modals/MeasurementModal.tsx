@@ -125,7 +125,7 @@ export function MeasurementModal({
       onClose={onClose}
       title={isEditMode ? "Edit Measurement" : "Add Measurement"}
       centered
-      size="lg"
+      size="500"
     >
       <Stack gap="md">
         <DateInput

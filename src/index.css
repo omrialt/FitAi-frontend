@@ -1,33 +1,88 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* ======================================================
+   Performance Lab — Design Tokens
+   ====================================================== */
+@theme {
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Primary */
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-light: #eef2ff;
+
+  /* Accents */
+  --color-physical: #06b6d4;
+  --color-physical-light: #ecfeff;
+  --color-ai: #8b5cf6;
+  --color-ai-light: #f5f3ff;
+  --color-success: #22c55e;
+  --color-success-light: #f0fdf4;
+  --color-warning: #f97316;
+  --color-warning-light: #fff7ed;
+  --color-danger: #ef4444;
+  --color-danger-light: #fef2f2;
+  --color-nutrition: #22c55e;
+  --color-nutrition-light: #f0fdf4;
+
+  /* Light Surfaces */
+  --color-bg-light: #f8fafc;
+  --color-card-light: #ffffff;
+  --color-border-light: rgba(226, 232, 240, 0.6);
+
+  /* Dark Surfaces */
+  --color-bg-dark: #020617;
+  --color-card-dark: #0f172a;
+  --color-border-dark: rgba(30, 41, 59, 0.4);
+
+  /* Radii */
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --radius-badge: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.07), 0 1px 2px -1px rgba(0,0,0,.07);
+  --shadow-card-hover: 0 4px 16px -2px rgba(99,102,241,.12), 0 2px 6px -2px rgba(0,0,0,.08);
+  --shadow-modal: 0 20px 60px -10px rgba(0,0,0,.22), 0 8px 24px -8px rgba(0,0,0,.16);
+}
+
+/* ======================================================
+   Global Base Styles
+   ====================================================== */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #6366f1;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #4f46e5;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+[data-mantine-color-scheme='dark'] body {
+  background-color: #020617;
+  color: #f1f5f9;
 }
 
 #root {
@@ -35,39 +90,55 @@ body {
   width: 100%;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Headline tracking */
+h1, h2 {
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+h3, h4 {
+  letter-spacing: -0.02em;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
-button:hover {
-  border-color: #646cff;
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+[data-mantine-color-scheme='dark'] ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+/* Selection */
+::selection {
+  background: rgba(99, 102, 241, 0.2);
+  color: inherit;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+    color: #0f172a;
+    background-color: #f8fafc;
   }
 }
+
+/* ── Global Style Modules ── */
+@import './styles/App.css';
+@import './styles/Modals.css';

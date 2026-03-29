@@ -48,7 +48,7 @@ export function EditNutritionPlanModal({
       opened={opened}
       onClose={onClose}
       title="Edit Nutrition Plan"
-      size="lg"
+      size="900"
     >
       <Stack gap="md">
         <TextInput

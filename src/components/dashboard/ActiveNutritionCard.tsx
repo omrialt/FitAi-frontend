@@ -98,8 +98,8 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           roundCaps
           sections={[
             { value: proteinPct, color: 'indigo', tooltip: `Protein ${Math.round(proteinPct)}%` },
-            { value: carbsPct, color: 'cyan', tooltip: `Carbs ${Math.round(carbsPct)}%` },
-            { value: fatPct, color: 'orange', tooltip: `Fat ${Math.round(fatPct)}%` },
+            { value: carbsPct, color: 'yellow', tooltip: `Carbs ${Math.round(carbsPct)}%` },
+            { value: fatPct, color: 'red', tooltip: `Fat ${Math.round(fatPct)}%` },
           ]}
           label={
             <Stack align="center" gap={0}>
@@ -125,7 +125,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           </Text>
         </Stack>
         <Stack align="center" gap={2}>
-          <Text size="xs" fw={700} c="cyan">
+          <Text size="xs" fw={700} c="yellow">
             {Math.round(totals.carbs)}g
           </Text>
           <Text size="xs" c="dimmed">
@@ -133,7 +133,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           </Text>
         </Stack>
         <Stack align="center" gap={2}>
-          <Text size="xs" fw={700} c="orange">
+          <Text size="xs" fw={700} c="red">
             {Math.round(totals.fat)}g
           </Text>
           <Text size="xs" c="dimmed">

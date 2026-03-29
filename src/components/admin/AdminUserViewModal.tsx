@@ -29,7 +29,7 @@ export function AdminUserViewModal({ opened, onClose, user }: AdminUserViewModal
             <Text fw={700} size="lg">
                 User Details
             </Text>
-          } size="lg" centered>
+          } size="700" centered>
       <Stack gap="lg">
         {/* User Header */}
         <Group gap="md" align="center">
