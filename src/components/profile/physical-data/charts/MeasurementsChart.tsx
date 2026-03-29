@@ -18,20 +18,16 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
     );
   }, [data]);
 
-  // Prepare all chart data
-  const weightData = useMemo(() => 
+  // Combined Weight + Body Fat dataset for dual-axis chart
+  const weightBodyFatData = useMemo(() =>
     sortedData.map(record => ({
       date: formatChartDate(record.dateRecorded),
       weight: record.weightKg,
+      bodyFat: record.bodyFatPercent ?? null,
     })), [sortedData]);
 
-  const bodyFatData = useMemo(() => 
-    sortedData
-      .filter(record => record.bodyFatPercent)
-      .map(record => ({
-        date: formatChartDate(record.dateRecorded),
-        bodyFat: record.bodyFatPercent,
-      })), [sortedData]);
+  const hasBodyFat = useMemo(() =>
+    sortedData.some(r => r.bodyFatPercent != null), [sortedData]);
 
   const measurementsData = useMemo(() => 
     sortedData
@@ -60,27 +56,64 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
       <Title order={3}>Progress Trends</Title>
       
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-        {/* Weight Chart */}
+        {/* Dual-axis Weight + Body Fat Chart */}
         <Paper p="md" withBorder>
           <Stack gap="sm">
-            <Title order={4} size="h5">Weight Progress</Title>
+            <Title order={4} size="h5">Weight & Body Fat</Title>
             <Activity mode="visible">
               <Box style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={weightData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" style={{ fontSize: '12px' }} />
-                    <YAxis label={{ value: 'Weight (kg)', angle: -90, position: 'insideLeft' }} style={{ fontSize: '12px' }} />
-                    <Tooltip formatter={(value: number) => `${value} kg`} />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="weight" 
-                      stroke="#8884d8" 
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
+                  <LineChart data={weightBodyFatData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
+                    <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: '#64748b' }} />
+                    {/* Left Y-axis: Weight (kg) */}
+                    <YAxis
+                      yAxisId="left"
+                      orientation="left"
+                      label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#6366f1' } }}
+                      style={{ fontSize: '11px' }}
+                      tick={{ fill: '#6366f1' }}
+                    />
+                    {/* Right Y-axis: Body Fat (%) */}
+                    {hasBodyFat && (
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        label={{ value: '%', angle: 90, position: 'insideRight', style: { fontSize: '11px', fill: '#06b6d4' } }}
+                        style={{ fontSize: '11px' }}
+                        tick={{ fill: '#06b6d4' }}
+                      />
+                    )}
+                    <Tooltip
+                      formatter={(value: number, name: string) =>
+                        name === 'Weight' ? [`${value} kg`, name] : [`${value}%`, name]
+                      }
+                      contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="weight"
+                      stroke="#6366f1"
+                      strokeWidth={2.5}
+                      dot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: '#6366f1' }}
                       name="Weight"
                     />
+                    {hasBodyFat && (
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="bodyFat"
+                        stroke="#06b6d4"
+                        strokeWidth={2.5}
+                        dot={{ r: 4, fill: '#06b6d4', strokeWidth: 0 }}
+                        activeDot={{ r: 6, fill: '#06b6d4' }}
+                        name="Body Fat %"
+                        connectNulls={false}
+                      />
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
@@ -88,28 +121,32 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
           </Stack>
         </Paper>
 
-        {/* Body Fat Chart */}
-        {bodyFatData.length > 0 && (
+        {/* Body Measurements Chart */}
+        {measurementsData.length > 0 && (
           <Paper p="md" withBorder>
             <Stack gap="sm">
-              <Title order={4} size="h5">Body Fat Progress</Title>
+              <Title order={4} size="h5">Body Measurements</Title>
               <Activity mode="visible">
                 <Box style={{ width: '100%', height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={bodyFatData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" style={{ fontSize: '12px' }} />
-                      <YAxis label={{ value: 'Body Fat %', angle: -90, position: 'insideLeft' }} style={{ fontSize: '12px' }} />
-                      <Tooltip formatter={(value: number) => `${value}%`} />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="bodyFat" 
-                        stroke="#82ca9d" 
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        name="Body Fat %"
+                    <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
+                      <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: '#64748b' }} />
+                      <YAxis
+                        label={{ value: 'cm', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#64748b' } }}
+                        style={{ fontSize: '11px' }}
+                        tick={{ fill: '#64748b' }}
                       />
+                      <Tooltip
+                        formatter={(value: number) => `${value} cm`}
+                        contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Line type="monotone" dataKey="chest" stroke="#6366f1" strokeWidth={2} name="Chest" dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="waist" stroke="#06b6d4" strokeWidth={2} name="Waist" dot={{ r: 3, fill: '#06b6d4', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="hips" stroke="#f97316" strokeWidth={2} name="Hips" dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="arms" stroke="#22c55e" strokeWidth={2} name="Arms" dot={{ r: 3, fill: '#22c55e', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="legs" stroke="#8b5cf6" strokeWidth={2} name="Legs" dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </Box>
@@ -118,33 +155,6 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
           </Paper>
         )}
       </SimpleGrid>
-
-      {/* Measurements Chart */}
-      {measurementsData.length > 0 && (
-        <Paper p="md" withBorder>
-          <Stack gap="sm">
-            <Title order={4} size="h5">Body Measurements</Title>
-            <Activity mode="visible">
-              <Box style={{ width: '100%', height: 350 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" style={{ fontSize: '12px' }} />
-                    <YAxis label={{ value: 'Measurements (cm)', angle: -90, position: 'insideLeft' }} style={{ fontSize: '12px' }} />
-                    <Tooltip formatter={(value: number) => `${value} cm`} />
-                    <Legend />
-                    <Line type="monotone" dataKey="chest" stroke="#8884d8" strokeWidth={2} name="Chest" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="waist" stroke="#82ca9d" strokeWidth={2} name="Waist" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="hips" stroke="#ffc658" strokeWidth={2} name="Hips" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="arms" stroke="#ff7c7c" strokeWidth={2} name="Arms" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="legs" stroke="#8dd1e1" strokeWidth={2} name="Legs" dot={{ r: 3 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
-            </Activity>
-          </Stack>
-        </Paper>
-      )}
     </Stack>
   );
 }

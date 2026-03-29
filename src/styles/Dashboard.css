@@ -1,142 +1,168 @@
-/* ============================================
-   Dashboard Styles
-   Follows the app's Mantine + CSS approach
-   with dark mode support and responsive design
-   ============================================ */
+/* ========================================================
+   Dashboard — Performance Lab Styles
+   ======================================================== */
 
-/* Welcome Section */
+/* ── Welcome Banner ── */
+/* Light: Indigo-50 surface with indigo text accents
+   Dark: Slate-900 with subtle indigo tint
+   Per guide: "Indigo-50 background. Dynamic greeting." */
 .dashboard-welcome {
-  background: linear-gradient(135deg, var(--mantine-color-indigo-6) 0%, var(--mantine-color-cyan-6) 100%);
-  color: white;
+  background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
   position: relative;
   overflow: hidden;
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-welcome {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(6, 182, 212, 0.06) 100%);
+  border-color: rgba(99, 102, 241, 0.2);
 }
 
 .dashboard-welcome::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 300px;
-  height: 300px;
+  top: -40%;
+  right: -10%;
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(99, 102, 241, 0.06);
   pointer-events: none;
 }
 
 .dashboard-welcome::after {
   content: '';
   position: absolute;
-  bottom: -40%;
-  left: -10%;
+  bottom: -50%;
+  left: -8%;
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(6, 182, 212, 0.04);
   pointer-events: none;
 }
 
 .dashboard-welcome-name {
-  color: white;
   font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   line-height: 1.2;
+  color: #1e293b;
+}
+
+[data-mantine-color-scheme='dark'] .dashboard-welcome-name {
+  color: #f1f5f9;
 }
 
 .dashboard-welcome-streak {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 8px 16px;
-  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  padding: 7px 14px;
+  border-radius: 10px;
 }
 
-/* Stat Cards */
+[data-mantine-color-scheme='dark'] .dashboard-welcome-streak {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+/* ── Quick Stat Cards ── */
 .dashboard-stat-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   cursor: default;
+  border-radius: 12px !important;
 }
 
 .dashboard-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px -4px rgba(99, 102, 241, 0.14), 0 2px 8px -2px rgba(0,0,0,0.06);
+  border-color: rgba(99, 102, 241, 0.25) !important;
 }
 
 [data-mantine-color-scheme='dark'] .dashboard-stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px -4px rgba(99, 102, 241, 0.22), 0 2px 8px -2px rgba(0,0,0,0.3);
+  border-color: rgba(99, 102, 241, 0.35) !important;
 }
 
 .dashboard-stat-value {
   line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
-/* Main Dashboard Cards */
+/* ── Main Dashboard Cards ── */
 .dashboard-card {
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
   height: 100%;
+  border-radius: 12px !important;
 }
 
 .dashboard-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px -4px rgba(99, 102, 241, 0.1), 0 2px 8px -2px rgba(0,0,0,0.05);
 }
 
 [data-mantine-color-scheme='dark'] .dashboard-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px -4px rgba(99, 102, 241, 0.18), 0 2px 8px -2px rgba(0,0,0,0.25);
 }
 
-/* Metric Cards inside Body Progress */
+/* ── Metric Cards (Body Progress sub-cards) ── */
 .dashboard-metric-card {
-  background: var(--mantine-color-gray-0);
+  background: rgba(248, 250, 252, 1);
+  border: 1px solid rgba(226, 232, 240, 0.7);
   border-radius: 8px;
+  transition: border-color 0.18s ease;
 }
 
 [data-mantine-color-scheme='dark'] .dashboard-metric-card {
-  background: var(--mantine-color-dark-6);
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(30, 41, 59, 0.6);
 }
 
-/* Plan Row Items */
+.dashboard-metric-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ── Plan Row Items ── */
 .dashboard-plan-row {
   border-radius: 8px;
   transition: background-color 0.15s ease;
+  cursor: pointer;
 }
 
 .dashboard-plan-row:hover {
-  background-color: var(--mantine-color-gray-0);
+  background-color: rgba(99, 102, 241, 0.05);
 }
 
 [data-mantine-color-scheme='dark'] .dashboard-plan-row:hover {
-  background-color: var(--mantine-color-dark-6);
+  background-color: rgba(99, 102, 241, 0.08);
 }
 
-/* Schedule Items */
+/* ── Schedule Items ── */
 .dashboard-schedule-item {
   border-radius: 8px;
   transition: background-color 0.15s ease;
 }
 
 .dashboard-schedule-item:hover {
-  background-color: var(--mantine-color-gray-0);
+  background-color: rgba(99, 102, 241, 0.05);
 }
 
 [data-mantine-color-scheme='dark'] .dashboard-schedule-item:hover {
-  background-color: var(--mantine-color-dark-6);
+  background-color: rgba(99, 102, 241, 0.08);
 }
 
-/* Quick Action Buttons */
+/* ── Quick Action Buttons ── */
 .dashboard-quick-action {
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 8px !important;
 }
 
 .dashboard-quick-action:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1);
 }
 
-/* Loading Skeleton */
-.dashboard-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Grid layout helper for dashboard */
+/* ── Grid Layouts ── */
 .dashboard-grid {
   display: grid;
   gap: 20px;
@@ -172,11 +198,11 @@
   }
 }
 
-/* Smooth fade-in animation */
+/* ── Fade-In Animation ── */
 @keyframes dashboardFadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -185,17 +211,17 @@
 }
 
 .dashboard-section {
-  animation: dashboardFadeIn 0.4s ease forwards;
+  animation: dashboardFadeIn 0.35s ease forwards;
 }
 
 .dashboard-section:nth-child(1) { animation-delay: 0ms; }
-.dashboard-section:nth-child(2) { animation-delay: 60ms; }
-.dashboard-section:nth-child(3) { animation-delay: 120ms; }
-.dashboard-section:nth-child(4) { animation-delay: 180ms; }
-.dashboard-section:nth-child(5) { animation-delay: 240ms; }
-.dashboard-section:nth-child(6) { animation-delay: 300ms; }
+.dashboard-section:nth-child(2) { animation-delay: 50ms; }
+.dashboard-section:nth-child(3) { animation-delay: 100ms; }
+.dashboard-section:nth-child(4) { animation-delay: 150ms; }
+.dashboard-section:nth-child(5) { animation-delay: 200ms; }
+.dashboard-section:nth-child(6) { animation-delay: 250ms; }
 
-/* Mobile adjustments */
+/* ── Mobile Adjustments ── */
 @media (max-width: 576px) {
   .dashboard-welcome {
     padding: 16px !important;
@@ -228,7 +254,7 @@
   }
 }
 
-/* Print styles */
+/* ── Print Styles ── */
 @media print {
   .dashboard-quick-action,
   .dashboard-welcome-streak {

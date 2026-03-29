@@ -22,8 +22,6 @@ import {
   RecentRecommendations,
   UpcomingSchedule,
   QuickActions,
-  TrainingOverview,
-  NutritionOverview,
 } from '../components/dashboard';
 import '../styles/Dashboard.css';
 
@@ -62,6 +60,7 @@ function DashboardContent() {
     bmi,
     progressStats,
     aiRecommendations,
+    refetch,
   } = useDashboard();
 
   if (loading) {
@@ -140,19 +139,8 @@ function DashboardContent() {
                 latestPhysicalData={latestPhysicalData}
                 weightProgress={weightProgress}
                 progressStats={progressStats}
+                onDataUpdate={refetch}
               />
-            </Activity>
-          </div>
-        </div>
-
-        {/* Overview + Recommendations Row */}
-        <div className="dashboard-section">
-          <div className="dashboard-grid-bottom">
-            <Activity mode="visible">
-              <TrainingOverview plans={trainingPlans} />
-            </Activity>
-            <Activity mode="visible">
-              <NutritionOverview plans={nutritionPlans} />
             </Activity>
           </div>
         </div>

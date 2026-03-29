@@ -17,10 +17,17 @@ export function AdminUsersCard({ user, onView }: AdminUsersCardProps) {
             <Text fw={600}>{user.fullName}</Text>
             <Text size="sm" c="dimmed">{user.email}</Text>
             <Group gap="xs">
-              <Badge color={user.role === "admin" ? "red" : user.role === "trainer" ? "blue" : "gray"}>
+              <Badge color={user.role === "admin" ? "red" : user.role === "trainer" ? "blue" : "gray"} variant="light">
                 {user.role}
               </Badge>
-              <Badge color={user.isActive ? "green" : "gray"}>
+              <Badge
+                color={user.isActive ? "green" : "gray"}
+                variant="light"
+                style={user.isActive
+                  ? { background: 'rgba(220,252,231,1)', color: '#15803d' }
+                  : { background: 'rgba(241,245,249,1)', color: '#475569' }
+                }
+              >
                 {user.isActive ? "Active" : "Inactive"}
               </Badge>
             </Group>

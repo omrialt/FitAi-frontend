@@ -65,6 +65,10 @@ export function AdminUsersTable({ users, onView }: AdminUsersTableProps) {
                 <Badge
                   color={u.isActive ? "green" : "gray"}
                   variant="light"
+                  style={u.isActive
+                    ? { background: 'rgba(220,252,231,1)', color: '#15803d' }
+                    : { background: 'rgba(241,245,249,1)', color: '#475569' }
+                  }
                 >
                   {u.isActive ? "active" : "inactive"}
                 </Badge>

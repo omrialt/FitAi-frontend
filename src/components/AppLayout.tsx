@@ -247,17 +247,17 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: 64 }}
       navbar={{
-        width: 260,
+        width: 240,
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
-      footer={{ height: 50 }}
+      footer={{ height: 48 }}
       padding="md"
     >
       {/* Header */}
-      <AppShell.Header>
+      <AppShell.Header className="appshell-header">
         <Group h="100%" px="md" justify="space-between">
           <Group gap="md">
             <Burger
@@ -428,9 +428,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       <AppShell.Main>{children}</AppShell.Main>
 
       {/* Footer */}
-      <AppShell.Footer p="md" style={{ position: "relative" }}>
+      <AppShell.Footer p="xs" style={{ position: "relative" }} className="appshell-footer">
         <Group justify="center" h="100%">
-          <Text size="sm" c="dimmed">
+          <Text size="xs" c="dimmed">
             © 2025 FitAI. All rights reserved.
           </Text>
         </Group>

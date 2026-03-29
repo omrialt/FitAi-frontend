@@ -274,7 +274,7 @@ export function EditTrainingModal({
           {titleText}
         </Text>
       }
-      size="xl"
+      size="900"
       styles={{ body: { maxHeight: "80vh", overflowY: "auto" } }}
     >
       <form onSubmit={handleSubmit}>
