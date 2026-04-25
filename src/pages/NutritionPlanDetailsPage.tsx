@@ -2,9 +2,9 @@
  * NutritionPlanDetailsPage - Complete nutrition plan details with ratings and sharing
  */
 
-import { useState, useEffect, useCallback, Activity } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge } from "@mantine/core";
+import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge, Paper } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { AppLayout } from "../components/AppLayout";
@@ -260,12 +260,43 @@ export default function NutritionPlanDetailsPage() {
           creatorName={creatorName}
         />
 
+        {/* Total Daily Fuel */}
+        {(() => {
+          const totalKcal = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.calories, 0), 0);
+          const totalP    = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.protein, 0), 0);
+          const totalC    = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.carbs, 0), 0);
+          const totalF    = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.fat, 0), 0);
+          return (
+            <Paper p="xl" radius="md" withBorder mb="lg" ta="center">
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed" mb="xs">Total Daily Fuel</Text>
+              <Text size="3.5rem" fw={900} lh={1} c="indigo">
+                {totalKcal.toFixed(0)}
+                <Text span size="lg" fw={400} c="dimmed"> kcal</Text>
+              </Text>
+              <Group justify="center" gap="xl" mt="md">
+                <Box ta="center">
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Protein</Text>
+                  <Text fw={700} c="blue">{totalP.toFixed(0)}g</Text>
+                </Box>
+                <Box ta="center">
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Carbs</Text>
+                  <Text fw={700} c="yellow.7">{totalC.toFixed(0)}g</Text>
+                </Box>
+                <Box ta="center">
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Fats</Text>
+                  <Text fw={700} c="green">{totalF.toFixed(0)}g</Text>
+                </Box>
+              </Group>
+            </Paper>
+          );
+        })()}
+
         {/* Meals Section */}
         <MealSection meals={plan.meals} />
 
         {/* Active Users Section - visible to trainers/admins */}
-        <Activity mode={currentUser?.role === 'trainer' || currentUser?.role === 'admin' ? "visible" : "hidden"}>
-          {plan.activeByUsers && plan.activeByUsers.length > 0 && (
+        {(currentUser?.role === 'trainer' || currentUser?.role === 'admin') && (
+          plan.activeByUsers && plan.activeByUsers.length > 0 && (
             <Stack gap="lg" mb="xl">
               <Group gap="xs" align="center">
                 <IconCircleCheck size={24} color="green" />
@@ -306,29 +337,28 @@ export default function NutritionPlanDetailsPage() {
                 })}
               </Stack>
             </Stack>
-          )}
-        </Activity>
+          )
+        )}
 
         {/* Ratings Section */}
         <RatingsSection ratings={plan.ratings} />
-        <Activity mode={isOwner ? "visible" : "hidden"}>
-          {/* Add Rating Form - Only show for non-owners */}
 
-          <AddRating onSubmit={handleAddRating} loading={loadingRating} />
-
-          {/* Share Section (Owner Only) */}
-
-          <SharedWithSection
-            sharedAccess={plan.sharedAccess}
-            allUsers={allUsers}
-            title="Shared With"
-            emptyMessage="This plan is not shared with anyone yet"
-            showActions={true}
-            onShare={handleSharePlan}
-            onRevoke={handleRevokeAccess}
-            loading={loadingShare || loadingRevoke}
-          />
-        </Activity>
+        {/* Add Rating + Share — owner only */}
+        {isOwner && (
+          <>
+            <AddRating onSubmit={handleAddRating} loading={loadingRating} />
+            <SharedWithSection
+              sharedAccess={plan.sharedAccess}
+              allUsers={allUsers}
+              title="Shared With"
+              emptyMessage="This plan is not shared with anyone yet"
+              showActions={true}
+              onShare={handleSharePlan}
+              onRevoke={handleRevokeAccess}
+              loading={loadingShare || loadingRevoke}
+            />
+          </>
+        )}
         {/* Edit Modal */}
         {plan && (
           <EditNutritionModal

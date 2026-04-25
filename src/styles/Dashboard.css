@@ -198,6 +198,39 @@
   }
 }
 
+/* ── Landing Feature Cards ── */
+.landing-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -6px rgba(99, 102, 241, 0.18), 0 4px 12px -3px rgba(0,0,0,0.08);
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+/* ── Physical Data Page ── */
+.pd-latest-card {
+  border-color: rgba(99, 102, 241, 0.15);
+}
+
+[data-mantine-color-scheme='dark'] .pd-latest-card {
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.pd-metric-tile {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pd-metric-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -4px rgba(99, 102, 241, 0.15);
+}
+
+.pd-metric-tile--accent {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.04) 0%, rgba(251, 146, 60, 0.04) 100%);
+}
+
+[data-mantine-color-scheme='dark'] .pd-metric-tile--accent {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(251, 146, 60, 0.05) 100%);
+}
+
 /* ── Fade-In Animation ── */
 @keyframes dashboardFadeIn {
   from {

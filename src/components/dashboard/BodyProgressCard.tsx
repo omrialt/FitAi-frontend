@@ -5,7 +5,6 @@ import {
   Group,
   Stack,
   Badge,
-  SimpleGrid,
   ThemeIcon,
   Button,
 } from '@mantine/core';
@@ -78,25 +77,18 @@ export function BodyProgressCard({
           </Text>
         </Stack>
       ) : (
-        <Stack gap="md">
-          {/* Current measurements */}
-          <SimpleGrid cols={2} spacing="sm">
-            <Paper className="dashboard-metric-card" p="sm" radius="sm">
-              <Group gap="xs" mb={4}>
+        <Stack gap="sm">
+          {/* Weight row */}
+          <Paper className="dashboard-metric-card" p="sm" radius="sm">
+            <Group justify="space-between" align="center">
+              <Group gap="xs">
                 <ThemeIcon variant="light" color="blue" size="sm" radius="sm">
                   <IconScale size={14} />
                 </ThemeIcon>
-                <Text size="xs" c="dimmed">
-                  Weight
-                </Text>
+                <Text size="sm" c="dimmed">Weight</Text>
               </Group>
-              <Group gap={4} align="baseline">
-                <Text fw={700} size="lg">
-                  {latestPhysicalData.weightKg}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  kg
-                </Text>
+              <Group gap={6} align="baseline">
+                <Text fw={700} size="lg">{latestPhysicalData.weightKg} kg</Text>
                 {weightProgress?.change != null && weightProgress.change !== 0 && (
                   <Badge
                     size="xs"
@@ -105,110 +97,88 @@ export function BodyProgressCard({
                     leftSection={<TrendIcon value={weightProgress.change} />}
                   >
                     {weightProgress.change > 0 ? '+' : ''}
-                    {weightProgress.change.toFixed(1)}
+                    {weightProgress.change.toFixed(1)} kg this month
+                  </Badge>
+                )}
+                {weightProgress?.change === 0 && (
+                  <Badge size="xs" variant="light" color="gray" leftSection={<TrendIcon value={0} />}>
+                    Stable
                   </Badge>
                 )}
               </Group>
-            </Paper>
+            </Group>
+          </Paper>
 
-            <Paper className="dashboard-metric-card" p="sm" radius="sm">
-              <Group gap="xs" mb={4}>
+          {/* Body Fat row */}
+          <Paper className="dashboard-metric-card" p="sm" radius="sm">
+            <Group justify="space-between" align="center">
+              <Group gap="xs">
                 <ThemeIcon variant="light" color="violet" size="sm" radius="sm">
                   <IconPercentage size={14} />
                 </ThemeIcon>
-                <Text size="xs" c="dimmed">
-                  Body Fat
-                </Text>
+                <Text size="sm" c="dimmed">Body Fat %</Text>
               </Group>
-              <Group gap={4} align="baseline">
+              <Group gap={6} align="baseline">
                 <Text fw={700} size="lg">
                   {latestPhysicalData.bodyFatPercent != null
-                    ? latestPhysicalData.bodyFatPercent
+                    ? `${latestPhysicalData.bodyFatPercent} %`
                     : '—'}
                 </Text>
-                <Text size="xs" c="dimmed">
-                  {latestPhysicalData.bodyFatPercent != null ? '%' : ''}
-                </Text>
                 {progressStats?.last30Days?.fatDiff != null &&
-                  progressStats.last30Days.fatDiff !== 0 && (
-                    <Badge
-                      size="xs"
-                      variant="light"
-                      color={progressStats.last30Days.fatDiff < 0 ? 'green' : 'red'}
-                      leftSection={
-                        <TrendIcon value={-progressStats.last30Days.fatDiff} />
-                      }
-                    >
-                      {progressStats.last30Days.fatDiff > 0 ? '+' : ''}
-                      {progressStats.last30Days.fatDiff.toFixed(1)}%
-                    </Badge>
-                  )}
+                  progressStats.last30Days.fatDiff !== 0 ? (
+                  <Badge
+                    size="xs"
+                    variant="light"
+                    color={progressStats.last30Days.fatDiff < 0 ? 'green' : 'red'}
+                    leftSection={<TrendIcon value={-progressStats.last30Days.fatDiff} />}
+                  >
+                    {progressStats.last30Days.fatDiff > 0 ? '+' : ''}
+                    {progressStats.last30Days.fatDiff.toFixed(1)}%
+                  </Badge>
+                ) : (
+                  <Badge size="xs" variant="light" color="gray" leftSection={<TrendIcon value={0} />}>
+                    Stable
+                  </Badge>
+                )}
               </Group>
-            </Paper>
+            </Group>
+          </Paper>
 
-            {latestPhysicalData.heightCm && (
-              <Paper className="dashboard-metric-card" p="sm" radius="sm">
-                <Group gap="xs" mb={4}>
+          {/* Height row */}
+          {latestPhysicalData.heightCm ? (
+            <Paper className="dashboard-metric-card" p="sm" radius="sm">
+              <Group justify="space-between" align="center">
+                <Group gap="xs">
                   <ThemeIcon variant="light" color="teal" size="sm" radius="sm">
                     <IconRulerMeasure size={14} />
                   </ThemeIcon>
-                  <Text size="xs" c="dimmed">
-                    Height
-                  </Text>
+                  <Text size="sm" c="dimmed">Height</Text>
                 </Group>
-                <Group gap={4} align="baseline">
-                  <Text fw={700} size="lg">
-                    {latestPhysicalData.heightCm}
-                  </Text>
-                  <Text size="xs" c="dimmed">
-                    cm
-                  </Text>
+                <Text fw={700} size="lg">{latestPhysicalData.heightCm} cm</Text>
+              </Group>
+            </Paper>
+          ) : null}
+
+          {/* Waist row */}
+          {latestPhysicalData.measurements?.waist ? (
+            <Paper className="dashboard-metric-card" p="sm" radius="sm">
+              <Group justify="space-between" align="center">
+                <Group gap="xs">
+                  <ThemeIcon variant="light" color="orange" size="sm" radius="sm">
+                    <IconRulerMeasure size={14} />
+                  </ThemeIcon>
+                  <Text size="sm" c="dimmed">Waist</Text>
                 </Group>
-              </Paper>
-            )}
+                <Text fw={700} size="lg">{latestPhysicalData.measurements.waist} cm</Text>
+              </Group>
+            </Paper>
+          ) : null}
 
-            {latestPhysicalData.measurements && (
-              <Paper className="dashboard-metric-card" p="sm" radius="sm">
-                <Text size="xs" c="dimmed" mb={4}>
-                  Measurements
-                </Text>
-                <Stack gap={2}>
-                  {latestPhysicalData.measurements.chest && (
-                    <Text size="xs">
-                      Chest:{' '}
-                      <Text span fw={600}>
-                        {latestPhysicalData.measurements.chest} cm
-                      </Text>
-                    </Text>
-                  )}
-                  {latestPhysicalData.measurements.waist && (
-                    <Text size="xs">
-                      Waist:{' '}
-                      <Text span fw={600}>
-                        {latestPhysicalData.measurements.waist} cm
-                      </Text>
-                    </Text>
-                  )}
-                  {latestPhysicalData.measurements.arms && (
-                    <Text size="xs">
-                      Arms:{' '}
-                      <Text span fw={600}>
-                        {latestPhysicalData.measurements.arms} cm
-                      </Text>
-                    </Text>
-                  )}
-                </Stack>
-              </Paper>
-            )}
-          </SimpleGrid>
-
-          {/* Last recorded date */}
           <Text size="xs" c="dimmed" ta="right">
             Last recorded:{' '}
-            {new Date(latestPhysicalData.dateRecorded).toLocaleDateString(
-              undefined,
-              { year: 'numeric', month: 'short', day: 'numeric' },
-            )}
+            {new Date(latestPhysicalData.dateRecorded).toLocaleDateString(undefined, {
+              year: 'numeric', month: 'short', day: 'numeric',
+            })}
           </Text>
         </Stack>
       )}

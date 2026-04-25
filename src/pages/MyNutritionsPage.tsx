@@ -4,8 +4,9 @@
 
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, Activity } from "react";
-import { Container, Box, Center, Loader } from "@mantine/core";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Container, Box, Center, Loader, SimpleGrid, Paper, Group, Text, ThemeIcon, Progress, Avatar } from "@mantine/core";
+import { IconFlame, IconScale, IconCircleCheck } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
@@ -320,7 +321,7 @@ export default function MyNutritionsPage() {
           ) : (
             <>
               {/* Responsive View */}
-              <Activity mode={isMobile ? "visible" : "hidden"}>
+              {isMobile ? (
                 <NutritionsCardList
                   nutritionPlans={paginatedNutritionPlans}
                   isAdmin={user?.role === "admin"}
@@ -332,9 +333,7 @@ export default function MyNutritionsPage() {
                   onDelete={handleDelete}
                   onActivate={handleActivate}
                 />
-              </Activity>
-
-              <Activity mode={isMobile ? "hidden" : "visible"}>
+              ) : (
                 <NutritionsTable
                   nutritionPlans={paginatedNutritionPlans}
                   isAdmin={user?.role === "admin"}
@@ -346,7 +345,7 @@ export default function MyNutritionsPage() {
                   onDelete={handleDelete}
                   onActivate={handleActivate}
                 />
-              </Activity>
+              )}
             </>
           )}
         </Box>
@@ -358,6 +357,9 @@ export default function MyNutritionsPage() {
           pageSize={pageSize}
           onPageChange={setCurrentPage}
         />
+
+        {/* Stats Bento */}
+        <NutritionStatsBento nutritionPlans={allNutritionPlans} />
       </Container>
 
       {/* Modals */}
@@ -378,5 +380,120 @@ export default function MyNutritionsPage() {
         onConfirm={handleConfirmDelete}
       />
     </AppLayout>
+  );
+}
+
+// --- Stats Bento Component ---
+
+import type { NutritionPlan } from "../types/nutrition.types";
+
+function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan[] }) {
+  const avgKcal = useMemo(() => {
+    if (!nutritionPlans.length) return 0;
+    return Math.round(
+      nutritionPlans.reduce((sum, p) => sum + (p.totalCalories || 0), 0) / nutritionPlans.length
+    );
+  }, [nutritionPlans]);
+
+  const avgRating = useMemo(() => {
+    const rated = nutritionPlans.filter((p) => p.averageRating > 0);
+    if (!rated.length) return 0;
+    return rated.reduce((sum, p) => sum + p.averageRating, 0) / rated.length;
+  }, [nutritionPlans]);
+
+  const totalPlans = nutritionPlans.length;
+  const ratingPct = Math.round((avgRating / 5) * 100);
+  const weekDays = ['M', 'T', 'W', 'T', 'F'];
+
+  return (
+    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg" mt="xl">
+      {/* Weekly Average */}
+      <Paper
+        p="xl"
+        radius="xl"
+        style={{
+          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+          color: '#fff',
+          boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
+        }}
+      >
+        <Group justify="space-between" mb="md">
+          <ThemeIcon size={40} radius="md" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff' }}>
+            <IconFlame size={20} />
+          </ThemeIcon>
+          <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.1em', opacity: 0.8 }}>
+            Weekly Average
+          </Text>
+        </Group>
+        <Text size="2.2rem" fw={700} lh={1} mb={4}>
+          {avgKcal.toLocaleString()}
+        </Text>
+        <Text size="xs" style={{ opacity: 0.8 }}>Daily kcal across your plans</Text>
+        <Group justify="space-between" mt="md" pt="md" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+          <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.08em', opacity: 0.8 }}>
+            {totalPlans} Plans Total
+          </Text>
+          <Group gap={4}>
+            <Box w={8} h={8} style={{ borderRadius: '50%', background: '#34d399' }} />
+            <Text size="xs" fw={700} style={{ opacity: 0.9 }}>Active</Text>
+          </Group>
+        </Group>
+      </Paper>
+
+      {/* Total Plans */}
+      <Paper p="xl" radius="xl" withBorder style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+        <Group justify="space-between" mb="md">
+          <ThemeIcon size={40} radius="md" color="indigo" variant="light">
+            <IconScale size={20} />
+          </ThemeIcon>
+          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+            Total Plans
+          </Text>
+        </Group>
+        <Group align="flex-end" gap="xs" mb={4}>
+          <Text size="2.2rem" fw={700} lh={1} c="dark">
+            {totalPlans}
+          </Text>
+          <Text size="sm" fw={700} c="dimmed" pb={4}>plans</Text>
+        </Group>
+        <Text size="xs" c="dimmed">Nutrition plans in your collection</Text>
+        <Progress value={Math.min((totalPlans / 20) * 100, 100)} color="indigo" size="xs" radius="xl" mt="md" />
+      </Paper>
+
+      {/* Average Rating */}
+      <Paper p="xl" radius="xl" withBorder style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+        <Group justify="space-between" mb="md">
+          <ThemeIcon size={40} radius="md" color="green" variant="light">
+            <IconCircleCheck size={20} />
+          </ThemeIcon>
+          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+            Avg. Rating
+          </Text>
+        </Group>
+        <Text size="2.2rem" fw={700} lh={1} c="dark" mb={4}>
+          {avgRating > 0 ? `${avgRating.toFixed(1)}★` : '—'}
+        </Text>
+        <Text size="xs" c="dimmed">Average plan rating</Text>
+        <Group gap={4} mt="md">
+          {weekDays.map((day, i) => (
+            <Avatar
+              key={i}
+              size={24}
+              radius="xl"
+              style={{
+                background: i !== 3 && ratingPct > (i / weekDays.length) * 100 ? '#10b981' : '#e2e8f0',
+                color: '#fff',
+                fontSize: 8,
+                fontWeight: 700,
+                marginLeft: i > 0 ? -6 : 0,
+                border: '2px solid #fff',
+              }}
+            >
+              {day}
+            </Avatar>
+          ))}
+        </Group>
+      </Paper>
+    </SimpleGrid>
   );
 }

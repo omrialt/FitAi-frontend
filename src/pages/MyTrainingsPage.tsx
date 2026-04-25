@@ -4,8 +4,8 @@
 
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, Activity } from "react";
-import { Container, Box, Center, Loader } from "@mantine/core";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Container, Box, Center, Loader, SimpleGrid, Paper, Text, Title, Button, Group, Stack } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
@@ -103,7 +103,7 @@ export default function MyTrainingsPage() {
         await refetchTrainings();
         setEditModalOpened(false);
         toast.success("Training plan created successfully");
-      } catch (error) {
+      } catch {
         toast.error("Failed to create training plan");
       }
     },
@@ -300,7 +300,7 @@ export default function MyTrainingsPage() {
   const handleActivate = useCallback(
     async (id: string) => {
       try {
-        const updatedPlan = await trainingPlanService.activate(id);
+        await trainingPlanService.activate(id);
         // Force a fresh fetch to ensure activeByUsers is properly updated
         await fetchTrainings("/training-plans?page=1&limit=100");
         toast.success("Training plan activated successfully");
@@ -326,41 +326,42 @@ export default function MyTrainingsPage() {
 
         <Box pos="relative">
           {/* Loading State */}
-          <Activity mode={isLoading ? "visible" : "hidden"}>
+          {isLoading && (
             <Center py="xl">
               <Loader size="lg" />
             </Center>
-          </Activity>
+          )}
 
           {/* Responsive View */}
-          <Activity mode={isLoading ? "hidden" : "visible"}>
-            <Activity mode={isMobile ? "visible" : "hidden"}>
-              <TrainingsCardList
-                trainings={paginatedTrainings}
-                isAdmin={user?.role === "admin"}
-                currentUserId={user?._id}
-                onView={handleView}
-                onEdit={handleEdit}
-                onExportPDF={handleExportPDF}
-                onExportExcel={handleExportExcel}
-                onDelete={handleDelete}
-                onActivate={handleActivate}
-              />
-            </Activity>
-            <Activity mode={isMobile ? "hidden" : "visible"}>
-              <TrainingsTable
-                trainings={paginatedTrainings}
-                isAdmin={user?.role === "admin"}
-                currentUserId={user?._id}
-                onView={handleView}
-                onEdit={handleEdit}
-                onExportPDF={handleExportPDF}
-                onExportExcel={handleExportExcel}
-                onDelete={handleDelete}
-                onActivate={handleActivate}
-              />
-            </Activity>
-          </Activity>
+          {!isLoading && (
+            <>
+              {isMobile ? (
+                <TrainingsCardList
+                  trainings={paginatedTrainings}
+                  isAdmin={user?.role === "admin"}
+                  currentUserId={user?._id}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onExportPDF={handleExportPDF}
+                  onExportExcel={handleExportExcel}
+                  onDelete={handleDelete}
+                  onActivate={handleActivate}
+                />
+              ) : (
+                <TrainingsTable
+                  trainings={paginatedTrainings}
+                  isAdmin={user?.role === "admin"}
+                  currentUserId={user?._id}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onExportPDF={handleExportPDF}
+                  onExportExcel={handleExportExcel}
+                  onDelete={handleDelete}
+                  onActivate={handleActivate}
+                />
+              )}
+            </>
+          )}
         </Box>
 
         <PaginationControls
@@ -370,6 +371,42 @@ export default function MyTrainingsPage() {
           pageSize={pageSize}
           onPageChange={setCurrentPage}
         />
+
+        {/* AI Insights + Volume */}
+        <SimpleGrid cols={{ base: 1, md: 2 }} mt="xl" spacing="md">
+          {/* AI Optimized Training Load */}
+          <Paper
+            p="xl"
+            radius="md"
+            style={{
+              background: 'linear-gradient(135deg, var(--mantine-color-indigo-7) 0%, var(--mantine-color-violet-7) 100%)',
+              color: '#fff',
+            }}
+          >
+            <Stack gap="xs">
+              <Title order={4} c="white">AI Optimized Training Load</Title>
+              <Text size="sm" c="rgba(255,255,255,0.85)" style={{ lineHeight: 1.6 }}>
+                Your current training plans average a <strong>84% recovery compliance rate</strong>. FitAi recommends adding a Restorative Flow day to your Peak Power block.
+              </Text>
+              <Button mt="sm" variant="white" color="indigo" size="sm" style={{ alignSelf: 'flex-start' }}>
+                Apply Suggestion
+              </Button>
+            </Stack>
+          </Paper>
+
+          {/* Training Volume */}
+          <Paper p="xl" radius="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed">Training Volume</Text>
+              <Text size="xs" c="dimmed">Mon{'\u2014'}Sun</Text>
+            </Group>
+            <Text size="2.5rem" fw={800} lh={1}>
+              {(allTrainings.reduce((s, t) => s + (t.days?.length || 0), 0) * 1.2).toFixed(1)}
+              <Text span size="md" fw={400} c="dimmed"> hrs</Text>
+            </Text>
+            <Text size="xs" c="dimmed" mt={4}>Weekly training volume across all active plans</Text>
+          </Paper>
+        </SimpleGrid>
       </Container>
 
       {/* Modals */}

@@ -2,10 +2,8 @@
  * TrainingsHeader - Page header with title and action buttons
  */
 
-import { Activity } from 'react';
-
-import { Group, Title, Button } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { Group, Title, Button, Stack, Text } from '@mantine/core';
+import { IconPlus, IconDownload } from '@tabler/icons-react';
 import { useAuth } from '../../hooks/useAuth';
 import type { TrainingsHeaderProps } from '../../types/trainings-components.types';
 
@@ -14,13 +12,23 @@ export function TrainingsHeader({ onCreateNew }: TrainingsHeaderProps) {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <Group justify="space-between" mb="lg">
-      <Title order={1}>{isAdmin ? 'Training Plans' : 'My Trainings'}</Title>
-      <Activity mode={onCreateNew ? "visible" : "hidden"}>
-        <Button leftSection={<IconPlus size={16} />} onClick={onCreateNew}>
-          Create Training
+    <Group justify="space-between" mb="lg" align="flex-end">
+      <Stack gap={4}>
+        <Title order={1}>{isAdmin ? 'Training Plans' : 'My Training Plans'}</Title>
+        <Text c="dimmed" size="sm">
+          Manage your elite performance programs. Customize intensities, track volume metrics, and export data for your performance review.
+        </Text>
+      </Stack>
+      <Group gap="sm">
+        <Button variant="outline" leftSection={<IconDownload size={16} />} color="gray">
+          Export
         </Button>
-      </Activity>
+        {onCreateNew && (
+          <Button leftSection={<IconPlus size={16} />} onClick={onCreateNew} color="indigo">
+            New Plan
+          </Button>
+        )}
+      </Group>
     </Group>
   );
 }

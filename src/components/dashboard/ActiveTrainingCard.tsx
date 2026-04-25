@@ -13,8 +13,6 @@ import {
 import {
   IconBarbell,
   IconCalendar,
-  IconClock,
-  IconFlame,
   IconChevronRight,
 } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
@@ -109,6 +107,19 @@ export function ActiveTrainingCard({
     ? new Date(currentStatus.nextWorkoutDate)
     : null;
 
+  // Calculate active cycle week
+  const activeCycleWeek = plan.startDate
+    ? Math.max(1, Math.floor((Date.now() - new Date(plan.startDate).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1)
+    : null;
+  const cycleTotalWeeks = plan.rotationCycleLength
+    ? Math.ceil(plan.rotationCycleLength / 7)
+    : null;
+
+  // Find today's training day by matching dayOfWeek
+  const todayDow = new Date().getDay();
+  const todayDay = plan.days.find((d) => d.dayOfWeek === todayDow) || plan.days[0];
+  const todayProtocol = todayDay?.exercises?.slice(0, 3) ?? [];
+
   return (
     <>
     <Paper className="dashboard-card" radius="md" p="lg" withBorder>
@@ -125,47 +136,44 @@ export function ActiveTrainingCard({
       <Text fw={600} size="lg" mb={4}>
         {plan.title}
       </Text>
-      <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-        {plan.description}
-      </Text>
 
-      <Group gap="lg" mb="md">
-        <Group gap={4}>
-          <IconCalendar size={14} color="var(--mantine-color-dimmed)" />
+      {activeCycleWeek && (
+        <Group gap={4} mb="sm">
+          <IconCalendar size={13} color="var(--mantine-color-indigo-5)" />
           <Text size="xs" c="dimmed">
-            {plan.days.length} days
+            Active Cycle: Week {activeCycleWeek}
+            {cycleTotalWeeks ? ` of ${cycleTotalWeeks}` : ''}
           </Text>
         </Group>
-        <Group gap={4}>
-          <IconBarbell size={14} color="var(--mantine-color-dimmed)" />
-          <Text size="xs" c="dimmed">
-            {totalExercises} exercises
-          </Text>
-        </Group>
-        {plan.estimatedDuration && (
-          <Group gap={4}>
-            <IconClock size={14} color="var(--mantine-color-dimmed)" />
-            <Text size="xs" c="dimmed">
-              ~{plan.estimatedDuration} min
-            </Text>
-          </Group>
-        )}
-        {plan.estimatedCalories && (
-          <Group gap={4}>
-            <IconFlame size={14} color="var(--mantine-color-dimmed)" />
-            <Text size="xs" c="dimmed">
-              ~{plan.estimatedCalories} kcal
-            </Text>
-          </Group>
-        )}
-      </Group>
+      )}
+
+      <Divider mb="md" label="Today's Protocol" labelPosition="left" />
+
+      {todayProtocol.length > 0 ? (
+        <Stack gap={6} mb="md">
+          {todayProtocol.map((ex, i) => (
+            <Group key={i} gap="xs" wrap="nowrap">
+              <Text size="xs" c="indigo" fw={700} w={18}>{i + 1}.</Text>
+              <Text size="xs" fw={500} style={{ flex: 1 }}>{ex.name}</Text>
+              <Text size="xs" c="dimmed">
+                {ex.sets.length} Sets × {ex.sets[0]?.targetReps ?? '?'} Reps
+              </Text>
+            </Group>
+          ))}
+          {todayDay && todayDay.exercises.length > 3 && (
+            <Text size="xs" c="dimmed">+{todayDay.exercises.length - 3} more exercises</Text>
+          )}
+        </Stack>
+      ) : (
+        <Text size="xs" c="dimmed" mb="md">Rest day — no exercises scheduled today.</Text>
+      )}
 
       <Divider mb="md" />
 
       <Group justify="space-between">
         {nextWorkoutDate && (
           <Text size="xs" c="dimmed">
-            Next workout:{' '}
+            Next:{' '}
             <Text span fw={600} c="indigo">
               {nextWorkoutDate.toLocaleDateString(undefined, {
                 weekday: 'short',

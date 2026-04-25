@@ -8,11 +8,13 @@ import {
   RingProgress,
   Button,
   Divider,
+  Progress,
 } from '@mantine/core';
 import {
   IconApple,
   IconFlame,
   IconChevronRight,
+  IconTarget,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import type { NutritionPlan } from '../../types/nutrition.types';
@@ -70,9 +72,15 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
     maintain: 'teal',
   };
 
+  const goalLabel: Record<string, string> = {
+    bulk: '+0.5 kg / week',
+    cut: '−0.5 kg / week',
+    maintain: 'Maintain weight',
+  };
+
   return (
     <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-      <Group justify="space-between" mb="md">
+      <Group justify="space-between" mb="xs">
         <Group gap="xs">
           <IconApple size={20} color="var(--mantine-color-green-5)" />
           <Title order={4}>Active Nutrition Plan</Title>
@@ -84,17 +92,23 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
         )}
       </Group>
 
-      <Text fw={600} size="lg" mb={4}>
+      <Text fw={600} size="lg" mb={2}>
         {plan.title}
       </Text>
-      <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-        {plan.description}
-      </Text>
 
-      <Group justify="center" mb="md">
+      {plan.target && (
+        <Group gap={4} mb="sm">
+          <IconTarget size={13} color="var(--mantine-color-green-5)" />
+          <Text size="xs" c="dimmed">
+            Goal: {goalLabel[plan.target] ?? plan.target}
+          </Text>
+        </Group>
+      )}
+
+      <Group justify="space-between" align="center" mb="md">
         <RingProgress
-          size={120}
-          thickness={12}
+          size={110}
+          thickness={10}
           roundCaps
           sections={[
             { value: proteinPct, color: 'indigo', tooltip: `Protein ${Math.round(proteinPct)}%` },
@@ -103,8 +117,8 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           ]}
           label={
             <Stack align="center" gap={0}>
-              <IconFlame size={16} color="var(--mantine-color-orange-5)" />
-              <Text size="xs" fw={700}>
+              <IconFlame size={14} color="var(--mantine-color-orange-5)" />
+              <Text size="xs" fw={700} lh={1.2}>
                 {plan.totalCalories || Math.round(totals.calories)}
               </Text>
               <Text size="xs" c="dimmed" style={{ fontSize: 10 }}>
@@ -113,57 +127,53 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
             </Stack>
           }
         />
-      </Group>
 
-      <Group justify="center" gap="lg" mb="md">
-        <Stack align="center" gap={2}>
-          <Text size="xs" fw={700} c="indigo">
-            {Math.round(totals.protein)}g
-          </Text>
-          <Text size="xs" c="dimmed">
-            Protein
-          </Text>
+        <Stack gap={8} style={{ flex: 1, marginLeft: 16 }}>
+          <Stack gap={2}>
+            <Group justify="space-between">
+              <Text size="xs" fw={600} c="indigo">Protein</Text>
+              <Text size="xs" c="dimmed">{Math.round(totals.protein)}g</Text>
+            </Group>
+            <Progress value={proteinPct} color="indigo" size="sm" radius="xl" />
+          </Stack>
+          <Stack gap={2}>
+            <Group justify="space-between">
+              <Text size="xs" fw={600} c="yellow">Carbs</Text>
+              <Text size="xs" c="dimmed">{Math.round(totals.carbs)}g</Text>
+            </Group>
+            <Progress value={carbsPct} color="yellow" size="sm" radius="xl" />
+          </Stack>
+          <Stack gap={2}>
+            <Group justify="space-between">
+              <Text size="xs" fw={600} c="red">Fat</Text>
+              <Text size="xs" c="dimmed">{Math.round(totals.fat)}g</Text>
+            </Group>
+            <Progress value={fatPct} color="red" size="sm" radius="xl" />
+          </Stack>
         </Stack>
-        <Stack align="center" gap={2}>
-          <Text size="xs" fw={700} c="yellow">
-            {Math.round(totals.carbs)}g
-          </Text>
-          <Text size="xs" c="dimmed">
-            Carbs
-          </Text>
-        </Stack>
-        <Stack align="center" gap={2}>
-          <Text size="xs" fw={700} c="red">
-            {Math.round(totals.fat)}g
-          </Text>
-          <Text size="xs" c="dimmed">
-            Fat
-          </Text>
-        </Stack>
-      </Group>
-
-      <Group justify="center" gap="xs" mb="md">
-        <Badge variant="dot" color="blue" size="sm">
-          {plan.meals.length} meals
-        </Badge>
-        {plan.averageRating > 0 && (
-          <Badge variant="dot" color="yellow" size="sm">
-            ★ {plan.averageRating.toFixed(1)}
-          </Badge>
-        )}
       </Group>
 
       <Divider mb="md" />
 
-      <Group justify="flex-end">
+      <Group justify="space-between" align="center">
+        <Group gap="xs">
+          <Badge variant="dot" color="blue" size="sm">
+            {plan.meals.length} meals
+          </Badge>
+          {plan.averageRating > 0 && (
+            <Badge variant="dot" color="yellow" size="sm">
+              ★ {plan.averageRating.toFixed(1)}
+            </Badge>
+          )}
+        </Group>
         <Button
           variant="subtle"
           color="green"
           size="xs"
           rightSection={<IconChevronRight size={14} />}
-          onClick={() => navigate(`/nutrition-plans/${plan._id}`)}
+          onClick={() => navigate(`/my-nutritions`)}
         >
-          View Plan
+          Macro View
         </Button>
       </Group>
     </Paper>

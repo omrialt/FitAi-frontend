@@ -1,12 +1,12 @@
 /**
  * NutritionsFilters - Client Component
- * Filters section with search, target, rating, and calorie range
+ * Filters section with search, target, and rating filters
  */
 
 'use client';
 
-import { Grid, Select, TextInput, Paper, NumberInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { Group, Select, TextInput, Paper, ActionIcon } from '@mantine/core';
+import { IconSearch, IconAdjustments } from '@tabler/icons-react';
 import type { NutritionFilters } from '../../types/nutrition.types';
 import type { NutritionsFiltersProps } from '../../types/nutrition-components.types';
 
@@ -24,74 +24,61 @@ export function NutritionsFilters({
   };
 
   return (
-    <Paper shadow="xs" p="md" radius="md" mb="lg">
-      <Grid gutter="md">
+    <Paper
+      shadow="xs"
+      p="md"
+      radius="xl"
+      mb="lg"
+      style={{ border: '1px solid var(--mantine-color-gray-2)' }}
+    >
+      <Group wrap="wrap" gap="md">
         {/* Search Input */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-          <TextInput
-            placeholder="Search by title or creator..."
-            leftSection={<IconSearch size={16} />}
-            value={search}
-            onChange={(e) => onSearchChange(e.currentTarget.value)}
-          />
-        </Grid.Col>
+        <TextInput
+          placeholder="Filter by plan name..."
+          leftSection={<IconSearch size={16} />}
+          value={search}
+          onChange={(e) => onSearchChange(e.currentTarget.value)}
+          radius="md"
+          style={{ flex: '1 1 240px' }}
+        />
 
         {/* Target Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
-          <Select
-            placeholder="Goal"
-            data={[
-              { value: '', label: 'All Goals' },
-              { value: 'maintain', label: 'Maintain' },
-              { value: 'cut', label: 'Cut' },
-              { value: 'bulk', label: 'Bulk' },
-            ]}
-            value={filters.target || ''}
-            onChange={(value) => handleFilterChange('target', value || undefined)}
-            clearable
-          />
-        </Grid.Col>
+        <Select
+          placeholder="Target: All"
+          data={[
+            { value: '', label: 'Target: All' },
+            { value: 'cut', label: 'Weight Loss' },
+            { value: 'bulk', label: 'Muscle Gain' },
+            { value: 'maintain', label: 'Maintain' },
+          ]}
+          value={filters.target || ''}
+          onChange={(value) => handleFilterChange('target', value || undefined)}
+          radius="md"
+          clearable
+          style={{ minWidth: 140 }}
+        />
 
         {/* Rating Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
-          <Select
-            placeholder="Min Rating"
-            data={[
-              { value: '', label: 'All Ratings' },
-              { value: '1', label: '1+ Stars' },
-              { value: '2', label: '2+ Stars' },
-              { value: '3', label: '3+ Stars' },
-              { value: '4', label: '4+ Stars' },
-              { value: '5', label: '5 Stars' },
-            ]}
-            value={filters.minRating?.toString() || ''}
-            onChange={(value) => handleFilterChange('minRating', value ? Number(value) : undefined)}
-            clearable
-          />
-        </Grid.Col>
+        <Select
+          placeholder="Rating: Any"
+          data={[
+            { value: '', label: 'Rating: Any' },
+            { value: '4', label: '4.0+ Stars' },
+            { value: '4.5', label: '4.5+ Stars' },
+            { value: '5', label: '5 Stars' },
+          ]}
+          value={filters.minRating?.toString() || ''}
+          onChange={(value) => handleFilterChange('minRating', value ? Number(value) : undefined)}
+          radius="md"
+          clearable
+          style={{ minWidth: 140 }}
+        />
 
-        {/* Min Calories Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
-          <NumberInput
-            placeholder="Min Calories"
-            min={0}
-            step={100}
-            value={filters.minCalories || ''}
-            onChange={(value) => handleFilterChange('minCalories', typeof value === 'number' ? value : undefined)}
-          />
-        </Grid.Col>
-
-        {/* Max Calories Filter */}
-        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-          <NumberInput
-            placeholder="Max Calories"
-            min={0}
-            step={100}
-            value={filters.maxCalories || ''}
-            onChange={(value) => handleFilterChange('maxCalories', typeof value === 'number' ? value : undefined)}
-          />
-        </Grid.Col>
-      </Grid>
+        {/* Advanced filters toggle */}
+        <ActionIcon variant="subtle" color="gray" size="lg" radius="md">
+          <IconAdjustments size={18} />
+        </ActionIcon>
+      </Group>
     </Paper>
   );
 }

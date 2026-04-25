@@ -1,237 +1,232 @@
-/**
+﻿/**
  * LatestRecordCard - Card displaying the latest physical data measurement
  */
 
-import { Activity } from 'react';
-import { Paper, Stack, Group, Text, Badge, SimpleGrid, Title, Divider } from '@mantine/core';
+import { Paper, Stack, Group, Text, Badge, SimpleGrid, Title, ThemeIcon, Divider } from '@mantine/core';
 import { 
-  IconRuler, 
   IconScale, 
   IconDroplet,
   IconUserCircle,
+  IconBarbell,
+  IconTrendingDown,
   IconTrendingUp,
-  IconTrendingDown
+  IconMinus,
+  IconCircleCheck,
+  IconInfoCircle,
 } from '@tabler/icons-react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
-import { formatDate, calcImprovement } from '../helpers/calcImprovement';
-import { MetricInfoTooltip } from './MetricInfoTooltip';
+import { formatDate } from '../helpers/calcImprovement';
 import { 
-  calculateBMIRanges, 
-  calculateWeightRanges, 
   calculateBodyFatRanges,
   calculateAge
 } from '../helpers/calcRanges';
 import { useAuth } from '../../../../hooks/useAuth';
 import type { LatestRecordCardProps } from '../../../../types/physical-data-components.types';
 
+function TrendBadge({ current, previous, lowerIsBetter = false, unit = '' }: {
+  current?: number | null;
+  previous?: number | null;
+  lowerIsBetter?: boolean;
+  unit?: string;
+}) {
+  if (current == null || previous == null) return null;
+  const diff = current - previous;
+  if (diff === 0) return (
+    <Group gap={4}>
+      <IconMinus size={12} color="var(--mantine-color-gray-5)" />
+      <Text size="xs" c="dimmed">Stable</Text>
+    </Group>
+  );
+  const isGood = lowerIsBetter ? diff < 0 : diff > 0;
+  const color = isGood ? 'green' : 'red';
+  const sign = diff > 0 ? '+' : '';
+  return (
+    <Group gap={4}>
+      {diff < 0
+        ? <IconTrendingDown size={13} color={`var(--mantine-color-${color}-6)`} />
+        : <IconTrendingUp size={13} color={`var(--mantine-color-${color}-6)`} />
+      }
+      <Text size="xs" c={color} fw={500}>
+        {sign}{diff.toFixed(1)}{unit} this month
+      </Text>
+    </Group>
+  );
+}
+
+function getBodyFatZone(bodyFat: number, gender: string, age: number): { label: string; color: string } {
+  // Simplified zones
+  const isMale = gender === 'male';
+  if (bodyFat < (isMale ? 6 : 14)) return { label: 'Essential Fat', color: 'blue' };
+  if (bodyFat < (isMale ? 14 : 21)) return { label: 'Athletic Zone', color: 'indigo' };
+  if (bodyFat < (isMale ? 18 : 25)) return { label: 'Optimal Zone', color: 'green' };
+  if (bodyFat < (isMale ? 25 : 32)) return { label: 'Acceptable', color: 'yellow' };
+  return { label: 'High Range', color: 'red' };
+}
+
+function getBMIZone(bmi: number): { label: string; color: string } {
+  if (bmi < 18.5) return { label: 'Underweight', color: 'blue' };
+  if (bmi < 25) return { label: 'Healthy Range', color: 'green' };
+  if (bmi < 30) return { label: 'Overweight', color: 'yellow' };
+  return { label: 'Obese', color: 'red' };
+}
+
 export function LatestRecordCard({ record, previousRecord, bmi }: LatestRecordCardProps) {
   const { user } = useAuth();
-  
-  const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg, true);
-  const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent, true);
-  const chestImprovement = calcImprovement(record.measurements?.chest, previousRecord?.measurements?.chest, false);
-  const waistImprovement = calcImprovement(record.measurements?.waist, previousRecord?.measurements?.waist, true);
-  const hipsImprovement = calcImprovement(record.measurements?.hips, previousRecord?.measurements?.hips, true);
-  const armsImprovement = calcImprovement(record.measurements?.arms, previousRecord?.measurements?.arms, false);
-  const legsImprovement = calcImprovement(record.measurements?.legs, previousRecord?.measurements?.legs, false);
-
-  // Calculate BMI for previous record if available
-  const previousBmi = previousRecord 
-    ? previousRecord.weightKg / Math.pow(previousRecord.heightCm / 100, 2)
-    : undefined;
-  const currentBmi = bmi?.bmi;
-  const bmiImprovement = currentBmi && previousBmi ? calcImprovement(currentBmi, previousBmi, true) : '—';
-
-  // Get user metrics for range calculations
   const userAge = user?.birthDate ? calculateAge(user.birthDate) : 30;
   const userGender = user?.gender || 'male';
-  
-  // Calculate ranges
-  const bmiRanges = calculateBMIRanges();
-  const weightRanges = calculateWeightRanges(record.heightCm);
-  const bodyFatRanges = calculateBodyFatRanges(userGender, userAge);
 
-  const calculateAbsoluteChange = (current: number | undefined, previous: number | undefined): string => {
-    if (!current || !previous) return '—';
-    const diff = current - previous;
-    return diff > 0 ? `+${diff.toFixed(1)}` : diff < 0 ? `${diff.toFixed(1)}` : '0.0';
-  };
+  const bfZone = record.bodyFatPercent != null
+    ? getBodyFatZone(record.bodyFatPercent, userGender, userAge)
+    : null;
+  const bmiZone = bmi?.bmi != null ? getBMIZone(bmi.bmi) : null;
 
-  const renderImprovement = (improvement: string, current?: number, previous?: number, lowerIsBetter: boolean = false) => {
-    if (improvement === '—') return null;
-    
-    // Calculate actual change (not percentage)
-    const actualChange = current && previous ? current - previous : 0;
-    const absoluteChange = calculateAbsoluteChange(current, previous);
-    
-    // For weight, body fat, waist, hips: decrease is good (green), increase is bad (red)
-    // For chest, arms, legs: increase is good (green), decrease is bad (red)
-    const isIncrease = actualChange > 0;
-    const isDecrease = actualChange < 0;
-    
-    const isGood = lowerIsBetter ? isDecrease : isIncrease;
-    const isBad = lowerIsBetter ? isIncrease : isDecrease;
-    
-    return (
-      <Group gap={4} wrap="nowrap">
-        <Text 
-          size="xs" 
-          c={isGood ? 'green' : isBad ? 'red' : 'dimmed'}
-          fw={500}
-          style={{ display: 'flex', alignItems: 'center', gap: 2 }}
-        >
-          {isIncrease && <IconTrendingUp size={14} />}
-          {isDecrease && <IconTrendingDown size={14} />}
-          {absoluteChange}
-        </Text>
-        <Text size="xs" c="dimmed">({improvement})</Text>
-      </Group>
-    );
-  };
+  // Crude muscle mass estimate: lean body mass % from body fat
+  const muscleMassPct = record.bodyFatPercent != null
+    ? Math.max(0, 100 - record.bodyFatPercent - 15).toFixed(1)
+    : null;
 
   return (
-    <Paper p="lg" withBorder>
+    <Paper p="lg" radius="md" withBorder className="pd-latest-card">
       <Stack gap="md">
+        {/* Header */}
         <Group justify="space-between" align="center">
-          <Title order={3}>Latest Measurement</Title>
-          <Badge variant="light" size="lg">
-            {formatDate(record.dateRecorded)}
+          <Title order={3}>Latest Recorded Metrics</Title>
+          <Badge variant="light" color="gray" size="md">
+            Last Update: {formatDate(record.dateRecorded)}
           </Badge>
         </Group>
 
         <Divider />
 
-        <SimpleGrid cols={{ base: 2, sm: 2, md: 4 }} spacing="lg">
-          <Stack gap="xs">
-            <Group gap="xs">
-              <IconRuler size={20} style={{ color: 'var(--mantine-color-blue-6)' }} />
-              <Text size="sm" c="dimmed">Height</Text>
+        {/* Metric tiles */}
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          {/* Weight */}
+          <Paper className="pd-metric-tile" p="md" radius="md" withBorder>
+            <Group gap="sm" mb="xs">
+              <ThemeIcon variant="light" color="indigo" size="md" radius="md">
+                <IconScale size={16} />
+              </ThemeIcon>
+              <Text size="sm" c="dimmed" fw={500}>Current Weight</Text>
             </Group>
-            <Text size="xl" fw={700}>
-              {record.heightCm} cm
+            <Text size="2rem" fw={800} lh={1.1}>
+              {record.weightKg} <Text span size="md" c="dimmed" fw={400}>kg</Text>
             </Text>
-          </Stack>
+            <TrendBadge
+              current={record.weightKg}
+              previous={previousRecord?.weightKg}
+              lowerIsBetter={false}
+              unit=" kg"
+            />
+          </Paper>
 
-          <Stack gap="xs">
-            <Group gap="xs">
-              <IconScale size={20} style={{ color: 'var(--mantine-color-green-6)' }} />
-              <Text size="sm" c="dimmed">Weight</Text>
-              <MetricInfoTooltip
-                metricName="Weight"
-                explanation={weightRanges.explanation}
-                ranges={weightRanges.ranges}
-                userValue={record.weightKg}
-                unit=" kg"
-                iconColor="var(--mantine-color-green-6)"
-              />
+          {/* Body Fat */}
+          <Paper className="pd-metric-tile" p="md" radius="md" withBorder>
+            <Group gap="sm" mb="xs">
+              <ThemeIcon variant="light" color="cyan" size="md" radius="md">
+                <IconDroplet size={16} />
+              </ThemeIcon>
+              <Text size="sm" c="dimmed" fw={500}>Body Fat %</Text>
             </Group>
-            <Text size="xl" fw={700}>
-              {record.weightKg} kg
+            <Text size="2rem" fw={800} lh={1.1}>
+              {record.bodyFatPercent != null ? record.bodyFatPercent : '\u2014'}
+              {record.bodyFatPercent != null && (
+                <Text span size="md" c="dimmed" fw={400}> %</Text>
+              )}
             </Text>
-            {renderImprovement(weightImprovement, record.weightKg, previousRecord?.weightKg, true)}
-          </Stack>
-
-          <Activity mode={record.bodyFatPercent ? "visible" : "hidden"}>
-            <Stack gap="xs">
-              <Group gap="xs">
-                <IconDroplet size={20} style={{ color: 'var(--mantine-color-orange-6)' }} />
-                <Text size="sm" c="dimmed">Body Fat</Text>
-                <MetricInfoTooltip
-                  metricName="Body Fat %"
-                  explanation={bodyFatRanges.explanation}
-                  ranges={bodyFatRanges.ranges}
-                  userValue={record.bodyFatPercent || 0}
-                  unit="%"
-                  iconColor="var(--mantine-color-orange-6)"
-                />
+            {bfZone && (
+              <Group gap={4} mt={4}>
+                <IconCircleCheck size={13} color={`var(--mantine-color-${bfZone.color}-6)`} />
+                <Badge variant="light" color={bfZone.color} size="sm">{bfZone.label}</Badge>
               </Group>
-              <Text size="xl" fw={700}>
-                {record.bodyFatPercent}%
-              </Text>
-              {renderImprovement(bodyFatImprovement, record.bodyFatPercent, previousRecord?.bodyFatPercent, true)}
-            </Stack>
-          </Activity>
-
-          <Activity mode={bmi && bmi.bmi !== undefined ? "visible" : "hidden"}>
-            {bmi && bmi.bmi !== undefined && (
-              <Stack gap="xs">
-                <Group gap="xs">
-                  <IconUserCircle size={20} style={{ color: 'var(--mantine-color-violet-6)' }} />
-                  <Text size="sm" c="dimmed">BMI</Text>
-                  <MetricInfoTooltip
-                    metricName="BMI"
-                    explanation={bmiRanges.explanation}
-                    ranges={bmiRanges.ranges}
-                    userValue={bmi.bmi}
-                    unit=""
-                    iconColor="var(--mantine-color-violet-6)"
-                  />
-                </Group>
-                <Text size="xl" fw={700}>
-                  {bmi.bmi.toFixed(1)}
-                </Text>
-                {renderImprovement(bmiImprovement, currentBmi, previousBmi, true)}
-                <Badge 
-                  variant="light" 
-                  color={
-                    bmi.category === 'Normal weight' ? 'green' :
-                    bmi.category === 'Underweight' ? 'blue' :
-                    bmi.category === 'Overweight' ? 'yellow' : 'red'
-                  }
-                  size="sm"
-                >
-                  {bmi.category}
-                </Badge>
-              </Stack>
             )}
-          </Activity>
+          </Paper>
+
+          {/* BMI */}
+          <Paper className="pd-metric-tile" p="md" radius="md" withBorder>
+            <Group gap="sm" mb="xs">
+              <ThemeIcon variant="light" color="violet" size="md" radius="md">
+                <IconUserCircle size={16} />
+              </ThemeIcon>
+              <Text size="sm" c="dimmed" fw={500}>BMI Index</Text>
+            </Group>
+            <Text size="2rem" fw={800} lh={1.1}>
+              {bmi?.bmi != null ? bmi.bmi.toFixed(1) : '\u2014'}
+              {bmi?.bmi != null && (
+                <Text span size="md" c="dimmed" fw={400}> pt</Text>
+              )}
+            </Text>
+            {bmiZone && (
+              <Group gap={4} mt={4}>
+                <IconInfoCircle size={13} color={`var(--mantine-color-${bmiZone.color}-6)`} />
+                <Badge variant="light" color={bmiZone.color} size="sm">{bmiZone.label}</Badge>
+              </Group>
+            )}
+          </Paper>
+
+          {/* Muscle Mass / Lean Focus */}
+          <Paper className="pd-metric-tile pd-metric-tile--accent" p="md" radius="md" withBorder>
+            <Group gap="sm" mb="xs">
+              <ThemeIcon variant="light" color="orange" size="md" radius="md">
+                <IconBarbell size={16} />
+              </ThemeIcon>
+              <Text size="sm" c="dimmed" fw={500}>Lean Muscle Focus</Text>
+            </Group>
+            {muscleMassPct != null ? (
+              <>
+                <Text size="2rem" fw={800} lh={1.1}>
+                  {muscleMassPct}
+                  <Text span size="md" c="dimmed" fw={400}> %</Text>
+                </Text>
+                <Text size="xs" c="dimmed" mt={4}>
+                  Estimated lean body mass ratio
+                </Text>
+              </>
+            ) : (
+              <Text size="sm" c="dimmed">
+                Add body fat % to calculate lean mass
+              </Text>
+            )}
+          </Paper>
         </SimpleGrid>
 
-        <Activity mode={record.measurements ? "visible" : "hidden"}>
-          {record.measurements && (
-            <>
-              <Divider label="Body Measurements" labelPosition="center" />
-              
-              <SimpleGrid cols={{ base: 2, sm: 3, md: 5 }} spacing="md">
-                {record.measurements.chest && (
-                  <Stack gap={4}>
-                    <Text size="xs" c="dimmed" tt="uppercase">Chest</Text>
-                    <Text size="lg" fw={600}>{record.measurements.chest} cm</Text>
-                    {renderImprovement(chestImprovement, record.measurements.chest, previousRecord?.measurements?.chest, false)}
-                  </Stack>
-                )}
-                {record.measurements.waist && (
-                  <Stack gap={4}>
-                    <Text size="xs" c="dimmed" tt="uppercase">Waist</Text>
-                    <Text size="lg" fw={600}>{record.measurements.waist} cm</Text>
-                    {renderImprovement(waistImprovement, record.measurements.waist, previousRecord?.measurements?.waist, true)}
-                  </Stack>
-                )}
-                {record.measurements.hips && (
-                  <Stack gap={4}>
-                    <Text size="xs" c="dimmed" tt="uppercase">Hips</Text>
-                    <Text size="lg" fw={600}>{record.measurements.hips} cm</Text>
-                    {renderImprovement(hipsImprovement, record.measurements.hips, previousRecord?.measurements?.hips, true)}
-                  </Stack>
-                )}
-                {record.measurements.arms && (
-                  <Stack gap={4}>
-                    <Text size="xs" c="dimmed" tt="uppercase">Arms</Text>
-                    <Text size="lg" fw={600}>{record.measurements.arms} cm</Text>
-                    {renderImprovement(armsImprovement, record.measurements.arms, previousRecord?.measurements?.arms, false)}
-                  </Stack>
-                )}
-                {record.measurements.legs && (
-                  <Stack gap={4}>
-                    <Text size="xs" c="dimmed" tt="uppercase">Legs</Text>
-                    <Text size="lg" fw={600}>{record.measurements.legs} cm</Text>
-                    {renderImprovement(legsImprovement, record.measurements.legs, previousRecord?.measurements?.legs, false)}
-                  </Stack>
-                )}
-              </SimpleGrid>
-            </>
-          )}
-        </Activity>
+        {/* Body Measurements section */}
+        {record.measurements && Object.values(record.measurements).some(Boolean) && (
+          <>
+            <Divider label="Body Measurements" labelPosition="left" />
+            <SimpleGrid cols={{ base: 2, sm: 3, md: 5 }} spacing="sm">
+              {record.measurements.chest && (
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Chest</Text>
+                  <Text fw={700}>{record.measurements.chest} cm</Text>
+                </Stack>
+              )}
+              {record.measurements.waist && (
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Waist</Text>
+                  <Text fw={700}>{record.measurements.waist} cm</Text>
+                </Stack>
+              )}
+              {record.measurements.hips && (
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Hips</Text>
+                  <Text fw={700}>{record.measurements.hips} cm</Text>
+                </Stack>
+              )}
+              {record.measurements.arms && (
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Arms</Text>
+                  <Text fw={700}>{record.measurements.arms} cm</Text>
+                </Stack>
+              )}
+              {record.measurements.legs && (
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Legs</Text>
+                  <Text fw={700}>{record.measurements.legs} cm</Text>
+                </Stack>
+              )}
+            </SimpleGrid>
+          </>
+        )}
       </Stack>
     </Paper>
   );

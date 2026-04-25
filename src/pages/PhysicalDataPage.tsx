@@ -2,8 +2,8 @@
  * PhysicalDataPage - Complete physical data tracking page
  */
 
-import { useState, useEffect, useCallback, Activity } from 'react';
-import { Container, Stack, Center, Loader, Alert } from '@mantine/core';
+import { useState, useEffect, useCallback } from 'react';
+import { Container, Stack, Center, Loader, Alert, SimpleGrid } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { AppLayout } from '../components/AppLayout';
@@ -139,15 +139,20 @@ export default function PhysicalDataPage() {
         )}
 
         {/* Content */}
-        <Activity mode={!loadingData && user ? "visible" : "hidden"}>
+        {!loadingData && user && (
           <Stack gap="xl">
-            {/* Latest Record or No Records Message */}
+            {/* Top row: Latest Metrics + Chart side by side */}
             {latestRecord ? (
-              <LatestRecordCard 
-                record={latestRecord} 
-                previousRecord={physicalData.length > 1 ? physicalData[1] : null}
-                bmi={bmiData || undefined} 
-              />
+              <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="xl">
+                <LatestRecordCard 
+                  record={latestRecord} 
+                  previousRecord={physicalData.length > 1 ? physicalData[1] : null}
+                  bmi={bmiData || undefined} 
+                />
+                {physicalData.length > 0 && (
+                  <MeasurementsChart data={physicalData} />
+                )}
+              </SimpleGrid>
             ) : (
               <NoRecordsMessage onAddMeasurement={() => {
                 setSelectedMeasurement(null);
@@ -155,12 +160,7 @@ export default function PhysicalDataPage() {
               }} />
             )}
 
-            {/* Charts - only show if we have data */}
-            {physicalData.length > 0 && (
-              <MeasurementsChart data={physicalData} />
-            )}
-
-            {/* Table - only show if we have data */}
+            {/* Table */}
             {physicalData.length > 0 && (
               <MeasurementsTable
                 data={physicalData}
@@ -169,34 +169,30 @@ export default function PhysicalDataPage() {
               />
             )}
           </Stack>
-        </Activity>
+        )}
 
         {/* Modals */}
-        <Activity mode={measurementModalOpened ? "visible" : "hidden"}>
-          <MeasurementModal
-            opened={measurementModalOpened}
-            onClose={() => {
-              setMeasurementModalOpened(false);
-              setSelectedMeasurement(null);
-            }}
-            measurement={selectedMeasurement}
-            lastRecord={latestRecord}
-            onSave={handleAddMeasurement}
-            onUpdate={handleEditMeasurement}
-          />
-        </Activity>
+        <MeasurementModal
+          opened={measurementModalOpened}
+          onClose={() => {
+            setMeasurementModalOpened(false);
+            setSelectedMeasurement(null);
+          }}
+          measurement={selectedMeasurement}
+          lastRecord={latestRecord}
+          onSave={handleAddMeasurement}
+          onUpdate={handleEditMeasurement}
+        />
 
-        <Activity mode={deleteModalOpened ? "visible" : "hidden"}>
-          <DeleteMeasurementModal
-            opened={deleteModalOpened}
-            onClose={() => {
-              setDeleteModalOpened(false);
-              setSelectedMeasurement(null);
-            }}
-            measurement={selectedMeasurement}
-            onConfirm={handleDeleteMeasurement}
-          />
-        </Activity>
+        <DeleteMeasurementModal
+          opened={deleteModalOpened}
+          onClose={() => {
+            setDeleteModalOpened(false);
+            setSelectedMeasurement(null);
+          }}
+          measurement={selectedMeasurement}
+          onConfirm={handleDeleteMeasurement}
+        />
       </Container>
     </AppLayout>
   );

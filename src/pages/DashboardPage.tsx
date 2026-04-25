@@ -1,4 +1,3 @@
-import { Activity } from 'react';
 import { AppLayout } from '../components/AppLayout';
 import { LandingHero } from '../components/LandingHero';
 import {
@@ -20,8 +19,6 @@ import {
   ActiveNutritionCard,
   BodyProgressCard,
   RecentRecommendations,
-  UpcomingSchedule,
-  QuickActions,
 } from '../components/dashboard';
 import '../styles/Dashboard.css';
 
@@ -97,65 +94,33 @@ function DashboardContent() {
     <Container size="xl" py="md">
       <Stack gap="lg">
         {/* Welcome Banner */}
-        <div className="dashboard-section">
-          <Activity mode="visible">
-            <WelcomeSection user={user} currentStatus={currentStatus} />
-          </Activity>
-        </div>
+        <WelcomeSection user={user} currentStatus={currentStatus} />
 
         {/* Quick Stats */}
-        <div className="dashboard-section">
-          <Activity mode="visible">
-            <QuickStatsCards
-              trainingPlans={trainingPlans}
-              nutritionPlans={nutritionPlans}
-              progressStats={progressStats}
-              bmi={bmi}
-            />
-          </Activity>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="dashboard-section">
-          <Activity mode="visible">
-            <QuickActions />
-          </Activity>
-        </div>
+        <QuickStatsCards
+          trainingPlans={trainingPlans}
+          nutritionPlans={nutritionPlans}
+          progressStats={progressStats}
+          bmi={bmi}
+        />
 
         {/* Active Plans Row */}
-        <div className="dashboard-section">
-          <div className="dashboard-grid-main">
-            <Activity mode="visible">
-              <ActiveTrainingCard
-                plan={activeTrainingPlan}
-                currentStatus={currentStatus}
-              />
-            </Activity>
-            <Activity mode="visible">
-              <ActiveNutritionCard plan={activeNutritionPlan} />
-            </Activity>
-            <Activity mode="visible">
-              <BodyProgressCard
-                latestPhysicalData={latestPhysicalData}
-                weightProgress={weightProgress}
-                progressStats={progressStats}
-                onDataUpdate={refetch}
-              />
-            </Activity>
-          </div>
+        <div className="dashboard-grid-main">
+          <ActiveTrainingCard
+            plan={activeTrainingPlan}
+            currentStatus={currentStatus}
+          />
+          <ActiveNutritionCard plan={activeNutritionPlan} />
+          <BodyProgressCard
+            latestPhysicalData={latestPhysicalData}
+            weightProgress={weightProgress}
+            progressStats={progressStats}
+            onDataUpdate={refetch}
+          />
         </div>
 
-        {/* Recommendations + Schedule Row */}
-        <div className="dashboard-section">
-          <div className="dashboard-grid-bottom">
-            <Activity mode="visible">
-              <RecentRecommendations recommendations={aiRecommendations} />
-            </Activity>
-            <Activity mode="visible">
-              <UpcomingSchedule />
-            </Activity>
-          </div>
-        </div>
+        {/* AI Insights — full width */}
+        <RecentRecommendations recommendations={aiRecommendations} />
       </Stack>
     </Container>
   );

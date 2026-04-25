@@ -4,7 +4,7 @@
 
 import { Paper, Title, Text, Box, Stack, SimpleGrid } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useMemo, Activity } from 'react';
+import { useMemo } from 'react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatChartDate } from '../helpers/calcImprovement';
 import type { MeasurementsChartProps } from '../../../../types/physical-data-components.types';
@@ -53,15 +53,17 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
 
   return (
     <Stack gap="lg">
-      <Title order={3}>Progress Trends</Title>
+      <div>
+        <Title order={3}>Performance Trends</Title>
+        <Text size="sm" c="dimmed">Weight vs Body Fat percentage correlation over 6 months</Text>
+      </div>
       
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
         {/* Dual-axis Weight + Body Fat Chart */}
         <Paper p="md" withBorder>
           <Stack gap="sm">
             <Title order={4} size="h5">Weight & Body Fat</Title>
-            <Activity mode="visible">
-              <Box style={{ width: '100%', height: 300 }}>
+            <Box style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={weightBodyFatData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
@@ -117,7 +119,6 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
-            </Activity>
           </Stack>
         </Paper>
 
@@ -126,7 +127,6 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
           <Paper p="md" withBorder>
             <Stack gap="sm">
               <Title order={4} size="h5">Body Measurements</Title>
-              <Activity mode="visible">
                 <Box style={{ width: '100%', height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
@@ -150,7 +150,6 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                     </LineChart>
                   </ResponsiveContainer>
                 </Box>
-              </Activity>
             </Stack>
           </Paper>
         )}

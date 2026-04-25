@@ -12,6 +12,7 @@ import {
   Box,
   Divider,
   Menu,
+  Avatar,
 } from "@mantine/core";
 import {
   IconEdit,
@@ -24,7 +25,6 @@ import {
   IconFileTypeXls,
 } from "@tabler/icons-react";
 import { StarRating } from "./StarRating";
-import { Activity } from "react";
 import type { PlanType, BasePlanData, NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
 
 const targetColors: Record<string, string> = {
@@ -110,33 +110,29 @@ export function PlanHeader({
             <Text size="xl" fw={700}>
               {plan.title}
             </Text>
-            <Activity mode={plan?.target ? "visible" : "hidden"}>
+            {plan?.target && (
               <Badge
-                color={plan.target ? targetColors[plan.target] : "gray"}
+                color={targetColors[plan.target]}
                 leftSection={<IconTarget size={14} />}
               >
-                {plan.target ? targetLabels[plan.target] : "Unknown"}
+                {targetLabels[plan.target]}
               </Badge>
-            </Activity>
-            <Activity mode={trainingPlan ? "visible" : "hidden"}>
-              <Badge
-                color={
-                  trainingPlan
-                    ? difficultyColors[trainingPlan.difficulty]
-                    : "gray"
-                }
-                leftSection={<IconTrendingUp size={14} />}
-              >
-                {trainingPlan
-                  ? difficultyLabels[trainingPlan.difficulty]
-                  : "Unknown"}
-              </Badge>
-              {trainingPlan && trainingPlan.isActive ? (
-                <Badge color="green">Active</Badge>
-              ) : (
-                <Badge color="gray">Inactive</Badge>
-              )}
-            </Activity>
+            )}
+            {trainingPlan && (
+              <>
+                <Badge
+                  color={difficultyColors[trainingPlan.difficulty]}
+                  leftSection={<IconTrendingUp size={14} />}
+                >
+                  {difficultyLabels[trainingPlan.difficulty]}
+                </Badge>
+                {trainingPlan.isActive ? (
+                  <Badge color="green">Active</Badge>
+                ) : (
+                  <Badge color="gray">Inactive</Badge>
+                )}
+              </>
+            )}
           </Group>
 
           <Text size="sm" c="dimmed">
@@ -186,52 +182,50 @@ export function PlanHeader({
 
       <Group gap="xl" mt="md" wrap="wrap">
         {/* Nutrition-specific stats */}
-        <Activity mode={nutritionPlan ? "visible" : "hidden"}>
-          <Group gap="xs">
-            <IconFlame size={20} color="orange" />
-            <Text size="sm" fw={500}>
-              {nutritionPlan ? nutritionPlan.totalCalories : 0} kcal
-            </Text>
-          </Group>
+        {nutritionPlan && (
+          <>
+            <Group gap="xs">
+              <IconFlame size={20} color="orange" />
+              <Text size="sm" fw={500}>
+                {nutritionPlan.totalCalories} kcal
+              </Text>
+            </Group>
 
-          {nutritionStats && (
-            <>
-              <Group gap="xs">
-                <Text size="sm" fw={500} c="blue">
-                  P: {nutritionStats.totalProtein.toFixed(0)}g
-                </Text>
-              </Group>
-
-              <Group gap="xs">
-                <Text size="sm" fw={500} c="yellow">
-                  C: {nutritionStats.totalCarbs.toFixed(0)}g
-                </Text>
-              </Group>
-
-              <Group gap="xs">
-                <Text size="sm" fw={500} c="green">
-                  F: {nutritionStats.totalFat.toFixed(0)}g
-                </Text>
-              </Group>
-            </>
-          )}
-
-          <Group gap="xs">
-            {nutritionPlan && (
+            {nutritionStats && (
               <>
-                <StarRating
-                  rating={nutritionPlan.averageRating}
-                  readonly
-                  showValue
-                />
-                <Text size="sm" c="dimmed">
-                  ({nutritionPlan.totalRatings}{" "}
-                  {nutritionPlan.totalRatings === 1 ? "rating" : "ratings"})
-                </Text>
+                <Group gap="xs">
+                  <Text size="sm" fw={500} c="blue">
+                    P: {nutritionStats.totalProtein.toFixed(0)}g
+                  </Text>
+                </Group>
+
+                <Group gap="xs">
+                  <Text size="sm" fw={500} c="yellow">
+                    C: {nutritionStats.totalCarbs.toFixed(0)}g
+                  </Text>
+                </Group>
+
+                <Group gap="xs">
+                  <Text size="sm" fw={500} c="green">
+                    F: {nutritionStats.totalFat.toFixed(0)}g
+                  </Text>
+                </Group>
               </>
             )}
-          </Group>
-        </Activity>
+
+            <Group gap="xs">
+              <StarRating
+                rating={nutritionPlan.averageRating}
+                readonly
+                showValue
+              />
+              <Text size="sm" c="dimmed">
+                ({nutritionPlan.totalRatings}{" "}
+                {nutritionPlan.totalRatings === 1 ? "rating" : "ratings"})
+              </Text>
+            </Group>
+          </>
+        )}
         {/* Training-specific stats */}
         {trainingPlan && (
           <>
@@ -285,12 +279,15 @@ export function PlanHeader({
         )}
 
         {creatorName && (
-          <Text size="sm" c="dimmed">
-            {planType === "training" ? "Trainer" : "Created by"}:{" "}
-            <Text component="span" fw={500}>
-              {creatorName}
-            </Text>
-          </Text>
+          <Group gap="xs" align="center">
+            <Avatar size="sm" radius="xl" color={planType === 'training' ? 'indigo' : 'orange'}>
+              {creatorName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+            </Avatar>
+            <Box>
+              <Text size="sm" fw={600}>{creatorName}</Text>
+              <Text size="xs" c="dimmed">{planType === 'training' ? 'Elite Performance Coach' : 'Nutrition Plan Creator'}</Text>
+            </Box>
+          </Group>
         )}
 
         <Text size="sm" c="dimmed">

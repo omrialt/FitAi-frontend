@@ -2,7 +2,7 @@
  * TrainingPlanDetailsPage - Complete training plan details with days, exercises, and sharing
  */
 
-import { useState, useEffect, useCallback, Activity } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
@@ -15,7 +15,7 @@ import { useApi } from "../hooks/useApi";
 import { useAuth } from "../hooks/useAuth";
 import { useExport } from "../hooks/useExport";
 import userService from "../services/user.service";
-import type { TrainingPlan } from "../types/training-plan.types";
+import type { TrainingPlan, Exercise } from "../types/training-plan.types";
 import type { User } from "../types/auth.types";
 import { DaysSection, VideoModal } from "../components/trainings/details";
 import { EditTrainingModal } from "../components/trainings/EditTrainingModal";
@@ -133,7 +133,7 @@ export default function TrainingPlanDetailsPage() {
   };
 
   // Handle exercise update (for history changes)
-  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: any) => {
+  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => {
     if (!plan || !id) return;
 
     // Create updated days array
@@ -241,8 +241,7 @@ export default function TrainingPlanDetailsPage() {
         />
 
         {/* Active Users Section - visible to trainers/admins */}
-        <Activity mode={currentUser?.role === 'trainer' || currentUser?.role === 'admin' ? "visible" : "hidden"}>
-          {plan.activeByUsers && plan.activeByUsers.length > 0 && (
+        {(currentUser?.role === 'trainer' || currentUser?.role === 'admin') && plan.activeByUsers && plan.activeByUsers.length > 0 && (
             <Stack gap="lg" mb="xl">
               <Group gap="xs" align="center">
                 <IconCircleCheck size={24} color="green" />
@@ -284,10 +283,9 @@ export default function TrainingPlanDetailsPage() {
               </Stack>
             </Stack>
           )}
-        </Activity>
 
         {/* Shared With Section (Trainer Only) */}
-        <Activity mode={canViewShared ? "visible" : "hidden"}>
+        {canViewShared && (
           <SharedWithSection
             sharedAccess={plan.sharedAccess}
             allUsers={allUsers}
@@ -295,19 +293,17 @@ export default function TrainingPlanDetailsPage() {
             emptyMessage="This plan is not shared with anyone yet"
             showActions={false}
           />
-        </Activity>
+        )}
 
         {/* Edit Modal */}
-        <Activity mode={plan ? "visible" : "hidden"}>
-          <EditTrainingModal
-            opened={editModalOpened}
-            onClose={() => setEditModalOpened(false)}
-            training={plan!}
-            onSave={handleEditPlan}
-            createMode={false}
-            allUsers={allUsers}
-          />
-        </Activity>
+        <EditTrainingModal
+          opened={editModalOpened}
+          onClose={() => setEditModalOpened(false)}
+          training={plan!}
+          onSave={handleEditPlan}
+          createMode={false}
+          allUsers={allUsers}
+        />
 
         {/* Video Modal */}
         <VideoModal

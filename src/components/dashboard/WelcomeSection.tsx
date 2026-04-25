@@ -6,13 +6,18 @@ import {
   Badge,
   Avatar,
   Stack,
+  Button,
 } from '@mantine/core';
 import {
   IconFlame,
   IconTrendingUp,
   IconTrendingDown,
   IconMinus,
+  IconBarbell,
+  IconApple,
+  IconCalendar,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import type { User } from '../../types/auth.types';
 import type { CurrentStatus } from '../../types/current-status.types';
 import type { WelcomeSectionProps } from '../../types/dashboard-components.types';
@@ -47,6 +52,7 @@ const phaseConfig = {
 
 export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
   const greeting = getGreeting();
+  const navigate = useNavigate();
   const phase = currentStatus?.phase || user.target || 'maintain';
   const config = phaseConfig[phase];
 
@@ -83,9 +89,39 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
               >
                 {config.label}
               </Badge>
-              <Text size="xs" c="dimmed">
-                {config.description}
-              </Text>
+              {currentStatus?.lastWorkoutDate && (
+                <Group gap={4}>
+                  <IconCalendar size={13} color="var(--mantine-color-dimmed)" />
+                  <Text size="xs" c="dimmed">
+                    Last workout:{' '}
+                    {new Date(currentStatus.lastWorkoutDate).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </Text>
+                </Group>
+              )}
+            </Group>
+            <Group gap="xs" mt={6}>
+              <Button
+                size="sm"
+                variant="filled"
+                color="indigo"
+                leftSection={<IconBarbell size={15} />}
+                onClick={() => navigate('/my-trainings')}
+              >
+                Start Today's Session
+              </Button>
+              <Button
+                size="sm"
+                variant="light"
+                color="green"
+                leftSection={<IconApple size={15} />}
+                onClick={() => navigate('/my-nutritions')}
+              >
+                Log Meal
+              </Button>
             </Group>
           </Stack>
         </Group>

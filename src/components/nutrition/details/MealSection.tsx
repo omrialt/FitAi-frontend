@@ -1,114 +1,91 @@
 /**
- * MealSection - Display meals grouped by meal type with food details
+ * MealSection - Display meals with compact mobile-friendly cards
  */
 
-import { Activity } from 'react';
-
-import { Stack, Title, Card, Text, Group, Badge, Table, Box, SimpleGrid } from '@mantine/core';
-import type { Meal, MealType } from '../../../types/nutrition.types';
+import type { ReactNode } from 'react';
+import { Stack, Title, Paper, Text, Group, ThemeIcon, Divider, Box } from '@mantine/core';
+import { IconCoffee, IconSoup, IconMoon, IconApple } from '@tabler/icons-react';
 import type { MealSectionProps } from '../../../types/nutrition-components.types';
+import type { MealType } from '../../../types/nutrition.types';
 
-const mealTypeLabels: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
-};
-
-const mealTypeIcons: Record<MealType, string> = {
-  breakfast: '🌅',
-  lunch: '🌞',
-  dinner: '🌙',
-  snack: '🍎',
+const mealTypeMeta: Record<MealType, { label: string; color: string; icon: ReactNode }> = {
+  breakfast: { label: 'Breakfast', color: 'orange', icon: <IconCoffee size={16} /> },
+  lunch:     { label: 'Lunch',     color: 'yellow', icon: <IconSoup size={16} /> },
+  dinner:    { label: 'Dinner',    color: 'indigo', icon: <IconMoon size={16} /> },
+  snack:     { label: 'Snack',     color: 'green',  icon: <IconApple size={16} /> },
 };
 
 export function MealSection({ meals }: MealSectionProps) {
-  return (
-    <Stack gap="lg" mb="xl">
-      <Title order={2}>Meals</Title>
+  if (meals.length === 0) {
+    return (
+      <Stack gap="md" mb="xl">
+        <Title order={2}>Daily Meal Layout</Title>
+        <Text c="dimmed" size="sm" ta="center">No meals added to this plan yet</Text>
+      </Stack>
+    );
+  }
 
-      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+  return (
+    <Stack gap="md" mb="xl">
+      <Title order={2}>Daily Meal Layout</Title>
+
+      <Stack gap="sm">
         {meals.map((meal, mealIndex) => {
-          const totalMealCalories = meal.foods.reduce(
-            (sum, food) => sum + food.calories,
-            0
-          );
-          const totalProtein = meal.foods.reduce((sum, food) => sum + food.protein, 0);
-          const totalCarbs = meal.foods.reduce((sum, food) => sum + food.carbs, 0);
-          const totalFat = meal.foods.reduce((sum, food) => sum + food.fat, 0);
+          const meta = mealTypeMeta[meal.mealType] ?? { label: meal.mealType, color: 'gray', icon: <IconApple size={16} /> };
+          const totalKcal = meal.foods.reduce((s, f) => s + f.calories, 0);
+          const totalP    = meal.foods.reduce((s, f) => s + f.protein, 0);
+          const totalC    = meal.foods.reduce((s, f) => s + f.carbs, 0);
+          const totalF    = meal.foods.reduce((s, f) => s + f.fat, 0);
 
           return (
-            <Card key={mealIndex} shadow="sm" p="md" withBorder>
-              <Group justify="space-between" mb="md" wrap="wrap">
+            <Paper key={mealIndex} p="md" radius="md" withBorder>
+              {/* Meal type header row */}
+              <Group justify="space-between" mb="xs">
                 <Group gap="xs">
-                  <Text size="lg">{mealTypeIcons[meal.mealType]}</Text>
-                  <Title order={3}>Meal {mealIndex + 1} - {mealTypeLabels[meal.mealType]}</Title>
+                  <ThemeIcon variant="light" color={meta.color} size="sm" radius="xl">
+                    {meta.icon}
+                  </ThemeIcon>
+                  <Text size="sm" fw={600} c={meta.color}>{meta.label}</Text>
                 </Group>
-                <Group gap="md" wrap="wrap">
-                  <Badge variant="light" color="orange">
-                    {totalMealCalories.toFixed(0)} kcal
-                  </Badge>
-                  <Badge variant="light" color="blue">
-                    P: {totalProtein.toFixed(0)}g
-                  </Badge>
-                  <Badge variant="light" color="yellow">
-                    C: {totalCarbs.toFixed(0)}g
-                  </Badge>
-                  <Badge variant="light" color="green">
-                    F: {totalFat.toFixed(0)}g
-                  </Badge>
-                </Group>
+                <Text size="sm" fw={700} c="dimmed">{totalKcal.toFixed(0)} kcal</Text>
               </Group>
 
-              <Activity mode={meal.foods.length > 0 ? "visible" : "hidden"}>
-                <Box style={{ overflowX: 'auto' }}>
-                  <Table striped highlightOnHover>
-                    <Table.Thead>
-                      <Table.Tr>
-                        <Table.Th>Food</Table.Th>
-                        <Table.Th>Quantity</Table.Th>
-                        <Table.Th>Calories</Table.Th>
-                        <Table.Th>Protein</Table.Th>
-                        <Table.Th>Carbs</Table.Th>
-                        <Table.Th>Fat</Table.Th>
-                      </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                      {meal.foods.map((food, foodIndex) => (
-                        <Table.Tr key={foodIndex}>
-                          <Table.Td>
-                            <Text fw={500}>{food.name}</Text>
-                          </Table.Td>
-                          <Table.Td>
-                            {food.quantity && food.unit
-                              ? `${food.quantity} ${food.unit}`
-                              : '-'}
-                          </Table.Td>
-                          <Table.Td>{food.calories.toFixed(0)} kcal</Table.Td>
-                          <Table.Td>{food.protein.toFixed(1)}g</Table.Td>
-                          <Table.Td>{food.carbs.toFixed(1)}g</Table.Td>
-                          <Table.Td>{food.fat.toFixed(1)}g</Table.Td>
-                        </Table.Tr>
-                      ))}
-                    </Table.Tbody>
-                  </Table>
+              {/* Food names */}
+              <Stack gap={2} mb="sm">
+                {meal.foods.map((food, fi) => (
+                  <Text key={fi} size="sm" fw={fi === 0 ? 600 : 400} c={fi === 0 ? undefined : 'dimmed'}>
+                    {food.name}
+                    {food.quantity && food.unit && (
+                      <Text span size="xs" c="dimmed"> {'\u2014'} {food.quantity} {food.unit}</Text>
+                    )}
+                  </Text>
+                ))}
+                {meal.foods.length === 0 && (
+                  <Text size="sm" c="dimmed">No foods added</Text>
+                )}
+              </Stack>
+
+              <Divider />
+
+              {/* Inline macros */}
+              <Group gap="md" mt="xs">
+                <Box>
+                  <Text size="xs" c="dimmed">Protein</Text>
+                  <Text size="sm" fw={700} c="blue">{totalP.toFixed(0)}g</Text>
                 </Box>
-              </Activity>
-              <Activity mode={meal.foods.length === 0 ? "visible" : "hidden"}>
-                <Text c="dimmed" size="sm">
-                  No foods added yet
-                </Text>
-              </Activity>
-            </Card>
+                <Box>
+                  <Text size="xs" c="dimmed">Carbs</Text>
+                  <Text size="sm" fw={700} c="yellow.7">{totalC.toFixed(0)}g</Text>
+                </Box>
+                <Box>
+                  <Text size="xs" c="dimmed">Fats</Text>
+                  <Text size="sm" fw={700} c="green">{totalF.toFixed(0)}g</Text>
+                </Box>
+              </Group>
+            </Paper>
           );
         })}
-      </SimpleGrid>
-
-      <Activity mode={meals.length === 0 ? "visible" : "hidden"}>
-        <Text c="dimmed" size="sm" ta="center">
-          No meals added to this plan yet
-        </Text>
-      </Activity>
+      </Stack>
     </Stack>
   );
 }

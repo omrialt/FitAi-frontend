@@ -2,8 +2,8 @@
  * MeasurementsTable - Table component displaying all physical data records
  */
 
-import { Paper, Table, Title, ActionIcon, Group, Text, Stack, Badge, ScrollArea } from '@mantine/core';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { Paper, Table, Title, ActionIcon, Group, Text, Stack, Badge, ScrollArea, Tooltip } from '@mantine/core';
+import { IconEdit, IconTrash, IconFilter, IconDownload } from '@tabler/icons-react';
 import type { PhysicalData } from '../../../../types/physical-data.types';
 import { formatDate } from '../helpers/calcImprovement';
 import { calcImprovement } from '../helpers/calcImprovement';
@@ -29,7 +29,24 @@ export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableP
   return (
     <Paper p="lg" withBorder>
       <Stack gap="md">
-        <Title order={3}>Measurement History</Title>
+        <Group justify="space-between" align="center">
+          <div>
+            <Title order={3}>Measurement History</Title>
+            <Text size="sm" c="dimmed">Complete record of all your physical measurements</Text>
+          </div>
+          <Group gap="xs">
+            <Tooltip label="Filter">
+              <ActionIcon variant="light" color="gray" size="lg">
+                <IconFilter size={18} />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Export data">
+              <ActionIcon variant="light" color="indigo" size="lg">
+                <IconDownload size={18} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+        </Group>
         
         <ScrollArea>
           <Table striped highlightOnHover withTableBorder withColumnBorders>
