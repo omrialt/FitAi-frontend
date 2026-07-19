@@ -1,45 +1,47 @@
 import { Container, Title, Text, Button, Stack, Group, Box, Grid, ThemeIcon } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { IconBarbell, IconApple, IconChartLine, IconBrain, IconTarget, IconTrendingUp, IconBolt, IconShieldCheck } from '@tabler/icons-react';
 
 export function LandingHero() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const features = [
     {
       icon: <IconBarbell size={26} stroke={1.5} />,
-      title: 'Training Plans',
-      description: 'Adaptive strength and conditioning programs designed for elite performance.',
+      title: t('landing.featTrainingTitle'),
+      description: t('landing.featTrainingDesc'),
       color: 'indigo',
     },
     {
       icon: <IconApple size={26} stroke={1.5} />,
-      title: 'Nutrition Programs',
-      description: 'Precision macro tracking and meal architecture for your goals.',
+      title: t('landing.featNutritionTitle'),
+      description: t('landing.featNutritionDesc'),
       color: 'green',
     },
     {
       icon: <IconChartLine size={26} stroke={1.5} />,
-      title: 'Progress Tracking',
-      description: 'Visual evolution via biometric data syncing and analytics.',
+      title: t('landing.featProgressTitle'),
+      description: t('landing.featProgressDesc'),
       color: 'blue',
     },
     {
       icon: <IconBrain size={26} stroke={1.5} />,
-      title: 'AI Recommendations',
-      description: 'Neural-mapped adjustments for your daily training load.',
+      title: t('landing.featAiTitle'),
+      description: t('landing.featAiDesc'),
       color: 'violet',
     },
     {
       icon: <IconTarget size={26} stroke={1.5} />,
-      title: 'Goal Setting',
-      description: 'Milestone mapping for long-term athletic dominance.',
+      title: t('landing.featGoalsTitle'),
+      description: t('landing.featGoalsDesc'),
       color: 'orange',
     },
     {
       icon: <IconTrendingUp size={26} stroke={1.5} />,
-      title: 'Performance Analytics',
-      description: 'Advanced metrics and metabolic insights in real time.',
+      title: t('landing.featAnalyticsTitle'),
+      description: t('landing.featAnalyticsDesc'),
       color: 'cyan',
     },
   ];
@@ -79,7 +81,7 @@ export function LandingHero() {
                 >
                   <IconBolt size={14} color="#818cf8" />
                   <Text size="xs" fw={600} style={{ color: '#818cf8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    Elite Performance Ready
+                    {t('landing.badge')}
                   </Text>
                 </Box>
 
@@ -93,9 +95,9 @@ export function LandingHero() {
                     color: 'white',
                   }}
                 >
-                  Build Your Strongest,{' '}
+                  {t('landing.heroTitle1')}{' '}
                   <span style={{ background: 'linear-gradient(90deg, #818cf8, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                    Healthiest Version
+                    {t('landing.heroTitle2')}
                   </span>
                 </Title>
 
@@ -107,7 +109,7 @@ export function LandingHero() {
                     maxWidth: '520px',
                   }}
                 >
-                  The lab-grade athletic intelligence platform designed for those who demand precision. Track, analyze, and evolve with AI-driven insights.
+                  {t('landing.heroSubtitle')}
                 </Text>
 
                 <Group gap="md">
@@ -118,7 +120,7 @@ export function LandingHero() {
                     onClick={() => navigate('/register')}
                     style={{ minWidth: '160px', fontWeight: 700, borderRadius: '10px' }}
                   >
-                    Create Account
+                    {t('auth.registerTitle')}
                   </Button>
                   <Button
                     size="lg"
@@ -132,22 +134,22 @@ export function LandingHero() {
                     }}
                     onClick={() => navigate('/login')}
                   >
-                    Sign In
+                    {t('auth.signIn')}
                   </Button>
                 </Group>
 
                 <Group gap="xl" mt="xs">
                   <Stack gap={2}>
                     <Text fw={800} size="xl" style={{ color: 'white' }}>50K+</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Athletes</Text>
+                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statAthletes')}</Text>
                   </Stack>
                   <Stack gap={2}>
                     <Text fw={800} size="xl" style={{ color: 'white' }}>98%</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Satisfaction</Text>
+                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statSatisfaction')}</Text>
                   </Stack>
                   <Stack gap={2}>
                     <Text fw={800} size="xl" style={{ color: 'white' }}>+14.2%</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Avg. Performance Gain</Text>
+                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statGain')}</Text>
                   </Stack>
                 </Group>
               </Stack>
@@ -170,15 +172,15 @@ export function LandingHero() {
                     <Box style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
                     <Box style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }} />
                   </Group>
-                  <Text size="xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Performance Lab Dashboard</Text>
+                  <Text size="xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('landing.mockTitle')}</Text>
                 </Group>
 
                 <Stack gap="sm">
                   {[
-                    { label: 'Training Plans', value: '4 active', color: '#818cf8' },
-                    { label: 'Workouts this week', value: '5 sessions', color: '#34d399' },
-                    { label: 'Calories tracked', value: '3,200 kcal', color: '#fb923c' },
-                    { label: 'AI Insights', value: '3 new', color: '#a78bfa' },
+                    { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), color: '#818cf8' },
+                    { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), color: '#34d399' },
+                    { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), color: '#fb923c' },
+                    { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), color: '#a78bfa' },
                   ].map((item) => (
                     <Box
                       key={item.label}
@@ -211,8 +213,8 @@ export function LandingHero() {
                   }}
                 >
                   <IconBolt size={16} color="#818cf8" />
-                  <Text size="sm" fw={600} style={{ color: 'white' }}>Performance Gain</Text>
-                  <Text size="sm" fw={800} style={{ color: '#a3e635', marginLeft: 'auto' }}>+14.2%</Text>
+                  <Text size="sm" fw={600} style={{ color: 'white' }}>{t('landing.performanceGain')}</Text>
+                  <Text size="sm" fw={800} style={{ color: '#a3e635', marginInlineStart: 'auto' }}>+14.2%</Text>
                 </Box>
               </Box>
             </Grid.Col>
@@ -234,7 +236,7 @@ export function LandingHero() {
                   textTransform: 'uppercase',
                 }}
               >
-                Engineered for Results
+                {t('landing.featuresKicker')}
               </Text>
               <Title
                 order={2}
@@ -244,10 +246,10 @@ export function LandingHero() {
                   letterSpacing: '-0.03em',
                 }}
               >
-                Our modular ecosystem bridges the gap between effort and elite performance.
+                {t('landing.featuresTitle')}
               </Title>
               <Text size="lg" c="dimmed" maw={640} style={{ lineHeight: 1.7 }}>
-                Every tool is purpose-built for athletes who demand more from their training technology.
+                {t('landing.featuresSubtitle')}
               </Text>
             </Stack>
 
@@ -305,25 +307,25 @@ export function LandingHero() {
                     color: 'white',
                   }}
                 >
-                  Elite Training is a Science, Not a Guess.
+                  {t('landing.scienceTitle')}
                 </Title>
                 <Text style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.75 }}>
-                  Access the same protocols used by world-class athletes. Real-time data synchronization with all major wearables and an AI engine that learns your patterns.
+                  {t('landing.scienceText')}
                 </Text>
                 <Group gap="xl">
                   <Stack gap={2}>
                     <Group gap={6}>
                       <IconBolt size={16} color="#a3e635" />
-                      <Text fw={700} size="sm" style={{ color: 'white' }}>Daily Load</Text>
+                      <Text fw={700} size="sm" style={{ color: 'white' }}>{t('landing.dailyLoad')}</Text>
                     </Group>
-                    <Text size="xs" style={{ color: '#a3e635' }}>94% Optimized</Text>
+                    <Text size="xs" style={{ color: '#a3e635' }}>{t('landing.dailyLoadValue')}</Text>
                   </Stack>
                   <Stack gap={2}>
                     <Group gap={6}>
                       <IconShieldCheck size={16} color="#34d399" />
-                      <Text fw={700} size="sm" style={{ color: 'white' }}>Recovery</Text>
+                      <Text fw={700} size="sm" style={{ color: 'white' }}>{t('landing.recovery')}</Text>
                     </Group>
-                    <Text size="xs" style={{ color: '#34d399' }}>8.2h Peak State</Text>
+                    <Text size="xs" style={{ color: '#34d399' }}>{t('landing.recoveryValue')}</Text>
                   </Stack>
                 </Group>
               </Stack>
@@ -339,9 +341,9 @@ export function LandingHero() {
               >
                 <Stack gap="sm">
                   {[
-                    { label: 'Lab-Tested Metrics', desc: 'Real-time sync with all major wearables', icon: <IconChartLine size={18} />, color: '#818cf8' },
-                    { label: 'AI Coaching Engine', desc: 'Adapts daily based on your biometric data', icon: <IconBrain size={18} />, color: '#a78bfa' },
-                    { label: 'Progressive Overload', desc: 'Auto-adjusting intensity protocols', icon: <IconBarbell size={18} />, color: '#60a5fa' },
+                    { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} />, color: '#818cf8' },
+                    { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} />, color: '#a78bfa' },
+                    { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} />, color: '#60a5fa' },
                   ].map((item) => (
                     <Group key={item.label} gap="md" style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 16px' }}>
                       <ThemeIcon variant="light" color="indigo" size="md" radius="md">
@@ -383,10 +385,10 @@ export function LandingHero() {
                 color: 'white',
               }}
             >
-              Ready to Outperform Your Former Self?
+              {t('landing.ctaTitle')}
             </Title>
             <Text size="lg" style={{ opacity: 0.88, maxWidth: '520px', lineHeight: 1.7, color: 'white' }}>
-              Join 50,000+ athletes using FitAi to push boundaries and achieve lasting results.
+              {t('landing.ctaText')}
             </Text>
             <Group gap="md">
               <Button
@@ -396,7 +398,7 @@ export function LandingHero() {
                 onClick={() => navigate('/register')}
                 style={{ minWidth: '180px', fontWeight: 700, borderRadius: '10px' }}
               >
-                Get Started Now
+                {t('landing.getStarted')}
               </Button>
             </Group>
           </Stack>
@@ -411,30 +413,30 @@ export function LandingHero() {
               <Stack gap="sm">
                 <Text fw={800} size="lg" style={{ color: 'white', letterSpacing: '-0.02em' }}>FitAi</Text>
                 <Text size="sm" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.65, maxWidth: 280 }}>
-                  Building the future of athletic performance through intelligence and data.
+                  {t('landing.footerTagline')}
                 </Text>
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 6, md: 2 }}>
               <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Product</Text>
-                {['Workouts', 'Nutrition', 'AI Engine'].map((l) => (
+                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerProduct')}</Text>
+                {[t('landing.footerWorkouts'), t('landing.footerNutrition'), t('landing.footerAiEngine')].map((l) => (
                   <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
                 ))}
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 6, md: 2 }}>
               <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Company</Text>
-                {['About', 'Science', 'Careers'].map((l) => (
+                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerCompany')}</Text>
+                {[t('landing.footerAbout'), t('landing.footerScience'), t('landing.footerCareers')].map((l) => (
                   <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
                 ))}
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 6, md: 2 }}>
               <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Support</Text>
-                {['Privacy', 'Terms', 'Contact'].map((l) => (
+                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerSupport')}</Text>
+                {[t('landing.footerPrivacy'), t('landing.footerTerms'), t('landing.footerContact')].map((l) => (
                   <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
                 ))}
               </Stack>
@@ -442,7 +444,7 @@ export function LandingHero() {
           </Grid>
           <Box style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 40, paddingTop: 24 }}>
             <Text size="xs" style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-              © 2026 Performance Lab. All rights reserved.
+              {t('landing.footerCopyright')}
             </Text>
           </Box>
         </Container>

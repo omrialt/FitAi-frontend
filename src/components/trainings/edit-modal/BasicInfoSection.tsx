@@ -1,5 +1,6 @@
 import { Activity } from 'react';
 import { TextInput, Textarea, Select, Grid, NumberInput } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import type { Difficulty, Target, ProgramType } from '../../../types/training-plan.types';
 import type { BasicInfoSectionProps } from '../../../types/trainings-components.types';
 
@@ -19,20 +20,21 @@ export function BasicInfoSection({
   rotationCycleLength,
   setRotationCycleLength
 }: BasicInfoSectionProps) {
+  const { t } = useTranslation();
 
   return (
     <>
       <TextInput
-        label="Title"
-        placeholder="Enter training plan title"
+        label={t('trainings.form.title')}
+        placeholder={t('trainings.form.titlePlaceholder')}
         required
         value={title}
         onChange={(e) => setTitle(e.currentTarget.value)}
       />
 
       <Textarea
-        label="Description"
-        placeholder="Enter training plan description"
+        label={t('trainings.form.description')}
+        placeholder={t('trainings.form.descriptionPlaceholder')}
         required
         rows={4}
         value={description}
@@ -42,11 +44,11 @@ export function BasicInfoSection({
       <Grid gutter="md">
         <Grid.Col span={6}>
           <Select
-            label="Difficulty"
+            label={t('trainings.difficulty')}
             data={[
-              { value: 'beginner', label: 'Beginner' },
-              { value: 'intermediate', label: 'Intermediate' },
-              { value: 'advanced', label: 'Advanced' },
+              { value: 'beginner', label: t('trainings.beginner') },
+              { value: 'intermediate', label: t('trainings.intermediate') },
+              { value: 'advanced', label: t('trainings.advanced') },
             ]}
             value={difficulty}
             onChange={(value) => setDifficulty(value as Difficulty)}
@@ -56,11 +58,11 @@ export function BasicInfoSection({
 
         <Grid.Col span={6}>
           <Select
-            label="Fitness Goal"
+            label={t('trainings.form.fitnessGoal')}
             data={[
-              { value: 'maintain', label: 'Maintain Weight' },
-              { value: 'cut', label: 'Cut (Lose Weight)' },
-              { value: 'bulk', label: 'Bulk (Gain Weight)' },
+              { value: 'maintain', label: t('trainings.form.maintainWeight') },
+              { value: 'cut', label: t('trainings.form.cutWeight') },
+              { value: 'bulk', label: t('trainings.form.bulkWeight') },
             ]}
             value={target}
             onChange={(value) => setTarget(value as Target | undefined)}
@@ -72,11 +74,11 @@ export function BasicInfoSection({
       <Grid gutter="md">
         <Grid.Col span={6}>
           <Select
-            label="Program Type"
+            label={t('trainings.form.programType')}
             required
             data={[
-              { value: 'fixedDays', label: 'Fixed Days' },
-              { value: 'rotation', label: 'Rotation' },
+              { value: 'fixedDays', label: t('trainings.form.fixedDays') },
+              { value: 'rotation', label: t('trainings.form.rotation') },
             ]}
             value={programType as string}
             onChange={(value) => setProgramType(value as ProgramType)}
@@ -87,9 +89,9 @@ export function BasicInfoSection({
       <Grid gutter="md">
         <Grid.Col span={programType === 'rotation' ? 8 : 12}>
           <TextInput
-            label="Focus"
+            label={t('trainings.focus')}
             required
-            placeholder="e.g., Upper Body, Cardio, Full Body"
+            placeholder={t('trainings.form.focusPlaceholder')}
             value={focus}
             onChange={(e) => setFocus(e.currentTarget.value)}
           />
@@ -98,8 +100,8 @@ export function BasicInfoSection({
         <Activity mode={programType === 'rotation' ? "visible" : "hidden"}>
           <Grid.Col span={4}>
             <NumberInput
-              label="Rotation Cycle Length"
-              placeholder="Days"
+              label={t('trainings.form.rotationCycleLength')}
+              placeholder={t('trainings.days')}
               value={rotationCycleLength ?? undefined}
               onChange={(value) => setRotationCycleLength(typeof value === 'number' ? value : undefined)}
             />

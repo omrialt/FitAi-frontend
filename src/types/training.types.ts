@@ -15,6 +15,7 @@ export interface TrainingFilters {
   creator?: TrainingCreator;
   difficulty?: string;
   target?: string;
+  status?: 'active' | 'archived';
 }
 
 export interface TrainingTableData {

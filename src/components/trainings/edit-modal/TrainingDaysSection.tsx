@@ -1,5 +1,6 @@
 import { Stack, Group, Text, Button, Accordion } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import type { TrainingDay } from '../../../types/training-plan.types';
 import { TrainingDayItem } from './TrainingDayItem';
 import type { TrainingDaysSectionProps } from '../../../types/trainings-components.types';
@@ -17,13 +18,14 @@ export function TrainingDaysSection({
   removeSet,
   updateSet
 }: TrainingDaysSectionProps) {
+  const { t } = useTranslation();
 
   return (
     <Stack gap="xs">
       <Group justify="space-between">
-        <Text fw={500} size="sm">Training Days ({localDays.length})</Text>
+        <Text fw={500} size="sm">{t('trainings.trainingDays')} ({localDays.length})</Text>
         <Button size="xs" leftSection={<IconPlus size={14} />} onClick={addDay}>
-          Add Day
+          {t('trainings.addDay')}
         </Button>
       </Group>
 

@@ -1,8 +1,9 @@
 import { NumberInput, Grid, Checkbox } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
+import { useTranslation } from 'react-i18next';
 import type { ProgramDetailsSectionProps } from '../../../types/trainings-components.types';
 
-export function ProgramDetailsSection({ 
+export function ProgramDetailsSection({
   estimatedDuration,
   setEstimatedDuration,
   estimatedCalories,
@@ -14,13 +15,15 @@ export function ProgramDetailsSection({
   isActive,
   setIsActive
 }: ProgramDetailsSectionProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <Grid gutter="md">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <NumberInput
-            label="Estimated Duration (minutes)"
-            placeholder="Per session"
+            label={t('trainings.form.estimatedDuration')}
+            placeholder={t('trainings.form.perSession')}
             min={0}
             required
             value={estimatedDuration}
@@ -30,8 +33,8 @@ export function ProgramDetailsSection({
 
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <NumberInput
-            label="Estimated Calories"
-            placeholder="Per session"
+            label={t('trainings.form.estimatedCalories')}
+            placeholder={t('trainings.form.perSession')}
             min={0}
             required
             value={estimatedCalories}
@@ -43,8 +46,8 @@ export function ProgramDetailsSection({
       <Grid gutter="md">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <DateInput
-            label="Start Date"
-            placeholder="Select start date"
+            label={t('trainings.form.startDate')}
+            placeholder={t('trainings.form.selectStartDate')}
             value={startDate ? new Date(startDate) : null}
             onChange={(date) => {
               if (!date) {
@@ -61,8 +64,8 @@ export function ProgramDetailsSection({
 
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <DateInput
-            label="End Date"
-            placeholder="Select end date"
+            label={t('trainings.form.endDate')}
+            placeholder={t('trainings.form.selectEndDate')}
             value={endDate ? new Date(endDate) : null}
             onChange={(date) => {
               if (!date) {
@@ -79,7 +82,7 @@ export function ProgramDetailsSection({
       </Grid>
 
       <Checkbox
-        label="Active"
+        label={t('trainings.active')}
         checked={isActive}
         onChange={(e) => setIsActive(e.currentTarget.checked)}
       />

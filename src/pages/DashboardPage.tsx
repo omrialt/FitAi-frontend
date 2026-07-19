@@ -9,6 +9,7 @@ import {
   Alert,
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { useAuthStore } from '../store/authStore';
 import { useDashboard } from '../hooks/useDashboard';
@@ -23,9 +24,7 @@ import {
 import '../styles/Dashboard.css';
 
 function DashboardPage() {
-  const metadata = usePresetMetadata('dashboard', {
-    preconnect: ['https://api.fitai.com'],
-  });
+  const metadata = usePresetMetadata('dashboard');
 
   const { isAuthenticated } = useAuthStore();
 
@@ -43,6 +42,7 @@ function DashboardPage() {
 }
 
 function DashboardContent() {
+  const { t } = useTranslation();
   const {
     user,
     loading,
@@ -66,7 +66,7 @@ function DashboardContent() {
         <Stack align="center" gap="md">
           <Loader color="indigo" size="lg" />
           <Text c="dimmed" size="sm">
-            Loading your dashboard...
+            {t('dashboard.loading')}
           </Text>
         </Stack>
       </Center>
@@ -78,7 +78,7 @@ function DashboardContent() {
       <Container size="xl" py="xl">
         <Alert
           icon={<IconAlertCircle size={16} />}
-          title="Failed to load dashboard"
+          title={t('dashboard.loadFailed')}
           color="red"
           variant="light"
         >

@@ -11,6 +11,7 @@ import {
   IconEye,
   IconEdit,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
 import type { TrainingPlan } from '../../types/training-plan.types';
 import type { TrainingsCardProps } from '../../types/trainings-components.types';
@@ -40,6 +41,12 @@ export function TrainingsCard({
   onDelete,
   onActivate,
 }: TrainingsCardProps) {
+  const { t, i18n } = useTranslation();
+  const difficulty = (training.difficulty || 'beginner').toLowerCase();
+  const difficultyLabel = ['beginner', 'intermediate', 'advanced', 'elite'].includes(difficulty)
+    ? t(`trainings.${difficulty}`)
+    : training.difficulty;
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
@@ -65,16 +72,16 @@ export function TrainingsCard({
         <Stack gap="xs">
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Difficulty:
+              {t('trainings.difficulty')}:
             </Text>
             <Badge color={getDifficultyColor(training.difficulty || 'beginner')} variant="light">
-              {training.difficulty || 'beginner'}
+              {difficultyLabel}
             </Badge>
           </Group>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Days:
+              {t('trainings.days')}:
             </Text>
             <Text size="sm">{training.days?.length || 0}</Text>
           </Group>
@@ -82,7 +89,7 @@ export function TrainingsCard({
           <Activity mode={training.focus ? "visible" : "hidden"}>
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
-                Focus:
+                {t('trainings.focus')}:
               </Text>
               <Text size="sm">{training.focus}</Text>
             </Group>
@@ -91,27 +98,29 @@ export function TrainingsCard({
           <Activity mode={training.estimatedDuration ? "visible" : "hidden"}>
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
-                Duration:
+                {t('trainings.duration')}:
               </Text>
-              <Text size="sm">{training.estimatedDuration} min</Text>
+              <Text size="sm">{t('trainings.durationMin', { count: training.estimatedDuration })}</Text>
             </Group>
           </Activity>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Status:
+              {t('trainings.status')}:
             </Text>
             <Badge color={training.isActive ? 'green' : 'gray'} variant="light">
-              {training.isActive ? 'Active' : 'Inactive'}
+              {training.isActive ? t('trainings.active') : t('trainings.inactive')}
             </Badge>
           </Group>
 
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
-              Created:
+              {t('trainings.created')}:
             </Text>
             <Text size="sm">
-              {training.createdAt ? new Date(training.createdAt).toLocaleDateString('en-GB') : '-'}
+              {training.createdAt
+                ? new Date(training.createdAt).toLocaleDateString(i18n.language === 'he' ? 'he-IL' : 'en-GB')
+                : '-'}
             </Text>
           </Group>
         </Stack>
@@ -125,7 +134,7 @@ export function TrainingsCard({
             onClick={() => onView(training._id)}
             flex={1}
           >
-            View
+            {t('common.view')}
           </Button>
           <Button
             variant="light"
@@ -134,7 +143,7 @@ export function TrainingsCard({
             onClick={() => onEdit(training._id)}
             flex={1}
           >
-            Edit
+            {t('common.edit')}
           </Button>
        
         </Group>

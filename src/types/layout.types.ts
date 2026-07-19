@@ -3,6 +3,7 @@
  */
 
 import type { ReactNode } from 'react';
+import type { UserRole } from './auth.types';
 
 export interface NavItem {
   icon: ReactNode;
@@ -17,6 +18,8 @@ export interface AppLayoutProps {
 
 export interface ProtectedRouteProps {
   children: ReactNode;
+  /** When set, only these roles may access the route; others go to "/" */
+  roles?: UserRole[];
 }
 
 export interface PublicRouteProps {

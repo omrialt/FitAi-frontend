@@ -4,27 +4,30 @@
 
 import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantine/core';
 import { Activity } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { TrainingDay, Exercise } from '../../../types/training-plan.types';
 import { ExerciseCard } from './ExerciseCard';
 import type { DaysSectionProps } from '../../../types/trainings-components.types';
 
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectionProps) {
+  const { t } = useTranslation();
+
   return (
     <Stack gap="lg" mb="xl">
-      <Title order={2}>Training Days</Title>
+      <Title order={2}>{t('trainings.trainingDays')}</Title>
 
       <Activity mode={days.length === 0 ? "visible" : "hidden"}>
         <Text c="dimmed" size="sm" ta="center">
-          No training days added to this plan yet
+          {t('trainings.noDaysYet')}
         </Text>
       </Activity>
 
       <Activity mode={days.length > 0 ? "visible" : "hidden"}>
         <Accordion variant="contained" defaultValue={`day-0`}>
           {days.map((day, dayIndex) => {
-            const dayName = dayNames[day.dayOfWeek] || `Day ${day.dayOfWeek}`;
+            const dayName = day.dayOfWeek >= 0 && day.dayOfWeek <= 6
+              ? t(`common.weekday${day.dayOfWeek}`)
+              : t('trainings.dayDefault', { num: day.dayOfWeek });
             const totalExercises = day.exercises.length;
             const totalSets = day.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
 
@@ -37,10 +40,10 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
                         {day.dayName} ({dayName})
                       </Text>
                       <Badge variant="light" color="blue">
-                        {totalExercises} {totalExercises === 1 ? 'Exercise' : 'Exercises'}
+                        {t('trainings.exerciseCount', { count: totalExercises })}
                       </Badge>
                       <Badge variant="light" color="grape">
-                        {totalSets} {totalSets === 1 ? 'Set' : 'Sets'}
+                        {t('trainings.setCount', { count: totalSets })}
                       </Badge>
                     </Group>
                   </Group>
@@ -48,7 +51,7 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
                 <Accordion.Panel>
                   <Activity mode={day.exercises.length === 0 ? "visible" : "hidden"}>
                     <Text c="dimmed" size="sm" ta="center" py="md">
-                      No exercises added yet
+                      {t('trainings.noExercisesYet')}
                     </Text>
                   </Activity>
 

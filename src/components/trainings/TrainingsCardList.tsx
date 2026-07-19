@@ -5,6 +5,7 @@
 'use client';
 
 import { Stack, Text } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { TrainingsCard } from './TrainingsCard';
 import type { TrainingPlan } from '../../types/training-plan.types';
 import type { TrainingsCardListProps } from '../../types/trainings-components.types';
@@ -21,10 +22,12 @@ export function TrainingsCardList({
   onDelete,
   onActivate,
 }: TrainingsCardListProps) {
+  const { t } = useTranslation();
+
   if (trainings.length === 0) {
     return (
       <Text c="dimmed" ta="center" py="xl">
-        No training plans found
+        {t('trainings.noTrainings')}
       </Text>
     );
   }

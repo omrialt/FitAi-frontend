@@ -5,9 +5,11 @@
 
 import { Modal } from '@mantine/core';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { VideoModalProps } from '../../../types/trainings-components.types';
 
 export function VideoModal({ opened, onClose, videoUrl }: VideoModalProps) {
+  const { t } = useTranslation();
   const [activeSrc, setActiveSrc] = useState('');
 
   const getYouTubeEmbedUrl = (url: string): string => {
@@ -35,7 +37,7 @@ export function VideoModal({ opened, onClose, videoUrl }: VideoModalProps) {
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Exercise Video"
+      title={t('trainings.exerciseVideo')}
       size="900"
       centered
     >

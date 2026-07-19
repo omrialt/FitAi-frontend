@@ -5,6 +5,7 @@
 import { Modal, Table, Button, Group, TextInput, Box, Text, ActionIcon, Stack, Checkbox } from '@mantine/core';
 import { IconPlus, IconTrash, IconEdit, IconCheck, IconX } from '@tabler/icons-react';
 import { useState, Activity } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DateInput } from '@mantine/dates';
 import type { WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryChart } from './SetHistoryChart';
@@ -20,6 +21,7 @@ export function SetHistoryModal({
   targetWeight,
   targetReps,
 }: SetHistoryModalProps) {
+  const { t } = useTranslation();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [syncToAllSets, setSyncToAllSets] = useState(false);
@@ -114,7 +116,7 @@ export function SetHistoryModal({
   // Prepare chart data with target as baseline
   const chartData = [
     {
-      date: 'Target',
+      date: t('trainings.targetLabel'),
       weight: targetWeight,
       reps: targetReps,
       isTarget: true,
@@ -148,7 +150,7 @@ export function SetHistoryModal({
       onClose={onClose}
       title={
         <Text fw={600} size="lg">
-          History - {exerciseName} (Set {setNumber})
+          {t('trainings.historyTitle', { exercise: exerciseName, set: setNumber })}
         </Text>
       }
       size="700"
@@ -160,15 +162,15 @@ export function SetHistoryModal({
         {/* Table section */}
         <Box>
           <Text fw={500} size="sm" mb="xs">
-            Records
+            {t('trainings.records')}
           </Text>
           {/* Target record */}
           <Box mb="sm" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
             <Group justify="space-between">
-              <Text size="sm" fw={500} c="dimmed">Target:</Text>
+              <Text size="sm" fw={500} c="dimmed">{t('trainings.targetLabel')}:</Text>
               <Group gap="lg">
-                <Text size="sm">{targetWeight} kg</Text>
-                <Text size="sm">{targetReps} reps</Text>
+                <Text size="sm">{targetWeight} {t('common.kg')}</Text>
+                <Text size="sm">{targetReps} {t('trainings.reps')}</Text>
               </Group>
             </Group>
           </Box>
@@ -179,10 +181,10 @@ export function SetHistoryModal({
             <Table striped highlightOnHover>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Date</Table.Th>
-                  <Table.Th>Weight (kg)</Table.Th>
-                  <Table.Th>Reps</Table.Th>
-                  <Table.Th>Actions</Table.Th>
+                  <Table.Th>{t('common.date')}</Table.Th>
+                  <Table.Th>{t('trainings.weightKg')}</Table.Th>
+                  <Table.Th>{t('trainings.repsHeader')}</Table.Th>
+                  <Table.Th>{t('trainings.actions')}</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -193,7 +195,7 @@ export function SetHistoryModal({
                         <>
                           <Table.Td>
                             <DateInput
-                              placeholder="Pick date"
+                              placeholder={t('common.pickDate')}
                               value={formData.date}
                               onChange={(date) => setFormData({ ...formData, date: date ? (typeof date === 'string' ? new Date(date) : date) : new Date() })}
                               maxDate={new Date()}
@@ -247,7 +249,7 @@ export function SetHistoryModal({
                       ) : (
                         <>
                           <Table.Td>{formatDate(entry.date)}</Table.Td>
-                        <Table.Td>{entry.weight} kg</Table.Td>
+                        <Table.Td>{entry.weight} {t('common.kg')}</Table.Td>
                         <Table.Td>{entry.reps}</Table.Td>
                         <Table.Td>
                           <Group gap="xs">
@@ -278,7 +280,7 @@ export function SetHistoryModal({
                       <Table.Tr>
                         <Table.Td colSpan={4}>
                           <Checkbox
-                            label="Sync to all sets"
+                            label={t('trainings.syncToAllSets')}
                             checked={syncToAllSets}
                             onChange={(e) => setSyncToAllSets(e.currentTarget.checked)}
                             size="xs"
@@ -292,7 +294,7 @@ export function SetHistoryModal({
                   <Table.Tr>
                     <Table.Td>
                       <DateInput
-                        placeholder="Pick date"
+                        placeholder={t('common.pickDate')}
                         value={formData.date}
                         onChange={(date) => setFormData({ ...formData, date: date ? (typeof date === 'string' ? new Date(date) : date) : new Date() })}
                         maxDate={new Date()}
@@ -309,7 +311,7 @@ export function SetHistoryModal({
                         min={0}
                         step={0.5}
                         size="xs"
-                        placeholder="Weight"
+                        placeholder={t('trainings.weight')}
                       />
                     </Table.Td>
                     <Table.Td>
@@ -321,7 +323,7 @@ export function SetHistoryModal({
                         }
                         min={1}
                         size="xs"
-                        placeholder="Reps"
+                        placeholder={t('trainings.repsHeader')}
                       />
                     </Table.Td>
                     <Table.Td>
@@ -363,7 +365,7 @@ export function SetHistoryModal({
 
         <Activity mode={history.length === 0 ? "visible" : "hidden"}>
           <Text c="dimmed" ta="center" py="md">
-            No history recorded yet
+            {t('trainings.noHistory')}
           </Text>
         </Activity>
 
@@ -374,7 +376,7 @@ export function SetHistoryModal({
             variant="light"
             fullWidth
           >
-            Add Record
+            {t('trainings.addRecord')}
           </Button>
         </Activity>
       </Stack>

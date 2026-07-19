@@ -13,12 +13,14 @@ import {
   Loader,
 } from '@mantine/core';
 import { IconLogin } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useApi } from '../hooks/useApi';
 import { toast } from 'sonner';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import '../styles/Auth.css';
 
 function ResetPasswordPage() {
+  const { t } = useTranslation();
   const metadata = usePresetMetadata('reset-password');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -28,30 +30,30 @@ function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [formError, setFormError] = useState('');
-  const { execute: resetPassword, loading, error, data } = useApi<void>({ showSuccessToast: true, successMessage: 'Password reset successful! You can now log in.' });
+  const { execute: resetPassword, loading, error, data } = useApi<void>({ showSuccessToast: true, successMessage: t('auth.resetSuccess') });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     if (!email || !newPassword || !confirmPassword) {
-      setFormError('All fields are required.');
+      setFormError(t('auth.allFieldsRequired'));
       return;
     }
     if (newPassword.length < 6) {
-      setFormError('Password must be at least 6 characters.');
+      setFormError(t('auth.passwordTooShort'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setFormError('Passwords do not match.');
+      setFormError(t('auth.passwordsDoNotMatch'));
       return;
     }
     if (!token) {
-      setFormError('Invalid or missing reset token.');
+      setFormError(t('auth.invalidResetToken'));
       return;
     }
     const result = await resetPassword('/auth/reset-password', { method: 'POST', data: { token, newPassword } });
     if (result !== null && !error) {
-      toast.success('Password reset successful! You can now log in.');
+      toast.success(t('auth.resetSuccess'));
       setTimeout(() => navigate('/login'), 1800);
     }
   };
@@ -84,34 +86,34 @@ function ResetPasswordPage() {
           <Stack gap="md">
             <div style={{ textAlign: 'center' }}>
               <Title order={2} mb="xs">
-                Reset Password
+                {t('auth.resetPassword')}
               </Title>
               <Text size="sm" c="dimmed">
-                Enter your email and new password
+                {t('auth.resetSubtitle')}
               </Text>
             </div>
-            <Divider label="Reset your password" labelPosition="center" />
+            <Divider label={t('auth.resetDivider')} labelPosition="center" />
             <form onSubmit={handleSubmit}>
               <Stack gap="md">
                 <TextInput
-                  label="Email"
-                  placeholder="your@email.com"
+                  label={t('auth.email')}
+                  placeholder={t('auth.emailPlaceholder')}
                   required
                   withAsterisk
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                 />
                 <PasswordInput
-                  label="New Password"
-                  placeholder="Enter new password"
+                  label={t('auth.newPassword')}
+                  placeholder={t('auth.newPasswordPlaceholder')}
                   required
                   withAsterisk
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                 />
                 <PasswordInput
-                  label="Confirm Password"
-                  placeholder="Re-enter new password"
+                  label={t('auth.confirmPassword')}
+                  placeholder={t('auth.reenterPasswordPlaceholder')}
                   required
                   withAsterisk
                   value={confirmPassword}
@@ -138,7 +140,7 @@ function ResetPasswordPage() {
                   variant="gradient"
                   className="auth-button"
                 >
-                  Reset Password
+                  {t('auth.resetPassword')}
                 </Button>
                 <Button
                   variant="subtle"
@@ -147,7 +149,7 @@ function ResetPasswordPage() {
                   onClick={() => navigate('/login')}
                   type="button"
                 >
-                  Back to Login
+                  {t('auth.backToLogin')}
                 </Button>
               </Stack>
             </form>

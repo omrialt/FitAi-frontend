@@ -1,4 +1,4 @@
-// React 19: No forwardRef needed - refs work directly on components
+﻿// React 19: No forwardRef needed - refs work directly on components
 import { useMemo, Activity } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -28,19 +28,15 @@ import {
   IconUserPlus,
   IconBarbell,
   IconApple,
-  IconChartLine,
   IconCalendar,
   IconUsers,
-  IconNotebook,
-  IconReport,
-  IconDatabase,
-  IconActivity,
   IconHeartRateMonitor,
-  IconBrain,
-  IconClipboardList,
 } from "@tabler/icons-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useTranslation } from "react-i18next";
+import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
+import { MobileBottomNav } from "./MobileBottomNav";
 import type { UserRole } from "../types/auth.types";
 import type { NavItem, AppLayoutProps } from '../types/layout.types';
 import "../styles/AppLayout.css";
@@ -55,15 +51,15 @@ const getNavigationItems = (
   // Not logged in - public navigation
   if (!isAuthenticated || !role) {
     return [
-      { icon: <IconHome size={20} stroke={1.5} />, label: "Home", path: "/" },
+      { icon: <IconHome size={20} stroke={1.5} />, label: "nav.home", path: "/" },
       {
         icon: <IconLogin size={20} stroke={1.5} />,
-        label: "Login",
+        label: "nav.login",
         path: "/login",
       },
       {
         icon: <IconUserPlus size={20} stroke={1.5} />,
-        label: "Register",
+        label: "nav.register",
         path: "/register",
       },
     ];
@@ -74,47 +70,27 @@ const getNavigationItems = (
     return [
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
-        label: "Dashboard",
+        label: "nav.dashboard",
         path: "/",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
-        label: "My Trainings",
+        label: "nav.myTrainings",
         path: "/my-trainings",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
-        label: "Nutrition Plans",
+        label: "nav.nutritionPlans",
         path: "/nutrition-plans",
       },
       {
-        icon: <IconActivity size={20} stroke={1.5} />,
-        label: "Performance",
-        path: "/performance",
-      },
-      {
-        icon: <IconChartLine size={20} stroke={1.5} />,
-        label: "Progress Stats",
-        path: "/progress",
-      },
-      {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
-        label: "Physical Data",
+        label: "nav.physicalData",
         path: "/physical-data",
       },
       {
-        icon: <IconClipboardList size={20} stroke={1.5} />,
-        label: "Current Status",
-        path: "/status",
-      },
-      {
-        icon: <IconBrain size={20} stroke={1.5} />,
-        label: "AI Recommendations",
-        path: "/ai-recommendations",
-      },
-      {
         icon: <IconCalendar size={20} stroke={1.5} />,
-        label: "Schedule",
+        label: "nav.schedule",
         path: "/schedule",
       },
     ];
@@ -125,38 +101,28 @@ const getNavigationItems = (
     return [
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
-        label: "Dashboard",
+        label: "nav.dashboard",
         path: "/",
       },
       {
-        icon: <IconUsers size={20} stroke={1.5} />,
-        label: "Clients",
-        path: "/clients",
-      },
-      {
         icon: <IconBarbell size={20} stroke={1.5} />,
-        label: "My Trainings",
+        label: "nav.myTrainings",
         path: "/my-trainings",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
-        label: "Nutrition Plans",
+        label: "nav.nutritionPlans",
         path: "/nutrition-plans",
       },
       {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
-        label: "Physical Data",
+        label: "nav.physicalData",
         path: "/physical-data",
       },
       {
-        icon: <IconBrain size={20} stroke={1.5} />,
-        label: "AI Recommendations",
-        path: "/ai-recommendations",
-      },
-      {
-        icon: <IconChartLine size={20} stroke={1.5} />,
-        label: "Progress Analytics",
-        path: "/analytics",
+        icon: <IconCalendar size={20} stroke={1.5} />,
+        label: "nav.schedule",
+        path: "/schedule",
       },
     ];
   }
@@ -166,55 +132,40 @@ const getNavigationItems = (
     return [
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
-        label: "Dashboard",
+        label: "nav.dashboard",
         path: "/",
       },
       {
         icon: <IconUsers size={20} stroke={1.5} />,
-        label: "Users",
+        label: "nav.users",
         path: "/users",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
-        label: "Training Plans",
+        label: "nav.trainingPlans",
         path: "/my-trainings",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
-        label: "Nutrition Plans",
+        label: "nav.nutritionPlans",
         path: "/nutrition-plans",
       },
       {
-        icon: <IconActivity size={20} stroke={1.5} />,
-        label: "Performance Data",
-        path: "/performance",
-      },
-      {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
-        label: "Physical Data",
+        label: "nav.physicalData",
         path: "/physical-data",
       },
       {
-        icon: <IconBrain size={20} stroke={1.5} />,
-        label: "AI Recommendations",
-        path: "/ai-recommendations",
-      },
-      {
-        icon: <IconReport size={20} stroke={1.5} />,
-        label: "Reports",
-        path: "/reports",
-      },
-      {
-        icon: <IconDatabase size={20} stroke={1.5} />,
-        label: "System",
-        path: "/system",
+        icon: <IconCalendar size={20} stroke={1.5} />,
+        label: "nav.schedule",
+        path: "/schedule",
       },
     ];
   }
 
   // Fallback to public navigation
   return [
-    { icon: <IconHome size={20} stroke={1.5} />, label: "Home", path: "/" },
+    { icon: <IconHome size={20} stroke={1.5} />, label: "nav.home", path: "/" },
   ];
 };
 
@@ -223,14 +174,19 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   // Get auth state from Zustand store
   const { user, isAuthenticated, logout } = useAuthStore();
 
-  // Get dynamic navigation items based on auth state
+  // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
-    () => getNavigationItems(isAuthenticated, user?.role || null),
-    [isAuthenticated, user?.role]
+    () =>
+      getNavigationItems(isAuthenticated, user?.role || null).map((item) => ({
+        ...item,
+        label: t(item.label),
+      })),
+    [isAuthenticated, user?.role, t]
   );
 
   // Handle logout
@@ -288,10 +244,22 @@ export function AppLayout({ children }: AppLayoutProps) {
           </Group>
 
           <Group gap="xs">
+            <SegmentedControl
+              size="xs"
+              value={i18n.language === "he" ? "he" : "en"}
+              onChange={(lng) => i18n.changeLanguage(lng)}
+              data={[
+                { value: "en", label: "EN" },
+                { value: "he", label: "עב" },
+              ]}
+              aria-label="Language"
+            />
             <Tooltip
-              label={`Switch to ${
-                colorScheme === "dark" ? "light" : "dark"
-              } mode`}
+              label={
+                colorScheme === "dark"
+                  ? t("layout.switchToLight")
+                  : t("layout.switchToDark")
+              }
             >
               <ActionIcon
                 onClick={() => toggleColorScheme()}
@@ -345,7 +313,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       onClick={() => navigate("/profile")}
                     >
                       <IconUser size={16} />
-                      <span>Profile</span>
+                      <span>{t("layout.profile")}</span>
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator className="dropdown-separator" />
                     <DropdownMenu.Item
@@ -353,7 +321,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       onClick={handleLogout}
                     >
                       <IconLogout size={16} />
-                      <span>Logout</span>
+                      <span>{t("layout.logout")}</span>
                     </DropdownMenu.Item>
                     <DropdownMenu.Arrow className="dropdown-arrow" />
                   </DropdownMenu.Content>
@@ -367,7 +335,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   onClick={() => navigate("/login")}
                 >
                   <Text size="sm" fw={500}>
-                    Login
+                    {t("nav.login")}
                   </Text>
                 </UnstyledButton>
                 <ActionIcon
@@ -413,7 +381,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <Box className="navbar-footer">
             <Activity mode={isAuthenticated && !!user ? "visible" : "hidden"}>
               <Text size="xs" c="dimmed" ta="center" mb="xs">
-                Role: {user?.role.charAt(0).toUpperCase()}
+                {t("layout.role")}: {user?.role.charAt(0).toUpperCase()}
                 {user?.role.slice(1)}
               </Text>
             </Activity>
@@ -427,13 +395,30 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <AppShell.Main>{children}</AppShell.Main>
 
-      {/* Footer */}
+      {/* Footer: bottom nav on mobile (when signed in), copyright on desktop */}
       <AppShell.Footer p="xs" style={{ position: "relative" }} className="appshell-footer">
-        <Group justify="center" h="100%">
-          <Text size="xs" c="dimmed">
-            © 2025 FitAI. All rights reserved.
-          </Text>
-        </Group>
+        {isAuthenticated && user ? (
+          <>
+            <Box hiddenFrom="sm" h="100%">
+              <MobileBottomNav
+                items={navigationItems}
+                currentPath={location.pathname}
+                onNavigate={handleNavClick}
+              />
+            </Box>
+            <Group justify="center" h="100%" visibleFrom="sm">
+              <Text size="xs" c="dimmed">
+                ֲ{t("layout.allRightsReserved")}
+              </Text>
+            </Group>
+          </>
+        ) : (
+          <Group justify="center" h="100%">
+            <Text size="xs" c="dimmed">
+              ֲ{t("layout.allRightsReserved")}
+            </Text>
+          </Group>
+        )}
       </AppShell.Footer>
     </AppShell>
   );

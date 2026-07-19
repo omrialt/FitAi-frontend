@@ -21,7 +21,8 @@ import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 function App() {
   return (
     <Routes>
-      {/* Protected Routes - require authentication */}
+      {/* "/" is intentionally unguarded: DashboardPage renders the public
+          landing hero for guests and the dashboard for signed-in users */}
       <Route path="/" element={<DashboardPage />} />
       <Route
         path="/my-trainings"
@@ -77,10 +78,18 @@ function App() {
       {/* Auth callback - no protection needed */}
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 
-      {/* Complete Profile - for Google OAuth users */}
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-      {/* Admin Users Page */}
-      <Route path="/users" element={<AdminUsersPage />} />
+      {/* Admin Users Page - admin only */}
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute roles={["admin"]}>
+            <AdminUsersPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Complete Profile - intentionally unguarded: the Google OAuth redirect
+          lands here with tokens in the URL, which the page stores itself */}
       <Route path="/complete-profile" element={<CompleteProfilePage />} />
 
       {/* Profile Page - requires authentication */}

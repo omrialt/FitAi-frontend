@@ -8,6 +8,7 @@ import { Activity } from 'react';
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import {
   IconDotsVertical,
   IconEye,
@@ -32,6 +33,7 @@ export function TrainingsActionsMenu({
   onDelete,
   onActivate,
 }: TrainingsActionsMenuProps) {
+  const { t } = useTranslation();
   // Check if current user is the owner of the training
   const trainingUserId = typeof training.userId === 'string' ? training.userId : training.userId?._id;
   const isOwner = currentUserId === trainingUserId;
@@ -58,7 +60,7 @@ export function TrainingsActionsMenu({
             onSelect={() => onView(training._id)}
           >
             <IconEye size={16} />
-            <span>View</span>
+            <span>{t('common.view')}</span>
           </DropdownMenu.Item>
 
           {/* Make Active */}
@@ -68,7 +70,7 @@ export function TrainingsActionsMenu({
               onSelect={() => onActivate && onActivate(training._id)}
             >
               <IconCircleCheck size={16} />
-              <span>Make Active</span>
+              <span>{t('trainings.makeActive')}</span>
             </DropdownMenu.Item>
           </Activity>
 
@@ -78,7 +80,7 @@ export function TrainingsActionsMenu({
             onSelect={() => onEdit(training._id)}
           >
             <IconEdit size={16} />
-            <span>Edit</span>
+            <span>{t('common.edit')}</span>
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator className="dropdown-menu-separator" />
@@ -87,7 +89,7 @@ export function TrainingsActionsMenu({
           <DropdownMenu.Sub>
             <DropdownMenu.SubTrigger className="dropdown-menu-item">
               <IconFileTypePdf size={16} />
-              <span>Export</span>
+              <span>{t('trainings.export')}</span>
             </DropdownMenu.SubTrigger>
             <DropdownMenu.Portal>
               <DropdownMenu.SubContent
@@ -100,14 +102,14 @@ export function TrainingsActionsMenu({
                   onSelect={() => onExportPDF(training)}
                 >
                   <IconFileTypePdf size={16} />
-                  <span>Export as PDF</span>
+                  <span>{t('common.exportAsPDF')}</span>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="dropdown-menu-item"
                   onSelect={() => onExportExcel(training)}
                 >
                   <IconFileTypeXls size={16} />
-                  <span>Export as Excel</span>
+                  <span>{t('common.exportAsExcel')}</span>
                 </DropdownMenu.Item>
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
@@ -121,7 +123,7 @@ export function TrainingsActionsMenu({
               onSelect={() => onDelete && onDelete(training._id)}
             >
               <IconTrash size={16} />
-              <span>Delete</span>
+              <span>{t('common.delete')}</span>
             </DropdownMenu.Item>
           </Activity>
         </DropdownMenu.Content>

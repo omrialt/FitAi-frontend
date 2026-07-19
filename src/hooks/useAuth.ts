@@ -24,6 +24,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import i18n from '../i18n';
 import { useAuthStore } from '../store/authStore';
 import type { LoginCredentials, RegisterData, User, AuthTokens, UseAuthReturn } from '../types/auth.types';
 import api from '../services/api';
@@ -53,13 +54,13 @@ export function useAuth(): UseAuthReturn {
         // Set axios default header
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.tokens.accessToken}`;
         
-        toast.success(`Welcome back, ${response.data.data.user.fullName}!`);
+        toast.success(i18n.t('auth.welcomeBackName', { name: response.data.data.user.fullName }));
         navigate('/');
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
         ? String(error.response.data.message)
-        : 'Login failed. Please check your credentials.';
+        : i18n.t('auth.loginFailed');
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -79,13 +80,13 @@ export function useAuth(): UseAuthReturn {
         // Set axios default header
         api.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.tokens.accessToken}`;
         
-        toast.success(`Welcome to FitAI, ${response.data.data.user.fullName}!`);
+        toast.success(i18n.t('auth.welcomeToFitAI', { name: response.data.data.user.fullName }));
         navigate('/');
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
         ? String(error.response.data.message)
-        : 'Registration failed. Please try again.';
+        : i18n.t('auth.registerFailed');
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -96,7 +97,7 @@ export function useAuth(): UseAuthReturn {
   // Logout function
   const logout = useCallback(async () => {
     await clearAuth();
-    toast.info('You have been logged out');
+    toast.info(i18n.t('auth.loggedOut'));
     navigate('/login');
   }, [clearAuth, navigate]);
 
@@ -125,7 +126,7 @@ export function useAuth(): UseAuthReturn {
   // Update profile function
   const updateProfile = useCallback(async (data: Partial<User>) => {
     if (!user?._id) {
-      toast.error('User not authenticated');
+      toast.error(i18n.t('auth.notAuthenticated'));
       return;
     }
 
@@ -135,12 +136,12 @@ export function useAuth(): UseAuthReturn {
       
       if (response.data.user) {
         updateUser(response.data.user);
-        toast.success('Profile updated successfully!');
+        toast.success(i18n.t('auth.profileUpdated'));
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response !== null && 'data' in error.response && typeof error.response.data === 'object' && error.response.data !== null && 'message' in error.response.data
         ? String(error.response.data.message)
-        : 'Failed to update profile';
+        : i18n.t('auth.profileUpdateFailed');
       toast.error(errorMessage);
       throw error;
     } finally {

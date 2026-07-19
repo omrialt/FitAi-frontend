@@ -14,6 +14,7 @@ import {
   Loader,
 } from "@mantine/core";
 import { IconBrandGoogle, IconLogin } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { useApi } from "../hooks/useApi";
 import { useFormHandler } from "../hooks/useFormHandler";
@@ -23,6 +24,7 @@ import { loginSchema, type LoginFormData } from "../schemas/auth.schemas";
 import "../styles/Auth.css";
 
 function LoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const metadata = usePresetMetadata("login", {
     preconnect: ["https://accounts.google.com"],
@@ -52,7 +54,7 @@ function LoginPage() {
     data: resetData,
   } = useApi<void>({
     showSuccessToast: true,
-    successMessage: "If this email exists, a reset link was sent.",
+    successMessage: t('auth.resetLinkSent'),
   });
 
   const handleGoogleLogin = () => {
@@ -98,10 +100,10 @@ function LoginPage() {
             {/* Header */}
             <div style={{ textAlign: "center" }}>
               <Title order={2} mb="xs">
-                Welcome Back
+                {t('auth.loginTitle')}
               </Title>
               <Text size="sm" c="dimmed">
-                Sign in to your FitAI account
+                {t('auth.loginSubtitle')}
               </Text>
             </div>
             <Activity mode={!showReset ? "visible" : "hidden"}>
@@ -112,15 +114,15 @@ function LoginPage() {
                 onClick={handleGoogleLogin}
                 fullWidth
               >
-                Continue with Google
+                {t('auth.continueWithGoogle')}
               </Button>
 
-              <Divider label="Or continue with email" labelPosition="center" />
+              <Divider label={t('auth.orContinueWithEmail')} labelPosition="center" />
               <form onSubmit={handleSubmit}>
                 <Stack gap="md">
                   <TextInput
-                    label="Email"
-                    placeholder="your@email.com"
+                    label={t('auth.email')}
+                    placeholder={t('auth.emailPlaceholder')}
                     required
                     withAsterisk
                     {...register("email")}
@@ -128,8 +130,8 @@ function LoginPage() {
                   />
 
                   <PasswordInput
-                    label="Password"
-                    placeholder="Your password"
+                    label={t('auth.password')}
+                    placeholder={t('auth.passwordPlaceholder')}
                     required
                     withAsterisk
                     {...register("password")}
@@ -143,7 +145,7 @@ function LoginPage() {
                       size="sm"
                       onClick={() => setShowReset(true)}
                     >
-                      Forgot password?
+                      {t('auth.forgotPassword')}
                     </Anchor>
                   </Group>
 
@@ -157,7 +159,7 @@ function LoginPage() {
                     variant="gradient"
                     className="auth-button"
                   >
-                    Sign In
+                    {t('auth.signIn')}
                   </Button>
                 </Stack>
               </form>
@@ -167,8 +169,8 @@ function LoginPage() {
               <form onSubmit={handleResetSubmit}>
                 <Stack gap="md">
                   <TextInput
-                    label="Email"
-                    placeholder="your@email.com"
+                    label={t('auth.email')}
+                    placeholder={t('auth.emailPlaceholder')}
                     required
                     withAsterisk
                     value={resetEmail}
@@ -188,7 +190,7 @@ function LoginPage() {
                     variant="gradient"
                     gradient={{ from: "indigo", to: "cyan", deg: 45 }}
                   >
-                    Reset Password
+                    {t('auth.resetPassword')}
                   </Button>
                   <Button
                     variant="subtle"
@@ -197,7 +199,7 @@ function LoginPage() {
                     onClick={() => setShowReset(false)}
                     type="button"
                   >
-                    Back to Login
+                    {t('auth.backToLogin')}
                   </Button>
                 </Stack>
               </form>
@@ -205,9 +207,9 @@ function LoginPage() {
 
             {/* Register Link */}
             <Text size="sm" ta="center">
-              Don't have an account?{" "}
+              {t('auth.noAccount')}{" "}
               <Anchor component={Link} to="/register" fw={600}>
-                Sign up
+                {t('auth.signUp')}
               </Anchor>
             </Text>
           </Stack>

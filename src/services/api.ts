@@ -1,4 +1,7 @@
-import axios from 'axios';
+import axios, {
+  AxiosError,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -19,37 +22,84 @@ api.interceptors.request.use(
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-      } catch (error) {
-        console.error('❌ Failed to parse auth storage:', error);
+      } catch {
+        // Corrupt storage — proceed unauthenticated
       }
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Single-flight refresh: concurrent 401s share one refresh request.
+let refreshPromise: Promise<string | null> | null = null;
+
+async function refreshAccessToken(): Promise<string | null> {
+  // Dynamic import to avoid a circular dependency (authStore imports api)
+  const { useAuthStore } = await import('../store/authStore');
+  const tokens = useAuthStore.getState().tokens;
+  if (!tokens?.refreshToken) return null;
+
+  try {
+    // Bare axios so this request skips the interceptors above
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/refresh`,
+      { refreshToken: tokens.refreshToken },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    // Backend wraps responses as { data, timestamp, path }
+    const payload = res.data?.data ?? res.data;
+    if (!payload?.accessToken || !payload?.refreshToken) return null;
+
+    useAuthStore.getState().setTokens({
+      accessToken: payload.accessToken,
+      refreshToken: payload.refreshToken,
+    });
+    return payload.accessToken;
+  } catch {
+    return null;
+  }
+}
+
+type RetriableRequest = InternalAxiosRequestConfig & { _retry?: boolean };
+
+// Response interceptor: silent token refresh on 401, logout when refresh fails
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Handle different error status codes
-    if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          // Handle unauthorized
-          break;
-        case 404:
-          // Handle not found
-          break;
-        case 500:
-          // Handle server error
-          break;
-        default:
-          break;
+  async (error: AxiosError) => {
+    const original = error.config as RetriableRequest | undefined;
+    const url = original?.url ?? '';
+    const isAuthRoute =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh') ||
+      url.includes('/auth/logout');
+
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._retry &&
+      !isAuthRoute
+    ) {
+      original._retry = true;
+
+      if (!refreshPromise) {
+        refreshPromise = refreshAccessToken().finally(() => {
+          refreshPromise = null;
+        });
       }
+      const newToken = await refreshPromise;
+
+      if (newToken) {
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return api(original);
+      }
+
+      const { useAuthStore } = await import('../store/authStore');
+      await useAuthStore.getState().logout();
+      window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );

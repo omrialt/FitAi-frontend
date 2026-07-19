@@ -5,15 +5,10 @@
 import { Card, Text, Group, Badge, Table, Box, Button } from '@mantine/core';
 import { IconVideo, IconHistory, IconPlus } from '@tabler/icons-react';
 import { useState, Activity } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Exercise, WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryModal } from './SetHistoryModal';
 import type { ExerciseCardProps } from '../../../types/trainings-components.types';
-
-const exerciseTypeLabels: Record<string, string> = {
-  regular: 'Regular',
-  dropset: 'Dropset',
-  superset: 'Superset',
-};
 
 const exerciseTypeColors: Record<string, string> = {
   regular: 'blue',
@@ -22,6 +17,7 @@ const exerciseTypeColors: Record<string, string> = {
 };
 
 export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExerciseUpdate }: ExerciseCardProps) {
+  const { t } = useTranslation();
   const [historyModalOpened, setHistoryModalOpened] = useState(false);
   const [selectedSetIndex, setSelectedSetIndex] = useState<number | null>(null);
 
@@ -73,7 +69,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
             {exerciseNumber}. {exercise.name}
           </Text>
           <Badge color={exerciseTypeColors[exercise.type]} size="sm">
-            {exerciseTypeLabels[exercise.type]}
+            {t(`trainings.type_${exercise.type}`, { defaultValue: exercise.type })}
           </Badge>
           <Badge variant="light" color="cyan" size="sm">
             {exercise.muscleGroup}
@@ -86,7 +82,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
             leftSection={<IconVideo size={16} />}
             onClick={() => onVideoClick(exercise.video!)}
           >
-            Watch Video
+            {t('trainings.watchVideo')}
           </Button>
         )}
       </Group>
@@ -102,10 +98,10 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
           <Table striped highlightOnHover>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Set</Table.Th>
-                <Table.Th>Target Reps</Table.Th>
-                <Table.Th>Target Weight</Table.Th>
-                <Table.Th>Sets History</Table.Th>
+                <Table.Th>{t('trainings.set')}</Table.Th>
+                <Table.Th>{t('trainings.targetReps')}</Table.Th>
+                <Table.Th>{t('trainings.targetWeight')}</Table.Th>
+                <Table.Th>{t('trainings.setsHistory')}</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -115,7 +111,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
                     <Text fw={500}>{setIndex + 1}</Text>
                   </Table.Td>
                   <Table.Td>{set.targetReps}</Table.Td>
-                  <Table.Td>{set.targetWeight} kg</Table.Td>
+                  <Table.Td>{set.targetWeight} {t('common.kg')}</Table.Td>
                   <Table.Td>
                     <Button
                       size="xs"
@@ -130,7 +126,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
                       }
                       onClick={() => handleHistoryClick(setIndex)}
                     >
-                      {set.history && set.history.length > 0 ? 'Show' : 'Add'}
+                      {set.history && set.history.length > 0 ? t('common.show') : t('common.add')}
                     </Button>
                   </Table.Td>
                 </Table.Tr>
@@ -142,7 +138,7 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
 
       <Activity mode={exercise.sets.length === 0 ? "visible" : "hidden"}>
         <Text c="dimmed" size="sm">
-          No sets defined
+          {t('trainings.noSets')}
         </Text>
       </Activity>
 

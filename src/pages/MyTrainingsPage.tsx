@@ -71,6 +71,20 @@ export default function MyTrainingsPage() {
     return trainingsData?.data.items || [];
   }, [trainingsData]);
 
+  // Per-weekday share of scheduled training days (0..1), for the volume mini chart
+  const weekdayVolume = useMemo(() => {
+    const counts = new Array<number>(7).fill(0);
+    allTrainings.forEach((t) => {
+      if (!t.isActive) return;
+      t.days?.forEach((d) => {
+        const dow = (d as { dayOfWeek?: number }).dayOfWeek;
+        if (typeof dow === 'number' && dow >= 0 && dow <= 6) counts[dow] += 1;
+      });
+    });
+    const max = Math.max(...counts, 1);
+    return counts.map((c) => c / max);
+  }, [allTrainings]);
+
   // Modals state
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
@@ -136,6 +150,11 @@ export default function MyTrainingsPage() {
     }
     if (filters.target) {
       filtered = filtered.filter((t) => t.target === filters.target);
+    }
+    if (filters.status === 'archived') {
+      filtered = filtered.filter((t) => !t.isActive);
+    } else {
+      filtered = filtered.filter((t) => t.isActive);
     }
 
     // Apply search
@@ -388,7 +407,15 @@ export default function MyTrainingsPage() {
               <Text size="sm" c="rgba(255,255,255,0.85)" style={{ lineHeight: 1.6 }}>
                 Your current training plans average a <strong>84% recovery compliance rate</strong>. FitAi recommends adding a Restorative Flow day to your Peak Power block.
               </Text>
-              <Button mt="sm" variant="white" color="indigo" size="sm" style={{ alignSelf: 'flex-start' }}>
+              <Button
+                mt="sm"
+                variant="white"
+                color="indigo"
+                size="sm"
+                style={{ alignSelf: 'flex-start' }}
+                disabled
+                title="Coming soon"
+              >
                 Apply Suggestion
               </Button>
             </Stack>
@@ -404,7 +431,27 @@ export default function MyTrainingsPage() {
               {(allTrainings.reduce((s, t) => s + (t.days?.length || 0), 0) * 1.2).toFixed(1)}
               <Text span size="md" fw={400} c="dimmed"> hrs</Text>
             </Text>
-            <Text size="xs" c="dimmed" mt={4}>Weekly training volume across all active plans</Text>
+            <Group gap={6} mt="md" align="flex-end" h={48}>
+              {weekdayVolume.map((count, i) => (
+                <Stack key={i} gap={2} align="center" style={{ flex: 1 }}>
+                  <Box
+                    w="100%"
+                    style={{
+                      height: `${8 + count * 36}px`,
+                      borderRadius: 4,
+                      backgroundColor:
+                        count > 0
+                          ? 'var(--mantine-color-indigo-5)'
+                          : 'var(--mantine-color-gray-3)',
+                    }}
+                  />
+                </Stack>
+              ))}
+            </Group>
+            <Group justify="space-between" mt={4}>
+              <Text size="10px" c="dimmed">MON</Text>
+              <Text size="10px" c="dimmed">SUN</Text>
+            </Group>
           </Paper>
         </SimpleGrid>
       </Container>

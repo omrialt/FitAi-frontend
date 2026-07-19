@@ -3,17 +3,21 @@
  */
 
 import { Box, Text } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import type { ChartDataPoint, SetHistoryChartProps } from '../../../types/trainings-components.types';
 
 export function SetHistoryChart({ chartData }: SetHistoryChartProps) {
+  const { t } = useTranslation();
+
   return (
     <Box>
       <Text fw={500} size="sm" mb="xs">
-        Progress Chart
+        {t('trainings.progressChart')}
       </Text>
-      <Box style={{ width: '100%', height: 250 }}>
+      {/* Charts stay LTR even in RTL layouts */}
+      <Box dir="ltr" style={{ width: '100%', height: 250 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -34,7 +38,7 @@ export function SetHistoryChart({ chartData }: SetHistoryChartProps) {
               dataKey="weight" 
               stroke="#228be6" 
               strokeWidth={2}
-              name="Weight (kg)"
+              name={t('trainings.weightKg')}
               dot={{ r: 4 }}
             />
             <Line 
@@ -43,7 +47,7 @@ export function SetHistoryChart({ chartData }: SetHistoryChartProps) {
               dataKey="reps" 
               stroke="#40c057" 
               strokeWidth={2}
-              name="Reps"
+              name={t('trainings.repsHeader')}
               dot={{ r: 4 }}
             />
           </LineChart>

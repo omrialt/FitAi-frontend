@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Center, Loader, Text, Stack } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
 
 function GoogleCallbackPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuthStore();
@@ -17,13 +19,13 @@ function GoogleCallbackPage() {
       const userStr = searchParams.get('user');
 
       if (error) {
-        toast.error('Google authentication failed');
+        toast.error(t('auth.googleAuthFailed'));
         navigate('/login');
         return;
       }
 
       if (!accessToken || !refreshToken || !userStr) {
-        toast.error('Failed to authenticate with Google');
+        toast.error(t('auth.googleAuthFailed'));
         navigate('/login');
         return;
       }
@@ -38,14 +40,14 @@ function GoogleCallbackPage() {
         login(user, tokens);
         
         if (needsProfileCompletion) {
-          toast.info('Please complete your profile');
+          toast.info(t('auth.pleaseCompleteProfile'));
           navigate('/complete-profile');
         } else {
-          toast.success('Successfully signed in with Google!');
+          toast.success(t('auth.googleSignInSuccess'));
           navigate('/');
         }
       } catch (err) {
-        toast.error('Failed to process authentication data');
+        toast.error(t('auth.authDataError'));
         navigate('/login');
       }
     };
@@ -59,10 +61,10 @@ function GoogleCallbackPage() {
         <Stack align="center" gap="md">
           <Loader size="lg" />
           <Text size="lg" fw={500}>
-            Authenticating with Google...
+            {t('auth.authenticatingGoogle')}
           </Text>
           <Text size="sm" c="dimmed">
-            Please wait while we complete your sign in
+            {t('auth.pleaseWaitSignIn')}
           </Text>
         </Stack>
       </Center>

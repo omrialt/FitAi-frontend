@@ -5,8 +5,9 @@
 
 'use client';
 
-import { Group, Select, TextInput, Paper, Text, Button, Stack } from '@mantine/core';
+import { Group, Select, TextInput, Paper, Text, SegmentedControl, Stack } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import type { TrainingFilters } from '../../types/training.types';
 import type { TrainingsFiltersProps } from '../../types/trainings-components.types';
 
@@ -16,6 +17,7 @@ export function TrainingsFilters({
   search,
   onSearchChange,
 }: TrainingsFiltersProps) {
+  const { t } = useTranslation();
   const handleFilterChange = (key: keyof TrainingFilters, value: string | undefined) => {
     onFiltersChange({
       ...filters,
@@ -23,9 +25,11 @@ export function TrainingsFilters({
     });
   };
 
-  const statusFilter = (filters as any).status as string | undefined;
   const handleStatus = (val: string) => {
-    onFiltersChange({ ...filters, ...(val ? { status: val } : { status: undefined }) } as any);
+    onFiltersChange({
+      ...filters,
+      status: val === 'archived' ? 'archived' : 'active',
+    });
   };
 
   return (
@@ -33,9 +37,9 @@ export function TrainingsFilters({
       <Group gap="md" wrap="wrap" align="flex-end">
         {/* Search Input */}
         <Stack gap={4} style={{ flex: '1 1 180px', minWidth: 160 }}>
-          <Text size="xs" fw={600} tt="uppercase" c="dimmed">Plan Name</Text>
+          <Text size="xs" fw={600} tt="uppercase" c="dimmed">{t('trainings.planName')}</Text>
           <TextInput
-            placeholder="Search plans..."
+            placeholder={t('trainings.searchPlaceholder')}
             leftSection={<IconSearch size={16} />}
             value={search}
             onChange={(e) => onSearchChange(e.currentTarget.value)}
@@ -44,15 +48,15 @@ export function TrainingsFilters({
 
         {/* Difficulty Filter */}
         <Stack gap={4} style={{ flex: '1 1 140px', minWidth: 130 }}>
-          <Text size="xs" fw={600} tt="uppercase" c="dimmed">Difficulty</Text>
+          <Text size="xs" fw={600} tt="uppercase" c="dimmed">{t('trainings.difficulty')}</Text>
           <Select
-            placeholder="All Levels"
+            placeholder={t('trainings.allLevels')}
             data={[
-              { value: '', label: 'All Levels' },
-              { value: 'beginner', label: 'Beginner' },
-              { value: 'intermediate', label: 'Intermediate' },
-              { value: 'advanced', label: 'Advanced' },
-              { value: 'elite', label: 'Elite' },
+              { value: '', label: t('trainings.allLevels') },
+              { value: 'beginner', label: t('trainings.beginner') },
+              { value: 'intermediate', label: t('trainings.intermediate') },
+              { value: 'advanced', label: t('trainings.advanced') },
+              { value: 'elite', label: t('trainings.elite') },
             ]}
             value={filters.difficulty || ''}
             onChange={(value) => handleFilterChange('difficulty', value || undefined)}
@@ -62,14 +66,14 @@ export function TrainingsFilters({
 
         {/* Target Filter */}
         <Stack gap={4} style={{ flex: '1 1 140px', minWidth: 130 }}>
-          <Text size="xs" fw={600} tt="uppercase" c="dimmed">Primary Target</Text>
+          <Text size="xs" fw={600} tt="uppercase" c="dimmed">{t('trainings.primaryTarget')}</Text>
           <Select
-            placeholder="All Targets"
+            placeholder={t('trainings.allTargets')}
             data={[
-              { value: '', label: 'All Targets' },
-              { value: 'maintain', label: 'Maintain' },
-              { value: 'cut', label: 'Cut' },
-              { value: 'bulk', label: 'Bulk' },
+              { value: '', label: t('trainings.allTargets') },
+              { value: 'maintain', label: t('trainings.maintain') },
+              { value: 'cut', label: t('trainings.cut') },
+              { value: 'bulk', label: t('trainings.bulk') },
             ]}
             value={filters.target || ''}
             onChange={(value) => handleFilterChange('target', value || undefined)}
@@ -78,24 +82,15 @@ export function TrainingsFilters({
         </Stack>
 
         {/* Active / Archived toggle */}
-        <Group gap="xs" pb={1}>
-          <Button
-            variant={!statusFilter || statusFilter === 'active' ? 'filled' : 'outline'}
-            color="indigo"
-            size="sm"
-            onClick={() => handleStatus('active')}
-          >
-            Active
-          </Button>
-          <Button
-            variant={statusFilter === 'archived' ? 'filled' : 'outline'}
-            color="gray"
-            size="sm"
-            onClick={() => handleStatus('archived')}
-          >
-            Archived
-          </Button>
-        </Group>
+        <SegmentedControl
+          value={filters.status === 'archived' ? 'archived' : 'active'}
+          onChange={handleStatus}
+          color="indigo"
+          data={[
+            { value: 'active', label: t('trainings.active') },
+            { value: 'archived', label: t('trainings.archived') },
+          ]}
+        />
       </Group>
     </Paper>
   );

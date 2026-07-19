@@ -3,6 +3,7 @@ import { IconTrash, IconPlus, IconCopy } from '@tabler/icons-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useTranslation } from 'react-i18next';
 import type { TrainingDay } from '../../../types/training-plan.types';
 import { ExerciseItem } from './ExerciseItem';
 import type { TrainingDayItemProps } from '../../../types/trainings-components.types';
@@ -20,6 +21,7 @@ export function TrainingDayItem({
   removeSet,
   updateSet
 }: TrainingDayItemProps) {
+  const { t } = useTranslation();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -47,7 +49,7 @@ export function TrainingDayItem({
     <Accordion.Item value={`day-${dayIndex}`}>
       <Accordion.Control>
         <Group justify="space-between">
-          <Text>{day.dayName} - {day.exercises.length} exercises</Text>
+          <Text>{day.dayName} - {t('trainings.exerciseCount', { count: day.exercises.length })}</Text>
         </Group>
       </Accordion.Control>
       <Accordion.Panel>
@@ -55,7 +57,7 @@ export function TrainingDayItem({
           <Grid gutter="xs">
             <Grid.Col span={{ base: 12, sm: 8 }}>
               <TextInput
-                label="Day Name"
+                label={t('trainings.dayName')}
                 value={day.dayName}
                 onChange={(e) => onUpdate({ dayName: e.currentTarget.value })}
                 size="xs"
@@ -63,18 +65,13 @@ export function TrainingDayItem({
             </Grid.Col>
             <Grid.Col span={{ base: 12, sm: 3 }}>
               <Select
-                label="Day of Week"
+                label={t('trainings.dayOfWeek')}
                 value={day.dayOfWeek.toString()}
                 onChange={(value) => value && onUpdate({ dayOfWeek: parseInt(value) })}
-                data={[
-                  { value: '0', label: 'Sunday' },
-                  { value: '1', label: 'Monday' },
-                  { value: '2', label: 'Tuesday' },
-                  { value: '3', label: 'Wednesday' },
-                  { value: '4', label: 'Thursday' },
-                  { value: '5', label: 'Friday' },
-                  { value: '6', label: 'Saturday' },
-                ]}
+                data={[0, 1, 2, 3, 4, 5, 6].map((d) => ({
+                  value: d.toString(),
+                  label: t(`common.weekday${d}`),
+                }))}
                 size="xs"
               />
             </Grid.Col>
@@ -91,9 +88,9 @@ export function TrainingDayItem({
           </Grid>
 
           <Group justify="space-between">
-            <Text size="sm" fw={500}>Exercises</Text>
+            <Text size="sm" fw={500}>{t('trainings.exercises')}</Text>
             <Button size="xs" variant="light" leftSection={<IconPlus size={12} />} onClick={() => addExercise(dayIndex)}>
-              Add Exercise
+              {t('trainings.addExercise')}
             </Button>
           </Group>
 

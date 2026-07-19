@@ -5,23 +5,24 @@
 "use client";
 
 import { Table, Badge, Text, Group, ThemeIcon, Avatar, Box } from "@mantine/core";
-import { IconBarbell, IconRun, IconYoga, IconFlame } from "@tabler/icons-react";
+import { IconBarbell, IconYoga, IconFlame } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { TrainingsActionsMenu } from "./TrainingsActionsMenu";
-import type { TrainingPlan } from "../../types/training.types";
 import type { TrainingsTableProps } from '../../types/trainings-components.types';
 
-const getDifficultyMeta = (difficulty: string): { label: string; color: string } => {
+const getDifficultyMeta = (difficulty: string): { labelKey: string | null; color: string } => {
   switch (difficulty?.toLowerCase()) {
     case "beginner":
-      return { label: "Beginner", color: "teal" };
+      return { labelKey: "trainings.beginner", color: "gray" };
     case "intermediate":
-      return { label: "Intermediate", color: "yellow" };
+      return { labelKey: "trainings.intermediate", color: "cyan" };
     case "advanced":
-      return { label: "Advanced", color: "orange" };
+      return { labelKey: "trainings.advanced", color: "indigo" };
     case "elite":
-      return { label: "Elite", color: "red" };
+      return { labelKey: "trainings.elite", color: "red" };
     default:
-      return { label: difficulty || "N/A", color: "gray" };
+      return { labelKey: null, color: "gray" };
   }
 };
 
@@ -44,18 +45,19 @@ const getPlanIconColor = (difficulty: string) => {
   }
 };
 
-const formatModified = (date?: string | Date) => {
+const formatModified = (t: TFunction, lng: string, date?: string | Date) => {
   if (!date) return null;
   const d = new Date(date);
   const now = Date.now();
   const diff = now - d.getTime();
   const days = Math.floor(diff / 86400000);
-  if (days === 0) return "Modified: Today";
-  if (days === 1) return "Modified: Yesterday";
-  if (days < 7) return `Modified: ${days} days ago`;
+  if (days === 0) return t('trainings.modifiedToday');
+  if (days === 1) return t('trainings.modifiedYesterday');
+  if (days < 7) return t('trainings.modifiedDaysAgo', { count: days });
   const weeks = Math.floor(days / 7);
-  if (weeks < 5) return `Modified: ${weeks} week${weeks > 1 ? 's' : ''} ago`;
-  return `Modified: ${d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}`;
+  if (weeks < 5) return t('trainings.modifiedWeeksAgo', { count: weeks });
+  const formatted = d.toLocaleDateString(lng === 'he' ? 'he-IL' : 'en-GB', { month: 'short', day: 'numeric' });
+  return t('trainings.modifiedOn', { date: formatted });
 };
 
 export function TrainingsTable({
@@ -69,10 +71,12 @@ export function TrainingsTable({
   onDelete,
   onActivate,
 }: TrainingsTableProps) {
+  const { t, i18n } = useTranslation();
+
   if (trainings.length === 0) {
     return (
       <Text c="dimmed" ta="center" py="xl">
-        No trainings found
+        {t('trainings.noTrainings')}
       </Text>
     );
   }
@@ -82,13 +86,13 @@ export function TrainingsTable({
       <Table highlightOnHover>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Plan Details</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Difficulty</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Target</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Days</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Lead Trainer</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Status</Text></Table.Th>
-            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">Actions</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.planDetails')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.difficulty')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.target')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.days')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.leadTrainer')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.status')}</Text></Table.Th>
+            <Table.Th><Text size="xs" fw={700} tt="uppercase" c="dimmed">{t('trainings.actions')}</Text></Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -99,7 +103,7 @@ export function TrainingsTable({
               : training.userId && typeof training.userId === "object"
               ? training.userId.fullName
               : null;
-            const modifiedText = formatModified((training as any).updatedAt || training.createdAt);
+            const modifiedText = formatModified(t, i18n.language, (training as any).updatedAt || training.createdAt);
 
             return (
               <Table.Tr key={training._id} style={{ cursor: 'pointer' }} onClick={() => onView(training._id)}>
@@ -118,19 +122,19 @@ export function TrainingsTable({
 
                 {/* Difficulty */}
                 <Table.Td>
-                  <Badge color={diffMeta.color} variant="filled" size="sm" tt="uppercase" fw={700}>
-                    {diffMeta.label}
+                  <Badge color={diffMeta.color} variant="light" size="sm" tt="uppercase" fw={700}>
+                    {diffMeta.labelKey ? t(diffMeta.labelKey) : training.difficulty || t('common.none')}
                   </Badge>
                 </Table.Td>
 
                 {/* Target */}
                 <Table.Td>
-                  <Text size="sm" tt="capitalize">{training.focus || training.target || "\u2014"}</Text>
+                  <Text size="sm" tt="capitalize">{training.focus || training.target || "—"}</Text>
                 </Table.Td>
 
                 {/* Days */}
                 <Table.Td>
-                  <Text size="sm" fw={600}>{training.days?.length || 0}</Text>
+                  <Text size="sm" fw={700} c="indigo">{training.days?.length || 0}</Text>
                 </Table.Td>
 
                 {/* Lead Trainer */}
@@ -143,7 +147,7 @@ export function TrainingsTable({
                       <Text size="sm">{trainerName}</Text>
                     </Group>
                   ) : (
-                    <Text size="sm" c="dimmed">\u2014</Text>
+                    <Text size="sm" c="dimmed">{'—'}</Text>
                   )}
                 </Table.Td>
 
@@ -160,7 +164,7 @@ export function TrainingsTable({
                       }}
                     />
                     <Text size="sm" c={training.isActive ? 'green' : 'dimmed'}>
-                      {training.isActive ? 'Active' : 'Inactive'}
+                      {training.isActive ? t('trainings.active') : t('trainings.inactive')}
                     </Text>
                   </Group>
                 </Table.Td>

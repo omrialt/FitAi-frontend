@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge, Paper } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { AppLayout } from "../components/AppLayout";
@@ -28,6 +29,7 @@ export default function NutritionPlanDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // State
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
@@ -229,25 +231,29 @@ export default function NutritionPlanDetailsPage() {
 
   return (
     <AppLayout>
-      <Container size="xl" py="xl">
-        {/* Breadcrumbs */}
-        <AppBreadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Nutrition Plans", href: "/nutrition-plans" },
-            { label: plan.title },
-          ]}
-        />
+      <Container size="xl" py={isMobile ? "md" : "xl"} px={isMobile ? "xs" : undefined}>
+        {/* Breadcrumbs + back button - desktop only for a compact mobile view */}
+        {!isMobile && (
+          <>
+            <AppBreadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Nutrition Plans", href: "/nutrition-plans" },
+                { label: plan.title },
+              ]}
+            />
 
-        <Box mb="lg">
-          <Button
-            variant="subtle"
-            leftSection={<IconArrowLeft size={16} />}
-            onClick={() => navigate("/nutrition-plans")}
-          >
-            Back to Nutrition Plans
-          </Button>
-        </Box>
+            <Box mb="lg">
+              <Button
+                variant="subtle"
+                leftSection={<IconArrowLeft size={16} />}
+                onClick={() => navigate("/nutrition-plans")}
+              >
+                Back to Nutrition Plans
+              </Button>
+            </Box>
+          </>
+        )}
 
         {/* Plan Header */}
         <PlanHeader
@@ -343,21 +349,23 @@ export default function NutritionPlanDetailsPage() {
         {/* Ratings Section */}
         <RatingsSection ratings={plan.ratings} />
 
-        {/* Add Rating + Share — owner only */}
+        {/* Add Rating — any signed-in non-owner can review the plan */}
+        {currentUser && !isOwner && (
+          <AddRating onSubmit={handleAddRating} loading={loadingRating} />
+        )}
+
+        {/* Share — owner only */}
         {isOwner && (
-          <>
-            <AddRating onSubmit={handleAddRating} loading={loadingRating} />
-            <SharedWithSection
-              sharedAccess={plan.sharedAccess}
-              allUsers={allUsers}
-              title="Shared With"
-              emptyMessage="This plan is not shared with anyone yet"
-              showActions={true}
-              onShare={handleSharePlan}
-              onRevoke={handleRevokeAccess}
-              loading={loadingShare || loadingRevoke}
-            />
-          </>
+          <SharedWithSection
+            sharedAccess={plan.sharedAccess}
+            allUsers={allUsers}
+            title="Shared With"
+            emptyMessage="This plan is not shared with anyone yet"
+            showActions={true}
+            onShare={handleSharePlan}
+            onRevoke={handleRevokeAccess}
+            loading={loadingShare || loadingRevoke}
+          />
         )}
         {/* Edit Modal */}
         {plan && (

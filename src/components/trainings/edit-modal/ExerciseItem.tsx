@@ -2,6 +2,7 @@ import { Stack, Grid, TextInput, Select, ActionIcon, Group, Text, Button, Badge,
 import { IconTrash, IconGripVertical } from '@tabler/icons-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useTranslation } from 'react-i18next';
 import type { Exercise } from '../../../types/training-plan.types';
 import type { ExerciseItemProps } from '../../../types/trainings-components.types';
 
@@ -16,6 +17,7 @@ export function ExerciseItem({
   updateSet,
   id
 }: ExerciseItemProps) {
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -42,9 +44,9 @@ export function ExerciseItem({
                   <IconGripVertical size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
                 </Box>
                 <Text size="sm" fw={500}>
-                  {exercise.name || `Exercise ${exerciseIndex + 1}`}
+                  {exercise.name || t('trainings.exerciseDefault', { num: exerciseIndex + 1 })}
                 </Text>
-                <Badge size="sm" variant="light">{exercise.sets.length} sets</Badge>
+                <Badge size="sm" variant="light">{t('trainings.setCount', { count: exercise.sets.length })}</Badge>
               </Group>
             </Group>
           </Accordion.Control>
@@ -59,7 +61,7 @@ export function ExerciseItem({
               <Grid gutter="xs">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
-            label="Name"
+            label={t('common.name')}
             value={exercise.name || ''}
             onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'name', e.currentTarget.value)}
             size="xs"
@@ -68,7 +70,7 @@ export function ExerciseItem({
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
-            label="Muscle Group"
+            label={t('trainings.muscleGroup')}
             value={exercise.muscleGroup || ''}
             onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'muscleGroup', e.currentTarget.value)}
             size="xs"
@@ -77,11 +79,11 @@ export function ExerciseItem({
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <Select
-            label="Type"
+            label={t('trainings.typeLabel')}
             data={[
-              { value: 'regular', label: 'Regular' },
-              { value: 'dropset', label: 'Dropset' },
-              { value: 'superset', label: 'Superset' },
+              { value: 'regular', label: t('trainings.type_regular') },
+              { value: 'dropset', label: t('trainings.type_dropset') },
+              { value: 'superset', label: t('trainings.type_superset') },
             ]}
             value={exercise.type || 'regular'}
             onChange={(value) => value && updateExerciseField(dayIndex, exerciseIndex, 'type', value)}
@@ -90,7 +92,7 @@ export function ExerciseItem({
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <TextInput
-            label="Notes"
+            label={t('trainings.notes')}
             value={exercise.notes || ''}
             onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'notes', e.currentTarget.value)}
             size="xs"
@@ -98,7 +100,7 @@ export function ExerciseItem({
         </Grid.Col>
         <Grid.Col span={12}>
           <TextInput
-            label="Video URL"
+            label={t('trainings.videoUrl')}
             value={exercise.video || ''}
             onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'video', e.currentTarget.value)}
             size="xs"
@@ -108,34 +110,34 @@ export function ExerciseItem({
               </Grid>
 
               <Group justify="space-between" mt="xs">
-                <Text size="xs" c="dimmed">Sets ({exercise.sets.length})</Text>
+                <Text size="xs" c="dimmed">{t('trainings.sets')} ({exercise.sets.length})</Text>
                 <Button size="xs" variant="subtle" onClick={() => addSet(dayIndex, exerciseIndex)}>
-                  Add Set
+                  {t('trainings.addSet')}
                 </Button>
               </Group>
 
               {exercise.sets.map((set, setIndex: number) => (
         <Stack key={setIndex} gap="xs" p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)', borderRadius: '4px' }}>
           <Group gap="xs" wrap="nowrap">
-            <Badge size="sm">Set {setIndex + 1}</Badge>
+            <Badge size="sm">{t('trainings.set')} {setIndex + 1}</Badge>
             <ActionIcon size="xs" color="red" variant="subtle" onClick={() => removeSet(dayIndex, exerciseIndex, setIndex)} ml="auto">
               <IconTrash size={12} />
             </ActionIcon>
           </Group>
           <Group gap="xs" grow>
             <Stack gap={4}>
-              <Text size="xs" c="dimmed">Reps</Text>
+              <Text size="xs" c="dimmed">{t('trainings.repsHeader')}</Text>
               <NumberInput
-                placeholder="Reps"
+                placeholder={t('trainings.repsHeader')}
                 value={set.targetReps}
                 onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetReps: value })}
                 size="xs"
               />
             </Stack>
             <Stack gap={4}>
-              <Text size="xs" c="dimmed">Weight (kg)</Text>
+              <Text size="xs" c="dimmed">{t('trainings.weightKg')}</Text>
               <NumberInput
-                placeholder="Weight"
+                placeholder={t('trainings.weight')}
                 value={set.targetWeight}
                 onChange={(value) => typeof value === 'number' && updateSet(dayIndex, exerciseIndex, setIndex, { targetWeight: value })}
                 size="xs"

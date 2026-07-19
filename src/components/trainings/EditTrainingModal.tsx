@@ -6,6 +6,7 @@
 
 import { Modal, Button, Stack, Group, Text, Checkbox } from "@mantine/core";
 import { useState, useEffect, Activity } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   TrainingPlan,
   TrainingDay,
@@ -33,8 +34,9 @@ export function EditTrainingModal({
   createMode = false,
   allUsers,
 }: EditTrainingModalProps) {
-  const titleText = createMode ? "Create Training Plan" : "Edit Training Plan";
-  const submitButtonText = createMode ? "Create" : "Save Changes";
+  const { t } = useTranslation();
+  const titleText = createMode ? t('trainings.createTitle') : t('trainings.editTitle');
+  const submitButtonText = createMode ? t('common.create') : t('common.saveChanges');
   const { user: currentUser } = useAuth();
   const [localDays, setLocalDays] = useState<TrainingDay[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,7 +122,7 @@ export function EditTrainingModal({
     const newDays = [
       ...localDays,
       {
-        dayName: `Day ${localDays.length + 1}`,
+        dayName: t('trainings.dayDefault', { num: localDays.length + 1 }),
         dayOfWeek: localDays.length % 7,
         exercises: [],
       },
@@ -137,7 +139,7 @@ export function EditTrainingModal({
   const duplicateDay = (index: number) => {
     const newDays = [...localDays];
     const dayToDuplicate = JSON.parse(JSON.stringify(newDays[index]));
-    dayToDuplicate.dayName = `${dayToDuplicate.dayName} (Copy)`;
+    dayToDuplicate.dayName = `${dayToDuplicate.dayName} ${t('trainings.copySuffix')}`;
     newDays.splice(index + 1, 0, dayToDuplicate);
     setLocalDays(newDays);
   };
@@ -318,8 +320,8 @@ export function EditTrainingModal({
           {/* Sync checkbox - only show for owners and if not a clone */}
           <Activity mode={canShowSyncCheckbox ? "visible" : "hidden"}>
             <Checkbox
-              label="Sync updates to shared copies"
-              description="When enabled, changes to this plan will automatically update all shared copies (except their workout history)"
+              label={t('trainings.syncLabel')}
+              description={t('trainings.syncDescription')}
               checked={syncWithParent}
               onChange={(e) => setSyncWithParent(e.currentTarget.checked)}
             />
@@ -340,7 +342,7 @@ export function EditTrainingModal({
           {/* Action Buttons */}
           <Group justify="flex-end" gap="xs">
             <Button variant="light" onClick={onClose}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={isSubmitting}>
               {submitButtonText}

@@ -12,6 +12,7 @@ import {
 import { DateInput } from '@mantine/dates';
 import { Controller } from 'react-hook-form';
 import { IconUserCheck } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
 import { useFormHandler } from '../hooks/useFormHandler';
@@ -21,6 +22,7 @@ import type { AuthTokens, User } from '../types/auth.types';
 import '../styles/Auth.css';
 
 function CompleteProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, login } = useAuthStore();
@@ -40,7 +42,7 @@ function CompleteProfilePage() {
     mode: 'onTouched',
     onSubmit: async (data) => {
       if (!user?._id) {
-        toast.error('User not authenticated');
+        toast.error(t('auth.notAuthenticated'));
         navigate('/login');
         return;
       }
@@ -61,7 +63,7 @@ function CompleteProfilePage() {
 
       if (response?.data?.user && response?.data?.tokens) {
         login(response.data.user, response.data.tokens);
-        toast.success('Profile completed successfully! Redirecting to dashboard...');
+        toast.success(t('auth.profileCompleted'));
         // Small delay to ensure state is updated before navigation
         setTimeout(() => {
           navigate('/', { replace: true });
@@ -80,9 +82,9 @@ function CompleteProfilePage() {
       try {
         const userData = JSON.parse(userParam);
         login(userData, { accessToken, refreshToken });
-        toast.success('Welcome! Please complete your profile to continue.');
+        toast.success(t('auth.welcomeCompleteProfile'));
       } catch {
-        toast.error('Failed to process authentication data');
+        toast.error(t('auth.authDataError'));
         navigate('/login');
       }
     }
@@ -129,10 +131,10 @@ function CompleteProfilePage() {
             {/* Header */}
             <div style={{ textAlign: 'center' }}>
               <Title order={2} mb="xs">
-                Complete Your Profile
+                {t('auth.completeProfileTitle')}
               </Title>
               <Text size="sm" c="dimmed">
-                Just a few more details to get started
+                {t('auth.completeProfileSubtitle')}
               </Text>
             </div>
 
@@ -140,16 +142,16 @@ function CompleteProfilePage() {
             <form onSubmit={handleSubmit}>
               <Stack gap="md">
                 <TextInput
-                  label="First Name"
-                  placeholder="John"
+                  label={t('auth.firstName')}
+                  placeholder={t('auth.firstNamePlaceholder')}
                   required
                   {...register('firstName')}
                   error={errors.firstName?.message}
                 />
 
                 <TextInput
-                  label="Last Name"
-                  placeholder="Doe"
+                  label={t('auth.lastName')}
+                  placeholder={t('auth.lastNamePlaceholder')}
                   required
                   {...register('lastName')}
                   error={errors.lastName?.message}
@@ -160,13 +162,13 @@ function CompleteProfilePage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="Gender"
-                      placeholder="Select your gender"
+                      label={t('auth.gender')}
+                      placeholder={t('auth.genderPlaceholder')}
                       required
                       data={[
-                        { value: 'male', label: 'Male' },
-                        { value: 'female', label: 'Female' },
-                        { value: 'other', label: 'Other' },
+                        { value: 'male', label: t('auth.male') },
+                        { value: 'female', label: t('auth.female') },
+                        { value: 'other', label: t('auth.other') },
                       ]}
                       {...field}
                       error={errors.gender?.message}
@@ -179,12 +181,12 @@ function CompleteProfilePage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="I am a"
-                      placeholder="Select your role"
+                      label={t('auth.iAmA')}
+                      placeholder={t('auth.rolePlaceholder')}
                       required
                       data={[
-                        { value: 'user', label: 'Athlete / User' },
-                        { value: 'trainer', label: 'Trainer / Coach' },
+                        { value: 'user', label: t('auth.roleUser') },
+                        { value: 'trainer', label: t('auth.roleTrainer') },
                       ]}
                       {...field}
                       error={errors.role?.message}
@@ -197,8 +199,8 @@ function CompleteProfilePage() {
                   control={control}
                   render={({ field }) => (
                     <DateInput
-                      label="Birth Date"
-                      placeholder="Pick date"
+                      label={t('auth.birthDate')}
+                      placeholder={t('common.pickDate')}
                       required
                       maxDate={new Date()}
                       {...field}
@@ -208,7 +210,7 @@ function CompleteProfilePage() {
                 />
 
                 <TextInput
-                  label="Height (cm)"
+                  label={t('auth.heightCm')}
                   placeholder="170"
                   type="number"
                   {...register('height', { valueAsNumber: true })}
@@ -220,13 +222,13 @@ function CompleteProfilePage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="Fitness Goal"
-                      placeholder="Select your goal"
+                      label={t('trainings.form.fitnessGoal')}
+                      placeholder={t('auth.goalPlaceholder')}
                       required
                       data={[
-                        { value: 'maintain', label: 'Maintain Weight' },
-                        { value: 'cut', label: 'Cut (Lose Weight)' },
-                        { value: 'bulk', label: 'Bulk (Gain Weight)' },
+                        { value: 'maintain', label: t('trainings.form.maintainWeight') },
+                        { value: 'cut', label: t('trainings.form.cutWeight') },
+                        { value: 'bulk', label: t('trainings.form.bulkWeight') },
                       ]}
                       {...field}
                       error={errors.target?.message}
@@ -243,7 +245,7 @@ function CompleteProfilePage() {
                   gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
                   variant="gradient"
                 >
-                  Complete Profile
+                  {t('auth.completeProfileButton')}
                 </Button>
               </Stack>
             </form>

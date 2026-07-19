@@ -14,6 +14,7 @@ import {
 import { IconBrandGoogle, IconUserPlus } from '@tabler/icons-react';
 import { DateInput } from '@mantine/dates';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
@@ -22,6 +23,7 @@ import { registerSchema, type RegisterFormData } from '../schemas/auth.schemas';
 import '../styles/Auth.css';
 
 function RegisterPage() {
+  const { t } = useTranslation();
   const { register: registerUser } = useAuth();
   const metadata = usePresetMetadata('register', {
     preconnect: ['https://accounts.google.com'],
@@ -81,10 +83,10 @@ function RegisterPage() {
             {/* Header */}
             <div style={{ textAlign: 'center' }}>
               <Title order={2} mb="xs">
-                Create Account
+                {t('auth.registerTitle')}
               </Title>
               <Text size="sm" c="dimmed">
-                Join FitAI and start your fitness journey
+                {t('auth.registerSubtitle')}
               </Text>
             </div>
 
@@ -96,17 +98,17 @@ function RegisterPage() {
               onClick={handleGoogleSignup}
               fullWidth
             >
-              Sign up with Google
+              {t('auth.signUpWithGoogle')}
             </Button>
 
-            <Divider label="Or sign up with email" labelPosition="center" />
+            <Divider label={t('auth.orSignUpWithEmail')} labelPosition="center" />
 
             {/* Register Form */}
             <form onSubmit={handleSubmit}>
               <Stack gap="md">
                 <TextInput
-                  label="Full Name"
-                  placeholder="John Doe"
+                  label={t('auth.fullName')}
+                  placeholder={t('auth.fullNamePlaceholder')}
                   required
                   withAsterisk
                   {...register('fullName')}
@@ -114,8 +116,8 @@ function RegisterPage() {
                 />
 
                 <TextInput
-                  label="Email"
-                  placeholder="your@email.com"
+                  label={t('auth.email')}
+                  placeholder={t('auth.emailPlaceholder')}
                   required
                   withAsterisk
                   {...register('email')}
@@ -127,14 +129,14 @@ function RegisterPage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="Gender"
-                      placeholder="Select your gender"
+                      label={t('auth.gender')}
+                      placeholder={t('auth.genderPlaceholder')}
                       required
                       withAsterisk
                       data={[
-                        { value: 'male', label: 'Male' },
-                        { value: 'female', label: 'Female' },
-                        { value: 'other', label: 'Other' },
+                        { value: 'male', label: t('auth.male') },
+                        { value: 'female', label: t('auth.female') },
+                        { value: 'other', label: t('auth.other') },
                       ]}
                       {...field}
                       error={errors.gender?.message}
@@ -147,13 +149,13 @@ function RegisterPage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="I am a"
-                      placeholder="Select your role"
+                      label={t('auth.iAmA')}
+                      placeholder={t('auth.rolePlaceholder')}
                       required
                       withAsterisk
                       data={[
-                        { value: 'user', label: 'Athlete / User' },
-                        { value: 'trainer', label: 'Trainer / Coach' },
+                        { value: 'user', label: t('auth.roleUser') },
+                        { value: 'trainer', label: t('auth.roleTrainer') },
                       ]}
                       {...field}
                       error={errors.role?.message}
@@ -166,8 +168,8 @@ function RegisterPage() {
                   control={control}
                   render={({ field }) => (
                     <DateInput
-                      label="Birth Date"
-                      placeholder="Pick date"
+                      label={t('auth.birthDate')}
+                      placeholder={t('common.pickDate')}
                       required
                       withAsterisk
                       maxDate={new Date()}
@@ -178,7 +180,7 @@ function RegisterPage() {
                 />
 
                 <TextInput
-                  label="Height (cm)"
+                  label={t('auth.heightCm')}
                   placeholder="170"
                   type="number"
                   {...register('height', { valueAsNumber: true })}
@@ -190,14 +192,14 @@ function RegisterPage() {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="Fitness Goal"
-                      placeholder="Select your goal"
+                      label={t('trainings.form.fitnessGoal')}
+                      placeholder={t('auth.goalPlaceholder')}
                       required
                       withAsterisk
                       data={[
-                        { value: 'maintain', label: 'Maintain Weight' },
-                        { value: 'cut', label: 'Cut (Lose Weight)' },
-                        { value: 'bulk', label: 'Bulk (Gain Weight)' },
+                        { value: 'maintain', label: t('trainings.form.maintainWeight') },
+                        { value: 'cut', label: t('trainings.form.cutWeight') },
+                        { value: 'bulk', label: t('trainings.form.bulkWeight') },
                       ]}
                       {...field}
                       error={errors.target?.message}
@@ -206,8 +208,8 @@ function RegisterPage() {
                 />
 
                 <PasswordInput
-                  label="Password"
-                  placeholder="Your password"
+                  label={t('auth.password')}
+                  placeholder={t('auth.passwordPlaceholder')}
                   required
                   withAsterisk
                   {...register('password')}
@@ -215,8 +217,8 @@ function RegisterPage() {
                 />
 
                 <PasswordInput
-                  label="Confirm Password"
-                  placeholder="Confirm your password"
+                  label={t('auth.confirmPassword')}
+                  placeholder={t('auth.confirmPasswordPlaceholder')}
                   required
                   withAsterisk
                   {...register('confirmPassword')}
@@ -232,16 +234,16 @@ function RegisterPage() {
                   gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
                   variant="gradient"
                 >
-                  Create Account
+                  {t('auth.registerTitle')}
                 </Button>
               </Stack>
             </form>
 
             {/* Login Link */}
             <Text size="sm" ta="center">
-              Already have an account?{' '}
+              {t('auth.haveAccount')}{' '}
               <Anchor component={Link} to="/login" fw={600}>
-                Sign in
+                {t('auth.signIn')}
               </Anchor>
             </Text>
           </Stack>
