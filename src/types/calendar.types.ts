@@ -7,6 +7,8 @@ export interface CalendarEvent {
   end: Date;
   description?: string;
   type: 'training' | 'google';
+  /** Google all-day events span whole days and carry no meaningful time. */
+  allDay?: boolean;
   trainingPlanId?: string;
   dayIndex?: number;
   googleEventId?: string;

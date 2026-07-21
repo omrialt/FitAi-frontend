@@ -137,7 +137,9 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
         }`}
       >
         <p className={`text-[10px] font-black ${isTraining ? 'text-primary' : 'text-on-secondary-container'}`}>
-          {format(event.start, 'HH:mm')} – {format(event.end, 'HH:mm')}
+          {event.allDay
+            ? t('calendar.allDay')
+            : `${format(event.start, 'HH:mm')} – ${format(event.end, 'HH:mm')}`}
         </p>
         <p className="text-sm font-bold text-on-surface leading-snug mt-0.5">
           {event.title}

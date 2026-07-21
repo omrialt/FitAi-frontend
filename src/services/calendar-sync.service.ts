@@ -44,12 +44,23 @@ class CalendarSyncService {
       { params },
     );
 
-    // Parse date strings to Date objects
-    return response.data.data.events.map((event) => ({
-      ...event,
-      start: new Date(event.start),
-      end: new Date(event.end),
-    }));
+    // Parse date strings to Date objects, discarding any event we cannot place
+    // on the calendar. `new Date(null)` is NOT NaN — it silently returns
+    // 1970-01-01, so an event with a missing date used to be grouped under a
+    // day that is never rendered and vanished without a trace. Checking the raw
+    // value first is what makes such an event visible as a dropped event rather
+    // than a silent one.
+    return response.data.data.events
+      .map((event) => {
+        if (event.start == null || event.end == null) return null;
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+          return null;
+        }
+        return { ...event, start, end } as CalendarEvent;
+      })
+      .filter((e): e is CalendarEvent => e !== null);
   }
 
   /**
