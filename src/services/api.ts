@@ -1,10 +1,11 @@
+import { API_URL } from '../config/env';
 import axios, {
   AxiosError,
   type InternalAxiosRequestConfig,
 } from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -43,7 +44,7 @@ async function refreshAccessToken(): Promise<string | null> {
   try {
     // Bare axios so this request skips the interceptors above
     const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/auth/refresh`,
+      `${API_URL}/auth/refresh`,
       { refreshToken: tokens.refreshToken },
       { headers: { 'Content-Type': 'application/json' } }
     );

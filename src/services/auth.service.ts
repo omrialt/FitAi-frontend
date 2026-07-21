@@ -1,3 +1,4 @@
+import { API_URL } from '../config/env';
 import api from './api';
 import type { User, AuthTokens, LoginCredentials, RegisterData, AuthResponse } from '../types/auth.types';
 
@@ -39,7 +40,7 @@ class AuthService {
    */
   loginWithGoogle(): void {
     // Get the API base URL from environment or default
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const apiUrl = API_URL;
     
     // Redirect to Google OAuth endpoint
     window.location.href = `${apiUrl}/auth/google`;
