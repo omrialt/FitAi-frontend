@@ -53,12 +53,24 @@ class CalendarSyncService {
     return response.data.data.events
       .map((event) => {
         if (event.start == null || event.end == null) return null;
-        const start = new Date(event.start);
-        const end = new Date(event.end);
-        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        const rawStart = new Date(event.start);
+        const rawEnd = new Date(event.end);
+        if (Number.isNaN(rawStart.getTime()) || Number.isNaN(rawEnd.getTime())) {
           return null;
         }
-        return { ...event, start, end } as CalendarEvent;
+
+        // An all-day event belongs to a calendar DATE, not an instant. The API
+        // encodes it as UTC midnight of that date, so reading it as an instant
+        // lands on the previous day for anyone behind UTC. Rebuild it at local
+        // midnight of the same date, which is the day the UI groups it under.
+        const toLocalDay = (d: Date) =>
+          new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+
+        return {
+          ...event,
+          start: event.allDay ? toLocalDay(rawStart) : rawStart,
+          end: event.allDay ? toLocalDay(rawEnd) : rawEnd,
+        } as CalendarEvent;
       })
       .filter((e): e is CalendarEvent => e !== null);
   }
