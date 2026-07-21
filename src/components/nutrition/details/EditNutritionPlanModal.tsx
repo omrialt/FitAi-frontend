@@ -4,7 +4,8 @@
 
 import { Modal, Button, Stack, Group, TextInput, Textarea, NumberInput, Select } from '@mantine/core';
 import { useState, useEffect } from 'react';
-import type { NutritionPlan, Target } from '../../../types/nutrition.types';
+import { useTranslation } from 'react-i18next';
+import type { Target } from '../../../types/nutrition.types';
 import type { EditNutritionPlanModalProps } from '../../../types/nutrition-components.types';
 
 export function EditNutritionPlanModal({
@@ -13,6 +14,7 @@ export function EditNutritionPlanModal({
   plan,
   onSave,
 }: EditNutritionPlanModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [totalCalories, setTotalCalories] = useState(0);
@@ -47,21 +49,21 @@ export function EditNutritionPlanModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Edit Nutrition Plan"
+      title={t('nutrition.editPlanTitle')}
       size="900"
     >
       <Stack gap="md">
         <TextInput
-          label="Title"
-          placeholder="Enter plan title"
+          label={t('nutrition.planTitle')}
+          placeholder={t('nutrition.planTitlePlaceholder')}
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           required
         />
 
         <Textarea
-          label="Description"
-          placeholder="Enter plan description"
+          label={t('nutrition.description')}
+          placeholder={t('nutrition.descriptionPlaceholder')}
           value={description}
           onChange={(e) => setDescription(e.currentTarget.value)}
           minRows={3}
@@ -69,8 +71,8 @@ export function EditNutritionPlanModal({
         />
 
         <NumberInput
-          label="Total Calories"
-          placeholder="Enter total calories"
+          label={t('nutrition.totalCalories')}
+          placeholder={t('nutrition.totalCaloriesPlaceholder')}
           value={totalCalories}
           onChange={(value) => setTotalCalories(Number(value) || 0)}
           min={0}
@@ -78,12 +80,12 @@ export function EditNutritionPlanModal({
         />
 
         <Select
-          label="Target Goal"
-          placeholder="Select target goal"
+          label={t('nutrition.targetGoal')}
+          placeholder={t('nutrition.targetGoalPlaceholder')}
           data={[
-            { value: 'maintain', label: 'Maintain' },
-            { value: 'cut', label: 'Cut' },
-            { value: 'bulk', label: 'Bulk' },
+            { value: 'maintain', label: t('nutrition.maintain') },
+            { value: 'cut', label: t('nutrition.cut') },
+            { value: 'bulk', label: t('nutrition.bulk') },
           ]}
           value={target}
           onChange={(value) => setTarget(value as Target)}
@@ -92,10 +94,10 @@ export function EditNutritionPlanModal({
 
         <Group justify="flex-end" mt="md">
           <Button variant="subtle" onClick={onClose} disabled={isSubmitting}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} loading={isSubmitting}>
-            Save Changes
+            {t('common.saveChanges')}
           </Button>
         </Group>
       </Stack>

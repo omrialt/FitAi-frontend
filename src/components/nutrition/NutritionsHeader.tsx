@@ -1,33 +1,35 @@
 /**
- * NutritionsHeader - Page header with title and action buttons
+ * NutritionsHeader — page title and primary action.
+ * "Performance Lab" design.
  */
 
-import { Group, Title, Button } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../../hooks/useAuth';
+import { StitchIcon } from '../common/StitchIcon';
 import type { NutritionsHeaderProps } from '../../types/nutrition-components.types';
 
 export function NutritionsHeader({ onCreateNew }: NutritionsHeaderProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const isAdmin = user?.role === 'admin';
 
   return (
-    <Group justify="space-between" mb="lg">
-      <Title order={2} fw={700} style={{ letterSpacing: '-0.5px', fontSize: '1.75rem' }}>
-        {isAdmin ? 'Nutrition Plans' : 'My Nutrition Plans'}
-      </Title>
+    <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <h1 className="text-4xl font-black tracking-tight text-on-surface">
+        {isAdmin ? t('nutrition.titleAdmin') : t('nutrition.title')}
+      </h1>
+
       {onCreateNew && (
-        <Button
-          leftSection={<IconPlus size={16} />}
+        <button
+          type="button"
           onClick={onCreateNew}
-          variant="gradient"
-          gradient={{ from: 'indigo', to: 'violet' }}
-          radius="md"
-          style={{ boxShadow: '0 4px 14px rgba(99,102,241,0.25)' }}
+          className="flex items-center justify-center gap-2 bg-primary-gradient text-white px-5 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform shrink-0"
         >
-          New Plan
-        </Button>
+          <StitchIcon name="add" size={18} />
+          {t('nutrition.newPlan')}
+        </button>
       )}
-    </Group>
+    </header>
   );
 }

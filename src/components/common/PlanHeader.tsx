@@ -3,29 +3,11 @@
  * Displays plan details, badges, and action buttons (edit, export)
  */
 
-import {
-  Group,
-  Stack,
-  Text,
-  Badge,
-  Button,
-  Box,
-  Divider,
-  Menu,
-  Avatar,
-} from "@mantine/core";
-import {
-  IconEdit,
-  IconFlame,
-  IconClock,
-  IconTarget,
-  IconTrendingUp,
-  IconDownload,
-  IconFileTypePdf,
-  IconFileTypeXls,
-} from "@tabler/icons-react";
+import { Group, Stack, Text, Badge, Button, Box, Divider, Menu, Avatar } from "@mantine/core";
+import { IconEdit, IconFlame, IconClock, IconTarget, IconTrendingUp, IconDownload, IconFileTypePdf, IconFileTypeXls } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import { StarRating } from "./StarRating";
-import type { PlanType, BasePlanData, NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
+import type { NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
 
 const targetColors: Record<string, string> = {
   maintain: "blue",
@@ -33,22 +15,10 @@ const targetColors: Record<string, string> = {
   bulk: "green",
 };
 
-const targetLabels: Record<string, string> = {
-  maintain: "Maintain",
-  cut: "Cut",
-  bulk: "Bulk",
-};
-
 const difficultyColors: Record<string, string> = {
   beginner: "green",
   intermediate: "yellow",
   advanced: "red",
-};
-
-const difficultyLabels: Record<string, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
 };
 
 export function PlanHeader({
@@ -60,6 +30,20 @@ export function PlanHeader({
   onExportExcel,
   creatorName,
 }: PlanHeaderProps) {
+  const { t } = useTranslation();
+
+  const targetLabels: Record<string, string> = {
+    maintain: t("common.maintain"),
+    cut: t("common.cut"),
+    bulk: t("common.bulk"),
+  };
+
+  const difficultyLabels: Record<string, string> = {
+    beginner: t("common.beginner"),
+    intermediate: t("common.intermediate"),
+    advanced: t("common.advanced"),
+  };
+
   // Format date as dd/mm/yyyy
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -127,9 +111,9 @@ export function PlanHeader({
                   {difficultyLabels[trainingPlan.difficulty]}
                 </Badge>
                 {trainingPlan.isActive ? (
-                  <Badge color="green">Active</Badge>
+                  <Badge color="green">{t("common.active")}</Badge>
                 ) : (
-                  <Badge color="gray">Inactive</Badge>
+                  <Badge color="gray">{t("common.inactive")}</Badge>
                 )}
               </>
             )}
@@ -148,7 +132,7 @@ export function PlanHeader({
                 variant="light"
                 color="gray"
               >
-                Export
+                {t("common.export")}
               </Button>
             </Menu.Target>
 
@@ -157,13 +141,13 @@ export function PlanHeader({
                 leftSection={<IconFileTypePdf size={16} />}
                 onClick={onExportPDF}
               >
-                Export to PDF
+                {t("common.exportToPDF")}
               </Menu.Item>
               <Menu.Item
                 leftSection={<IconFileTypeXls size={16} />}
                 onClick={onExportExcel}
               >
-                Export to Excel
+                {t("common.exportToExcel")}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -174,7 +158,7 @@ export function PlanHeader({
               variant="light"
               onClick={onEdit}
             >
-              Edit Plan
+              {t("common.editPlan")}
             </Button>
           )}
         </Group>
@@ -187,7 +171,7 @@ export function PlanHeader({
             <Group gap="xs">
               <IconFlame size={20} color="orange" />
               <Text size="sm" fw={500}>
-                {nutritionPlan.totalCalories} kcal
+                {nutritionPlan.totalCalories} {t("common.kcal")}
               </Text>
             </Group>
 
@@ -195,19 +179,22 @@ export function PlanHeader({
               <>
                 <Group gap="xs">
                   <Text size="sm" fw={500} c="blue">
-                    P: {nutritionStats.totalProtein.toFixed(0)}g
+                    {t("common.proteinShort")}{" "}
+                    {t("common.grams", { value: nutritionStats.totalProtein.toFixed(0) })}
                   </Text>
                 </Group>
 
                 <Group gap="xs">
                   <Text size="sm" fw={500} c="yellow">
-                    C: {nutritionStats.totalCarbs.toFixed(0)}g
+                    {t("common.carbsShort")}{" "}
+                    {t("common.grams", { value: nutritionStats.totalCarbs.toFixed(0) })}
                   </Text>
                 </Group>
 
                 <Group gap="xs">
                   <Text size="sm" fw={500} c="green">
-                    F: {nutritionStats.totalFat.toFixed(0)}g
+                    {t("common.fatShort")}{" "}
+                    {t("common.grams", { value: nutritionStats.totalFat.toFixed(0) })}
                   </Text>
                 </Group>
               </>
@@ -220,8 +207,7 @@ export function PlanHeader({
                 showValue
               />
               <Text size="sm" c="dimmed">
-                ({nutritionPlan.totalRatings}{" "}
-                {nutritionPlan.totalRatings === 1 ? "rating" : "ratings"})
+                {t("common.ratingCount", { count: nutritionPlan.totalRatings })}
               </Text>
             </Group>
           </>
@@ -233,7 +219,7 @@ export function PlanHeader({
               <Group gap="xs">
                 <IconFlame size={20} color="orange" />
                 <Text size="sm" fw={500}>
-                  {trainingPlan.estimatedCalories} kcal
+                  {trainingPlan.estimatedCalories} {t("common.kcal")}
                 </Text>
               </Group>
             )}
@@ -242,14 +228,14 @@ export function PlanHeader({
               <Group gap="xs">
                 <IconClock size={20} color="blue" />
                 <Text size="sm" fw={500}>
-                  {trainingPlan.estimatedDuration} min
+                  {trainingPlan.estimatedDuration} {t("common.minShort")}
                 </Text>
               </Group>
             )}
 
             {trainingPlan.focus && (
               <Text size="sm" c="dimmed">
-                Focus:{" "}
+                {t("common.focusLabel")}{" "}
                 <Text component="span" fw={500}>
                   {trainingPlan.focus}
                 </Text>
@@ -258,20 +244,20 @@ export function PlanHeader({
 
             {trainingPlan.programType && (
               <Text size="sm" c="dimmed">
-                Type:{" "}
+                {t("common.typeLabel")}{" "}
                 <Text component="span" fw={500}>
                   {trainingPlan.programType === "fixedDays"
-                    ? "Fixed Days"
-                    : "Rotation"}
+                    ? t("common.fixedDays")
+                    : t("common.rotation")}
                 </Text>
               </Text>
             )}
 
             {trainingPlan.rotationCycleLength && (
               <Text size="sm" c="dimmed">
-                Cycle:{" "}
+                {t("common.cycleLabel")}{" "}
                 <Text component="span" fw={500}>
-                  {trainingPlan.rotationCycleLength} days
+                  {t("common.dayCount", { count: trainingPlan.rotationCycleLength })}
                 </Text>
               </Text>
             )}
@@ -285,13 +271,14 @@ export function PlanHeader({
             </Avatar>
             <Box>
               <Text size="sm" fw={600}>{creatorName}</Text>
-              <Text size="xs" c="dimmed">{planType === 'training' ? 'Elite Performance Coach' : 'Nutrition Plan Creator'}</Text>
+              <Text size="xs" c="dimmed">{planType === 'training' ? t('common.elitePerformanceCoach') : t('common.nutritionPlanCreator')}</Text>
             </Box>
           </Group>
         )}
 
         <Text size="sm" c="dimmed">
-          Created: {plan.createdAt ? formatDate(plan.createdAt) : "N/A"}
+          {t("common.createdLabel")}{" "}
+          {plan.createdAt ? formatDate(plan.createdAt) : t("common.notAvailable")}
         </Text>
       </Group>
 

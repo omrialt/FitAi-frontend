@@ -1,28 +1,15 @@
-import {
-  Paper,
-  Title,
-  Text,
-  Group,
-  Badge,
-  Stack,
-  Button,
-  Divider,
-  Modal,
-  ScrollArea,
-} from '@mantine/core';
-import {
-  IconBarbell,
-  IconCalendar,
-  IconChevronRight,
-} from '@tabler/icons-react';
+import { Text, Group, Badge, Stack, Modal, ScrollArea } from '@mantine/core';
+import { IconBarbell } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { StitchIcon } from '../common/StitchIcon';
 import type { TrainingPlan, Exercise } from '../../types/training-plan.types';
 import type { ActiveTrainingCardProps } from '../../types/dashboard-components.types';
 import { DaysSection } from '../trainings/details/DaysSection';
 import { VideoModal } from '../trainings/details/VideoModal';
 import { trainingPlanService } from '../../services/training-plan.service';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const difficultyColor: Record<string, string> = {
   beginner: 'green',
@@ -36,6 +23,7 @@ export function ActiveTrainingCard({
   onPlanUpdate,
 }: ActiveTrainingCardProps) {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [modalOpened, setModalOpened] = useState(false);
   const [videoModalOpened, setVideoModalOpened] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState('');
@@ -68,40 +56,38 @@ export function ActiveTrainingCard({
       const updatedPlan = { ...localPlan, days: updatedDays };
       setLocalPlan(updatedPlan);
       onPlanUpdate?.(updatedPlan);
-      toast.success('Exercise history updated');
+      toast.success(t('trainings.historyUpdated'));
     } catch {
-      toast.error('Failed to update exercise history');
+      toast.error(t('trainings.historyUpdateFailed'));
     }
   };
 
   if (!plan) {
     return (
-      <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-        <Group gap="xs" mb="md">
-          <IconBarbell size={20} color="var(--mantine-color-indigo-5)" />
-          <Title order={4}>Active Training Plan</Title>
-        </Group>
-        <Stack align="center" gap="md" py="xl">
-          <Text c="dimmed" ta="center">
-            No active training plan selected.
-          </Text>
-          <Button
-            variant="light"
-            color="indigo"
-            size="sm"
+      <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+            <StitchIcon name="fitness_center" size={18} />
+          </div>
+          <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
+            {t('dashboard.activeTrainingPlan')}
+          </h3>
+        </div>
+        <div className="flex flex-col items-center gap-4 py-8">
+          <p className="text-sm text-on-surface-variant text-center">
+            {t('dashboard.noActiveTrainingPlan')}
+          </p>
+          <button
+            type="button"
             onClick={() => navigate('/my-trainings')}
+            className="bg-primary-gradient text-white px-5 py-2.5 rounded-lg font-bold text-xs hover:scale-[1.02] transition-transform"
           >
-            Browse Training Plans
-          </Button>
-        </Stack>
-      </Paper>
+            {t('dashboard.browseTrainingPlans')}
+          </button>
+        </div>
+      </div>
     );
   }
-
-  const totalExercises = plan.days.reduce(
-    (sum, d) => sum + d.exercises.length,
-    0,
-  );
 
   const nextWorkoutDate = currentStatus?.nextWorkoutDate
     ? new Date(currentStatus.nextWorkoutDate)
@@ -122,79 +108,90 @@ export function ActiveTrainingCard({
 
   return (
     <>
-    <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-      <Group justify="space-between" mb="md">
-        <Group gap="xs">
-          <IconBarbell size={20} color="var(--mantine-color-indigo-5)" />
-          <Title order={4}>Active Training Plan</Title>
-        </Group>
-        <Badge color={difficultyColor[plan.difficulty] || 'gray'} size="sm">
-          {plan.difficulty}
-        </Badge>
-      </Group>
+    <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg bg-primary-gradient flex items-center justify-center text-white shrink-0">
+            <StitchIcon name="fitness_center" size={20} />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-lg font-extrabold tracking-tight text-on-surface truncate">
+              {plan.title}
+            </h3>
+            <p className="text-xs text-on-surface-variant">
+              {activeCycleWeek
+                ? cycleTotalWeeks
+                  ? t('dashboard.activeCycleWeekOf', {
+                      week: activeCycleWeek,
+                      total: cycleTotalWeeks,
+                    })
+                  : t('dashboard.activeCycleWeek', { week: activeCycleWeek })
+                : t(`trainings.${plan.difficulty}`, {
+                    defaultValue: plan.difficulty,
+                  })}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setModalOpened(true)}
+          className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:underline shrink-0"
+        >
+          {t('dashboard.viewPlan')}
+          <StitchIcon name="chevron_right" size={14} />
+        </button>
+      </div>
 
-      <Text fw={600} size="lg" mb={4}>
-        {plan.title}
-      </Text>
-
-      {activeCycleWeek && (
-        <Group gap={4} mb="sm">
-          <IconCalendar size={13} color="var(--mantine-color-indigo-5)" />
-          <Text size="xs" c="dimmed">
-            Active Cycle: Week {activeCycleWeek}
-            {cycleTotalWeeks ? ` of ${cycleTotalWeeks}` : ''}
-          </Text>
-        </Group>
-      )}
-
-      <Divider mb="md" label="Today's Protocol" labelPosition="left" />
+      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-3">
+        {t('dashboard.todaysProtocol')}
+      </p>
 
       {todayProtocol.length > 0 ? (
-        <Stack gap={6} mb="md">
+        <div className="space-y-2">
           {todayProtocol.map((ex, i) => (
-            <Group key={i} gap="xs" wrap="nowrap">
-              <Text size="xs" c="indigo" fw={700} w={18}>{i + 1}.</Text>
-              <Text size="xs" fw={500} style={{ flex: 1 }}>{ex.name}</Text>
-              <Text size="xs" c="dimmed">
-                {ex.sets.length} Sets × {ex.sets[0]?.targetReps ?? '?'} Reps
-              </Text>
-            </Group>
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low"
+            >
+              <span className="w-6 h-6 rounded-full bg-primary text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                {i + 1}
+              </span>
+              <span className="text-sm font-bold text-on-surface flex-1 truncate">
+                {ex.name}
+              </span>
+              <span className="text-xs text-on-surface-variant shrink-0">
+                {t('dashboard.setsByReps', {
+                  sets: ex.sets.length,
+                  reps: ex.sets[0]?.targetReps ?? '?',
+                })}
+              </span>
+            </div>
           ))}
           {todayDay && todayDay.exercises.length > 3 && (
-            <Text size="xs" c="dimmed">+{todayDay.exercises.length - 3} more exercises</Text>
+            <p className="text-xs text-on-surface-variant pt-1">
+              {t('dashboard.moreExercises', {
+                count: todayDay.exercises.length - 3,
+              })}
+            </p>
           )}
-        </Stack>
+        </div>
       ) : (
-        <Text size="xs" c="dimmed" mb="md">Rest day — no exercises scheduled today.</Text>
+        <p className="text-sm text-on-surface-variant">{t('dashboard.restDay')}</p>
       )}
 
-      <Divider mb="md" />
-
-      <Group justify="space-between">
-        {nextWorkoutDate && (
-          <Text size="xs" c="dimmed">
-            Next:{' '}
-            <Text span fw={600} c="indigo">
-              {nextWorkoutDate.toLocaleDateString(undefined, {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-              })}
-            </Text>
-          </Text>
-        )}
-        <Button
-          variant="subtle"
-          color="indigo"
-          size="xs"
-          rightSection={<IconChevronRight size={14} />}
-          onClick={() => setModalOpened(true)}
-          ml="auto"
-        >
-          View Plan
-        </Button>
-      </Group>
-    </Paper>
+      {nextWorkoutDate && (
+        <p className="text-xs text-on-surface-variant mt-4">
+          {t('dashboard.next')}{' '}
+          <span className="font-bold text-primary">
+            {nextWorkoutDate.toLocaleDateString(i18n.language, {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+            })}
+          </span>
+        </p>
+      )}
+    </div>
 
     {/* Plan Details Modal */}
     <Modal
@@ -206,7 +203,7 @@ export function ActiveTrainingCard({
           <Text fw={600} size="lg">{localPlan?.title}</Text>
           {localPlan && (
             <Badge color={difficultyColor[localPlan.difficulty] || 'gray'} size="sm">
-              {localPlan.difficulty}
+              {t(`trainings.${localPlan.difficulty}`, { defaultValue: localPlan.difficulty })}
             </Badge>
           )}
         </Group>

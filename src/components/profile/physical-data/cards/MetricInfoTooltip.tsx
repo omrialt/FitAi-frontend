@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Popover, ActionIcon, Stack, Text, Paper } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { RangeBar } from './RangeBar';
-import type { RangeSegment } from '../helpers/calcRanges';
+
 import type { MetricInfoTooltipProps } from '../../../../types/physical-data-components.types';
 
 export function MetricInfoTooltip({

@@ -7,8 +7,10 @@ import { ProfileDetails, ProfileForm } from '../components/profile';
 import { AppLayout } from '../components/AppLayout';
 import userService from '../services/user.service';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const ProfilePage: React.FC = () => {
+  const { t } = useTranslation();
   const { user, updateUser } = useAuthStore();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +95,7 @@ const ProfilePage: React.FC = () => {
 
       // Check if there are any changes
       if (Object.keys(submitData).length === 0) {
-        toast.info('No changes to save');
+        toast.info(t('profile.noChanges'));
         return;
       }
 
@@ -116,7 +118,7 @@ const ProfilePage: React.FC = () => {
           avatarUrl: updatedUser.avatarUrl ?? user.avatarUrl,
         });
 
-        toast.success('Profile updated successfully!');
+        toast.success(t('profile.updated'));
         
         // Clear password field after success
         setValue('password', '');
@@ -128,7 +130,7 @@ const ProfilePage: React.FC = () => {
             ? (err as { response?: { data?: { message?: string } } })?.response?.data?.message
             : undefined;
         
-        toast.error(errorMessage || 'Failed to update profile. Please try again.');
+        toast.error(errorMessage || t('profile.updateFailed'));
       } finally {
         setIsLoading(false);
       }
@@ -181,7 +183,7 @@ const ProfilePage: React.FC = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading user data...</p>
+        <p className="text-on-surface-variant">{t('profile.loadingUser')}</p>
       </div>
     );
   }
@@ -192,8 +194,12 @@ const ProfilePage: React.FC = () => {
         <div className="max-w-5xl mx-auto py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-light text-gray-900">Profile</h1>
-            <p className="mt-2 text-sm text-gray-600">Manage your account information and preferences</p>
+            <h1 className="text-4xl font-black tracking-tight text-on-surface">
+              {t('profile.pageTitle')}
+            </h1>
+            <p className="mt-2 text-on-surface-variant">
+              {t('profile.pageSubtitle')}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

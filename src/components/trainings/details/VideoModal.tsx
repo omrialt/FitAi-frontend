@@ -37,25 +37,22 @@ export function VideoModal({ opened, onClose, videoUrl }: VideoModalProps) {
     <Modal
       opened={opened}
       onClose={onClose}
-      title={t('trainings.exerciseVideo')}
+      title={
+        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
+          {t('trainings.exerciseVideo')}
+        </h3>
+      }
       size="900"
       centered
     >
-      {/* 16:9 aspect ratio container */}
-      <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
+      {/* 16:9 frame */}
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-inverse-surface">
         <iframe
           src={activeSrc}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            border: 0,
-          }}
+          className="absolute inset-0 w-full h-full border-0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          title="Exercise Video"
+          title={t('trainings.exerciseVideo')}
         />
       </div>
     </Modal>

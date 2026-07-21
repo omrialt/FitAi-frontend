@@ -15,7 +15,7 @@ class CloudinaryService {
       },
     });
 
-    return response.data.data.imageUrl;
+    return response.data.imageUrl;
   }
 
   /**

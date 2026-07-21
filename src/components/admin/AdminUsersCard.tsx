@@ -1,47 +1,75 @@
 /**
- * AdminUsersCard - Individual user card for mobile view
+ * AdminUsersCard - Individual user card for mobile view.
+ * "Performance Lab" design.
  */
 
-import { Card, Group, Stack, Text, Badge, Button, Avatar } from '@mantine/core';
-import { IconEye } from '@tabler/icons-react';
-import type { User } from '../../types/auth.types';
+import { useTranslation } from 'react-i18next';
+
+import { StitchIcon } from '../common/StitchIcon';
 import type { AdminUsersCardProps } from '../../types/admin.types';
 
+const getRolePill = (role: string) => {
+  switch (role?.toLowerCase()) {
+    case 'admin':
+      return 'bg-error-container text-on-error-container';
+    case 'trainer':
+      return 'bg-primary/10 text-primary';
+    default:
+      return 'bg-surface-container-high text-on-surface-variant';
+  }
+};
+
 export function AdminUsersCard({ user, onView }: AdminUsersCardProps) {
+  const { t } = useTranslation();
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" wrap="nowrap">
-        <Group gap="md">
-          <Avatar src={user.avatarUrl} size={50} radius={50} />
-          <Stack gap={4}>
-            <Text fw={600}>{user.fullName}</Text>
-            <Text size="sm" c="dimmed">{user.email}</Text>
-            <Group gap="xs">
-              <Badge color={user.role === "admin" ? "red" : user.role === "trainer" ? "blue" : "gray"} variant="light">
-                {user.role}
-              </Badge>
-              <Badge
-                color={user.isActive ? "green" : "gray"}
-                variant="light"
-                style={user.isActive
-                  ? { background: 'rgba(220,252,231,1)', color: '#15803d' }
-                  : { background: 'rgba(241,245,249,1)', color: '#475569' }
-                }
+    <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="w-12 h-12 rounded-full bg-primary/10 text-primary font-black flex items-center justify-center shrink-0 overflow-hidden">
+            {user.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.fullName}
+                className="w-12 h-12 object-cover"
+              />
+            ) : (
+              user.fullName?.charAt(0)?.toUpperCase()
+            )}
+          </span>
+
+          <div className="min-w-0">
+            <p className="font-bold text-on-surface truncate">{user.fullName}</p>
+            <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
+
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${getRolePill(user.role)}`}
               >
-                {user.isActive ? "Active" : "Inactive"}
-              </Badge>
-            </Group>
-          </Stack>
-        </Group>
-        <Button
-          size="xs"
-          leftSection={<IconEye size={16} />}
-          variant="light"
+                {t(`admin.role_${user.role}`, { defaultValue: user.role })}
+              </span>
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  user.isActive
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-surface-container-high text-on-surface-variant'
+                }`}
+              >
+                {user.isActive ? t('common.active') : t('common.inactive')}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
           onClick={() => onView(user)}
+          className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-2 rounded-lg font-bold text-xs hover:bg-primary/20 transition-colors shrink-0"
         >
-          View
-        </Button>
-      </Group>
-    </Card>
+          <StitchIcon name="visibility" size={16} />
+          {t('common.view')}
+        </button>
+      </div>
+    </div>
   );
 }

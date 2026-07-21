@@ -1,0 +1,163 @@
+/**
+ * Performance Lab design tokens ("kinetic_indigo").
+ *
+ * Extracted once from the Stitch exports in /stitch_fitai — every screen's
+ * code.html inlined the same 47 Material 3 tokens, so they live here instead.
+ * Two consumers read them:
+ *   1. Tailwind v4, via the @theme block below, which generates utilities like
+ *      `bg-surface-container-lowest` and `text-on-surface`. This is what lets
+ *      Stitch markup be pasted in essentially unchanged.
+ *   2. Mantine, via mantineTheme.ts, which maps the same variables onto its own
+ *      theme so Mantine components and Tailwind markup never disagree on color.
+ *
+ * Source of truth: stitch_fitai/kinetic_indigo/DESIGN.md
+ */
+
+/**
+ * Stitch exports assume Tailwind's `darkMode: "class"` (a `.dark` class on
+ * <html>), but this app switches themes with Mantine, which sets
+ * data-mantine-color-scheme. Without this bridge every `dark:` utility pasted
+ * from a Stitch screen would silently never apply. Redefining the variant lets
+ * the existing theme toggle drive both systems at once.
+ */
+@custom-variant dark (&:where([data-mantine-color-scheme='dark'], [data-mantine-color-scheme='dark'] *));
+
+@theme {
+  /* Primary — indigo core */
+  --color-primary: #4648d4;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #6063ee;
+  --color-on-primary-container: #fffbff;
+  --color-primary-fixed: #e1e0ff;
+  --color-primary-fixed-dim: #c0c1ff;
+  --color-on-primary-fixed: #07006c;
+  --color-on-primary-fixed-variant: #2f2ebe;
+  --color-inverse-primary: #c0c1ff;
+
+  /* Secondary — cyan */
+  --color-secondary: #00687a;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #57dffe;
+  --color-on-secondary-container: #006172;
+  --color-secondary-fixed: #acedff;
+  --color-secondary-fixed-dim: #4cd7f6;
+  --color-on-secondary-fixed: #001f26;
+  --color-on-secondary-fixed-variant: #004e5c;
+
+  /* Tertiary — violet */
+  --color-tertiary: #6b38d4;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #8455ef;
+  --color-on-tertiary-container: #fffbff;
+  --color-tertiary-fixed: #e9ddff;
+  --color-tertiary-fixed-dim: #d0bcff;
+  --color-on-tertiary-fixed: #23005c;
+  --color-on-tertiary-fixed-variant: #5516be;
+
+  /* Error */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Surface tier scale — see the "No-Line" philosophy in DESIGN.md:
+     structure comes from these background shifts, not from 1px borders. */
+  --color-surface: #f8f9fa;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-tint: #494bd6;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #464554;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+
+  /* Background */
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+
+  /* Outline — only ever used at low opacity ("Ghost Border") */
+  --color-outline: #767586;
+  --color-outline-variant: #c7c4d7;
+
+  /* Type — Inter throughout, per DESIGN.md section 3 */
+  --font-headline: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-label: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Shape */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/**
+ * Ambient shadow (DESIGN.md section 4): indigo-tinted rather than gray, so
+ * floating elements read as lit rather than as dropped.
+ */
+.shadow-ambient {
+  box-shadow: 0 12px 32px -8px rgba(70, 72, 212, 0.08);
+}
+
+/**
+ * Ghost border: the accessibility fallback when a boundary is unavoidable.
+ * Never a fully opaque line.
+ */
+.border-ghost {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+}
+
+/**
+ * Utilities the Stitch exports declare inline in every screen's <style> block.
+ * Lifted here so the markup keeps working when pasted in, without each screen
+ * re-declaring them.
+ */
+
+/* Primary CTA fill — the "Glass & Gradient" rule, 135° primary -> primary-container */
+.bg-primary-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-container) 100%
+  );
+}
+
+/* Floating menus and mobile nav: 70% surface + 20px blur, per DESIGN.md */
+.glass-panel {
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 70%, transparent);
+  backdrop-filter: blur(20px);
+}
+
+[data-mantine-color-scheme='dark'] .glass-panel {
+  background: color-mix(in srgb, var(--color-inverse-surface) 70%, transparent);
+}
+
+/* The auth screens name these differently from the dashboard screens; alias so
+   markup copied from either renders identically. */
+.auth-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-container) 100%
+  );
+}
+
+.ghost-border {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+}
+
+.ambient-glow {
+  box-shadow: 0 12px 32px -8px rgba(70, 72, 212, 0.08);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -7,21 +7,10 @@
 import { Modal, Button, Stack, Group, Text, Checkbox } from "@mantine/core";
 import { useState, useEffect, Activity } from "react";
 import { useTranslation } from "react-i18next";
-import type {
-  TrainingPlan,
-  TrainingDay,
-  Difficulty,
-  Target,
-  ProgramType,
-  AccessLevel,
-} from "../../types/training-plan.types";
-import type { User } from "../../types/auth.types";
+import type { TrainingPlan, TrainingDay, Difficulty, Target, ProgramType, AccessLevel } from "../../types/training-plan.types";
+
 import { useAuth } from "../../hooks/useAuth";
-import {
-  BasicInfoSection,
-  ProgramDetailsSection,
-  TrainingDaysSection,
-} from "./edit-modal/index";
+import { BasicInfoSection, ProgramDetailsSection, TrainingDaysSection } from "./edit-modal/index";
 import { SharedAccessSection } from "../common/SharedAccessSection";
 import type { EditTrainingModalProps } from '../../types/trainings-components.types';
 

@@ -1,25 +1,33 @@
 /**
- * PhysicalDataHeader - Header component for Physical Data page
+ * PhysicalDataHeader - Header component for Physical Data page.
+ * "Performance Lab" design.
  */
 
-import { Group, Button, Title, Text, Stack } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+
+import { StitchIcon } from '../../common/StitchIcon';
 import type { PhysicalDataHeaderProps } from '../../../types/physical-data-components.types';
 
 export function PhysicalDataHeader({ onAddMeasurement }: PhysicalDataHeaderProps) {
+  const { t } = useTranslation();
+
   return (
-    <Group justify="space-between" align="flex-end" mb="lg">
-      <Stack gap={2}>
-        <Title order={2}>Physical Data</Title>
-        <Text size="sm" c="dimmed">Track your body measurements and progress over time</Text>
-      </Stack>
-      <Button 
-        leftSection={<IconPlus size={18} />}
+    <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div>
+        <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+          {t('physicalData.title')}
+        </h1>
+        <p className="text-on-surface-variant">{t('physicalData.subtitle')}</p>
+      </div>
+
+      <button
+        type="button"
         onClick={onAddMeasurement}
-        color="indigo"
+        className="flex items-center justify-center gap-2 bg-primary-gradient text-white px-5 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform shrink-0"
       >
-        Add Measurement
-      </Button>
-    </Group>
+        <StitchIcon name="add" size={18} />
+        {t('physicalData.addMeasurement')}
+      </button>
+    </header>
   );
 }

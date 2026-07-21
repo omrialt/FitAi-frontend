@@ -4,7 +4,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import type { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useTranslation } from 'react-i18next';
-import type { TrainingDay } from '../../../types/training-plan.types';
+
 import { ExerciseItem } from './ExerciseItem';
 import type { TrainingDayItemProps } from '../../../types/trainings-components.types';
 

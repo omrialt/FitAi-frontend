@@ -6,16 +6,19 @@
 
 import { Group, TextInput, NumberInput, ActionIcon, Paper, Select } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import type { Food } from "../../../types/nutrition.types";
 import type { FoodItemProps } from '../../../types/nutrition-components.types';
 
 export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
+  const { t } = useTranslation();
+
   return (
     <Paper p="sm" withBorder bg="gray.0">
       <Group gap="xs" align="flex-start" wrap="wrap">
         {/* Food Name */}
         <TextInput
-          placeholder="Food name"
+          placeholder={t('nutrition.foodName')}
           value={food.name}
           onChange={(e) => onUpdate({ name: e.currentTarget.value })}
           style={{ flex: "1 1 200px", minWidth: "150px" }}
@@ -24,18 +27,18 @@ export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
 
         {/* Quantity */}
         <NumberInput
-          placeholder="Qty"
+          placeholder={t('nutrition.qty')}
           value={food.quantity ?? 0}
           onChange={(value) => onUpdate({ quantity: typeof value === 'number' ? value : 0 })}
           min={0}
-          prefix="Qty: "
+          prefix={t('nutrition.qtyPrefix')}
           style={{ flex: "0 1 100px" }}
           size="sm"
         />
 
         {/* Unit */}
         <Select
-          placeholder="Unit"
+          placeholder={t('nutrition.unit')}
           value={food.unit || null}
           onChange={(value) => onUpdate({ unit: value as Food['unit'] })}
           data={[
@@ -57,24 +60,24 @@ export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
 
         {/* Calories */}
         <NumberInput
-          placeholder="Calories"
+          placeholder={t('nutrition.caloriesPlaceholder')}
           value={food.calories}
           onChange={(value) => onUpdate({ calories: typeof value === 'number' ? value : 0 })}
           min={0}
-          prefix="Cal: "
-          suffix=" kcal"
+          prefix={t('nutrition.calPrefix')}
+          suffix={` ${t('nutrition.kcal')}`}
           style={{ flex: "0 1 120px" }}
           size="sm"
         />
 
         {/* Protein */}
         <NumberInput
-          placeholder="Protein"
+          placeholder={t('nutrition.protein')}
           value={food.protein}
           onChange={(value) => onUpdate({ protein: typeof value === 'number' ? value : 0 })}
           min={0}
           step={0.1}
-          prefix="P: "
+          prefix={t('nutrition.proteinPrefix')}
           suffix=" g"
           style={{ flex: "0 1 100px" }}
           size="sm"
@@ -82,12 +85,12 @@ export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
 
         {/* Carbs */}
         <NumberInput
-          placeholder="Carbs"
+          placeholder={t('nutrition.carbs')}
           value={food.carbs}
           onChange={(value) => onUpdate({ carbs: typeof value === 'number' ? value : 0 })}
           min={0}
           step={0.1}
-          prefix="C: "
+          prefix={t('nutrition.carbsPrefix')}
           suffix=" g"
           style={{ flex: "0 1 100px" }}
           size="sm"
@@ -95,12 +98,12 @@ export function FoodItem({ food, onRemove, onUpdate }: FoodItemProps) {
 
         {/* Fat */}
         <NumberInput
-          placeholder="Fat"
+          placeholder={t('nutrition.fat')}
           value={food.fat}
           onChange={(value) => onUpdate({ fat: typeof value === 'number' ? value : 0 })}
           min={0}
           step={0.1}
-          prefix="F: "
+          prefix={t('nutrition.fatPrefix')}
           suffix=" g"
           style={{ flex: "0 1 100px" }}
           size="sm"

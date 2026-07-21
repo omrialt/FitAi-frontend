@@ -2,11 +2,12 @@
  * MeasurementModal - Unified modal for adding or editing physical data measurements
  */
 
-import { Modal, Button, Stack, Group, NumberInput, TextInput } from '@mantine/core';
-import { DateInput } from '@mantine/dates';
+import { Modal } from '@mantine/core';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../../hooks/useAuth';
-import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../../../../types/physical-data.types';
+import { AuthField } from '../../../auth/AuthField';
+import type { CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../../../../types/physical-data.types';
 import type { MeasurementModalProps } from '../../../../types/physical-data-components.types';
 
 export function MeasurementModal({ 
@@ -17,6 +18,7 @@ export function MeasurementModal({
   onSave,
   onUpdate
 }: MeasurementModalProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditMode = !!measurement;
@@ -123,119 +125,149 @@ export function MeasurementModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={isEditMode ? "Edit Measurement" : "Add Measurement"}
+      title={isEditMode ? t('physicalData.editMeasurement') : t('physicalData.addMeasurement')}
       centered
       size="500"
     >
-      <Stack gap="md">
-        <DateInput
-          label="Date Recorded"
-          placeholder="Select date"
-          value={dateRecorded}
-          onChange={(value) => setDateRecorded(value ? new Date(value) : null)}
+      <div className="space-y-4">
+        <AuthField
+          id="dateRecorded"
+          label={t('physicalData.dateRecorded')}
+          icon="event"
+          type="date"
+          max={new Date().toISOString().split('T')[0]}
+          value={dateRecorded ? dateRecorded.toISOString().split('T')[0] : ''}
+          onChange={(e) => setDateRecorded(e.target.value ? new Date(e.target.value) : null)}
           required
-          maxDate={new Date()}
         />
 
-        <Group grow>
-          <NumberInput
-            label="Height (cm)"
-            placeholder="170"
-            value={heightCm}
-            onChange={(val) => setHeightCm(typeof val === 'number' ? val : 170)}
-            required
+        <div className="grid grid-cols-2 gap-4">
+          <AuthField
+            id="heightCm"
+            label={t('physicalData.heightCm')}
+            icon="monitor_weight"
+            type="number"
             min={100}
             max={250}
-            decimalScale={1}
-          />
-          <NumberInput
-            label="Weight (kg)"
-            placeholder="70.5"
-            value={weightKg}
-            onChange={setWeightKg}
+            step="0.1"
+            placeholder="170"
+            value={heightCm}
+            onChange={(e) => setHeightCm(e.target.value === '' ? 170 : Number(e.target.value))}
             required
+          />
+          <AuthField
+            id="weightKg"
+            label={t('physicalData.weightKgHeader')}
+            icon="scale"
+            type="number"
             min={30}
             max={300}
-            decimalScale={1}
+            step="0.1"
+            placeholder="70.5"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value === '' ? '' : Number(e.target.value))}
+            required
           />
-        </Group>
+        </div>
 
-        <NumberInput
-          label="Body Fat %"
-          placeholder="15.5"
-          value={bodyFatPercent}
-          onChange={setBodyFatPercent}
+        <AuthField
+          id="bodyFatPercent"
+          label={t('physicalData.bodyFatPct')}
+          icon="water_drop"
+          type="number"
           min={0}
           max={100}
-          decimalScale={1}
+          step="0.1"
+          placeholder="15.5"
+          value={bodyFatPercent}
+          onChange={(e) => setBodyFatPercent(e.target.value === '' ? '' : Number(e.target.value))}
         />
 
-        
-        <Group grow>
-          <NumberInput
-            label="Chest (cm)"
+        <div className="grid grid-cols-2 gap-4">
+          <AuthField
+            id="chest"
+            label={t('physicalData.chestCm')}
+            icon="exercise"
+            type="number"
+            min={0}
+            max={200}
+            step="0.1"
             placeholder="100"
             value={chest}
-            onChange={setChest}
+            onChange={(e) => setChest(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+          <AuthField
+            id="waist"
+            label={t('physicalData.waistCm')}
+            icon="exercise"
+            type="number"
             min={0}
             max={200}
-            decimalScale={1}
-          />
-          <NumberInput
-            label="Waist (cm)"
+            step="0.1"
             placeholder="80"
             value={waist}
-            onChange={setWaist}
+            onChange={(e) => setWaist(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+          <AuthField
+            id="hips"
+            label={t('physicalData.hipsCm')}
+            icon="exercise"
+            type="number"
             min={0}
             max={200}
-            decimalScale={1}
-          />
-        </Group>
-
-        <Group grow>
-          <NumberInput
-            label="Hips (cm)"
+            step="0.1"
             placeholder="95"
             value={hips}
-            onChange={setHips}
-            min={0}
-            max={200}
-            decimalScale={1}
+            onChange={(e) => setHips(e.target.value === '' ? '' : Number(e.target.value))}
           />
-          <NumberInput
-            label="Arms (cm)"
-            placeholder="35"
-            value={arms}
-            onChange={setArms}
+          <AuthField
+            id="arms"
+            label={t('physicalData.armsCm')}
+            icon="exercise"
+            type="number"
             min={0}
             max={100}
-            decimalScale={1}
+            step="0.1"
+            placeholder="35"
+            value={arms}
+            onChange={(e) => setArms(e.target.value === '' ? '' : Number(e.target.value))}
           />
-        </Group>
+        </div>
 
-        <NumberInput
-          label="Legs (cm)"
-          placeholder="60"
-          value={legs}
-          onChange={setLegs}
-          min={0}
-          max={150}
-          decimalScale={1}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <AuthField
+            id="legs"
+            label={t('physicalData.legsCm')}
+            icon="exercise"
+            type="number"
+            min={0}
+            max={150}
+            step="0.1"
+            placeholder="60"
+            value={legs}
+            onChange={(e) => setLegs(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+        </div>
 
-        <Group justify="flex-end" mt="md">
-          <Button variant="default" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!weightKg || !heightCm}
-            loading={isSubmitting}
+        <div className="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors disabled:opacity-60"
           >
-            {isEditMode ? "Save Changes" : "Add Measurement"}
-          </Button>
-        </Group>
-      </Stack>
+            {t('common.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!weightKg || !heightCm || isSubmitting}
+            className="px-5 py-2.5 rounded-lg font-bold text-sm bg-primary-gradient text-white shadow-lg shadow-primary/20 disabled:opacity-60"
+          >
+            {isEditMode ? t('common.saveChanges') : t('physicalData.addMeasurement')}
+          </button>
+        </div>
+      </div>
     </Modal>
   );
 }

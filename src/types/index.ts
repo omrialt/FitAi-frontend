@@ -202,12 +202,8 @@ export type {
 
 // Profile component prop types
 export type {
-  ProfileAvatarProps,
   ProfileDetailsProps,
   ProfileFormProps,
-  ProfileHeaderProps,
-  ProfileInfoProps,
-  InfoItemProps,
 } from './profile.types';
 
 // Physical data component prop types

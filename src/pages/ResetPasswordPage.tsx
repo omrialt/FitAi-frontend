@@ -1,24 +1,14 @@
-import { useState, Activity } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import {
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  PasswordInput,
-  Button,
-  Stack,
-  Divider,
-  Group,
-  Loader,
-} from '@mantine/core';
-import { IconLogin } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
-import { useApi } from '../hooks/useApi';
 import { toast } from 'sonner';
-import { usePresetMetadata } from '../hooks/useMetadata';
-import '../styles/Auth.css';
 
+import { useApi } from '../hooks/useApi';
+import { usePresetMetadata } from '../hooks/useMetadata';
+import { AuthLayout } from '../components/auth/AuthLayout';
+import { AuthField, AuthSubmit } from '../components/auth/AuthField';
+
+/** Reset password — "Performance Lab" design. */
 function ResetPasswordPage() {
   const { t } = useTranslation();
   const metadata = usePresetMetadata('reset-password');
@@ -30,11 +20,20 @@ function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [formError, setFormError] = useState('');
-  const { execute: resetPassword, loading, error, data } = useApi<void>({ showSuccessToast: true, successMessage: t('auth.resetSuccess') });
+
+  const {
+    execute: resetPassword,
+    loading,
+    error,
+  } = useApi<void>({
+    showSuccessToast: true,
+    successMessage: t('auth.resetSuccess'),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
+
     if (!email || !newPassword || !confirmPassword) {
       setFormError(t('auth.allFieldsRequired'));
       return;
@@ -51,7 +50,12 @@ function ResetPasswordPage() {
       setFormError(t('auth.invalidResetToken'));
       return;
     }
-    const result = await resetPassword('/auth/reset-password', { method: 'POST', data: { token, newPassword } });
+
+    const result = await resetPassword('/auth/reset-password', {
+      method: 'POST',
+      data: { token, newPassword },
+    });
+
     if (result !== null && !error) {
       toast.success(t('auth.resetSuccess'));
       setTimeout(() => navigate('/login'), 1800);
@@ -61,101 +65,66 @@ function ResetPasswordPage() {
   return (
     <>
       {metadata}
-      <div
-        className="auth-container"
-        style={{
-          width: '100%',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+      <AuthLayout
+        title={t('auth.resetPassword')}
+        subtitle={t('auth.resetSubtitle')}
       >
-        <Paper
-          shadow="xl"
-          p="xl"
-          radius="md"
-          withBorder
-          className="auth-card"
-          style={{
-            width: '100%',
-            maxWidth: '420px',
-            margin: '0 auto',
-          }}
-        >
-          <Stack gap="md">
-            <div style={{ textAlign: 'center' }}>
-              <Title order={2} mb="xs">
-                {t('auth.resetPassword')}
-              </Title>
-              <Text size="sm" c="dimmed">
-                {t('auth.resetSubtitle')}
-              </Text>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <AuthField
+            id="email"
+            label={t('auth.workEmail')}
+            icon="mail"
+            type="email"
+            placeholder={t('auth.workEmailPlaceholder')}
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <AuthField
+            id="newPassword"
+            label={t('auth.newPassword')}
+            icon="lock"
+            type="password"
+            placeholder={t('auth.newPasswordPlaceholder')}
+            autoComplete="new-password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+
+          <AuthField
+            id="confirmPassword"
+            label={t('auth.confirmPassword')}
+            icon="lock"
+            type="password"
+            placeholder={t('auth.reenterPasswordPlaceholder')}
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+
+          {(formError || error?.message) && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-error-container text-on-error-container">
+              <p className="text-xs font-medium">
+                {formError || error?.message}
+              </p>
             </div>
-            <Divider label={t('auth.resetDivider')} labelPosition="center" />
-            <form onSubmit={handleSubmit}>
-              <Stack gap="md">
-                <TextInput
-                  label={t('auth.email')}
-                  placeholder={t('auth.emailPlaceholder')}
-                  required
-                  withAsterisk
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-                <PasswordInput
-                  label={t('auth.newPassword')}
-                  placeholder={t('auth.newPasswordPlaceholder')}
-                  required
-                  withAsterisk
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-                <PasswordInput
-                  label={t('auth.confirmPassword')}
-                  placeholder={t('auth.reenterPasswordPlaceholder')}
-                  required
-                  withAsterisk
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                />
-                <Activity mode={formError ? "visible" : "hidden"}>
-                  <Text c="red" size="sm">{formError}</Text>
-                </Activity>
-                <Activity mode={error ? "visible" : "hidden"}>
-                  <Text c="red" size="sm">{error && error.message}</Text>
-                </Activity>
-                <Activity mode={loading ? "visible" : "hidden"}>
-                  <Group justify="center">
-                    <Loader size="sm" />
-                  </Group>
-                </Activity>
-                <Button
-                  type="submit"
-                  fullWidth
-                  size="md"
-                  leftSection={<IconLogin size={18} />}
-                  loading={loading}
-                  gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                  variant="gradient"
-                  className="auth-button"
-                >
-                  {t('auth.resetPassword')}
-                </Button>
-                <Button
-                  variant="subtle"
-                  color="gray"
-                  fullWidth
-                  onClick={() => navigate('/login')}
-                  type="button"
-                >
-                  {t('auth.backToLogin')}
-                </Button>
-              </Stack>
-            </form>
-          </Stack>
-        </Paper>
-      </div>
+          )}
+
+          <AuthSubmit loading={loading}>{t('auth.resetPassword')}</AuthSubmit>
+
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            className="w-full text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors"
+          >
+            {t('auth.backToLogin')}
+          </button>
+        </form>
+      </AuthLayout>
     </>
   );
 }

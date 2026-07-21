@@ -5,10 +5,11 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Container, Box, Center, Loader, SimpleGrid, Paper, Group, Text, ThemeIcon, Progress, Avatar } from "@mantine/core";
-import { IconFlame, IconScale, IconCircleCheck } from "@tabler/icons-react";
+import { Container, Box, Center, Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { StitchIcon } from "../components/common/StitchIcon";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useDebounce } from "../hooks/useDebounce";
 import { useApi } from "../hooks/useApi";
 import { toast } from "sonner";
@@ -31,6 +32,7 @@ import userService from "../services/user.service";
 import type { User } from "../types/user.types";
 
 export default function MyNutritionsPage() {
+  const { t } = useTranslation();
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
   // Fetch all users once on page load
@@ -64,11 +66,11 @@ export default function MyNutritionsPage() {
   });
   const { execute: updateNutritionPlan } = useApi<NutritionPlan>({
     showSuccessToast: true,
-    successMessage: "Nutrition plan updated successfully",
+    successMessage: t('nutrition.updatedSuccess'),
   });
   const { execute: deleteNutritionPlan } = useApi<{ message: string }>({
     showSuccessToast: true,
-    successMessage: "Nutrition plan deleted successfully",
+    successMessage: t('nutrition.deletedSuccess'),
   });
 
   const allNutritionPlans = useMemo(() => {
@@ -90,8 +92,8 @@ export default function MyNutritionsPage() {
   // Export hook
   const { exportToPDF, exportToExcel } = useNutritionExport({
     filename: "my-nutrition-plans",
-    onSuccess: () => toast.success("Export completed successfully"),
-    onError: (error) => toast.error(`Export failed: ${error.message}`),
+    onSuccess: () => toast.success(t('common.exportSuccess')),
+    onError: (error) => toast.error(t('common.exportFailed', { error: error.message })),
   });
 
   // Handler for creating a new plan
@@ -106,12 +108,12 @@ export default function MyNutritionsPage() {
         await nutritionPlanService.create(data);
         await refetchNutritionPlans();
         setEditModalOpened(false);
-        toast.success("Nutrition plan created successfully");
+        toast.success(t('nutrition.createdSuccess'));
       } catch {
-        toast.error("Failed to create nutrition plan");
+        toast.error(t('nutrition.createFailed'));
       }
     },
-    [refetchNutritionPlans]
+    [refetchNutritionPlans, t]
   );
 
   // Fetch nutrition plans from API
@@ -198,14 +200,14 @@ export default function MyNutritionsPage() {
       const isOwner = userId === user?._id || user?.role === "admin";
 
       if (!isOwner) {
-        toast.error("You do not have permission to edit this nutrition plan");
+        toast.error(t('nutrition.noEditPermission'));
         return;
       }
 
       setSelectedNutritionPlan(plan);
       setEditModalOpened(true);
     },
-    [nutritionPlans, user?._id, user?.role]
+    [nutritionPlans, user?._id, user?.role, t]
   );
 
   const handleDelete = useCallback(
@@ -219,14 +221,14 @@ export default function MyNutritionsPage() {
       const isOwner = userId === user?._id || user?.role === "admin";
 
       if (!isOwner) {
-        toast.error("You do not have permission to delete this nutrition plan");
+        toast.error(t('nutrition.noDeletePermission'));
         return;
       }
 
       setSelectedNutritionPlan(plan);
       setDeleteModalOpened(true);
     },
-    [nutritionPlans, user?._id, user?.role]
+    [nutritionPlans, user?._id, user?.role, t]
   );
 
   const handleSaveEdit = useCallback(
@@ -291,13 +293,13 @@ export default function MyNutritionsPage() {
       try {
         await nutritionPlanService.activate(id);
         await refetchNutritionPlans();
-        toast.success("Nutrition plan activated successfully");
+        toast.success(t('nutrition.activatedSuccess'));
       } catch (error) {
-        toast.error("Failed to activate nutrition plan");
+        toast.error(t('nutrition.activateFailed'));
         console.error("Failed to activate nutrition plan:", error);
       }
     },
-    [refetchNutritionPlans]
+    [refetchNutritionPlans, t]
   );
 
   return (
@@ -385,9 +387,9 @@ export default function MyNutritionsPage() {
 
 // --- Stats Bento Component ---
 
-import type { NutritionPlan } from "../types/nutrition.types";
-
 function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan[] }) {
+  const { t } = useTranslation();
+
   const avgKcal = useMemo(() => {
     if (!nutritionPlans.length) return 0;
     return Math.round(
@@ -403,97 +405,105 @@ function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan
 
   const totalPlans = nutritionPlans.length;
   const ratingPct = Math.round((avgRating / 5) * 100);
-  const weekDays = ['M', 'T', 'W', 'T', 'F'];
+  // Decorative Mon–Fri initials, taken from the translated weekday names
+  const weekDays = [1, 2, 3, 4, 5].map((d) => t(`common.weekday${d}`).charAt(0));
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg" mt="xl">
+    <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
       {/* Weekly Average */}
-      <Paper
-        p="xl"
-        radius="xl"
-        style={{
-          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-          color: '#fff',
-          boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
-        }}
-      >
-        <Group justify="space-between" mb="md">
-          <ThemeIcon size={40} radius="md" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff' }}>
-            <IconFlame size={20} />
-          </ThemeIcon>
-          <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.1em', opacity: 0.8 }}>
-            Weekly Average
-          </Text>
-        </Group>
-        <Text size="2.2rem" fw={700} lh={1} mb={4}>
+      <div className="bg-primary-gradient rounded-xl p-8 text-white shadow-lg shadow-primary/25">
+        <div className="flex items-center justify-between mb-4">
+          <span className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+            <StitchIcon name="bolt" size={20} />
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-80">
+            {t('nutrition.weeklyAverage')}
+          </span>
+        </div>
+
+        <p className="text-4xl font-black leading-none mb-1">
           {avgKcal.toLocaleString()}
-        </Text>
-        <Text size="xs" style={{ opacity: 0.8 }}>Daily kcal across your plans</Text>
-        <Group justify="space-between" mt="md" pt="md" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-          <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.08em', opacity: 0.8 }}>
-            {totalPlans} Plans Total
-          </Text>
-          <Group gap={4}>
-            <Box w={8} h={8} style={{ borderRadius: '50%', background: '#34d399' }} />
-            <Text size="xs" fw={700} style={{ opacity: 0.9 }}>Active</Text>
-          </Group>
-        </Group>
-      </Paper>
+        </p>
+        <p className="text-xs opacity-80">{t('nutrition.dailyKcalAcrossPlans')}</p>
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/15">
+          <span className="text-[10px] font-black uppercase tracking-widest opacity-80">
+            {t('nutrition.plansTotal', { count: totalPlans })}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-green-400" />
+            <span className="text-[10px] font-bold opacity-90">
+              {t('common.active')}
+            </span>
+          </span>
+        </div>
+      </div>
 
       {/* Total Plans */}
-      <Paper p="xl" radius="xl" withBorder style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-        <Group justify="space-between" mb="md">
-          <ThemeIcon size={40} radius="md" color="indigo" variant="light">
-            <IconScale size={20} />
-          </ThemeIcon>
-          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
-            Total Plans
-          </Text>
-        </Group>
-        <Group align="flex-end" gap="xs" mb={4}>
-          <Text size="2.2rem" fw={700} lh={1} c="dark">
+      <div className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/10">
+        <div className="flex items-center justify-between mb-4">
+          <span className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+            <StitchIcon name="restaurant_menu" size={20} />
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+            {t('nutrition.totalPlans')}
+          </span>
+        </div>
+
+        <div className="flex items-end gap-2 mb-1">
+          <p className="text-4xl font-black leading-none text-on-surface">
             {totalPlans}
-          </Text>
-          <Text size="sm" fw={700} c="dimmed" pb={4}>plans</Text>
-        </Group>
-        <Text size="xs" c="dimmed">Nutrition plans in your collection</Text>
-        <Progress value={Math.min((totalPlans / 20) * 100, 100)} color="indigo" size="xs" radius="xl" mt="md" />
-      </Paper>
+          </p>
+          <span className="text-sm font-bold text-on-surface-variant pb-1">
+            {t('nutrition.plansLabel')}
+          </span>
+        </div>
+        <p className="text-xs text-on-surface-variant">
+          {t('nutrition.plansInCollection')}
+        </p>
+
+        <div className="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden mt-4">
+          <div
+            className="bg-primary h-full"
+            style={{ width: `${Math.min((totalPlans / 20) * 100, 100)}%` }}
+          />
+        </div>
+      </div>
 
       {/* Average Rating */}
-      <Paper p="xl" radius="xl" withBorder style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-        <Group justify="space-between" mb="md">
-          <ThemeIcon size={40} radius="md" color="green" variant="light">
-            <IconCircleCheck size={20} />
-          </ThemeIcon>
-          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
-            Avg. Rating
-          </Text>
-        </Group>
-        <Text size="2.2rem" fw={700} lh={1} c="dark" mb={4}>
-          {avgRating > 0 ? `${avgRating.toFixed(1)}★` : '—'}
-        </Text>
-        <Text size="xs" c="dimmed">Average plan rating</Text>
-        <Group gap={4} mt="md">
+      <div className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/10">
+        <div className="flex items-center justify-between mb-4">
+          <span className="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+            <StitchIcon name="check_circle" size={20} />
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+            {t('nutrition.avgRating')}
+          </span>
+        </div>
+
+        <p className="text-4xl font-black leading-none text-on-surface mb-1">
+          {avgRating > 0 ? `${avgRating.toFixed(1)}★` : t('common.none')}
+        </p>
+        <p className="text-xs text-on-surface-variant">
+          {t('nutrition.averagePlanRating')}
+        </p>
+
+        <div className="flex mt-4">
           {weekDays.map((day, i) => (
-            <Avatar
+            <span
               key={i}
-              size={24}
-              radius="xl"
-              style={{
-                background: i !== 3 && ratingPct > (i / weekDays.length) * 100 ? '#10b981' : '#e2e8f0',
-                color: '#fff',
-                fontSize: 8,
-                fontWeight: 700,
-                marginLeft: i > 0 ? -6 : 0,
-                border: '2px solid #fff',
-              }}
+              className={`w-6 h-6 rounded-full text-[8px] font-bold text-white flex items-center justify-center border-2 border-surface-container-lowest ${
+                i !== 3 && ratingPct > (i / weekDays.length) * 100
+                  ? 'bg-green-500'
+                  : 'bg-surface-container-highest'
+              }`}
+              style={{ marginInlineStart: i > 0 ? -6 : 0 }}
             >
               {day}
-            </Avatar>
+            </span>
           ))}
-        </Group>
-      </Paper>
-    </SimpleGrid>
+        </div>
+      </div>
+    </section>
   );
 }

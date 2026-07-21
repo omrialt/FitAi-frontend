@@ -1,37 +1,50 @@
 /**
- * NutritionsTable - Desktop table view for nutrition plans
+ * NutritionsTable — desktop table view. "Performance Lab" design.
+ *
+ * Rows previously carried `cursor: pointer` with no click handler, so they
+ * looked interactive but weren't; they now open the plan, matching the
+ * trainings table.
  */
 
 "use client";
 
-import type React from "react";
-import { Table, Badge, Text, Group, Avatar, Box } from "@mantine/core";
-import { IconStarFilled } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+
+import { StitchIcon } from "../common/StitchIcon";
 import { NutritionsActionsMenu } from "./NutritionsActionsMenu";
-import type { NutritionPlan } from "../../types/nutrition.types";
 import type { NutritionsTableProps } from '../../types/nutrition-components.types';
 
-const getTargetBadgeStyle = (target?: string): { bg: string; color: string; label: string } => {
+const getTargetPill = (
+  target?: string,
+): { pill: string; labelKey?: string } => {
   switch (target?.toLowerCase()) {
     case "cut":
-      return { bg: '#fff1f2', color: '#be123c', label: 'Weight Loss' };
+      return { pill: 'bg-error-container text-on-error-container', labelKey: 'nutrition.weightLoss' };
     case "bulk":
-      return { bg: '#eef2ff', color: '#4338ca', label: 'Muscle Gain' };
+      return { pill: 'bg-primary/10 text-primary', labelKey: 'nutrition.muscleGain' };
     case "maintain":
-      return { bg: '#f0fdf4', color: '#15803d', label: 'Maintain' };
+      return { pill: 'bg-green-100 text-green-700', labelKey: 'nutrition.maintain' };
     default:
-      return { bg: '#f8fafc', color: '#64748b', label: target ?? '—' };
+      return { pill: 'bg-surface-container-high text-on-surface-variant' };
   }
 };
 
-const getAvatarColor = (target?: string): string => {
+/** Tint of the leading plan avatar, colour-coded by target. */
+const getAvatarTint = (target?: string): string => {
   switch (target?.toLowerCase()) {
-    case "cut": return '#f43f5e';
-    case "bulk": return '#6366f1';
-    case "maintain": return '#10b981';
-    default: return '#94a3b8';
+    case "cut":
+      return 'bg-error';
+    case "bulk":
+      return 'bg-primary';
+    case "maintain":
+      return 'bg-green-600';
+    default:
+      return 'bg-outline';
   }
 };
+
+const TH =
+  "text-start text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-6 py-4";
 
 export function NutritionsTable({
   nutritionPlans,
@@ -44,144 +57,123 @@ export function NutritionsTable({
   onDelete,
   onActivate,
 }: NutritionsTableProps) {
+  const { t } = useTranslation();
+
   if (nutritionPlans.length === 0) {
     return (
-      <Text c="dimmed" ta="center" py="xl">
-        No nutrition plans found
-      </Text>
+      <div className="bg-surface-container-lowest rounded-xl p-12 text-center border border-outline-variant/10">
+        <p className="text-on-surface-variant">{t('nutrition.noPlans')}</p>
+      </div>
     );
   }
 
+  const dash = t('common.none');
+
   return (
-    <Box
-      style={{
-        borderRadius: '1rem',
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-        border: '1px solid rgba(203,213,225,0.4)',
-        background: '#fff',
-      }}
-      mb="lg"
-    >
-      <Table.ScrollContainer minWidth={800}>
-        <Table style={{ borderCollapse: 'collapse' }}>
-          <Table.Thead>
-            <Table.Tr style={{ background: '#f8fafc' }}>
-              <Table.Th style={thStyle}>Plan Name</Table.Th>
-              <Table.Th style={thStyle}>Target</Table.Th>
-              <Table.Th style={thStyle}>Meals</Table.Th>
-              <Table.Th style={thStyle}>Calories</Table.Th>
-              <Table.Th style={thStyle}>Creator</Table.Th>
-              <Table.Th style={thStyle}>Rating</Table.Th>
-              <Table.Th style={{ ...thStyle, textAlign: 'right' }}></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+    <div className="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 mb-8">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[860px] border-collapse">
+          <thead className="bg-surface-container-low">
+            <tr>
+              <th className={TH}>{t('nutrition.planName')}</th>
+              <th className={TH}>{t('nutrition.target')}</th>
+              <th className={TH}>{t('nutrition.meals')}</th>
+              <th className={TH}>{t('nutrition.calories')}</th>
+              <th className={TH}>{t('nutrition.creator')}</th>
+              <th className={TH}>{t('nutrition.rating')}</th>
+              <th className={TH} />
+            </tr>
+          </thead>
+          <tbody>
             {nutritionPlans.map((plan) => {
-              const badge = getTargetBadgeStyle(plan.target);
-              const avatarColor = getAvatarColor(plan.target);
+              const badge = getTargetPill(plan.target);
               const creatorName =
                 typeof plan.userId === "object" && plan.userId?.fullName
                   ? plan.userId.fullName
                   : null;
-              const creatorInitial = creatorName ? creatorName[0].toUpperCase() : '?';
               const mealsCount = plan.meals?.length ?? 0;
 
               return (
-                <Table.Tr
+                <tr
                   key={plan._id}
-                  style={{
-                    borderTop: '1px solid #f1f5f9',
-                    transition: 'background 0.15s',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(248,250,252,0.6)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
+                  onClick={() => onView(plan._id)}
+                  className="cursor-pointer hover:bg-surface-container-low/60 transition-colors"
                 >
-                  {/* Plan Name */}
-                  <Table.Td style={tdStyle}>
-                    <Group gap="sm" wrap="nowrap">
-                      <Avatar
-                        size={40}
-                        radius="md"
-                        style={{ background: avatarColor, flexShrink: 0, fontSize: 18, fontWeight: 700, color: '#fff' }}
+                  {/* Plan name */}
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`w-10 h-10 rounded-lg text-white text-lg font-black flex items-center justify-center shrink-0 ${getAvatarTint(plan.target)}`}
                       >
                         {plan.title[0]?.toUpperCase()}
-                      </Avatar>
-                      <Text
-                        fw={700}
-                        size="sm"
-                        style={{ color: '#0f172a', lineHeight: 1.3 }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#4f46e5'; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#0f172a'; }}
-                      >
+                      </span>
+                      <span className="font-bold text-on-surface">
                         {plan.title}
-                      </Text>
-                    </Group>
-                  </Table.Td>
+                      </span>
+                    </div>
+                  </td>
 
-                  {/* Target badge */}
-                  <Table.Td style={tdStyle}>
+                  {/* Target */}
+                  <td className="px-6 py-5">
                     {plan.target ? (
-                      <Badge
-                        variant="light"
-                        radius="xl"
-                        size="sm"
-                        style={{
-                          background: badge.bg,
-                          color: badge.color,
-                          fontWeight: 700,
-                          fontSize: 10,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          border: 'none',
-                        }}
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${badge.pill}`}
                       >
-                        {badge.label}
-                      </Badge>
+                        {badge.labelKey ? t(badge.labelKey) : plan.target}
+                      </span>
                     ) : (
-                      <Text c="dimmed" size="sm">—</Text>
+                      <span className="text-sm text-on-surface-variant">{dash}</span>
                     )}
-                  </Table.Td>
+                  </td>
 
                   {/* Meals per day */}
-                  <Table.Td style={tdStyle}>
-                    <Text size="sm" fw={500} c="gray.7">
-                      {mealsCount > 0 ? `${mealsCount} per day` : '—'}
-                    </Text>
-                  </Table.Td>
+                  <td className="px-6 py-5">
+                    <span className="text-sm text-on-surface-variant">
+                      {mealsCount > 0
+                        ? t('nutrition.mealsPerDay', { count: mealsCount })
+                        : dash}
+                    </span>
+                  </td>
 
                   {/* Calories */}
-                  <Table.Td style={tdStyle}>
-                    <Text size="sm" fw={700} style={{ color: '#0f172a' }}>
-                      {plan.totalCalories ? `${plan.totalCalories.toLocaleString()} kcal` : '—'}
-                    </Text>
-                  </Table.Td>
+                  <td className="px-6 py-5">
+                    <span className="text-sm font-bold text-on-surface">
+                      {plan.totalCalories
+                        ? t('nutrition.caloriesValue', {
+                            value: plan.totalCalories.toLocaleString(),
+                          })
+                        : dash}
+                    </span>
+                  </td>
 
                   {/* Creator */}
-                  <Table.Td style={tdStyle}>
-                    <Group gap="xs" wrap="nowrap">
-                      <Avatar size={24} radius="xl" color="indigo">
-                        {creatorInitial}
-                      </Avatar>
-                      <Text size="sm" c="gray.6">
-                        {creatorName ?? '—'}
-                      </Text>
-                    </Group>
-                  </Table.Td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-full bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">
+                        {creatorName ? creatorName[0].toUpperCase() : '?'}
+                      </span>
+                      <span className="text-sm text-on-surface-variant">
+                        {creatorName ?? dash}
+                      </span>
+                    </div>
+                  </td>
 
                   {/* Rating */}
-                  <Table.Td style={tdStyle}>
-                    <Group gap={4} wrap="nowrap">
-                      <IconStarFilled size={14} style={{ color: '#f59e0b' }} />
-                      <Text size="sm" fw={700} style={{ color: '#0f172a' }}>
-                        {plan.averageRating > 0 ? plan.averageRating.toFixed(1) : '—'}
-                      </Text>
-                    </Group>
-                  </Table.Td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-1">
+                      <span className="text-amber-500">
+                        <StitchIcon name="verified" size={14} />
+                      </span>
+                      <span className="text-sm font-bold text-on-surface">
+                        {plan.averageRating > 0
+                          ? plan.averageRating.toFixed(1)
+                          : dash}
+                      </span>
+                    </div>
+                  </td>
 
                   {/* Actions */}
-                  <Table.Td style={{ ...tdStyle, textAlign: 'right' }}>
+                  <td className="px-6 py-5 text-end" onClick={(e) => e.stopPropagation()}>
                     <NutritionsActionsMenu
                       nutritionPlan={plan}
                       isAdmin={isAdmin}
@@ -193,27 +185,13 @@ export function NutritionsTable({
                       onDelete={onDelete}
                       onActivate={onActivate}
                     />
-                  </Table.Td>
-                </Table.Tr>
+                  </td>
+                </tr>
               );
             })}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
-    </Box>
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
-
-const thStyle: React.CSSProperties = {
-  padding: '14px 24px',
-  fontSize: 10,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  color: '#64748b',
-  borderBottom: 'none',
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: '18px 24px',
-};

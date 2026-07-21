@@ -1,27 +1,22 @@
 import { Link } from 'react-router-dom';
-import {
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  PasswordInput,
-  Button,
-  Stack,
-  Divider,
-  Select,
-  Anchor,
-} from '@mantine/core';
-import { IconBrandGoogle, IconUserPlus } from '@tabler/icons-react';
-import { DateInput } from '@mantine/dates';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../hooks/useAuth';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { registerSchema, type RegisterFormData } from '../schemas/auth.schemas';
-import '../styles/Auth.css';
+import { AuthLayout } from '../components/auth/AuthLayout';
+import {
+  AuthField,
+  AuthSelect,
+  AuthSubmit,
+  GoogleButton,
+  AuthDivider,
+} from '../components/auth/AuthField';
 
+/** Register — "Performance Lab" design. */
 function RegisterPage() {
   const { t } = useTranslation();
   const { register: registerUser } = useAuth();
@@ -46,209 +41,191 @@ function RegisterPage() {
       });
     },
     showErrorToast: false, // useAuth handles toast notifications
-    mode: 'onTouched', // Validate on blur and submit
+    mode: 'onTouched',
   });
 
-  const handleGoogleSignup = () => {
-    // Initiate Google OAuth flow
-    authService.loginWithGoogle();
-  };
+  const genderOptions = [
+    { value: 'male', label: t('auth.male') },
+    { value: 'female', label: t('auth.female') },
+    { value: 'other', label: t('auth.other') },
+  ];
+
+  const roleOptions = [
+    { value: 'user', label: t('auth.roleUser') },
+    { value: 'trainer', label: t('auth.roleTrainer') },
+  ];
+
+  const goalOptions = [
+    { value: 'maintain', label: t('profile.maintainWeight') },
+    { value: 'cut', label: t('profile.cutWeight') },
+    { value: 'bulk', label: t('profile.bulkWeight') },
+  ];
 
   return (
     <>
       {metadata}
-      <div 
-        className="auth-container"
-        style={{
-          width: '100%',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+      <AuthLayout
+        title={t('auth.registerTitle')}
+        subtitle={t('auth.registerSubtitle')}
       >
-        <Paper
-          shadow="xl"
-          p="xl"
-          radius="md"
-          withBorder
-          className="auth-card"
-          style={{
-            width: '100%',
-            maxWidth: '420px',
-            margin: '0 auto',
-          }}
-        >
-          <Stack gap="md">
-            {/* Header */}
-            <div style={{ textAlign: 'center' }}>
-              <Title order={2} mb="xs">
-                {t('auth.registerTitle')}
-              </Title>
-              <Text size="sm" c="dimmed">
-                {t('auth.registerSubtitle')}
-              </Text>
+        <div className="space-y-4">
+          <GoogleButton
+            label={t('auth.signUpWithGoogle')}
+            onClick={() => authService.loginWithGoogle()}
+          />
+
+          <AuthDivider label={t('auth.orSignUpWithEmail')} />
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <AuthField
+              id="fullName"
+              label={t('auth.fullName')}
+              icon="person"
+              placeholder={t('auth.fullNamePlaceholder')}
+              autoComplete="name"
+              error={errors.fullName?.message}
+              {...register('fullName')}
+            />
+
+            <AuthField
+              id="email"
+              label={t('auth.workEmail')}
+              icon="mail"
+              type="email"
+              placeholder={t('auth.workEmailPlaceholder')}
+              autoComplete="email"
+              error={errors.email?.message}
+              {...register('email')}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <AuthSelect
+                    id="gender"
+                    label={t('auth.gender')}
+                    icon="person"
+                    placeholder={t('auth.genderPlaceholder')}
+                    options={genderOptions}
+                    error={errors.gender?.message}
+                    {...field}
+                  />
+                )}
+              />
+
+              <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                  <AuthSelect
+                    id="role"
+                    label={t('auth.iAmA')}
+                    icon="verified_user"
+                    placeholder={t('auth.rolePlaceholder')}
+                    options={roleOptions}
+                    error={errors.role?.message}
+                    {...field}
+                  />
+                )}
+              />
             </div>
 
-            {/* Google Signup Button */}
-            <Button
-              variant="default"
-              size="md"
-              leftSection={<IconBrandGoogle size={18} />}
-              onClick={handleGoogleSignup}
-              fullWidth
-            >
-              {t('auth.signUpWithGoogle')}
-            </Button>
-
-            <Divider label={t('auth.orSignUpWithEmail')} labelPosition="center" />
-
-            {/* Register Form */}
-            <form onSubmit={handleSubmit}>
-              <Stack gap="md">
-                <TextInput
-                  label={t('auth.fullName')}
-                  placeholder={t('auth.fullNamePlaceholder')}
-                  required
-                  withAsterisk
-                  {...register('fullName')}
-                  error={errors.fullName?.message}
-                />
-
-                <TextInput
-                  label={t('auth.email')}
-                  placeholder={t('auth.emailPlaceholder')}
-                  required
-                  withAsterisk
-                  {...register('email')}
-                  error={errors.email?.message}
-                />
-
-                <Controller
-                  name="gender"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      label={t('auth.gender')}
-                      placeholder={t('auth.genderPlaceholder')}
-                      required
-                      withAsterisk
-                      data={[
-                        { value: 'male', label: t('auth.male') },
-                        { value: 'female', label: t('auth.female') },
-                        { value: 'other', label: t('auth.other') },
-                      ]}
-                      {...field}
-                      error={errors.gender?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="role"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      label={t('auth.iAmA')}
-                      placeholder={t('auth.rolePlaceholder')}
-                      required
-                      withAsterisk
-                      data={[
-                        { value: 'user', label: t('auth.roleUser') },
-                        { value: 'trainer', label: t('auth.roleTrainer') },
-                      ]}
-                      {...field}
-                      error={errors.role?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="birthDate"
-                  control={control}
-                  render={({ field }) => (
-                    <DateInput
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="birthDate"
+                control={control}
+                render={({ field }) => {
+                  // A native date input keeps one visual language across the
+                  // form and avoids shipping a picker just for this field.
+                  const value =
+                    field.value instanceof Date
+                      ? field.value.toISOString().split('T')[0]
+                      : (field.value ?? '');
+                  return (
+                    <AuthField
+                      id="birthDate"
                       label={t('auth.birthDate')}
-                      placeholder={t('common.pickDate')}
-                      required
-                      withAsterisk
-                      maxDate={new Date()}
-                      {...field}
+                      icon="event"
+                      type="date"
+                      max={new Date().toISOString().split('T')[0]}
+                      value={value as string}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? new Date(e.target.value) : null,
+                        )
+                      }
                       error={errors.birthDate?.message}
                     />
-                  )}
+                  );
+                }}
+              />
+
+              <AuthField
+                id="height"
+                label={t('auth.heightCm')}
+                icon="monitor_weight"
+                type="number"
+                min={50}
+                max={300}
+                placeholder={t('profile.heightPlaceholder')}
+                error={errors.height?.message}
+                {...register('height', { valueAsNumber: true })}
+              />
+            </div>
+
+            <Controller
+              name="target"
+              control={control}
+              render={({ field }) => (
+                <AuthSelect
+                  id="target"
+                  label={t('trainings.form.fitnessGoal')}
+                  icon="track_changes"
+                  placeholder={t('auth.goalPlaceholder')}
+                  options={goalOptions}
+                  error={errors.target?.message}
+                  {...field}
                 />
+              )}
+            />
 
-                <TextInput
-                  label={t('auth.heightCm')}
-                  placeholder="170"
-                  type="number"
-                  {...register('height', { valueAsNumber: true })}
-                  error={errors.height?.message}
-                />
+            <AuthField
+              id="password"
+              label={t('auth.password')}
+              icon="lock"
+              type="password"
+              placeholder={t('auth.passwordPlaceholder')}
+              autoComplete="new-password"
+              error={errors.password?.message}
+              {...register('password')}
+            />
 
-                <Controller
-                  name="target"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      label={t('trainings.form.fitnessGoal')}
-                      placeholder={t('auth.goalPlaceholder')}
-                      required
-                      withAsterisk
-                      data={[
-                        { value: 'maintain', label: t('trainings.form.maintainWeight') },
-                        { value: 'cut', label: t('trainings.form.cutWeight') },
-                        { value: 'bulk', label: t('trainings.form.bulkWeight') },
-                      ]}
-                      {...field}
-                      error={errors.target?.message}
-                    />
-                  )}
-                />
+            <AuthField
+              id="confirmPassword"
+              label={t('auth.confirmPassword')}
+              icon="lock"
+              type="password"
+              placeholder={t('auth.confirmPasswordPlaceholder')}
+              autoComplete="new-password"
+              error={errors.confirmPassword?.message}
+              {...register('confirmPassword')}
+            />
 
-                <PasswordInput
-                  label={t('auth.password')}
-                  placeholder={t('auth.passwordPlaceholder')}
-                  required
-                  withAsterisk
-                  {...register('password')}
-                  error={errors.password?.message}
-                />
+            <AuthSubmit loading={isSubmitting}>
+              {t('auth.registerButton')}
+            </AuthSubmit>
+          </form>
 
-                <PasswordInput
-                  label={t('auth.confirmPassword')}
-                  placeholder={t('auth.confirmPasswordPlaceholder')}
-                  required
-                  withAsterisk
-                  {...register('confirmPassword')}
-                  error={errors.confirmPassword?.message}
-                />
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  size="md"
-                  leftSection={<IconUserPlus size={18} />}
-                  loading={isSubmitting}
-                  gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-                  variant="gradient"
-                >
-                  {t('auth.registerTitle')}
-                </Button>
-              </Stack>
-            </form>
-
-            {/* Login Link */}
-            <Text size="sm" ta="center">
-              {t('auth.haveAccount')}{' '}
-              <Anchor component={Link} to="/login" fw={600}>
-                {t('auth.signIn')}
-              </Anchor>
-            </Text>
-          </Stack>
-        </Paper>
-      </div>
+          <p className="text-sm text-center text-on-surface-variant pt-2">
+            {t('auth.haveAccount')}{' '}
+            <Link to="/login" className="font-bold text-primary hover:underline">
+              {t('auth.signIn')}
+            </Link>
+          </p>
+        </div>
+      </AuthLayout>
     </>
   );
 }

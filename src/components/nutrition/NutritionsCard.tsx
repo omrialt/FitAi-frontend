@@ -1,48 +1,60 @@
 /**
- * NutritionsCard - Mobile card view for a single nutrition plan
+ * NutritionsCard — mobile card view for a single nutrition plan.
+ * "Performance Lab" design.
  */
 
 "use client";
 
-import { Card, Text, Group, Badge, Stack, Divider } from "@mantine/core";
-import { IconStar, IconStarFilled, IconCalendarEvent, IconFlame } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+
+import { StitchIcon } from "../common/StitchIcon";
 import { NutritionsActionsMenu } from "./NutritionsActionsMenu";
-import type { NutritionPlan } from "../../types/nutrition.types";
 import type { NutritionsCardProps } from '../../types/nutrition-components.types';
 
-// Star rating component
-function StarRating({ rating, totalRatings }: { rating: number; totalRatings: number }) {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      i <= Math.round(rating) ? (
-        <IconStarFilled key={i} size={14} style={{ color: '#FFA500' }} />
-      ) : (
-        <IconStar key={i} size={14} style={{ color: '#D3D3D3' }} />
-      )
-    );
-  }
+function StarRating({
+  rating,
+  totalRatings,
+}: {
+  rating: number;
+  totalRatings: number;
+}) {
+  const { t } = useTranslation();
 
   return (
-    <Group gap={4}>
-      {stars}
-      <Text size="xs" c="dimmed" ml={4}>
-        {rating > 0 ? `${rating.toFixed(1)} (${totalRatings})` : 'No ratings'}
-      </Text>
-    </Group>
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className={i <= Math.round(rating) ? 'text-amber-500' : 'text-outline/40'}
+        >
+          <StitchIcon name="verified" size={14} />
+        </span>
+      ))}
+      <span className="text-xs text-on-surface-variant ms-1">
+        {rating > 0
+          ? `${rating.toFixed(1)} (${totalRatings})`
+          : t('nutrition.noRatingsShort')}
+      </span>
+    </div>
   );
 }
 
-const getTargetColor = (target?: string) => {
+const TARGET_LABEL_KEYS: Record<string, string> = {
+  cut: 'nutrition.weightLoss',
+  bulk: 'nutrition.muscleGain',
+  maintain: 'nutrition.maintain',
+};
+
+const getTargetPill = (target?: string) => {
   switch (target?.toLowerCase()) {
-    case "maintain":
-      return "blue";
-    case "cut":
-      return "red";
-    case "bulk":
-      return "green";
+    case 'maintain':
+      return 'bg-blue-100 text-blue-700';
+    case 'cut':
+      return 'bg-error-container text-on-error-container';
+    case 'bulk':
+      return 'bg-green-100 text-green-700';
     default:
-      return "gray";
+      return 'bg-surface-container-high text-on-surface-variant';
   }
 };
 
@@ -57,109 +69,110 @@ export function NutritionsCard({
   onDelete,
   onActivate,
 }: NutritionsCardProps) {
-  // Calculate total macros from all foods in all meals
-  const totalProtein = nutritionPlan.meals?.reduce(
-    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.protein || 0), 0),
-    0
-  ) || 0;
-  const totalCarbs = nutritionPlan.meals?.reduce(
-    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.carbs || 0), 0),
-    0
-  ) || 0;
-  const totalFats = nutritionPlan.meals?.reduce(
-    (sum, meal) => sum + meal.foods.reduce((foodSum, food) => foodSum + (food.fat || 0), 0),
-    0
-  ) || 0;
+  const { t, i18n } = useTranslation();
+
+  // Totals across every food in every meal
+  const sumMacro = (pick: (f: { protein?: number; carbs?: number; fat?: number }) => number) =>
+    nutritionPlan.meals?.reduce(
+      (sum, meal) => sum + meal.foods.reduce((s, food) => s + (pick(food) || 0), 0),
+      0,
+    ) || 0;
+
+  const macros = [
+    { label: t('nutrition.protein'), value: sumMacro((f) => f.protein ?? 0) },
+    { label: t('nutrition.carbs'), value: sumMacro((f) => f.carbs ?? 0) },
+    { label: t('nutrition.fats'), value: sumMacro((f) => f.fat ?? 0) },
+  ];
+
+  const creator =
+    typeof nutritionPlan.userId === "object" && nutritionPlan.userId?.fullName
+      ? nutritionPlan.userId.fullName
+      : t('common.unknown');
 
   return (
-    <Card shadow="sm" padding="md" radius="md" withBorder>
-      <Stack gap="sm">
-        {/* Header with title and actions */}
-        <Group justify="space-between" align="flex-start">
-          <Text fw={600} size="lg" style={{ flex: 1 }}>
-            {nutritionPlan.title}
-          </Text>
-          <NutritionsActionsMenu
-            nutritionPlan={nutritionPlan}
-            isAdmin={isAdmin}
-            currentUserId={currentUserId}
-            onView={onView}
-            onEdit={onEdit}
-            onExportPDF={onExportPDF}
-            onExportExcel={onExportExcel}
-            onDelete={onDelete}
-            onActivate={onActivate}
-          />
-        </Group>
-
-        {/* Description */}
-        <Text size="sm" c="dimmed" lineClamp={2}>
-          {nutritionPlan.description}
-        </Text>
-
-        <Divider />
-
-        {/* Details */}
-        <Group gap="xs">
-          <IconFlame size={16} style={{ color: '#FF6B35' }} />
-          <Text size="sm" fw={500}>
-            {nutritionPlan.totalCalories} kcal
-          </Text>
-        </Group>
-
-        {/* Macros */}
-        <Group gap="md">
-          <Text size="xs" c="dimmed">
-            Protein: <Text component="span" fw={500} c="dark">{totalProtein.toFixed(0)}g</Text>
-          </Text>
-          <Text size="xs" c="dimmed">
-            Carbs: <Text component="span" fw={500} c="dark">{totalCarbs.toFixed(0)}g</Text>
-          </Text>
-          <Text size="xs" c="dimmed">
-            Fats: <Text component="span" fw={500} c="dark">{totalFats.toFixed(0)}g</Text>
-          </Text>
-        </Group>
-
-        {/* Goal badge */}
-        {nutritionPlan.target && (
-          <Group gap="xs">
-            <Text size="sm" c="dimmed">Goal:</Text>
-            <Badge color={getTargetColor(nutritionPlan.target)} variant="light">
-              {nutritionPlan.target}
-            </Badge>
-          </Group>
-        )}
-
-        {/* Rating */}
-        <StarRating 
-          rating={nutritionPlan.averageRating} 
-          totalRatings={nutritionPlan.totalRatings} 
+    <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-lg font-extrabold tracking-tight text-on-surface min-w-0 flex-1">
+          {nutritionPlan.title}
+        </h3>
+        <NutritionsActionsMenu
+          nutritionPlan={nutritionPlan}
+          isAdmin={isAdmin}
+          currentUserId={currentUserId}
+          onView={onView}
+          onEdit={onEdit}
+          onExportPDF={onExportPDF}
+          onExportExcel={onExportExcel}
+          onDelete={onDelete}
+          onActivate={onActivate}
         />
+      </div>
 
-        <Divider />
+      {nutritionPlan.description && (
+        <p className="text-sm text-on-surface-variant mt-2 line-clamp-2">
+          {nutritionPlan.description}
+        </p>
+      )}
 
-        {/* Footer with creator and date */}
-        <Group justify="space-between" gap="xs">
-          <Group gap="xs">
-            <Text size="xs" c="dimmed">
-              By:
-            </Text>
-            <Text size="xs" fw={500}>
-              {typeof nutritionPlan.userId === "object" && nutritionPlan.userId?.fullName
-                ? nutritionPlan.userId.fullName
-                : "Unknown"}
-            </Text>
-          </Group>
-          <Group gap={4}>
-            <IconCalendarEvent size={14} style={{ color: '#868e96' }} />
-            <Text size="xs" c="dimmed">
-              {nutritionPlan.createdAt
-                ? new Date(nutritionPlan.createdAt).toLocaleDateString("en-GB")
-                : "-"}
-            </Text>
-          </Group>
-        </Group>
-      </Stack>
-    </Card>
+      {/* Calories */}
+      <div className="flex items-center gap-2 mt-4 pt-4 border-t border-outline-variant/10">
+        <span className="text-orange-500">
+          <StitchIcon name="bolt" size={16} />
+        </span>
+        <span className="text-sm font-bold text-on-surface">
+          {nutritionPlan.totalCalories} {t('nutrition.kcal')}
+        </span>
+      </div>
+
+      {/* Macros */}
+      <div className="flex items-center gap-4 mt-3 flex-wrap">
+        {macros.map((m) => (
+          <span key={m.label} className="text-xs text-on-surface-variant">
+            {m.label}:{' '}
+            <span className="font-bold text-on-surface">{m.value.toFixed(0)}g</span>
+          </span>
+        ))}
+      </div>
+
+      {/* Goal */}
+      {nutritionPlan.target && (
+        <div className="flex items-center gap-2 mt-3">
+          <span className="text-sm text-on-surface-variant">
+            {t('nutrition.goal')}:
+          </span>
+          <span
+            className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${getTargetPill(nutritionPlan.target)}`}
+          >
+            {TARGET_LABEL_KEYS[nutritionPlan.target.toLowerCase()]
+              ? t(TARGET_LABEL_KEYS[nutritionPlan.target.toLowerCase()])
+              : nutritionPlan.target}
+          </span>
+        </div>
+      )}
+
+      <div className="mt-3">
+        <StarRating
+          rating={nutritionPlan.averageRating}
+          totalRatings={nutritionPlan.totalRatings}
+        />
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-outline-variant/10">
+        <span className="text-xs text-on-surface-variant">
+          {t('nutrition.by')}{' '}
+          <span className="font-bold text-on-surface">{creator}</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
+          <StitchIcon name="event" size={14} />
+          {nutritionPlan.createdAt
+            ? new Date(nutritionPlan.createdAt).toLocaleDateString(
+                i18n.language === 'he' ? 'he-IL' : 'en-GB',
+              )
+            : t('common.none')}
+        </span>
+      </div>
+    </div>
   );
 }

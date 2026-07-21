@@ -1,13 +1,18 @@
 /**
- * AdminUsersHeader - Page header with title for admin users page
+ * AdminUsersHeader - Page header with title for admin users page.
+ * "Performance Lab" design.
  */
 
-import { Group, Title } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 
 export function AdminUsersHeader() {
+  const { t } = useTranslation();
+
   return (
-    <Group justify="space-between" mb="lg">
-      <Title order={1}>Users Management</Title>
-    </Group>
+    <header className="mb-8">
+      <h1 className="text-4xl font-black tracking-tight text-on-surface">
+        {t('admin.usersManagement')}
+      </h1>
+    </header>
   );
 }

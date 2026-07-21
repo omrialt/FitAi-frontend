@@ -2,25 +2,27 @@
  * AdminUsersCardList - Mobile card list view for users
  */
 
-import { Stack, Text } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { AdminUsersCard } from './AdminUsersCard';
-import type { User } from '../../types/auth.types';
+
 import type { AdminUsersCardListProps } from '../../types/admin.types';
 
 export function AdminUsersCardList({
   users,
   onView,
 }: AdminUsersCardListProps) {
+  const { t } = useTranslation();
+
   if (users.length === 0) {
     return (
-      <Text c="dimmed" ta="center" py="xl">
-        No users found
-      </Text>
+      <div className="bg-surface-container-lowest rounded-xl p-12 text-center border border-outline-variant/10">
+        <p className="text-on-surface-variant">{t('admin.noUsers')}</p>
+      </div>
     );
   }
 
   return (
-    <Stack gap="md">
+    <div className="flex flex-col gap-4">
       {users.map((user) => (
         <AdminUsersCard
           key={user._id}
@@ -28,6 +30,6 @@ export function AdminUsersCardList({
           onView={onView}
         />
       ))}
-    </Stack>
+    </div>
   );
 }

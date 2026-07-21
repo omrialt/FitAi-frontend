@@ -1,16 +1,32 @@
-import { SimpleGrid, Paper, Group, Text, ThemeIcon, Stack } from '@mantine/core';
-import {
-  IconBarbell,
-  IconApple,
-  IconActivity,
-  IconScale,
-  IconFlame,
-  IconTrendingUp,
-} from '@tabler/icons-react';
-import type { TrainingPlan } from '../../types/training-plan.types';
-import type { NutritionPlan } from '../../types/nutrition.types';
-import type { ProgressStats } from '../../types/dashboard.types';
+import { useTranslation } from 'react-i18next';
+
+import { StitchIcon, type StitchIconName } from '../common/StitchIcon';
 import type { QuickStatsCardsProps } from '../../types/dashboard-components.types';
+
+/**
+ * Quick stats bento grid — "Performance Lab" design.
+ *
+ * Each tile is a "Signature Data Block" per DESIGN.md section 3: a large value
+ * paired with a small uppercase caption. Values are zero-padded to two digits,
+ * matching the design's editorial treatment ("04", not "4"). Counts of 100+ are
+ * left as-is so nothing is truncated.
+ */
+
+interface StatTile {
+  id: string;
+  label: string;
+  value: string;
+  icon: StitchIconName;
+  /** Tailwind classes for the icon chip, taken from the Stitch export. */
+  chip: string;
+  /** Border colour on hover, likewise from the export. */
+  hover: string;
+}
+
+/** The design renders small counts zero-padded; larger ones untouched. */
+function pad(value: number): string {
+  return value < 10 ? `0${value}` : String(value);
+}
 
 export function QuickStatsCards({
   trainingPlans,
@@ -18,96 +34,83 @@ export function QuickStatsCards({
   progressStats,
   bmi,
 }: QuickStatsCardsProps) {
-  const activePlans = trainingPlans.filter((p) => p.isActive).length;
+  const { t } = useTranslation();
+
   const totalExercises = trainingPlans.reduce(
     (sum, p) => sum + p.days.reduce((ds, d) => ds + d.exercises.length, 0),
     0,
   );
-  const workouts7d = progressStats?.last7Days?.workoutsCompleted ?? 0;
-  const workouts30d = progressStats?.last30Days?.workoutsCompleted ?? 0;
 
-  const stats = [
+  const tiles: StatTile[] = [
     {
-      label: 'Training Plans',
-      value: trainingPlans.length,
-      subtitle: `${activePlans} active`,
-      icon: <IconBarbell size={22} />,
-      color: 'indigo',
+      id: 'trainingPlans',
+      label: t('dashboard.trainingPlans'),
+      value: pad(trainingPlans.length),
+      icon: 'fitness_center',
+      chip: 'bg-primary/10 text-primary',
+      hover: 'hover:border-primary/30',
     },
     {
-      label: 'Nutrition Plans',
-      value: nutritionPlans.length,
-      subtitle: `${nutritionPlans.filter((p) => (p.activeByUsers as string[])?.length > 0).length} active`,
-      icon: <IconApple size={22} />,
-      color: 'green',
+      id: 'nutritionPlans',
+      label: t('dashboard.nutritionPlans'),
+      value: pad(nutritionPlans.length),
+      icon: 'restaurant',
+      chip: 'bg-green-100 text-green-600',
+      hover: 'hover:border-green-500/30',
     },
     {
-      label: 'Workouts (7d)',
-      value: workouts7d,
-      subtitle: `${workouts30d} this month`,
-      icon: <IconActivity size={22} />,
-      color: 'violet',
+      id: 'workouts7d',
+      label: t('dashboard.workouts7d'),
+      value: pad(progressStats?.last7Days?.workoutsCompleted ?? 0),
+      icon: 'calendar_view_week',
+      chip: 'bg-blue-100 text-blue-600',
+      hover: 'hover:border-blue-500/30',
     },
     {
-      label: 'Total Exercises',
-      value: totalExercises,
-      subtitle: `across ${trainingPlans.reduce((s, p) => s + p.days.length, 0)} training days`,
-      icon: <IconFlame size={22} />,
-      color: 'orange',
+      id: 'workouts30d',
+      label: t('dashboard.workouts30d'),
+      value: pad(progressStats?.last30Days?.workoutsCompleted ?? 0),
+      icon: 'history',
+      chip: 'bg-secondary-fixed text-on-secondary-container',
+      hover: 'hover:border-secondary-container/30',
     },
     {
-      label: 'BMI',
-      value: bmi ? bmi.bmi.toFixed(1) : '—',
-      subtitle: bmi?.category || 'No data yet',
-      icon: <IconScale size={22} />,
-      color: 'cyan',
+      id: 'totalExercises',
+      label: t('dashboard.totalExercises'),
+      value: pad(totalExercises),
+      icon: 'exercise',
+      chip: 'bg-teal-100 text-teal-600',
+      hover: 'hover:border-teal-500/30',
     },
     {
-      label: 'Weight Change (30d)',
-      value: progressStats?.last30Days?.weightDiff != null
-        ? `${progressStats.last30Days.weightDiff > 0 ? '+' : ''}${progressStats.last30Days.weightDiff.toFixed(1)} kg`
-        : '—',
-      subtitle: progressStats?.last7Days?.weightDiff != null
-        ? `${progressStats.last7Days.weightDiff > 0 ? '+' : ''}${progressStats.last7Days.weightDiff.toFixed(1)} kg this week`
-        : 'No data',
-      icon: <IconTrendingUp size={22} />,
-      color: 'teal',
+      id: 'bmi',
+      label: t('dashboard.currentBmi'),
+      // BMI is a ratio, not a count — never zero-padded
+      value: bmi ? bmi.bmi.toFixed(1) : t('common.none'),
+      icon: 'monitor_weight',
+      chip: 'bg-tertiary-fixed text-tertiary',
+      hover: 'hover:border-tertiary/30',
     },
   ];
 
   return (
-    <SimpleGrid cols={{ base: 2, sm: 3, lg: 6 }} spacing="md">
-      {stats.map((stat) => (
-        <Paper
-          key={stat.label}
-          className="dashboard-stat-card"
-          radius="md"
-          p="md"
-          withBorder
+    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {tiles.map((tile) => (
+        <div
+          key={tile.id}
+          className={`bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 transition-all ${tile.hover}`}
         >
-          <Group justify="space-between" mb="xs">
-            <ThemeIcon
-              variant="light"
-              color={stat.color}
-              size="lg"
-              radius="md"
-            >
-              {stat.icon}
-            </ThemeIcon>
-          </Group>
-          <Stack gap={2}>
-            <Text className="dashboard-stat-value" fw={700} size="xl">
-              {stat.value}
-            </Text>
-            <Text size="xs" c="dimmed" fw={500}>
-              {stat.label}
-            </Text>
-            <Text size="xs" c="dimmed" style={{ opacity: 0.7 }}>
-              {stat.subtitle}
-            </Text>
-          </Stack>
-        </Paper>
+          <div
+            className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${tile.chip}`}
+          >
+            <StitchIcon name={tile.icon} size={20} />
+          </div>
+          <p className="text-2xl font-black text-on-surface">{tile.value}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {tile.label}
+          </p>
+        </div>
       ))}
-    </SimpleGrid>
+    </section>
   );
 }

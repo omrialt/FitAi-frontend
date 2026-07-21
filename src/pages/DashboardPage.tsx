@@ -91,8 +91,11 @@ function DashboardContent() {
   if (!user) return null;
 
   return (
+    // Layout follows the Stitch dashboard: a full-width banner and stat bento,
+    // then two equal-width rows pairing the active plans and, below them, body
+    // progress against AI insights.
     <Container size="xl" py="md">
-      <Stack gap="lg">
+      <div className="space-y-8">
         {/* Welcome Banner */}
         <WelcomeSection user={user} currentStatus={currentStatus} />
 
@@ -104,24 +107,26 @@ function DashboardContent() {
           bmi={bmi}
         />
 
-        {/* Active Plans Row */}
-        <div className="dashboard-grid-main">
+        {/* Active plans */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ActiveTrainingCard
             plan={activeTrainingPlan}
             currentStatus={currentStatus}
           />
           <ActiveNutritionCard plan={activeNutritionPlan} />
+        </section>
+
+        {/* Progress + insights */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <BodyProgressCard
             latestPhysicalData={latestPhysicalData}
             weightProgress={weightProgress}
             progressStats={progressStats}
             onDataUpdate={refetch}
           />
-        </div>
-
-        {/* AI Insights — full width */}
-        <RecentRecommendations recommendations={aiRecommendations} />
-      </Stack>
+          <RecentRecommendations recommendations={aiRecommendations} />
+        </section>
+      </div>
     </Container>
   );
 }

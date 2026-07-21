@@ -3,10 +3,13 @@
  */
 
 import { Box, Group, Stack, Text } from '@mantine/core';
-import type { RangeSegment } from '../helpers/calcRanges';
+import { useTranslation } from 'react-i18next';
+
 import type { RangeBarProps } from '../../../../types/physical-data-components.types';
 
 export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
+  const { t } = useTranslation();
+
   // Calculate the total range span
   const minValue = ranges[0].min;
   const maxValue = ranges[ranges.length - 1].max;
@@ -123,7 +126,7 @@ export function RangeBar({ ranges, userValue, unit = '' }: RangeBarProps) {
 
       {/* User value label */}
       <Text size="md" fw={700} ta="center" c="dark" style={{ marginTop: 4 }}>
-        You are here: {userValue.toFixed(1)}{unit}
+        {t('physicalData.youAreHere', { value: userValue.toFixed(1), unit })}
       </Text>
     </Stack>
   );

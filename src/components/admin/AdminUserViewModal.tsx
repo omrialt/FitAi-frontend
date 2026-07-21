@@ -1,120 +1,151 @@
-import { Modal, Stack, Group, Avatar, Text, Badge, Button, Divider } from "@mantine/core";
-import { IconUserCircle } from "@tabler/icons-react";
-import type { User } from "../../types/auth.types";
+import { Modal } from "@mantine/core";
+import { useTranslation } from "react-i18next";
+
+import { StitchIcon } from "../common/StitchIcon";
 import type { AdminUserViewModalProps } from '../../types/admin.types';
 
-const getRoleColor = (role: string) => {
-  switch (role.toLowerCase()) {
+/** Admin user detail — "Performance Lab" design. */
+
+const getRolePill = (role: string) => {
+  switch (role?.toLowerCase()) {
     case "admin":
-      return "red";
+      return "bg-error-container text-on-error-container";
     case "trainer":
-      return "blue";
-    case "user":
-      return "gray";
+      return "bg-primary/10 text-primary";
     default:
-      return "gray";
+      return "bg-surface-container-high text-on-surface-variant";
   }
 };
 
+/** One label/value pair in the details grid. */
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">
+        {label}
+      </p>
+      <p className="text-sm text-on-surface">{children}</p>
+    </div>
+  );
+}
+
 export function AdminUserViewModal({ opened, onClose, user }: AdminUserViewModalProps) {
+  const { t, i18n } = useTranslation();
+
   if (!user) return null;
 
   const handleViewProfile = () => {
-    // TODO: Navigate to user profile page when implemented
-    console.log("Navigate to user profile:", user._id);
+    // TODO: Navigate to the user's profile page once that route exists
   };
 
+  const dash = t('common.none');
+  const fmt = (d?: string | Date) =>
+    d ? new Date(d).toLocaleDateString(i18n.language) : dash;
+
   return (
-    <Modal opened={opened} onClose={onClose} title={
-            <Text fw={700} size="lg">
-                User Details
-            </Text>
-          } size="700" centered>
-      <Stack gap="lg">
-        {/* User Header */}
-        <Group gap="md" align="center">
-          <Avatar src={user.avatarUrl} size={80} radius={80} />
-          <Stack gap={4}>
-            <Text fw={700} size="xl">{user.fullName}</Text>
-            <Text c="dimmed" size="sm">{user.email}</Text>
-            <Group gap="xs">
-              <Badge color={getRoleColor(user.role)} variant="light">
-                {user.role}
-              </Badge>
-              <Badge color={user.isActive ? "green" : "gray"} variant="light">
-                {user.isActive ? "Active" : "Inactive"}
-              </Badge>
-            </Group>
-          </Stack>
-        </Group>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      size="700"
+      centered
+      title={
+        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
+          {t('admin.userDetails')}
+        </h3>
+      }
+    >
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <span className="w-20 h-20 rounded-full bg-primary/10 text-primary text-2xl font-black flex items-center justify-center shrink-0 overflow-hidden">
+            {user.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.fullName}
+                className="w-20 h-20 object-cover"
+              />
+            ) : (
+              user.fullName?.charAt(0)?.toUpperCase()
+            )}
+          </span>
 
-        <Divider />
+          <div className="min-w-0">
+            <p className="text-xl font-black text-on-surface truncate">
+              {user.fullName}
+            </p>
+            <p className="text-sm text-on-surface-variant truncate">{user.email}</p>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${getRolePill(user.role)}`}
+              >
+                {t(`admin.role_${user.role}`, { defaultValue: user.role })}
+              </span>
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                  user.isActive
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-surface-container-high text-on-surface-variant'
+                }`}
+              >
+                {user.isActive ? t('common.active') : t('common.inactive')}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        {/* User Information Grid */}
-        <Stack gap="md">
-          <Group grow align="flex-start">
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Role</Text>
-              <Text tt="capitalize">{user.role}</Text>
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Status</Text>
-              <Text>{user.isActive ? "Active" : "Inactive"}</Text>
-            </Stack>
-          </Group>
+        {/* Details */}
+        <div className="grid grid-cols-2 gap-5 pt-6 border-t border-outline-variant/10">
+          <Field label={t('admin.role')}>
+            <span className="capitalize">
+              {t(`admin.role_${user.role}`, { defaultValue: user.role })}
+            </span>
+          </Field>
+          <Field label={t('admin.status')}>
+            {user.isActive ? t('common.active') : t('common.inactive')}
+          </Field>
+          <Field label={t('admin.authProvider')}>
+            <span className="capitalize">{user.authProvider || dash}</span>
+          </Field>
+          <Field label={t('admin.birthdate')}>{fmt(user.birthDate)}</Field>
+          <Field label={t('admin.joinDate')}>{fmt(user.createdAt)}</Field>
+          <Field label={t('admin.lastUpdated')}>{fmt(user.updatedAt)}</Field>
+        </div>
 
-          <Group grow align="flex-start">
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Auth Provider</Text>
-              <Text tt="capitalize">{user.authProvider}</Text>
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Birthdate</Text>
-              <Text>{user.birthDate ? new Date(user.birthDate).toLocaleDateString("en-GB") : "-"}</Text>
-            </Stack>
-          </Group>
+        {/* Activity */}
+        <div className="pt-6 border-t border-outline-variant/10">
+          <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-4">
+            {t('admin.activityStats')}
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              {
+                label: t('admin.trainingPrograms'),
+                value: user.trainingPlansCount ?? 0,
+              },
+              { label: t('admin.mealPlans'), value: user.nutritionPlansCount ?? 0 },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-surface-container-low rounded-xl p-4 text-center"
+              >
+                <p className="text-2xl font-black text-on-surface">{s.value}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mt-1">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <Group grow align="flex-start">
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Join Date</Text>
-              <Text>{user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-GB") : "-"}</Text>
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" c="dimmed" fw={600}>Last Updated</Text>
-              <Text>{user.updatedAt ? new Date(user.updatedAt).toLocaleDateString("en-GB") : "-"}</Text>
-            </Stack>
-          </Group>
-        </Stack>
-
-        <Divider />
-
-        {/* Stats Section */}
-        <Stack gap="sm">
-          <Text size="sm" c="dimmed" fw={600}>Activity Stats</Text>
-          <Group grow>
-            <Stack gap={4} align="center">
-              <Text size="lg" fw={700}>{user.trainingPlansCount ?? 0}</Text>
-              <Text size="sm" c="dimmed">Training Programs</Text>
-            </Stack>
-            <Stack gap={4} align="center">
-              <Text size="lg" fw={700}>{user.nutritionPlansCount ?? 0}</Text>
-              <Text size="sm" c="dimmed">Meal Plans</Text>
-            </Stack>
-          </Group>
-        </Stack>
-
-        <Divider />
-
-        {/* Action Button */}
-        <Button
-          leftSection={<IconUserCircle size={16} />}
-          variant="light"
+        <button
+          type="button"
           onClick={handleViewProfile}
-          fullWidth
+          className="w-full flex items-center justify-center gap-2 bg-surface-container-high text-on-surface py-3 rounded-lg font-bold text-sm hover:bg-surface-container-highest transition-colors"
         >
-          View Full Profile
-        </Button>
-      </Stack>
+          <StitchIcon name="person" size={18} />
+          {t('admin.viewFullProfile')}
+        </button>
+      </div>
     </Modal>
   );
 }

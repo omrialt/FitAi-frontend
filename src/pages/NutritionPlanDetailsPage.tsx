@@ -4,10 +4,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge, Paper } from "@mantine/core";
+import { Container, Center, Loader, Alert } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
+import { IconAlertCircle } from "@tabler/icons-react";
+import { StitchIcon } from "../components/common/StitchIcon";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { AppLayout } from "../components/AppLayout";
 import { AppBreadcrumbs } from "../components/common/AppBreadcrumbs";
 import { SharedWithSection } from "../components/common/SharedWithSection";
@@ -26,6 +28,7 @@ import {
 import { EditNutritionModal } from "../components/nutrition/EditNutritionModal";
 
 export default function NutritionPlanDetailsPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
@@ -45,7 +48,7 @@ export default function NutritionPlanDetailsPage() {
   });
   const { execute: updatePlan } = useApi<{ data: NutritionPlan }>({
     showSuccessToast: true,
-    successMessage: "Plan updated successfully",
+    successMessage: t('nutrition.planUpdated'),
   });
   const { loading: loadingRating, execute: addRatingRequest } = useApi<{
     data: NutritionPlan;
@@ -56,20 +59,20 @@ export default function NutritionPlanDetailsPage() {
     data: NutritionPlan;
   }>({
     showSuccessToast: true,
-    successMessage: "Plan shared successfully",
+    successMessage: t('nutrition.planShared'),
   });
   const { loading: loadingRevoke, execute: revokePlanRequest } = useApi<{
     message: string;
   }>({
     showSuccessToast: true,
-    successMessage: "Access revoked successfully",
+    successMessage: t('nutrition.accessRevoked'),
   });
 
   // Export hook
   const { exportToPDF, exportToExcel } = useNutritionExport({
     filename: `nutrition-plan-${id}`,
-    onSuccess: () => toast.success("Export completed successfully"),
-    onError: (error) => toast.error(`Export failed: ${error.message}`),
+    onSuccess: () => toast.success(t('common.exportSuccess')),
+    onError: (error) => toast.error(t('common.exportFailed', { error: error.message })),
   });
 
   // Check if current user is owner
@@ -94,16 +97,16 @@ export default function NutritionPlanDetailsPage() {
             const creator = await userService.findOne(data.data.userId);
             setCreatorName(creator.fullName);
           } catch {
-            setCreatorName("Unknown");
+            setCreatorName(t('common.unknown'));
           }
         } else {
           setCreatorName(data.data.userId.fullName);
         }
       }
     } catch {
-      toast.error("Failed to load nutrition plan");
+      toast.error(t('nutrition.loadFailed'));
     }
-  }, [id, fetchPlan]);
+  }, [id, fetchPlan, t]);
 
   // Fetch all users for sharing
   useEffect(() => {
@@ -131,7 +134,7 @@ export default function NutritionPlanDetailsPage() {
         setPlan(updated.data);
       }
     } catch {
-      toast.error("Failed to update plan");
+      toast.error(t('nutrition.updateFailed'));
     }
   };
 
@@ -144,13 +147,12 @@ export default function NutritionPlanDetailsPage() {
         method: "POST",
         data: { rating, comment },
       });
-      console.log("Add rating response:", updated);
       if (updated?.data) {
         setPlan(updated.data);
-        toast.success("Rating added successfully!");
+        toast.success(t('nutrition.ratingAdded'));
       }
     } catch {
-      toast.error("Failed to add rating");
+      toast.error(t('nutrition.ratingFailed'));
     }
   };
 
@@ -171,7 +173,7 @@ export default function NutritionPlanDetailsPage() {
         setPlan(updated.data);
       }
     } catch {
-      toast.error("Failed to share plan");
+      toast.error(t('nutrition.shareFailed'));
     }
   };
 
@@ -186,7 +188,7 @@ export default function NutritionPlanDetailsPage() {
       // Reload plan to get updated sharedAccess
       await loadPlan();
     } catch {
-      toast.error("Failed to revoke access");
+      toast.error(t('nutrition.revokeFailed'));
     }
   };
 
@@ -221,8 +223,8 @@ export default function NutritionPlanDetailsPage() {
     return (
       <AppLayout>
         <Container size="xl" py="xl">
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
-            Failed to load nutrition plan. Please try again.
+          <Alert icon={<IconAlertCircle size={16} />} title={t('common.error')} color="red">
+            {t('nutrition.loadError')}
           </Alert>
         </Container>
       </AppLayout>
@@ -237,21 +239,22 @@ export default function NutritionPlanDetailsPage() {
           <>
             <AppBreadcrumbs
               items={[
-                { label: "Home", href: "/" },
-                { label: "Nutrition Plans", href: "/nutrition-plans" },
+                { label: t('nav.home'), href: "/" },
+                { label: t('nav.nutritionPlans'), href: "/nutrition-plans" },
                 { label: plan.title },
               ]}
             />
 
-            <Box mb="lg">
-              <Button
-                variant="subtle"
-                leftSection={<IconArrowLeft size={16} />}
+            <div className="mb-6">
+              <button
+                type="button"
                 onClick={() => navigate("/nutrition-plans")}
+                className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
               >
-                Back to Nutrition Plans
-              </Button>
-            </Box>
+                <StitchIcon name="chevron_left" size={16} />
+                {t('nutrition.backToNutritionPlans')}
+              </button>
+            </div>
           </>
         )}
 
@@ -273,27 +276,34 @@ export default function NutritionPlanDetailsPage() {
           const totalC    = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.carbs, 0), 0);
           const totalF    = plan.meals.reduce((s, m) => s + m.foods.reduce((ss, f) => ss + f.fat, 0), 0);
           return (
-            <Paper p="xl" radius="md" withBorder mb="lg" ta="center">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed" mb="xs">Total Daily Fuel</Text>
-              <Text size="3.5rem" fw={900} lh={1} c="indigo">
+            <section className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/10 mb-6 text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">
+                {t('nutrition.totalDailyFuel')}
+              </p>
+              <p className="text-6xl font-black leading-none text-primary">
                 {totalKcal.toFixed(0)}
-                <Text span size="lg" fw={400} c="dimmed"> kcal</Text>
-              </Text>
-              <Group justify="center" gap="xl" mt="md">
-                <Box ta="center">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Protein</Text>
-                  <Text fw={700} c="blue">{totalP.toFixed(0)}g</Text>
-                </Box>
-                <Box ta="center">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Carbs</Text>
-                  <Text fw={700} c="yellow.7">{totalC.toFixed(0)}g</Text>
-                </Box>
-                <Box ta="center">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Fats</Text>
-                  <Text fw={700} c="green">{totalF.toFixed(0)}g</Text>
-                </Box>
-              </Group>
-            </Paper>
+                <span className="text-lg font-normal text-on-surface-variant ms-2">
+                  {t('nutrition.kcal')}
+                </span>
+              </p>
+
+              <div className="flex items-center justify-center gap-10 mt-6 flex-wrap">
+                {[
+                  { label: t('nutrition.protein'), value: totalP, color: 'text-primary' },
+                  { label: t('nutrition.carbs'), value: totalC, color: 'text-on-secondary-container' },
+                  { label: t('nutrition.fats'), value: totalF, color: 'text-orange-500' },
+                ].map((m) => (
+                  <div key={m.label} className="text-center">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                      {m.label}
+                    </p>
+                    <p className={`text-xl font-black ${m.color}`}>
+                      {m.value.toFixed(0)}g
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
           );
         })()}
 
@@ -303,46 +313,52 @@ export default function NutritionPlanDetailsPage() {
         {/* Active Users Section - visible to trainers/admins */}
         {(currentUser?.role === 'trainer' || currentUser?.role === 'admin') && (
           plan.activeByUsers && plan.activeByUsers.length > 0 && (
-            <Stack gap="lg" mb="xl">
-              <Group gap="xs" align="center">
-                <IconCircleCheck size={24} color="green" />
-                <Title order={2}>Active Users</Title>
-                <Badge color="green" variant="light">
+            <section className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                  <StitchIcon name="check_circle" size={18} />
+                </span>
+                <h2 className="text-lg font-extrabold tracking-tight text-on-surface">
+                  {t('common.activeUsers')}
+                </h2>
+                <span className="text-[10px] font-black px-2 py-1 rounded-full bg-green-100 text-green-700">
                   {plan.activeByUsers.length}
-                </Badge>
-              </Group>
-              <Stack gap="sm">
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-3">
                 {plan.activeByUsers.map((user, index) => {
-                  const userName = typeof user === 'string' 
-                    ? allUsers.find(u => u._id === user)?.fullName || 'Unknown User'
-                    : user.fullName || 'Unknown User';
+                  const userName = typeof user === 'string'
+                    ? allUsers.find(u => u._id === user)?.fullName || t('common.unknownUser')
+                    : user.fullName || t('common.unknownUser');
                   const userEmail = typeof user === 'string'
                     ? allUsers.find(u => u._id === user)?.email || ''
                     : user.email || '';
-                  
+
                   return (
-                    <Card key={index} shadow="sm" p="md" withBorder>
-                      <Group gap="md">
-                        <Avatar color="green" radius="xl">
-                          <IconUser size={24} />
-                        </Avatar>
-                        <Box style={{ flex: 1 }}>
-                          <Text fw={500}>{userName}</Text>
-                          {userEmail && (
-                            <Text size="sm" c="dimmed">
-                              {userEmail}
-                            </Text>
-                          )}
-                        </Box>
-                        <Badge color="green" variant="light">
-                          Active
-                        </Badge>
-                      </Group>
-                    </Card>
+                    <div
+                      key={index}
+                      className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/10 flex items-center gap-4"
+                    >
+                      <span className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                        <StitchIcon name="person" size={20} />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-on-surface truncate">{userName}</p>
+                        {userEmail && (
+                          <p className="text-sm text-on-surface-variant truncate">
+                            {userEmail}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-green-100 text-green-700 shrink-0">
+                        {t('common.active')}
+                      </span>
+                    </div>
                   );
                 })}
-              </Stack>
-            </Stack>
+              </div>
+            </section>
           )
         )}
 
@@ -359,8 +375,8 @@ export default function NutritionPlanDetailsPage() {
           <SharedWithSection
             sharedAccess={plan.sharedAccess}
             allUsers={allUsers}
-            title="Shared With"
-            emptyMessage="This plan is not shared with anyone yet"
+            title={t('common.sharedWith')}
+            emptyMessage={t('common.notShared')}
             showActions={true}
             onShare={handleSharePlan}
             onRevoke={handleRevokeAccess}

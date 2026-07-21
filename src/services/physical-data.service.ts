@@ -20,7 +20,6 @@ export const physicalDataService = {
   // Get physical data by user ID
   getByUserId: async (userId: string): Promise<PhysicalData[]> => {
     const response = await api.get(`/physical-data/user/${userId}`);
-    console.log('Physical data response:', response.data);
     return response.data.data;
   },
 

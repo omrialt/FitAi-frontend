@@ -1,101 +1,127 @@
 /**
- * AdminUsersTable - Desktop table view for users
+ * AdminUsersTable — desktop table view for users.
+ * "Performance Lab" design.
  */
 
 "use client";
 
-import { Table, Badge, Text } from "@mantine/core";
+import { useTranslation } from "react-i18next";
+
 import { AdminUsersActionsMenu } from "./AdminUsersActionsMenu";
-import type { User } from "../../types/auth.types";
 import type { AdminUsersTableProps } from '../../types/admin.types';
 
-const getRoleColor = (role: string) => {
+const getRolePill = (role: string) => {
   switch (role.toLowerCase()) {
     case "admin":
-      return "red";
+      return "bg-error-container text-on-error-container";
     case "trainer":
-      return "blue";
-    case "user":
-      return "gray";
+      return "bg-primary/10 text-primary";
     default:
-      return "gray";
+      return "bg-surface-container-high text-on-surface-variant";
   }
 };
 
+const TH =
+  "text-start text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-6 py-4";
+
 export function AdminUsersTable({ users, onView }: AdminUsersTableProps) {
+  const { t, i18n } = useTranslation();
+
   if (users.length === 0) {
     return (
-      <Text c="dimmed" ta="center" py="xl">
-        No users found
-      </Text>
+      <div className="bg-surface-container-lowest rounded-xl p-12 text-center border border-outline-variant/10">
+        <p className="text-on-surface-variant">{t('admin.noUsers')}</p>
+      </div>
     );
   }
 
   return (
-    <Table.ScrollContainer minWidth={800}>
-      <Table striped highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Full Name</Table.Th>
-            <Table.Th>Email</Table.Th>
-            <Table.Th>Role</Table.Th>
-            <Table.Th>Status</Table.Th>
-            <Table.Th>Auth Provider</Table.Th>
-            <Table.Th>Training Plans</Table.Th>
-            <Table.Th>Meal Plans</Table.Th>
-            <Table.Th>Created At</Table.Th>
-            <Table.Th>Actions</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {users.map((u) => (
-            <Table.Tr key={u._id}>
-              <Table.Td>
-                <Text fw={500}>{u.fullName}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text size="sm">{u.email}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Badge color={getRoleColor(u.role)} variant="light">
-                  {u.role}
-                </Badge>
-              </Table.Td>
-              <Table.Td>
-                <Badge
-                  color={u.isActive ? "green" : "gray"}
-                  variant="light"
-                  style={u.isActive
-                    ? { background: 'rgba(220,252,231,1)', color: '#15803d' }
-                    : { background: 'rgba(241,245,249,1)', color: '#475569' }
-                  }
-                >
-                  {u.isActive ? "active" : "inactive"}
-                </Badge>
-              </Table.Td>
-              <Table.Td>
-                <Text tt="capitalize">{u.authProvider || "-"}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text>{u.trainingPlansCount ?? 0}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text>{u.nutritionPlansCount ?? 0}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text size="sm" c="dimmed">
-                  {u.createdAt
-                    ? new Date(u.createdAt).toLocaleDateString("en-GB")
-                    : "-"}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                <AdminUsersActionsMenu user={u} onView={onView} />
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-    </Table.ScrollContainer>
+    <div className="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] border-collapse">
+          <thead className="bg-surface-container-low">
+            <tr>
+              <th className={TH}>{t('admin.fullName')}</th>
+              <th className={TH}>{t('admin.email')}</th>
+              <th className={TH}>{t('admin.role')}</th>
+              <th className={TH}>{t('admin.status')}</th>
+              <th className={TH}>{t('admin.authProvider')}</th>
+              <th className={TH}>{t('admin.trainingPlans')}</th>
+              <th className={TH}>{t('admin.mealPlans')}</th>
+              <th className={TH}>{t('admin.createdAt')}</th>
+              <th className={TH}>{t('admin.actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr
+                key={u._id}
+                onClick={() => onView(u)}
+                className="cursor-pointer hover:bg-surface-container-low/60 transition-colors"
+              >
+                <td className="px-6 py-5">
+                  <span className="font-bold text-on-surface">{u.fullName}</span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span className="text-sm text-on-surface-variant">{u.email}</span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span
+                    className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${getRolePill(u.role)}`}
+                  >
+                    {t(`admin.role_${u.role}`, { defaultValue: u.role })}
+                  </span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 ${u.isActive ? 'bg-green-600' : 'bg-outline'}`}
+                    />
+                    <span
+                      className={`text-sm font-medium ${u.isActive ? 'text-green-700' : 'text-on-surface-variant'}`}
+                    >
+                      {u.isActive ? t('common.active') : t('common.inactive')}
+                    </span>
+                  </div>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span className="text-sm text-on-surface capitalize">
+                    {u.authProvider || t('common.none')}
+                  </span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span className="text-sm font-bold text-on-surface">
+                    {u.trainingPlansCount ?? 0}
+                  </span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span className="text-sm font-bold text-on-surface">
+                    {u.nutritionPlansCount ?? 0}
+                  </span>
+                </td>
+
+                <td className="px-6 py-5">
+                  <span className="text-sm text-on-surface-variant">
+                    {u.createdAt
+                      ? new Date(u.createdAt).toLocaleDateString(i18n.language)
+                      : t('common.none')}
+                  </span>
+                </td>
+
+                <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
+                  <AdminUsersActionsMenu user={u} onView={onView} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

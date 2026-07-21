@@ -4,26 +4,11 @@
 
 "use client";
 
-import {
-  Modal,
-  Button,
-  Stack,
-  Group,
-  TextInput,
-  Textarea,
-  NumberInput,
-  Select,
-  Text,
-} from "@mantine/core";
+import { Modal, Button, Stack, Group, TextInput, Textarea, NumberInput, Select, Text } from "@mantine/core";
 import { useState, useEffect, Activity } from "react";
-import type {
-  NutritionPlan,
-  Meal,
-  Food,
-  MealType,
-  Target,
-} from "../../types/nutrition.types";
-import type { User } from "../../types/auth.types";
+import { useTranslation } from "react-i18next";
+import type { NutritionPlan, Meal, Food, MealType, Target } from "../../types/nutrition.types";
+
 import { useAuth } from "../../hooks/useAuth";
 import { MealsSection } from "./edit-modal/MealsSection";
 import { SharedAccessSection } from "../common/SharedAccessSection";
@@ -38,10 +23,11 @@ export function EditNutritionModal({
   createMode = false,
   allUsers,
 }: EditNutritionModalProps) {
+  const { t } = useTranslation();
   const titleText = createMode
-    ? "Create Nutrition Plan"
-    : "Edit Nutrition Plan";
-  const submitButtonText = createMode ? "Create" : "Save Changes";
+    ? t('nutrition.createPlanTitle')
+    : t('nutrition.editPlanTitle');
+  const submitButtonText = createMode ? t('common.create') : t('common.saveChanges');
   const { user: currentUser } = useAuth();
 
   // Form field states
@@ -213,16 +199,16 @@ export function EditNutritionModal({
       <Stack gap="md">
         {/* Basic Info Section */}
         <TextInput
-          label="Title"
-          placeholder="Enter nutrition plan title"
+          label={t('nutrition.planTitle')}
+          placeholder={t('nutrition.planTitlePlaceholder')}
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           required
         />
 
         <Textarea
-          label="Description"
-          placeholder="Describe your nutrition plan"
+          label={t('nutrition.description')}
+          placeholder={t('nutrition.descriptionPlaceholder')}
           value={description}
           onChange={(e) => setDescription(e.currentTarget.value)}
           minRows={3}
@@ -230,12 +216,12 @@ export function EditNutritionModal({
         />
 
         <Select
-          label="Goal"
-          placeholder="Select your goal"
+          label={t('nutrition.goal')}
+          placeholder={t('nutrition.goalPlaceholder')}
           data={[
-            { value: "maintain", label: "Maintain" },
-            { value: "cut", label: "Cut (Fat Loss)" },
-            { value: "bulk", label: "Bulk (Muscle Gain)" },
+            { value: "maintain", label: t('nutrition.maintain') },
+            { value: "cut", label: t('nutrition.cutFatLoss') },
+            { value: "bulk", label: t('nutrition.bulkMuscleGain') },
           ]}
           value={target || null}
           onChange={(value) => setTarget(value as Target | undefined)}
@@ -243,12 +229,12 @@ export function EditNutritionModal({
         />
 
         <NumberInput
-          label="Total Calories"
+          label={t('nutrition.totalCalories')}
           value={totalCalories}
           disabled
           readOnly
-          suffix=" kcal"
-          description="Automatically calculated from meals"
+          suffix={` ${t('nutrition.kcal')}`}
+          description={t('nutrition.caloriesAutoCalculated')}
         />
 
         {/* Shared Access Section */}
@@ -276,7 +262,7 @@ export function EditNutritionModal({
         {/* Actions */}
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={onClose} disabled={isSubmitting}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} loading={isSubmitting}>
             {submitButtonText}

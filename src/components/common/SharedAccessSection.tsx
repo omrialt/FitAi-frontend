@@ -4,25 +4,30 @@
 
 import { MultiSelect, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
-import type { User } from "../../types/auth.types";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+
 import type { SharedAccessSectionProps, SharedObjectType as ObjectType } from '../../types/common.types';
 
-const getShareDescription = (objectType: ObjectType): { title: string; description: string } => {
+const getShareDescription = (
+  objectType: ObjectType,
+  t: TFunction
+): { title: string; description: string } => {
   switch (objectType) {
     case "trainingPlan":
       return {
-        title: "Share Training Plan",
-        description: "Selected users will receive a personal copy of this plan",
+        title: t("common.shareTrainingPlan"),
+        description: t("common.shareTrainingPlanDescription"),
       };
     case "nutritionPlan":
       return {
-        title: "Share Nutrition Plan",
-        description: "Selected users will have view-only access to this plan",
+        title: t("common.shareNutritionPlan"),
+        description: t("common.shareNutritionPlanDescription"),
       };
     default:
       return {
-        title: "Share Plan",
-        description: "Selected users will have access to this plan",
+        title: t("common.sharePlan"),
+        description: t("common.sharePlanDescription"),
       };
   }
 };
@@ -33,6 +38,7 @@ export function SharedAccessSection({
   handleViewAccessChange,
   objectType,
 }: SharedAccessSectionProps) {
+  const { t } = useTranslation();
   const sharedWithUsers = sharedAccess.map((sa: { userId: string | any }) => {
     // Handle both string IDs and populated User objects
     return typeof sa.userId === 'string' ? sa.userId : sa.userId?._id || sa.userId;
@@ -42,7 +48,7 @@ export function SharedAccessSection({
     [allUsers]
   );
 
-  const { title, description } = getShareDescription(objectType);
+  const { title, description } = getShareDescription(objectType, t);
 
   return (
     <Stack gap="xs">
@@ -50,8 +56,8 @@ export function SharedAccessSection({
         {title}
       </Text>
       <MultiSelect
-        label="Share With"
-        placeholder="Select users to share this plan with"
+        label={t("common.shareWith")}
+        placeholder={t("common.shareWithPlaceholder")}
         description={description}
         data={allUsersData}
         value={sharedWithUsers}

@@ -4,9 +4,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Box, Center, Loader, Alert, Button, Stack, Title, Card, Text, Avatar, Group, Badge } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconUser, IconCircleCheck } from "@tabler/icons-react";
+import { Container, Center, Loader, Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
+import { StitchIcon } from "../components/common/StitchIcon";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { AppLayout } from "../components/AppLayout";
 import { AppBreadcrumbs } from "../components/common/AppBreadcrumbs";
 import { SharedWithSection } from "../components/common/SharedWithSection";
@@ -24,6 +26,7 @@ export default function TrainingPlanDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
 
   // State
   const [plan, setPlan] = useState<TrainingPlan | null>(null);
@@ -41,14 +44,14 @@ export default function TrainingPlanDetailsPage() {
   });
   const { execute: updatePlan } = useApi<{ data: TrainingPlan }>({
     showSuccessToast: true,
-    successMessage: "Plan updated successfully",
+    successMessage: t("trainings.planUpdated"),
   });
 
   // Export hook
   const { exportToPDF, exportToExcel } = useExport({
     filename: `training-plan-${id}`,
-    onSuccess: () => toast.success("Export completed successfully"),
-    onError: (error) => toast.error(`Export failed: ${error.message}`),
+    onSuccess: () => toast.success(t("common.exportSuccess")),
+    onError: (error) => toast.error(t("common.exportFailed", { error: error.message })),
   });
 
   // Check if current user is owner or trainer
@@ -84,7 +87,7 @@ export default function TrainingPlanDetailsPage() {
               const trainer = await userService.findOne(data.data.trainerId);
               setTrainerName(trainer.fullName);
             } catch {
-              setTrainerName("Unknown");
+              setTrainerName(t("common.unknown"));
             }
           } else {
             setTrainerName(data.data.trainerId.fullName);
@@ -92,9 +95,9 @@ export default function TrainingPlanDetailsPage() {
         }
       }
     } catch {
-      toast.error("Failed to load training plan");
+      toast.error(t("trainings.loadFailed"));
     }
-  }, [id, fetchPlan]);
+  }, [id, fetchPlan, t]);
 
   // Fetch all users for sharing
   useEffect(() => {
@@ -122,7 +125,7 @@ export default function TrainingPlanDetailsPage() {
         setPlan(updated.data);
       }
     } catch {
-      toast.error("Failed to update plan");
+      toast.error(t("trainings.updateFailed"));
     }
   };
 
@@ -154,10 +157,10 @@ export default function TrainingPlanDetailsPage() {
       });
       if (updated?.data) {
         setPlan(updated.data);
-        toast.success('Exercise history updated successfully');
+        toast.success(t('trainings.historyUpdated'));
       }
     } catch {
-      toast.error('Failed to update exercise history');
+      toast.error(t('trainings.historyUpdateFailed'));
     }
   };
 
@@ -192,8 +195,8 @@ export default function TrainingPlanDetailsPage() {
     return (
       <AppLayout>
         <Container size="xl" py="xl">
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
-            Failed to load training plan. Please try again.
+          <Alert icon={<IconAlertCircle size={16} />} title={t("common.error")} color="red">
+            {t("trainings.loadError")}
           </Alert>
         </Container>
       </AppLayout>
@@ -206,21 +209,22 @@ export default function TrainingPlanDetailsPage() {
         {/* Breadcrumbs */}
         <AppBreadcrumbs
           items={[
-            { label: "Home", href: "/" },
-            { label: "Training Plans", href: "/my-trainings" },
+            { label: t("nav.home"), href: "/" },
+            { label: t("nav.trainingPlans"), href: "/my-trainings" },
             { label: plan.title },
           ]}
         />
 
-        <Box mb="lg" display={{ base: "none", md: "block" }}>
-          <Button
-            variant="subtle"
-            leftSection={<IconArrowLeft size={16} />}
+        <div className="hidden md:block mb-6">
+          <button
+            type="button"
             onClick={() => navigate("/my-trainings")}
+            className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
           >
-            Back to Training Plans
-          </Button>
-        </Box>
+            <StitchIcon name="chevron_left" size={16} />
+            {t("trainings.backToPlans")}
+          </button>
+        </div>
 
         {/* Plan Header */}
         <PlanHeader
@@ -242,46 +246,52 @@ export default function TrainingPlanDetailsPage() {
 
         {/* Active Users Section - visible to trainers/admins */}
         {(currentUser?.role === 'trainer' || currentUser?.role === 'admin') && plan.activeByUsers && plan.activeByUsers.length > 0 && (
-            <Stack gap="lg" mb="xl">
-              <Group gap="xs" align="center">
-                <IconCircleCheck size={24} color="green" />
-                <Title order={2}>Active Users</Title>
-                <Badge color="green" variant="light">
+            <section className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                  <StitchIcon name="check_circle" size={18} />
+                </span>
+                <h2 className="text-lg font-extrabold tracking-tight text-on-surface">
+                  {t("common.activeUsers")}
+                </h2>
+                <span className="text-[10px] font-black px-2 py-1 rounded-full bg-green-100 text-green-700">
                   {plan.activeByUsers.length}
-                </Badge>
-              </Group>
-              <Stack gap="sm">
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-3">
                 {plan.activeByUsers.map((user, index) => {
-                  const userName = typeof user === 'string' 
-                    ? allUsers.find(u => u._id === user)?.fullName || 'Unknown User'
-                    : user.fullName || 'Unknown User';
+                  const userName = typeof user === 'string'
+                    ? allUsers.find(u => u._id === user)?.fullName || t('common.unknownUser')
+                    : user.fullName || t('common.unknownUser');
                   const userEmail = typeof user === 'string'
                     ? allUsers.find(u => u._id === user)?.email || ''
                     : user.email || '';
-                  
+
                   return (
-                    <Card key={index} shadow="sm" p="md" withBorder>
-                      <Group gap="md">
-                        <Avatar color="green" radius="xl">
-                          <IconUser size={24} />
-                        </Avatar>
-                        <Box style={{ flex: 1 }}>
-                          <Text fw={500}>{userName}</Text>
-                          {userEmail && (
-                            <Text size="sm" c="dimmed">
-                              {userEmail}
-                            </Text>
-                          )}
-                        </Box>
-                        <Badge color="green" variant="light">
-                          Active
-                        </Badge>
-                      </Group>
-                    </Card>
+                    <div
+                      key={index}
+                      className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/10 flex items-center gap-4"
+                    >
+                      <span className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                        <StitchIcon name="person" size={20} />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-on-surface truncate">{userName}</p>
+                        {userEmail && (
+                          <p className="text-sm text-on-surface-variant truncate">
+                            {userEmail}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-green-100 text-green-700 shrink-0">
+                        {t("trainings.active")}
+                      </span>
+                    </div>
                   );
                 })}
-              </Stack>
-            </Stack>
+              </div>
+            </section>
           )}
 
         {/* Shared With Section (Trainer Only) */}
@@ -289,8 +299,8 @@ export default function TrainingPlanDetailsPage() {
           <SharedWithSection
             sharedAccess={plan.sharedAccess}
             allUsers={allUsers}
-            title="Shared With"
-            emptyMessage="This plan is not shared with anyone yet"
+            title={t("common.sharedWith")}
+            emptyMessage={t("common.notShared")}
             showActions={false}
           />
         )}

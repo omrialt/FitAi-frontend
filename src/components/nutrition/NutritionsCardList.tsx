@@ -4,9 +4,9 @@
 
 "use client";
 
-import { Stack, Text } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 import { NutritionsCard } from "./NutritionsCard";
-import type { NutritionPlan } from "../../types/nutrition.types";
+
 import type { NutritionsCardListProps } from '../../types/nutrition-components.types';
 
 export function NutritionsCardList({
@@ -20,16 +20,18 @@ export function NutritionsCardList({
   onDelete,
   onActivate,
 }: NutritionsCardListProps) {
+  const { t } = useTranslation();
+
   if (nutritionPlans.length === 0) {
     return (
-      <Text c="dimmed" ta="center" py="xl">
-        No nutrition plans found
-      </Text>
+      <div className="bg-surface-container-lowest rounded-xl p-12 text-center border border-outline-variant/10">
+        <p className="text-on-surface-variant">{t('nutrition.noPlans')}</p>
+      </div>
     );
   }
 
   return (
-    <Stack gap="md">
+    <div className="flex flex-col gap-4">
       {nutritionPlans.map((plan) => (
         <NutritionsCard
           key={plan._id}
@@ -44,6 +46,6 @@ export function NutritionsCardList({
           onActivate={onActivate}
         />
       ))}
-    </Stack>
+    </div>
   );
 }

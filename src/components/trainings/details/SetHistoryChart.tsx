@@ -6,7 +6,7 @@ import { Box, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-import type { ChartDataPoint, SetHistoryChartProps } from '../../../types/trainings-components.types';
+import type { SetHistoryChartProps } from '../../../types/trainings-components.types';
 
 export function SetHistoryChart({ chartData }: SetHistoryChartProps) {
   const { t } = useTranslation();

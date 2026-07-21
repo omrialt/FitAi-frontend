@@ -5,6 +5,7 @@ import WeeklyCalendar from '../components/calendar/WeeklyCalendar';
 import currentStatusService from '../services/current-status.service';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Extract a MongoDB ObjectId string from a value that could be:
@@ -29,6 +30,7 @@ function extractId(value: unknown): string | undefined {
 }
 
 const CalendarPage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTrainingPlanId, setActiveTrainingPlanId] = useState<string | undefined>();
   const [shouldAutoSync, setShouldAutoSync] = useState(false);
   const user = useAuthStore((state) => state.user);
@@ -40,18 +42,18 @@ const CalendarPage: React.FC = () => {
     const error = searchParams.get('calendar_error');
 
     if (connected === 'true') {
-      toast.success('Google Calendar connected successfully!');
+      toast.success(t('calendar.connectedSuccess'));
       // Trigger auto-sync after connection
       setShouldAutoSync(true);
     } else if (error) {
-      toast.error(`Failed to connect Google Calendar: ${error}`);
+      toast.error(t('calendar.connectFailed', { error }));
     }
 
     // Clean up query params
     if (connected || error) {
       setSearchParams({}, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, t]);
 
   useEffect(() => {
     // Fetch the user's active training plan from current status
@@ -85,15 +87,13 @@ const CalendarPage: React.FC = () => {
 
   return (
     <AppLayout>
-      <div style={{ padding: '20px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', fontWeight: '700' }}>
-            Training Calendar
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <header className="mb-8">
+          <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+            {t('calendar.pageTitle')}
           </h1>
-          <p style={{ margin: 0, color: '#666' }}>
-            View and manage your training schedule alongside your Google Calendar events
-          </p>
-        </div>
+          <p className="text-on-surface-variant">{t('calendar.pageSubtitle')}</p>
+        </header>
 
         <WeeklyCalendar
           activeTrainingPlanId={activeTrainingPlanId}

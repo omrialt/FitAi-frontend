@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Container, Stack, Center, Loader, Alert, SimpleGrid } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/AppLayout';
 import { AppBreadcrumbs } from '../components/common/AppBreadcrumbs';
 import { PhysicalDataHeader } from '../components/profile/physical-data/PhysicalDataHeader';
@@ -20,6 +21,7 @@ import physicalDataService from '../services/physical-data.service';
 import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../types/physical-data.types';
 
 export default function PhysicalDataPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [physicalData, setPhysicalData] = useState<PhysicalData[]>([]);
   const [latestRecord, setLatestRecord] = useState<PhysicalData | null>(null);
@@ -33,9 +35,9 @@ export default function PhysicalDataPage() {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Profile', href: '/profile' },
-    { label: 'Physical Data' },
+    { label: t('nav.dashboard'), href: '/dashboard' },
+    { label: t('layout.profile'), href: '/profile' },
+    { label: t('physicalData.title') },
   ];
 
   // Fetch all data for the user
@@ -53,11 +55,11 @@ export default function PhysicalDataPage() {
       setBmiData(bmi);
     } catch (error) {
       console.error('Error loading physical data:', error);
-      toast.error('Failed to load physical data');
+      toast.error(t('physicalData.loadFailed'));
     } finally {
       setLoadingData(false);
     }
-  }, [user]);
+  }, [user, t]);
 
   // Initial load
   useEffect(() => {
@@ -69,10 +71,10 @@ export default function PhysicalDataPage() {
     try {
       await physicalDataService.create(data);
       await loadPhysicalData();
-      toast.success('Measurement added successfully');
+      toast.success(t('physicalData.addedSuccess'));
     } catch (error) {
       console.error('Error adding measurement:', error);
-      toast.error('Failed to add measurement');
+      toast.error(t('physicalData.addFailed'));
     }
   };
 
@@ -80,10 +82,10 @@ export default function PhysicalDataPage() {
     try {
       await physicalDataService.update(id, data);
       await loadPhysicalData();
-      toast.success('Measurement updated successfully');
+      toast.success(t('physicalData.updatedSuccess'));
     } catch (error) {
       console.error('Error updating measurement:', error);
-      toast.error('Failed to update measurement');
+      toast.error(t('physicalData.updateFailed'));
     }
   };
 
@@ -95,10 +97,10 @@ export default function PhysicalDataPage() {
       await loadPhysicalData();
       setDeleteModalOpened(false);
       setSelectedMeasurement(null);
-      toast.success('Measurement deleted successfully');
+      toast.success(t('physicalData.deletedSuccess'));
     } catch (error) {
       console.error('Error deleting measurement:', error);
-      toast.error('Failed to delete measurement');
+      toast.error(t('physicalData.deleteFailed'));
     }
   };
 
@@ -133,8 +135,8 @@ export default function PhysicalDataPage() {
 
         {/* Error State */}
         {!loadingData && !user && (
-          <Alert icon={<IconAlertCircle size={16} />} color="red" title="Error">
-            User not authenticated
+          <Alert icon={<IconAlertCircle size={16} />} color="red" title={t('common.error')}>
+            {t('physicalData.notAuthenticated')}
           </Alert>
         )}
 

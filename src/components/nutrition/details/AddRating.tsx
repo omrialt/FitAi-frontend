@@ -4,10 +4,12 @@
 
 import { Stack, Textarea, Button, Card, Title, Group } from '@mantine/core';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StarRating } from '../../common/StarRating';
 import type { AddRatingProps } from '../../../types/nutrition-components.types';
 
 export function AddRating({ onSubmit, loading = false }: AddRatingProps) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +30,7 @@ export function AddRating({ onSubmit, loading = false }: AddRatingProps) {
   return (
     <Card shadow="sm" p="md" withBorder>
       <Title order={3} mb="md">
-        Add Your Rating
+        {t('nutrition.addYourRating')}
       </Title>
 
       <Stack gap="md">
@@ -42,8 +44,8 @@ export function AddRating({ onSubmit, loading = false }: AddRatingProps) {
         </div>
 
         <Textarea
-          label="Comment (optional)"
-          placeholder="Share your thoughts about this nutrition plan..."
+          label={t('nutrition.commentLabel')}
+          placeholder={t('nutrition.commentPlaceholder')}
           value={comment}
           onChange={(e) => setComment(e.currentTarget.value)}
           minRows={3}
@@ -56,7 +58,7 @@ export function AddRating({ onSubmit, loading = false }: AddRatingProps) {
             disabled={rating === 0 || isSubmitting || loading}
             loading={isSubmitting || loading}
           >
-            Submit Rating
+            {t('nutrition.submitRating')}
           </Button>
         </Group>
       </Stack>

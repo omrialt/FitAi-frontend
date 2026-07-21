@@ -3,7 +3,7 @@ import { IconTrash, IconGripVertical } from '@tabler/icons-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'react-i18next';
-import type { Exercise } from '../../../types/training-plan.types';
+
 import type { ExerciseItemProps } from '../../../types/trainings-components.types';
 
 export function ExerciseItem({ 

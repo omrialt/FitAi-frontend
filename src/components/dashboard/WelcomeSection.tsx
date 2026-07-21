@@ -1,143 +1,124 @@
-import {
-  Paper,
-  Title,
-  Text,
-  Group,
-  Badge,
-  Avatar,
-  Stack,
-  Button,
-} from '@mantine/core';
-import {
-  IconFlame,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMinus,
-  IconBarbell,
-  IconApple,
-  IconCalendar,
-} from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import type { User } from '../../types/auth.types';
-import type { CurrentStatus } from '../../types/current-status.types';
+import { useTranslation } from 'react-i18next';
+
+import { StitchIcon } from '../common/StitchIcon';
 import type { WelcomeSectionProps } from '../../types/dashboard-components.types';
 
-function getGreeting(): string {
+/**
+ * Welcome banner — "Performance Lab" design.
+ *
+ * The blurred indigo orb bleeding off the top-right corner is the design's
+ * "Tonal Depth" treatment; it is decorative and sits behind the content via
+ * z-index rather than affecting layout.
+ */
+
+function getGreetingKey(): string {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 18) return 'Good Afternoon';
-  return 'Good Evening';
+  if (hour < 12) return 'dashboard.goodMorning';
+  if (hour < 18) return 'dashboard.goodAfternoon';
+  return 'dashboard.goodEvening';
 }
 
+/** Phase pill styling, keyed off the user's current training target. */
 const phaseConfig = {
   bulk: {
-    label: 'Bulking',
-    color: 'orange',
-    icon: <IconTrendingUp size={14} />,
-    description: 'Building muscle mass',
+    labelKey: 'dashboard.phaseBulking',
+    pill: 'bg-orange-100 text-orange-700 border-orange-200/50',
   },
   cut: {
-    label: 'Cutting',
-    color: 'red',
-    icon: <IconTrendingDown size={14} />,
-    description: 'Reducing body fat',
+    labelKey: 'dashboard.phaseCutting',
+    pill: 'bg-red-100 text-red-700 border-red-200/50',
   },
   maintain: {
-    label: 'Maintaining',
-    color: 'teal',
-    icon: <IconMinus size={14} />,
-    description: 'Keeping current form',
+    labelKey: 'dashboard.phaseMaintaining',
+    pill: 'bg-teal-100 text-teal-700 border-teal-200/50',
   },
 };
 
 export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
-  const greeting = getGreeting();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+
+  const greeting = t(getGreetingKey());
   const phase = currentStatus?.phase || user.target || 'maintain';
   const config = phaseConfig[phase];
 
+  const initials = user.fullName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  const lastWorkout = currentStatus?.lastWorkoutDate
+    ? new Date(currentStatus.lastWorkoutDate).toLocaleDateString(i18n.language, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : null;
+
   return (
-    <Paper className="dashboard-welcome" radius="lg" p="xl">
-      <Group justify="space-between" wrap="wrap" gap="md">
-        <Group gap="lg">
-          <Avatar
-            src={user.avatarUrl}
-            size={64}
-            radius="xl"
-            color="indigo"
-            alt={user.fullName}
-          >
-            {user.fullName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()}
-          </Avatar>
-          <Stack gap={4}>
-            <Text size="sm" c="dimmed">
-              {greeting}
-            </Text>
-            <Title order={2} className="dashboard-welcome-name">
-              {user.fullName}
-            </Title>
-            <Group gap="xs">
-              <Badge
-                variant="light"
-                color={config.color}
-                leftSection={config.icon}
-                size="md"
-              >
-                {config.label}
-              </Badge>
-              {currentStatus?.lastWorkoutDate && (
-                <Group gap={4}>
-                  <IconCalendar size={13} color="var(--mantine-color-dimmed)" />
-                  <Text size="xs" c="dimmed">
-                    Last workout:{' '}
-                    {new Date(currentStatus.lastWorkoutDate).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </Text>
-                </Group>
-              )}
-            </Group>
-            <Group gap="xs" mt={6}>
-              <Button
-                size="sm"
-                variant="filled"
-                color="indigo"
-                leftSection={<IconBarbell size={15} />}
-                onClick={() => navigate('/my-trainings')}
-              >
-                Start Today's Session
-              </Button>
-              <Button
-                size="sm"
-                variant="light"
-                color="green"
-                leftSection={<IconApple size={15} />}
-                onClick={() => navigate('/my-nutritions')}
-              >
-                Log Meal
-              </Button>
-            </Group>
-          </Stack>
-        </Group>
-        <Group gap="xs" className="dashboard-welcome-streak">
-          <IconFlame size={20} color="var(--mantine-color-orange-5)" />
-          <Text size="sm" fw={600}>
-            {currentStatus?.lastWorkoutDate
-              ? `Last workout: ${new Date(currentStatus.lastWorkoutDate).toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })}`
-              : 'No workouts yet — start today!'}
-          </Text>
-        </Group>
-      </Group>
-    </Paper>
+    <section className="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+      {/* Decorative ambient glow */}
+      <div
+        aria-hidden="true"
+        className="absolute -end-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"
+      />
+
+      <div className="flex items-center gap-6 relative z-10">
+        <div className="relative shrink-0">
+          <div className="w-20 h-20 rounded-full border-4 border-white shadow-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+            {user.avatarUrl ? (
+              <img
+                alt={user.fullName}
+                className="w-full h-full object-cover"
+                src={user.avatarUrl}
+              />
+            ) : (
+              <span className="text-xl font-black text-primary">{initials}</span>
+            )}
+          </div>
+          {/* Active indicator */}
+          <div className="absolute -bottom-1 -end-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
+        </div>
+
+        <div>
+          <div className="flex items-center gap-3 mb-1 flex-wrap">
+            <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">
+              {greeting}, {user.fullName.split(' ')[0]}
+            </h2>
+            <span
+              className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${config.pill}`}
+            >
+              {t(config.labelKey)}
+            </span>
+          </div>
+          <p className="text-on-surface-variant font-medium text-sm flex items-center gap-2">
+            <StitchIcon name="event_available" size={16} />
+            {lastWorkout
+              ? `${t('dashboard.lastWorkout')} ${lastWorkout}`
+              : t('dashboard.noWorkoutsYet')}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-4 relative z-10">
+        <button
+          type="button"
+          onClick={() => navigate('/my-trainings')}
+          className="bg-primary-gradient text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+        >
+          {t('dashboard.startTodaysSession')}
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/nutrition-plans')}
+          className="bg-surface-container-lowest text-on-surface px-6 py-3 rounded-lg font-bold text-sm border border-outline-variant/15 hover:bg-surface-container-low transition-colors"
+        >
+          {t('dashboard.logMeal')}
+        </button>
+      </div>
+    </section>
   );
 }

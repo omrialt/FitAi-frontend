@@ -3,20 +3,27 @@ import { useWeeklyCalendar, useGoogleCalendar, useTrainingPlanSync } from '../..
 import type { CalendarEvent } from '../../types/calendar.types';
 import type { WeeklyCalendarProps } from '../../types/calendar-components.types';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
+import { he as heLocale, enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import TrainingDayModal from './TrainingDayModal';
-import '../../styles/WeeklyCalendar.css';
+import { StitchIcon } from '../common/StitchIcon';
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, autoSyncOnConnect, onAutoSyncComplete }) => {
+  const { t, i18n } = useTranslation();
+
+  // Month/day names come from date-fns, so it needs the active locale too
+  const dateLocale = i18n.language.startsWith('he') ? heLocale : enUS;
+
   const DAYS_OF_WEEK = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
+    t('common.weekday0'),
+    t('common.weekday1'),
+    t('common.weekday2'),
+    t('common.weekday3'),
+    t('common.weekday4'),
+    t('common.weekday5'),
+    t('common.weekday6'),
+  ];
 
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
     startOfWeek(new Date(), { weekStartsOn: 0 }),
@@ -30,7 +37,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
 
   const handleSyncToGoogle = useCallback(async () => {
     if (!activeTrainingPlanId) {
-      toast.warning('No active training plan to sync');
+      toast.warning(t('calendar.noActivePlanToSync'));
       return;
     }
 
@@ -38,13 +45,17 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
       // Sync the full month that contains the current view
       const result = await syncPlan(activeTrainingPlanId, currentWeekStart);
       toast.success(
-        `Month synced! Created: ${result.created}, Updated: ${result.updated}, Deleted: ${result.deleted}`,
+        t('calendar.monthSynced', {
+          created: result.created,
+          updated: result.updated,
+          deleted: result.deleted,
+        }),
       );
       refetch();
     } catch {
-      toast.error('Failed to sync training plan to Google Calendar');
+      toast.error(t('calendar.syncFailed'));
     }
-  }, [activeTrainingPlanId, currentWeekStart, syncPlan, refetch]);
+  }, [activeTrainingPlanId, currentWeekStart, syncPlan, refetch, t]);
 
   // Auto-sync to Google Calendar after connecting
   useEffect(() => {
@@ -104,113 +115,197 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
     setSelectedEvent(null);
   };
 
+  /**
+   * Events are colour-coded by origin: training sessions take the indigo
+   * primary, Google events the cyan secondary. Only training events open a
+   * detail modal, so only those get affordances.
+   */
   const renderEvent = (event: CalendarEvent) => {
-    const eventClass = event.type === 'training' ? 'event-training' : 'event-google';
-    const icon = event.type === 'training' ? '🏋️' : '📅';
-    const isClickable = event.type === 'training';
+    const isTraining = event.type === 'training';
+    const isClickable = isTraining;
 
     return (
-      <div
+      <button
         key={event.id || `${event.title}-${event.start.getTime()}`}
-        className={`calendar-event ${eventClass} ${isClickable ? 'clickable' : ''}`}
+        type="button"
+        disabled={!isClickable}
         onClick={() => isClickable && handleEventClick(event)}
-        style={{ cursor: isClickable ? 'pointer' : 'default' }}
+        className={`w-full text-start rounded-lg p-3 border-s-4 transition-colors ${
+          isTraining
+            ? 'bg-primary/5 border-s-primary hover:bg-primary/10 cursor-pointer'
+            : 'bg-secondary-fixed/40 border-s-secondary cursor-default'
+        }`}
       >
-        <div className="event-icon">{icon}</div>
-        <div className="event-content">
-          <div className="event-title">{event.title}</div>
-          <div className="event-time">
-            {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
-          </div>
-          {event.description && (
-            <div className="event-description">{event.description}</div>
-          )}
-        </div>
-      </div>
+        <p className={`text-[10px] font-black ${isTraining ? 'text-primary' : 'text-on-secondary-container'}`}>
+          {format(event.start, 'HH:mm')} – {format(event.end, 'HH:mm')}
+        </p>
+        <p className="text-sm font-bold text-on-surface leading-snug mt-0.5">
+          {event.title}
+        </p>
+        {event.description && (
+          <p className="text-[10px] text-on-surface-variant mt-1 line-clamp-2">
+            {event.description}
+          </p>
+        )}
+      </button>
     );
   };
 
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="weekly-calendar-container">
-      <div className="calendar-header">
-        <div className="calendar-controls">
-          <button onClick={handlePreviousWeek} className="btn-nav">
-            ← Previous
-          </button>
-          <button onClick={handleToday} className="btn-today">
-            Today
-          </button>
-          <button onClick={handleNextWeek} className="btn-nav">
-            Next →
-          </button>
-        </div>
-
-        <div className="calendar-title">
-          <h2>
-            Week of {format(currentWeekStart, 'MMM d')} -{' '}
-            {format(addDays(currentWeekStart, 6), 'MMM d, yyyy')}
+    <div className="space-y-6">
+      {/* Header: title + week nav + Google actions */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-black tracking-tight text-on-surface">
+            {format(currentWeekStart, 'MMMM yyyy', { locale: dateLocale })}
           </h2>
+          <p className="text-sm text-on-surface-variant">
+            {t('calendar.weekOf', {
+              start: format(currentWeekStart, 'MMM d', { locale: dateLocale }),
+              end: format(addDays(currentWeekStart, 6), 'MMM d, yyyy', {
+                locale: dateLocale,
+              }),
+            })}
+          </p>
         </div>
 
-        <div className="calendar-actions">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center bg-surface-container-high rounded-lg p-1">
+            <button
+              type="button"
+              onClick={handlePreviousWeek}
+              aria-label={t('calendar.previous')}
+              className="w-9 h-9 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
+            >
+              <StitchIcon name="chevron_left" size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={handleToday}
+              className="px-4 h-9 rounded-md bg-surface-container-lowest text-sm font-bold text-on-surface"
+            >
+              {t('calendar.today')}
+            </button>
+            <button
+              type="button"
+              onClick={handleNextWeek}
+              aria-label={t('calendar.next')}
+              className="w-9 h-9 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
+            >
+              <StitchIcon name="chevron_right" size={18} />
+            </button>
+          </div>
+
           {googleStatus?.connected ? (
             <>
-              <button onClick={disconnect} className="btn-disconnect">
-                Disconnect Google
+              <button
+                type="button"
+                onClick={disconnect}
+                className="px-4 py-2.5 rounded-lg text-sm font-bold bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors"
+              >
+                {t('calendar.disconnectGoogle')}
               </button>
               <button
+                type="button"
                 onClick={handleSyncToGoogle}
                 disabled={syncing || !activeTrainingPlanId}
-                className="btn-sync"
-                title={!activeTrainingPlanId ? 'No active training plan' : 'Sync training plan to Google Calendar'}
+                title={
+                  !activeTrainingPlanId
+                    ? t('calendar.noActivePlan')
+                    : t('calendar.syncPlanTooltip')
+                }
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold bg-primary-gradient text-white shadow-lg shadow-primary/20 disabled:opacity-60"
               >
-                {syncing ? 'Syncing...' : 'Sync to Google'}
+                <StitchIcon
+                  name="sync"
+                  size={16}
+                  className={syncing ? 'animate-spin' : undefined}
+                />
+                {syncing ? t('calendar.syncing') : t('calendar.syncToGoogle')}
               </button>
             </>
           ) : (
-            <button onClick={connect} className="btn-connect">
-              Connect Google Calendar
+            <button
+              type="button"
+              onClick={connect}
+              className="px-4 py-2.5 rounded-lg text-sm font-bold bg-primary-gradient text-white shadow-lg shadow-primary/20"
+            >
+              {t('calendar.connectGoogle')}
             </button>
           )}
         </div>
       </div>
 
-      {loading && <div className="calendar-loading">Loading calendar...</div>}
-      {error && <div className="calendar-error">{error}</div>}
+      {loading && (
+        <p className="text-sm text-on-surface-variant">
+          {t('calendar.loadingCalendar')}
+        </p>
+      )}
+      {error && (
+        <div className="rounded-lg bg-error-container text-on-error-container p-4 text-sm">
+          {error}
+        </div>
+      )}
 
-      <div className="calendar-grid">
-        {DAYS_OF_WEEK.map((dayName, index) => {
-          const date = addDays(currentWeekStart, index);
-          const dateKey = format(date, 'yyyy-MM-dd');
-          const dayEvents = eventsByDay[dateKey] || [];
-          const todayClass = isToday(date) ? 'day-today' : '';
+      {/* Week grid */}
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-7 min-w-[900px]">
+            {DAYS_OF_WEEK.map((dayName, index) => {
+              const date = addDays(currentWeekStart, index);
+              const dateKey = format(date, 'yyyy-MM-dd');
+              const dayEvents = eventsByDay[dateKey] || [];
+              const today = isToday(date);
 
-          return (
-            <div key={dateKey} className={`calendar-day ${todayClass}`}>
-              <div className="day-header">
-                <div className="day-name">{dayName}</div>
-                <div className="day-date">{format(date, 'd')}</div>
-              </div>
-              <div className="day-events">
-                {dayEvents.length === 0 ? (
-                  <div className="no-events">No events</div>
-                ) : (
-                  dayEvents.map(renderEvent)
-                )}
-              </div>
-            </div>
-          );
-        })}
+              return (
+                <div
+                  key={dateKey}
+                  className={`min-h-[420px] p-3 ${index < 6 ? 'border-e border-outline-variant/10' : ''} ${
+                    today ? 'bg-primary/5' : ''
+                  }`}
+                >
+                  <div
+                    className={`text-center pb-3 mb-3 border-b-2 ${
+                      today ? 'border-primary' : 'border-transparent'
+                    }`}
+                  >
+                    <p
+                      className={`text-[10px] font-black uppercase tracking-widest ${
+                        today ? 'text-primary' : 'text-on-surface-variant'
+                      }`}
+                    >
+                      {dayName}
+                    </p>
+                    <p
+                      className={`text-2xl font-black ${
+                        today ? 'text-primary' : 'text-on-surface'
+                      }`}
+                    >
+                      {format(date, 'd')}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {dayEvents.length === 0 ? (
+                      <p className="text-[10px] text-on-surface-variant/60 text-center pt-4">
+                        {t('calendar.noEvents')}
+                      </p>
+                    ) : (
+                      dayEvents.map(renderEvent)
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {!googleStatus?.connected && (
-        <div className="calendar-info">
-          <p>
-            💡 Connect your Google Calendar to see all your events in one place and
-            automatically sync your training schedule!
-          </p>
+        <div className="bg-primary-gradient rounded-xl p-6 text-white">
+          <p className="text-sm leading-relaxed">{t('calendar.connectHint')}</p>
         </div>
       )}
 

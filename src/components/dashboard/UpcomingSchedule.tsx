@@ -17,10 +17,12 @@ import {
 import { startOfWeek, startOfDay, addDays, addWeeks } from 'date-fns';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useWeeklyCalendar } from '../../hooks/useCalendar';
 
 export function UpcomingSchedule() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const weekStart = useMemo(() => startOfWeek(new Date(), { weekStartsOn: 0 }), []);
   const nextWeekStart = useMemo(() => addWeeks(weekStart, 1), [weekStart]);
 
@@ -45,7 +47,7 @@ export function UpcomingSchedule() {
       <Group justify="space-between" mb="lg">
         <Group gap="xs">
           <IconCalendarEvent size={20} color="var(--mantine-color-blue-5)" />
-          <Title order={4}>Upcoming Schedule</Title>
+          <Title order={4}>{t('dashboard.upcomingSchedule')}</Title>
         </Group>
         <Button
           variant="subtle"
@@ -54,21 +56,20 @@ export function UpcomingSchedule() {
           rightSection={<IconChevronRight size={14} />}
           onClick={() => navigate('/calendar')}
         >
-          View All
+          {t('dashboard.viewAll')}
         </Button>
       </Group>
 
       {loading ? (
         <Stack align="center" py="xl">
           <Text c="dimmed" size="sm">
-            Loading schedule...
+            {t('dashboard.loadingSchedule')}
           </Text>
         </Stack>
       ) : upcoming.length === 0 ? (
         <Stack align="center" gap="md" py="xl">
           <Text c="dimmed" ta="center">
-            No upcoming events this week. Sync your training plan to Google
-            Calendar to see your schedule here.
+            {t('dashboard.noUpcomingEvents')}
           </Text>
         </Stack>
       ) : (
@@ -103,14 +104,14 @@ export function UpcomingSchedule() {
                   </Text>
                   <Group gap="xs">
                     <Text size="xs" c="dimmed">
-                      {startDate.toLocaleDateString(undefined, {
+                      {startDate.toLocaleDateString(i18n.language, {
                         weekday: 'short',
                         month: 'short',
                         day: 'numeric',
                       })}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      {startDate.toLocaleTimeString(undefined, {
+                      {startDate.toLocaleTimeString(i18n.language, {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
@@ -122,7 +123,7 @@ export function UpcomingSchedule() {
                   color={isTraining ? 'indigo' : 'blue'}
                   size="xs"
                 >
-                  {isTraining ? 'Workout' : 'Event'}
+                  {isTraining ? t('dashboard.workout') : t('dashboard.event')}
                 </Badge>
               </Group>
             );

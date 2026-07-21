@@ -4,7 +4,6 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, AuthTokens } from '../types/auth.types';
 import type { AuthStore } from '../types/store.types';
 import api from '../services/api';
 

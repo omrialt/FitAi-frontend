@@ -2,17 +2,21 @@
  * RatingsSection - Athlete testimonials and performance rating
  */
 
-import { Stack, Title, Paper, Text, Group, Box, Avatar, Progress, ThemeIcon } from '@mantine/core';
-import { IconStar } from '@tabler/icons-react';
+import { Stack, Title, Paper, Text, Group, Box, Avatar, Progress } from '@mantine/core';
+
+import { useTranslation } from 'react-i18next';
 import { StarRating } from '../../common/StarRating';
-import type { Rating } from '../../../types/nutrition.types';
+
 import type { User } from '../../../types/auth.types';
 import type { RatingsSectionProps } from '../../../types/nutrition-components.types';
 
 export function RatingsSection({ ratings }: RatingsSectionProps) {
+  const { t, i18n } = useTranslation();
+
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+    const locale = i18n.language === 'he' ? 'he-IL' : 'en-GB';
+    return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const avgRating = ratings.length > 0
@@ -27,22 +31,22 @@ export function RatingsSection({ ratings }: RatingsSectionProps) {
           <Box>
             <Text size="3rem" fw={800} lh={1}>{avgRating > 0 ? avgRating.toFixed(1) : '\u2014'}</Text>
             <StarRating rating={avgRating} readonly size={18} />
-            <Text size="xs" c="dimmed" mt={4}>Based on {ratings.length} athlete{ratings.length !== 1 ? 's' : ''}</Text>
+            <Text size="xs" c="dimmed" mt={4}>{t('nutrition.basedOn', { count: ratings.length })}</Text>
           </Box>
           <Box style={{ flex: 1 }} ml="xl">
             <Stack gap="xs">
               <Group gap="xs">
-                <Text size="sm" w={60}>Satiety</Text>
+                <Text size="sm" w={60}>{t('nutrition.satiety')}</Text>
                 <Progress value={Math.min(avgRating / 5 * 100, 100)} color="indigo" radius="xl" style={{ flex: 1 }} size="md" />
                 <Text size="sm" fw={600} w={36}>{(avgRating / 5 * 100).toFixed(0)}%</Text>
               </Group>
               <Group gap="xs">
-                <Text size="sm" w={60}>Energy</Text>
+                <Text size="sm" w={60}>{t('nutrition.energy')}</Text>
                 <Progress value={Math.min(avgRating / 5 * 92, 100)} color="cyan" radius="xl" style={{ flex: 1 }} size="md" />
                 <Text size="sm" fw={600} w={36}>{(avgRating / 5 * 92).toFixed(0)}%</Text>
               </Group>
               <Group gap="xs">
-                <Text size="sm" w={60}>Prep</Text>
+                <Text size="sm" w={60}>{t('nutrition.prep')}</Text>
                 <Progress value={Math.min(avgRating / 5 * 74, 100)} color="violet" radius="xl" style={{ flex: 1 }} size="md" />
                 <Text size="sm" fw={600} w={36}>{(avgRating / 5 * 74).toFixed(0)}%</Text>
               </Group>
@@ -52,15 +56,15 @@ export function RatingsSection({ ratings }: RatingsSectionProps) {
       </Paper>
 
       {/* Testimonials */}
-      <Title order={3}>Athlete Testimonials</Title>
+      <Title order={3}>{t('nutrition.reviews')}</Title>
 
       {ratings.length === 0 ? (
-        <Text c="dimmed" size="sm" ta="center">No ratings yet. Be the first to rate this plan!</Text>
+        <Text c="dimmed" size="sm" ta="center">{t('nutrition.noRatings')}</Text>
       ) : (
         <Stack gap="md">
           {ratings.map((rating, index) => {
             const user = typeof rating.userId === 'string' ? null : (rating.userId as User);
-            const userName = user?.fullName || 'Anonymous Athlete';
+            const userName = user?.fullName || t('nutrition.anonymousAthlete');
             const initial = userName.charAt(0).toUpperCase();
 
             return (

@@ -1,11 +1,12 @@
 /**
- * TrainingsHeader - Page header with title and action buttons
+ * TrainingsHeader — page title, subtitle and primary actions.
+ * "Performance Lab" design.
  */
 
-import { Group, Title, Button, Stack, Text } from '@mantine/core';
-import { IconPlus, IconDownload } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../../hooks/useAuth';
+import { StitchIcon } from '../common/StitchIcon';
 import type { TrainingsHeaderProps } from '../../types/trainings-components.types';
 
 export function TrainingsHeader({ onCreateNew }: TrainingsHeaderProps) {
@@ -14,23 +15,36 @@ export function TrainingsHeader({ onCreateNew }: TrainingsHeaderProps) {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <Group justify="space-between" mb="lg" align="flex-end">
-      <Stack gap={4}>
-        <Title order={1}>{isAdmin ? t('trainings.titleAdmin') : t('trainings.title')}</Title>
-        <Text c="dimmed" size="sm">
+    <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+      <div className="max-w-2xl">
+        <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+          {isAdmin ? t('trainings.titleAdmin') : t('trainings.title')}
+        </h1>
+        <p className="text-on-surface-variant leading-relaxed">
           {t('trainings.subtitle')}
-        </Text>
-      </Stack>
-      <Group gap="sm">
-        <Button variant="outline" leftSection={<IconDownload size={16} />} color="gray">
+        </p>
+      </div>
+
+      <div className="flex gap-3 shrink-0">
+        <button
+          type="button"
+          className="flex items-center gap-2 bg-surface-container-high text-on-surface px-5 py-3 rounded-lg font-bold text-sm hover:bg-surface-container-highest transition-colors"
+        >
+          <StitchIcon name="report" size={18} />
           {t('trainings.export')}
-        </Button>
+        </button>
+
         {onCreateNew && (
-          <Button leftSection={<IconPlus size={16} />} onClick={onCreateNew} color="indigo">
+          <button
+            type="button"
+            onClick={onCreateNew}
+            className="flex items-center gap-2 bg-primary-gradient text-white px-5 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+          >
+            <StitchIcon name="add" size={18} />
             {t('trainings.newPlan')}
-          </Button>
+          </button>
         )}
-      </Group>
-    </Group>
+      </div>
+    </header>
   );
 }

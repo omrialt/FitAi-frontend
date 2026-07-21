@@ -9,16 +9,8 @@ import { Activity } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import {
-  IconDotsVertical,
-  IconEye,
-  IconEdit,
-  IconFileTypePdf,
-  IconFileTypeXls,
-  IconTrash,
-  IconCircleCheck,
-} from '@tabler/icons-react';
-import type { TrainingPlan } from '../../types/training.types';
+import { IconDotsVertical, IconEye, IconEdit, IconFileTypePdf, IconFileTypeXls, IconTrash, IconCircleCheck } from '@tabler/icons-react';
+
 import '../../styles/DropdownMenu.css';
 import type { TrainingsActionsMenuProps } from '../../types/trainings-components.types';
 

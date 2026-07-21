@@ -9,16 +9,10 @@ import { IconTrash, IconPlus, IconGripVertical, IconChevronDown, IconChevronUp }
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useTranslation } from "react-i18next";
 import { FoodItem } from "./FoodItem";
-import type { Meal, Food, MealType } from "../../../types/nutrition.types";
+import type { Food, MealType } from "../../../types/nutrition.types";
 import type { MealCardProps } from '../../../types/nutrition-components.types';
-
-const mealTypeOptions = [
-  { value: "breakfast", label: "Breakfast" },
-  { value: "lunch", label: "Lunch" },
-  { value: "dinner", label: "Dinner" },
-  { value: "snack", label: "Snack" },
-];
 
 const getMealTypeColor = (mealType: MealType) => {
   switch (mealType) {
@@ -44,7 +38,15 @@ export function MealCard({
   onRemoveFood,
   onUpdateFood,
 }: MealCardProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
+
+  const mealTypeOptions = [
+    { value: "breakfast", label: t('nutrition.breakfast') },
+    { value: "lunch", label: t('nutrition.lunch') },
+    { value: "dinner", label: t('nutrition.dinner') },
+    { value: "snack", label: t('nutrition.snack') },
+  ];
 
   const {
     attributes,
@@ -86,7 +88,7 @@ export function MealCard({
               styles={{ input: { fontWeight: 500 } }}
             />
             <Badge color={getMealTypeColor(meal.mealType)} variant="light">
-              {meal.foods.length} {meal.foods.length === 1 ? "food" : "foods"}
+              {t('nutrition.foodCount', { count: meal.foods.length })}
             </Badge>
           </Group>
           <Group gap="xs">
@@ -106,11 +108,11 @@ export function MealCard({
         {/* Meal Totals */}
         <Group gap="xs">
           <Badge variant="filled" color="orange">
-            {mealCalories.toFixed(0)} kcal
+            {mealCalories.toFixed(0)} {t('nutrition.kcal')}
           </Badge>
-          <Badge variant="outline">P: {mealProtein.toFixed(1)}g</Badge>
-          <Badge variant="outline">C: {mealCarbs.toFixed(1)}g</Badge>
-          <Badge variant="outline">F: {mealFat.toFixed(1)}g</Badge>
+          <Badge variant="outline">{t('nutrition.proteinPrefix')}{mealProtein.toFixed(1)}g</Badge>
+          <Badge variant="outline">{t('nutrition.carbsPrefix')}{mealCarbs.toFixed(1)}g</Badge>
+          <Badge variant="outline">{t('nutrition.fatPrefix')}{mealFat.toFixed(1)}g</Badge>
         </Group>
 
         <Divider />
@@ -119,7 +121,7 @@ export function MealCard({
           {/* Foods List */}
           {meal.foods.length === 0 ? (
             <Text size="sm" c="dimmed" ta="center">
-              No foods added yet
+              {t('nutrition.noFoodsYet')}
             </Text>
           ) : (
             <Stack gap="sm">
@@ -142,7 +144,7 @@ export function MealCard({
             onClick={onAddFood}
             mt="sm"
           >
-            Add Food
+            {t('nutrition.addFood')}
           </Button>
         </Collapse>
       </Stack>

@@ -6,19 +6,23 @@
 import { Stack, Title, Card, Text, Avatar, Group, Box, Button, Modal, Select } from '@mantine/core';
 import { useState, Activity } from 'react';
 import { IconUser } from '@tabler/icons-react';
-import type { User } from '../../types/auth.types';
-import type { SharedWithEntry as SharedAccessEntry, SharedWithSectionProps } from '../../types/common.types';
+import { useTranslation } from 'react-i18next';
+
+import type { SharedWithSectionProps } from '../../types/common.types';
 
 export function SharedWithSection({
   sharedAccess,
   allUsers,
-  title = 'Shared With',
-  emptyMessage = 'This plan is not shared with anyone yet',
+  title,
+  emptyMessage,
   showActions = false,
   onShare,
   onRevoke,
   loading = false,
 }: SharedWithSectionProps) {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('common.sharedWith');
+  const resolvedEmptyMessage = emptyMessage ?? t('common.notShared');
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [accessLevel, setAccessLevel] = useState<string>('view');
@@ -55,17 +59,17 @@ export function SharedWithSection({
     <>
       <Stack gap="lg" mb="xl">
         <Group justify="space-between" align="center">
-          <Title order={2}>{title}</Title>
+          <Title order={2}>{resolvedTitle}</Title>
           {showActions && (
             <Button size="sm" onClick={() => setModalOpened(true)} disabled={loading} my="sm">
-              Share Plan
+              {t('common.sharePlan')}
             </Button>
           )}
         </Group>
 
         <Activity mode={sharedAccess.length === 0 ? "visible" : "hidden"}>
           <Text c="dimmed" size="sm" ta="center">
-            {emptyMessage}
+            {resolvedEmptyMessage}
           </Text>
         </Activity>
 
@@ -99,7 +103,7 @@ export function SharedWithSection({
                         onClick={() => onRevoke(entry.userId)}
                         disabled={loading}
                       >
-                        Revoke
+                        {t('common.revoke')}
                       </Button>
                     )}
                   </Group>
@@ -114,17 +118,17 @@ export function SharedWithSection({
         <Modal
           opened={modalOpened}
           onClose={() => setModalOpened(false)}
-          title="Share Plan"
+          title={t('common.sharePlan')}
           size="md"
         >
           <Stack gap="md">
             <Text size="sm" c="dimmed">
-              Select a user to share this plan with. They will have view-only access.
+              {t('common.shareModalDescription')}
             </Text>
 
             <Select
-              label="Select User"
-              placeholder="Choose a user"
+              label={t('common.selectUser')}
+              placeholder={t('common.chooseUser')}
               data={availableUsers.map((user) => ({
                 value: user._id,
                 label: user.fullName,
@@ -136,9 +140,9 @@ export function SharedWithSection({
             />
 
             <Select
-              label="Access Level"
-              placeholder="Choose access level"
-              data={[{ value: 'view', label: 'View Only' }]}
+              label={t('common.accessLevel')}
+              placeholder={t('common.chooseAccessLevel')}
+              data={[{ value: 'view', label: t('common.viewOnly') }]}
               value={accessLevel}
               onChange={(value) => setAccessLevel(value || 'view')}
               required
@@ -146,14 +150,14 @@ export function SharedWithSection({
 
             <Group justify="flex-end" mt="md">
               <Button variant="subtle" onClick={() => setModalOpened(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 onClick={handleShare}
                 disabled={!selectedUserId || isSubmitting}
                 loading={isSubmitting}
               >
-                Share
+                {t('common.share')}
               </Button>
             </Group>
           </Stack>

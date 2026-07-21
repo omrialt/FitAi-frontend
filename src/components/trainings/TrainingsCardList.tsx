@@ -4,10 +4,9 @@
 
 'use client';
 
-import { Stack, Text } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { TrainingsCard } from './TrainingsCard';
-import type { TrainingPlan } from '../../types/training-plan.types';
+
 import type { TrainingsCardListProps } from '../../types/trainings-components.types';
 
 export function TrainingsCardList({
@@ -26,14 +25,14 @@ export function TrainingsCardList({
 
   if (trainings.length === 0) {
     return (
-      <Text c="dimmed" ta="center" py="xl">
-        {t('trainings.noTrainings')}
-      </Text>
+      <div className="bg-surface-container-lowest rounded-xl p-12 text-center border border-outline-variant/10">
+        <p className="text-on-surface-variant">{t('trainings.noTrainings')}</p>
+      </div>
     );
   }
 
   return (
-    <Stack gap="md">
+    <div className="flex flex-col gap-4">
       {trainings.map((training) => (
         <TrainingsCard
           key={training._id}
@@ -49,6 +48,6 @@ export function TrainingsCardList({
           onActivate={onActivate}
         />
       ))}
-    </Stack>
+    </div>
   );
 }

@@ -1,44 +1,81 @@
-import {
-  Paper,
-  Title,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  ThemeIcon,
-  Button,
-} from '@mantine/core';
-import {
-  IconScale,
-  IconPercentage,
-  IconRulerMeasure,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMinus,
-  IconPlus,
-} from '@tabler/icons-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { StitchIcon } from '../common/StitchIcon';
 import type { BodyProgressCardProps } from '../../types/dashboard-components.types';
 import type { CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../../types/physical-data.types';
 import { MeasurementModal } from '../profile/physical-data/modals/MeasurementModal';
 import { physicalDataService } from '../../services/physical-data.service';
 
-function TrendIcon({ value }: { value: number }) {
-  if (value > 0)
-    return <IconTrendingUp size={14} color="var(--mantine-color-green-5)" />;
-  if (value < 0)
-    return <IconTrendingDown size={14} color="var(--mantine-color-red-5)" />;
-  return <IconMinus size={14} color="var(--mantine-color-gray-5)" />;
+/**
+ * Body progress — "Performance Lab" design.
+ *
+ * The Stitch design shows Muscle Mass and Visceral Fat as the third and fourth
+ * tiles. PhysicalData tracks neither, and the only "muscle mass" figure in the
+ * codebase is a rough `100 - bodyFat - 15` estimate, so those tiles would be
+ * presenting a guess as a measurement. Height and Waist are shown instead —
+ * both are recorded values, and they are what this card already displayed.
+ * Adding the design's metrics is a schema change, not a styling one.
+ */
+
+/** A trend line under a metric: direction arrow + caption. */
+function Trend({ value, unit, t }: { value: number | null | undefined; unit: string; t: (k: string, o?: Record<string, unknown>) => string }) {
+  if (value == null) return null;
+
+  if (value === 0) {
+    return (
+      <p className="text-[10px] text-primary font-bold flex items-center gap-0.5 mt-1">
+        <StitchIcon name="trending_flat" size={11} />
+        {t('dashboard.stable')}
+      </p>
+    );
+  }
+
+  const up = value > 0;
+  return (
+    <p
+      className={`text-[10px] font-bold flex items-center gap-0.5 mt-1 ${
+        up ? 'text-green-600' : 'text-red-600'
+      }`}
+    >
+      <StitchIcon name={up ? 'trending_up' : 'trending_down'} size={11} />
+      {t('dashboard.kgThisMonth', {
+        value: `${up ? '+' : ''}${value.toFixed(1)}${unit}`,
+      })}
+    </p>
+  );
+}
+
+/** One metric tile in the 2x2 grid. */
+function Tile({
+  label,
+  value,
+  children,
+}: {
+  label: string;
+  value: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="p-4 rounded-xl bg-surface-container-low border border-transparent hover:border-tertiary/20 transition-all">
+      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">
+        {label}
+      </p>
+      <p className="text-xl font-black text-on-surface">{value}</p>
+      {children}
+    </div>
+  );
 }
 
 export function BodyProgressCard({
   latestPhysicalData,
-  weightProgress,
   progressStats,
   onDataUpdate,
 }: BodyProgressCardProps) {
-  const hasData = latestPhysicalData != null;
+  const { t, i18n } = useTranslation();
   const [modalOpened, setModalOpened] = useState(false);
+
+  const hasData = latestPhysicalData != null;
 
   const handleSave = async (data: CreatePhysicalDataDto) => {
     await physicalDataService.create(data);
@@ -50,147 +87,100 @@ export function BodyProgressCard({
     onDataUpdate?.();
   };
 
+  const dash = t('common.none');
+
   return (
     <>
-    <Paper className="dashboard-card" radius="md" p="lg" withBorder>
-      <Group justify="space-between" mb="lg">
-        <Group gap="xs">
-          <IconScale size={20} color="var(--mantine-color-cyan-5)" />
-          <Title order={4}>Body Progress</Title>
-        </Group>
-        <Button
-          variant="light"
-          color="cyan"
-          size="xs"
-          leftSection={<IconPlus size={14} />}
-          onClick={() => setModalOpened(true)}
-        >
-          {hasData ? 'Update' : 'Add Record'}
-        </Button>
-      </Group>
+      <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
+        <div className="flex items-center justify-between mb-6 gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+              <StitchIcon name="scale" size={18} />
+            </div>
+            <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
+              {t('dashboard.bodyProgress')}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => setModalOpened(true)}
+            className="text-xs font-bold text-primary hover:underline shrink-0"
+          >
+            {hasData ? t('dashboard.updateRecord') : t('dashboard.addRecord')}
+          </button>
+        </div>
 
-      {!hasData ? (
-        <Stack align="center" gap="md" py="xl">
-          <Text c="dimmed" ta="center">
-            No physical data recorded yet. Start tracking your body metrics to
-            see progress.
-          </Text>
-        </Stack>
-      ) : (
-        <Stack gap="sm">
-          {/* Weight row */}
-          <Paper className="dashboard-metric-card" p="sm" radius="sm">
-            <Group justify="space-between" align="center">
-              <Group gap="xs">
-                <ThemeIcon variant="light" color="blue" size="sm" radius="sm">
-                  <IconScale size={14} />
-                </ThemeIcon>
-                <Text size="sm" c="dimmed">Weight</Text>
-              </Group>
-              <Group gap={6} align="baseline">
-                <Text fw={700} size="lg">{latestPhysicalData.weightKg} kg</Text>
-                {weightProgress?.change != null && weightProgress.change !== 0 && (
-                  <Badge
-                    size="xs"
-                    variant="light"
-                    color={weightProgress.change < 0 ? 'red' : 'green'}
-                    leftSection={<TrendIcon value={weightProgress.change} />}
-                  >
-                    {weightProgress.change > 0 ? '+' : ''}
-                    {weightProgress.change.toFixed(1)} kg this month
-                  </Badge>
-                )}
-                {weightProgress?.change === 0 && (
-                  <Badge size="xs" variant="light" color="gray" leftSection={<TrendIcon value={0} />}>
-                    Stable
-                  </Badge>
-                )}
-              </Group>
-            </Group>
-          </Paper>
+        {!hasData ? (
+          <p className="text-sm text-on-surface-variant">
+            {t('dashboard.noPhysicalData')}
+          </p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <Tile
+                label={t('dashboard.weight')}
+                value={`${latestPhysicalData.weightKg} ${t('common.kg')}`}
+              >
+                <Trend
+                  value={progressStats?.last30Days?.weightDiff}
+                  unit={t('common.kg')}
+                  t={t}
+                />
+              </Tile>
 
-          {/* Body Fat row */}
-          <Paper className="dashboard-metric-card" p="sm" radius="sm">
-            <Group justify="space-between" align="center">
-              <Group gap="xs">
-                <ThemeIcon variant="light" color="violet" size="sm" radius="sm">
-                  <IconPercentage size={14} />
-                </ThemeIcon>
-                <Text size="sm" c="dimmed">Body Fat %</Text>
-              </Group>
-              <Group gap={6} align="baseline">
-                <Text fw={700} size="lg">
-                  {latestPhysicalData.bodyFatPercent != null
+              <Tile
+                label={t('dashboard.bodyFatPct')}
+                value={
+                  latestPhysicalData.bodyFatPercent != null
                     ? `${latestPhysicalData.bodyFatPercent} %`
-                    : '—'}
-                </Text>
-                {progressStats?.last30Days?.fatDiff != null &&
-                  progressStats.last30Days.fatDiff !== 0 ? (
-                  <Badge
-                    size="xs"
-                    variant="light"
-                    color={progressStats.last30Days.fatDiff < 0 ? 'green' : 'red'}
-                    leftSection={<TrendIcon value={-progressStats.last30Days.fatDiff} />}
-                  >
-                    {progressStats.last30Days.fatDiff > 0 ? '+' : ''}
-                    {progressStats.last30Days.fatDiff.toFixed(1)}%
-                  </Badge>
-                ) : (
-                  <Badge size="xs" variant="light" color="gray" leftSection={<TrendIcon value={0} />}>
-                    Stable
-                  </Badge>
-                )}
-              </Group>
-            </Group>
-          </Paper>
+                    : dash
+                }
+              >
+                <Trend
+                  value={progressStats?.last30Days?.fatDiff}
+                  unit="%"
+                  t={t}
+                />
+              </Tile>
 
-          {/* Height row */}
-          {latestPhysicalData.heightCm ? (
-            <Paper className="dashboard-metric-card" p="sm" radius="sm">
-              <Group justify="space-between" align="center">
-                <Group gap="xs">
-                  <ThemeIcon variant="light" color="teal" size="sm" radius="sm">
-                    <IconRulerMeasure size={14} />
-                  </ThemeIcon>
-                  <Text size="sm" c="dimmed">Height</Text>
-                </Group>
-                <Text fw={700} size="lg">{latestPhysicalData.heightCm} cm</Text>
-              </Group>
-            </Paper>
-          ) : null}
+              <Tile
+                label={t('dashboard.height')}
+                value={
+                  latestPhysicalData.heightCm != null
+                    ? `${latestPhysicalData.heightCm} ${t('physicalData.cm')}`
+                    : dash
+                }
+              />
 
-          {/* Waist row */}
-          {latestPhysicalData.measurements?.waist ? (
-            <Paper className="dashboard-metric-card" p="sm" radius="sm">
-              <Group justify="space-between" align="center">
-                <Group gap="xs">
-                  <ThemeIcon variant="light" color="orange" size="sm" radius="sm">
-                    <IconRulerMeasure size={14} />
-                  </ThemeIcon>
-                  <Text size="sm" c="dimmed">Waist</Text>
-                </Group>
-                <Text fw={700} size="lg">{latestPhysicalData.measurements.waist} cm</Text>
-              </Group>
-            </Paper>
-          ) : null}
+              <Tile
+                label={t('dashboard.waist')}
+                value={
+                  latestPhysicalData.measurements?.waist != null
+                    ? `${latestPhysicalData.measurements.waist} ${t('physicalData.cm')}`
+                    : dash
+                }
+              />
+            </div>
 
-          <Text size="xs" c="dimmed" ta="right">
-            Last recorded:{' '}
-            {new Date(latestPhysicalData.dateRecorded).toLocaleDateString(undefined, {
-              year: 'numeric', month: 'short', day: 'numeric',
-            })}
-          </Text>
-        </Stack>
-      )}
-    </Paper>
+            <p className="text-[10px] text-on-surface-variant/70 mt-4">
+              {t('dashboard.lastRecorded')}{' '}
+              {new Date(latestPhysicalData.dateRecorded).toLocaleDateString(
+                i18n.language,
+                { day: '2-digit', month: '2-digit', year: 'numeric' },
+              )}
+            </p>
+          </>
+        )}
+      </div>
 
-    <MeasurementModal
-      opened={modalOpened}
-      onClose={() => setModalOpened(false)}
-      lastRecord={latestPhysicalData}
-      onSave={handleSave}
-      onUpdate={handleUpdate}
-    />
-  </>
+      <MeasurementModal
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+        measurement={hasData ? latestPhysicalData : null}
+        lastRecord={latestPhysicalData}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+      />
+    </>
   );
 }

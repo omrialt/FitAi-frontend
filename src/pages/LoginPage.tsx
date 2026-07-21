@@ -1,33 +1,33 @@
-import { Link } from "react-router-dom";
-import { useState, Activity } from "react";
-import {
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  PasswordInput,
-  Button,
-  Stack,
-  Divider,
-  Group,
-  Anchor,
-  Loader,
-} from "@mantine/core";
-import { IconBrandGoogle, IconLogin } from "@tabler/icons-react";
-import { useTranslation } from "react-i18next";
-import { useAuth } from "../hooks/useAuth";
-import { useApi } from "../hooks/useApi";
-import { useFormHandler } from "../hooks/useFormHandler";
-import { authService } from "../services/auth.service";
-import { usePresetMetadata } from "../hooks/useMetadata";
-import { loginSchema, type LoginFormData } from "../schemas/auth.schemas";
-import "../styles/Auth.css";
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useAuth } from '../hooks/useAuth';
+import { useApi } from '../hooks/useApi';
+import { useFormHandler } from '../hooks/useFormHandler';
+import { authService } from '../services/auth.service';
+import { usePresetMetadata } from '../hooks/useMetadata';
+import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
+import { AuthLayout } from '../components/auth/AuthLayout';
+import {
+  AuthField,
+  AuthSubmit,
+  GoogleButton,
+  AuthDivider,
+} from '../components/auth/AuthField';
+
+/**
+ * Login — "Performance Lab" design.
+ *
+ * The design also shows a "Remember this device for 30 days" checkbox. There is
+ * no backend support for persistent device trust, so it is omitted rather than
+ * rendered as a control that does nothing.
+ */
 function LoginPage() {
   const { t } = useTranslation();
   const { login } = useAuth();
-  const metadata = usePresetMetadata("login", {
-    preconnect: ["https://accounts.google.com"],
+  const metadata = usePresetMetadata('login', {
+    preconnect: ['https://accounts.google.com'],
   });
 
   const {
@@ -41,32 +41,26 @@ function LoginPage() {
       await login(data);
     },
     showErrorToast: false, // useAuth handles toast notifications
-    mode: "onTouched", // Validate on blur and submit
+    mode: 'onTouched',
   });
 
-  // State for showing reset password form
+  // Inline "forgot password" flow, shown in place of the credential form
   const [showReset, setShowReset] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
+  const [resetEmail, setResetEmail] = useState('');
   const {
     execute: resetPassword,
     loading: resetLoading,
     error: resetError,
-    data: resetData,
   } = useApi<void>({
     showSuccessToast: true,
     successMessage: t('auth.resetLinkSent'),
   });
 
-  const handleGoogleLogin = () => {
-    // Initiate Google OAuth flow
-    authService.loginWithGoogle();
-  };
-
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resetEmail) return;
-    await resetPassword("/auth/forgot-password", {
-      method: "POST",
+    await resetPassword('/auth/forgot-password', {
+      method: 'POST',
       data: { email: resetEmail },
     });
   };
@@ -74,147 +68,93 @@ function LoginPage() {
   return (
     <>
       {metadata}
-      <div
-        className="auth-container"
-        style={{
-          width: "100%",
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+      <AuthLayout
+        title={t('auth.loginTitle')}
+        subtitle={
+          showReset ? t('auth.resetSubtitle') : t('auth.loginSubtitleDesktop')
+        }
       >
-        <Paper
-          shadow="xl"
-          p="xl"
-          radius="md"
-          withBorder
-          className="auth-card"
-          style={{
-            width: "100%",
-            maxWidth: "420px",
-            margin: "0 auto",
-          }}
-        >
-          <Stack gap="md">
-            {/* Header */}
-            <div style={{ textAlign: "center" }}>
-              <Title order={2} mb="xs">
-                {t('auth.loginTitle')}
-              </Title>
-              <Text size="sm" c="dimmed">
-                {t('auth.loginSubtitle')}
-              </Text>
-            </div>
-            <Activity mode={!showReset ? "visible" : "hidden"}>
-              <Button
-                variant="default"
-                size="md"
-                leftSection={<IconBrandGoogle size={18} />}
-                onClick={handleGoogleLogin}
-                fullWidth
-              >
-                {t('auth.continueWithGoogle')}
-              </Button>
+        {showReset ? (
+          <form onSubmit={handleResetSubmit} className="space-y-5">
+            <AuthField
+              id="reset-email"
+              label={t('auth.workEmail')}
+              icon="mail"
+              type="email"
+              placeholder={t('auth.workEmailPlaceholder')}
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              error={resetError?.message}
+              required
+            />
 
-              <Divider label={t('auth.orContinueWithEmail')} labelPosition="center" />
-              <form onSubmit={handleSubmit}>
-                <Stack gap="md">
-                  <TextInput
-                    label={t('auth.email')}
-                    placeholder={t('auth.emailPlaceholder')}
-                    required
-                    withAsterisk
-                    {...register("email")}
-                    error={errors.email?.message}
-                  />
+            <AuthSubmit loading={resetLoading}>
+              {t('auth.resetPassword')}
+            </AuthSubmit>
 
-                  <PasswordInput
-                    label={t('auth.password')}
-                    placeholder={t('auth.passwordPlaceholder')}
-                    required
-                    withAsterisk
-                    {...register("password")}
-                    error={errors.password?.message}
-                  />
+            <button
+              type="button"
+              onClick={() => setShowReset(false)}
+              className="w-full text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors"
+            >
+              {t('auth.backToLogin')}
+            </button>
+          </form>
+        ) : (
+          <div className="space-y-4">
+            <GoogleButton
+              label={t('auth.continueWithGoogle')}
+              onClick={() => authService.loginWithGoogle()}
+            />
 
-                  <Group justify="space-between">
-                    <Anchor
-                      component="button"
-                      type="button"
-                      size="sm"
-                      onClick={() => setShowReset(true)}
-                    >
-                      {t('auth.forgotPassword')}
-                    </Anchor>
-                  </Group>
+            <AuthDivider label={t('auth.orContinueWithEmail')} />
 
-                  <Button
-                    type="submit"
-                    fullWidth
-                    size="md"
-                    leftSection={<IconLogin size={18} />}
-                    loading={isSubmitting}
-                    gradient={{ from: "indigo", to: "cyan", deg: 45 }}
-                    variant="gradient"
-                    className="auth-button"
-                  >
-                    {t('auth.signIn')}
-                  </Button>
-                </Stack>
-              </form>
-            </Activity>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <AuthField
+                id="email"
+                label={t('auth.workEmail')}
+                icon="mail"
+                type="email"
+                placeholder={t('auth.workEmailPlaceholder')}
+                autoComplete="email"
+                error={errors.email?.message}
+                {...register('email')}
+              />
 
-            <Activity mode={showReset ? "visible" : "hidden"}>
-              <form onSubmit={handleResetSubmit}>
-                <Stack gap="md">
-                  <TextInput
-                    label={t('auth.email')}
-                    placeholder={t('auth.emailPlaceholder')}
-                    required
-                    withAsterisk
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    error={resetError?.message}
-                  />
-                  <Activity mode={resetLoading ? "visible" : "hidden"}>
-                    <Group justify="center">
-                      <Loader size="sm" />
-                    </Group>
-                  </Activity>
-                  <Button
-                    type="submit"
-                    fullWidth
-                    size="md"
-                    disabled={resetLoading}
-                    variant="gradient"
-                    gradient={{ from: "indigo", to: "cyan", deg: 45 }}
-                  >
-                    {t('auth.resetPassword')}
-                  </Button>
-                  <Button
-                    variant="subtle"
-                    color="gray"
-                    fullWidth
-                    onClick={() => setShowReset(false)}
+              <AuthField
+                id="password"
+                label={t('auth.password')}
+                icon="lock"
+                type="password"
+                placeholder={t('auth.passwordPlaceholder')}
+                autoComplete="current-password"
+                error={errors.password?.message}
+                action={
+                  <button
                     type="button"
+                    onClick={() => setShowReset(true)}
+                    className="text-xs font-bold text-primary hover:text-primary-container transition-colors"
                   >
-                    {t('auth.backToLogin')}
-                  </Button>
-                </Stack>
-              </form>
-            </Activity>
+                    {t('auth.forgotShort')}
+                  </button>
+                }
+                {...register('password')}
+              />
 
-            {/* Register Link */}
-            <Text size="sm" ta="center">
-              {t('auth.noAccount')}{" "}
-              <Anchor component={Link} to="/register" fw={600}>
-                {t('auth.signUp')}
-              </Anchor>
-            </Text>
-          </Stack>
-        </Paper>
-      </div>
+              <AuthSubmit loading={isSubmitting}>
+                {t('auth.signInToLab')}
+              </AuthSubmit>
+            </form>
+
+            <p className="text-sm text-center text-on-surface-variant pt-2">
+              {t('auth.noAccountYet')}{' '}
+              <Link to="/register" className="font-bold text-primary hover:underline">
+                {t('auth.startTrial')}
+              </Link>
+            </p>
+          </div>
+        )}
+      </AuthLayout>
     </>
   );
 }

@@ -6,7 +6,7 @@ import { Card, Text, Group, Badge, Table, Box, Button } from '@mantine/core';
 import { IconVideo, IconHistory, IconPlus } from '@tabler/icons-react';
 import { useState, Activity } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Exercise, WeightHistoryEntry } from '../../../types/training-plan.types';
+import type { WeightHistoryEntry } from '../../../types/training-plan.types';
 import { SetHistoryModal } from './SetHistoryModal';
 import type { ExerciseCardProps } from '../../../types/trainings-components.types';
 

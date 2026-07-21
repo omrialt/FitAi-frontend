@@ -8,16 +8,9 @@ import { Activity } from 'react';
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
-import {
-  IconDotsVertical,
-  IconEye,
-  IconEdit,
-  IconFileTypePdf,
-  IconFileTypeXls,
-  IconTrash,
-  IconCircleCheck,
-} from '@tabler/icons-react';
-import type { NutritionPlan } from '../../types/nutrition.types';
+import { IconDotsVertical, IconEye, IconEdit, IconFileTypePdf, IconFileTypeXls, IconTrash, IconCircleCheck } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+
 import '../../styles/DropdownMenu.css';
 import type { NutritionsActionsMenuProps } from '../../types/nutrition-components.types';
 
@@ -32,6 +25,8 @@ export function NutritionsActionsMenu({
   onDelete,
   onActivate,
 }: NutritionsActionsMenuProps) {
+  const { t } = useTranslation();
+
   // Check if current user is the owner of the nutrition plan
   const nutritionUserId = typeof nutritionPlan.userId === 'string' 
     ? nutritionPlan.userId 
@@ -60,7 +55,7 @@ export function NutritionsActionsMenu({
             onSelect={() => onView(nutritionPlan._id)}
           >
             <IconEye size={16} />
-            <span>View</span>
+            <span>{t('common.view')}</span>
           </DropdownMenu.Item>
 
           {/* Make Active */}
@@ -70,7 +65,7 @@ export function NutritionsActionsMenu({
               onSelect={() => onActivate && onActivate(nutritionPlan._id)}
             >
               <IconCircleCheck size={16} />
-              <span>Make Active</span>
+              <span>{t('nutrition.makeActive')}</span>
             </DropdownMenu.Item>
           </Activity>
 
@@ -81,7 +76,7 @@ export function NutritionsActionsMenu({
               onSelect={() => onEdit(nutritionPlan._id)}
             >
               <IconEdit size={16} />
-              <span>Edit</span>
+              <span>{t('common.edit')}</span>
             </DropdownMenu.Item>
           </Activity>
 
@@ -91,7 +86,7 @@ export function NutritionsActionsMenu({
           <DropdownMenu.Sub>
             <DropdownMenu.SubTrigger className="dropdown-menu-item">
               <IconFileTypePdf size={16} />
-              <span>Export</span>
+              <span>{t('trainings.export')}</span>
             </DropdownMenu.SubTrigger>
             <DropdownMenu.Portal>
               <DropdownMenu.SubContent
@@ -104,14 +99,14 @@ export function NutritionsActionsMenu({
                   onSelect={() => onExportPDF(nutritionPlan)}
                 >
                   <IconFileTypePdf size={16} />
-                  <span>Export as PDF</span>
+                  <span>{t('common.exportAsPDF')}</span>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="dropdown-menu-item"
                   onSelect={() => onExportExcel(nutritionPlan)}
                 >
                   <IconFileTypeXls size={16} />
-                  <span>Export as Excel</span>
+                  <span>{t('common.exportAsExcel')}</span>
                 </DropdownMenu.Item>
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
@@ -125,7 +120,7 @@ export function NutritionsActionsMenu({
               onSelect={() => onDelete && onDelete(nutritionPlan._id)}
             >
               <IconTrash size={16} />
-              <span>Delete</span>
+              <span>{t('common.delete')}</span>
             </DropdownMenu.Item>
           </Activity>
         </DropdownMenu.Content>

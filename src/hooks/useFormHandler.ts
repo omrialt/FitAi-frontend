@@ -37,16 +37,44 @@
  * ```
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm, type UseFormReturn, type FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import type {
   UseFormHandlerOptions,
   UseFormHandlerReturn,
   AxiosErrorResponse,
 } from "../types/form.types";
+
+/**
+ * Schemas carry i18n keys (e.g. 'validation.passwordMin') as their messages so a
+ * single schema instance can render in any language. This walks the resolver's
+ * error tree and swaps each key for the translated string. Messages that aren't
+ * known keys are returned unchanged by i18next, so plain text still works.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function translateErrors(errors: any, t: TFunction): any {
+  if (!errors || typeof errors !== "object") return errors;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const out: any = Array.isArray(errors) ? [] : {};
+
+  for (const [key, value] of Object.entries(errors)) {
+    if (key === "message" && typeof value === "string") {
+      out[key] = t(value);
+    } else if (value && typeof value === "object") {
+      out[key] = translateErrors(value, t);
+    } else {
+      out[key] = value;
+    }
+  }
+
+  return out;
+}
 
 /**
  * Custom form handler hook with Zod validation
@@ -63,11 +91,26 @@ export function useFormHandler<TFormData extends FieldValues = FieldValues>({
   showErrorToast = true,
   mode = "onBlur",
 }: UseFormHandlerOptions<TFormData>): UseFormHandlerReturn<TFormData> {
-  // Type assertion needed due to Zod v4 compatibility with @hookform/resolvers v5
-  // The resolver works correctly at runtime despite the type mismatch
-  const form = useForm<TFormData>({
+  const { t } = useTranslation();
+
+  // `t` gets a new identity on language change, so this rebuilds with it and
+  // already-visible errors re-render translated
+  const resolver = useMemo(() => {
+    // Type assertion needed due to Zod v4 compatibility with @hookform/resolvers v5
+    // The resolver works correctly at runtime despite the type mismatch
     // @ts-expect-error - Zod v4 types don't match @hookform/resolvers v5 expectations, but runtime is compatible
-    resolver: zodResolver(schema),
+    const baseResolver = zodResolver(schema);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (async (values: any, context: any, options: any) => {
+      const result = await baseResolver(values, context, options);
+      return { ...result, errors: translateErrors(result.errors, t) };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any;
+  }, [schema, t]);
+
+  const form = useForm<TFormData>({
+    resolver,
     defaultValues,
     mode,
   });
@@ -80,7 +123,6 @@ export function useFormHandler<TFormData extends FieldValues = FieldValues>({
   const handleSubmit = rhfHandleSubmit(
     async (data) => {
       try {
-        // @ts-expect-error - Type mismatch between react-hook-form internal types and our schema types
         await onSubmit(data);
 
         if (showSuccessToast) {
@@ -90,7 +132,7 @@ export function useFormHandler<TFormData extends FieldValues = FieldValues>({
         console.error("Form submission error:", error);
 
         if (showErrorToast) {
-          const errorMessage = extractErrorMessage(error);
+          const errorMessage = extractErrorMessage(error, t);
           toast.error(errorMessage);
         }
 
@@ -119,7 +161,6 @@ export function useFormHandler<TFormData extends FieldValues = FieldValues>({
     }
   );
 
-  // @ts-expect-error - Type assertion needed for return type compatibility
   return {
     ...form,
     handleSubmit,
@@ -130,7 +171,7 @@ export function useFormHandler<TFormData extends FieldValues = FieldValues>({
 /**
  * Extract error message from various error types (Axios, Error, unknown)
  */
-function extractErrorMessage(error: unknown): string {
+function extractErrorMessage(error: unknown, t: TFunction): string {
   // Check if it's an Axios error
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as AxiosErrorResponse | undefined;
@@ -148,7 +189,7 @@ function extractErrorMessage(error: unknown): string {
   }
 
   // Fallback for unknown error types
-  return "Form submission failed";
+  return t("validation.submitFailed");
 }
 
 /**

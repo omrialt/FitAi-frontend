@@ -6,11 +6,9 @@
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ActionIcon } from '@mantine/core';
-import {
-  IconDotsVertical,
-  IconEye,
-} from '@tabler/icons-react';
-import type { User } from '../../types/auth.types';
+import { IconDotsVertical, IconEye } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+
 import type { AdminUsersActionsMenuProps } from '../../types/admin.types';
 import '../../styles/DropdownMenu.css';
 
@@ -18,6 +16,8 @@ export function AdminUsersActionsMenu({
   user,
   onView,
 }: AdminUsersActionsMenuProps) {
+  const { t } = useTranslation();
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -34,7 +34,7 @@ export function AdminUsersActionsMenu({
             onSelect={() => onView(user)}
           >
             <IconEye size={16} />
-            <span>View</span>
+            <span>{t('common.view')}</span>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

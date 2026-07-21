@@ -5,9 +5,10 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Container, Box, Center, Loader, SimpleGrid, Paper, Text, Title, Button, Group, Stack } from "@mantine/core";
+import { Container, Box, Center, Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import { useDebounce } from "../hooks/useDebounce";
 import { useApi } from "../hooks/useApi";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ export default function MyTrainingsPage() {
       userService.findAll().then(setAllUsers).catch(() => setAllUsers([]));
     }, []);
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
 
@@ -60,11 +62,11 @@ export default function MyTrainingsPage() {
   });
   const { execute: updateTraining } = useApi<TrainingPlan>({
     showSuccessToast: true,
-    successMessage: "Training updated successfully",
+    successMessage: t("trainings.updatedSuccess"),
   });
   const { execute: deleteTraining } = useApi<{ message: string }>({
     showSuccessToast: true,
-    successMessage: "Training deleted successfully",
+    successMessage: t("trainings.deletedSuccess"),
   });
 
   const allTrainings = useMemo(() => {
@@ -85,6 +87,19 @@ export default function MyTrainingsPage() {
     return counts.map((c) => c / max);
   }, [allTrainings]);
 
+  /**
+   * Weekly training volume in hours, summed from each active plan's
+   * `estimatedDuration` (minutes per session) across its scheduled days.
+   * Plans without an estimate contribute nothing rather than being guessed at.
+   */
+  const totalVolumeHours = useMemo(() => {
+    const minutes = allTrainings.reduce((sum, plan) => {
+      if (!plan.isActive || !plan.estimatedDuration) return sum;
+      return sum + plan.estimatedDuration * (plan.days?.length || 0);
+    }, 0);
+    return minutes / 60;
+  }, [allTrainings]);
+
   // Modals state
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
@@ -100,8 +115,8 @@ export default function MyTrainingsPage() {
   // Export hook
   const { exportToPDF, exportToExcel } = useExport({
     filename: "my-trainings",
-    onSuccess: () => toast.success("Export completed successfully"),
-    onError: (error) => toast.error(`Export failed: ${error.message}`),
+    onSuccess: () => toast.success(t("common.exportSuccess")),
+    onError: (error) => toast.error(t("common.exportFailed", { error: error.message })),
   });
 
   // Handler for creating a new plan
@@ -116,12 +131,12 @@ export default function MyTrainingsPage() {
         await trainingPlanService.create(data);
         await refetchTrainings();
         setEditModalOpened(false);
-        toast.success("Training plan created successfully");
+        toast.success(t("trainings.createdSuccess"));
       } catch {
-        toast.error("Failed to create training plan");
+        toast.error(t("trainings.createFailed"));
       }
     },
-    [refetchTrainings]
+    [refetchTrainings, t]
   );
 
   // Fetch trainings from API
@@ -225,14 +240,14 @@ export default function MyTrainingsPage() {
         user?.role === "admin";
 
       if (!isOwner) {
-        toast.error("You do not have permission to edit this training plan");
+        toast.error(t("trainings.noEditPermission"));
         return;
       }
 
       setSelectedTraining(training);
       setEditModalOpened(true);
     },
-    [trainings, user?._id, user?.role]
+    [trainings, user?._id, user?.role, t]
   );
 
   const handleDelete = useCallback(
@@ -255,14 +270,14 @@ export default function MyTrainingsPage() {
         user?.role === "admin";
 
       if (!isOwner) {
-        toast.error("You do not have permission to delete this training plan");
+        toast.error(t("trainings.noDeletePermission"));
         return;
       }
 
       setSelectedTraining(training);
       setDeleteModalOpened(true);
     },
-    [trainings, user?._id, user?.role]
+    [trainings, user?._id, user?.role, t]
   );
 
   const handleSaveEdit = useCallback(
@@ -322,13 +337,13 @@ export default function MyTrainingsPage() {
         await trainingPlanService.activate(id);
         // Force a fresh fetch to ensure activeByUsers is properly updated
         await fetchTrainings("/training-plans?page=1&limit=100");
-        toast.success("Training plan activated successfully");
+        toast.success(t("trainings.activatedSuccess"));
       } catch (error) {
-        toast.error("Failed to activate training plan");
+        toast.error(t("trainings.activateFailed"));
         console.error("Failed to activate training plan:", error);
       }
     },
-    [fetchTrainings]
+    [fetchTrainings, t]
   );
 
   return (
@@ -392,68 +407,63 @@ export default function MyTrainingsPage() {
         />
 
         {/* AI Insights + Volume */}
-        <SimpleGrid cols={{ base: 1, md: 2 }} mt="xl" spacing="md">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           {/* AI Optimized Training Load */}
-          <Paper
-            p="xl"
-            radius="md"
-            style={{
-              background: 'linear-gradient(135deg, var(--mantine-color-indigo-7) 0%, var(--mantine-color-violet-7) 100%)',
-              color: '#fff',
-            }}
-          >
-            <Stack gap="xs">
-              <Title order={4} c="white">AI Optimized Training Load</Title>
-              <Text size="sm" c="rgba(255,255,255,0.85)" style={{ lineHeight: 1.6 }}>
-                Your current training plans average a <strong>84% recovery compliance rate</strong>. FitAi recommends adding a Restorative Flow day to your Peak Power block.
-              </Text>
-              <Button
-                mt="sm"
-                variant="white"
-                color="indigo"
-                size="sm"
-                style={{ alignSelf: 'flex-start' }}
-                disabled
-                title="Coming soon"
-              >
-                Apply Suggestion
-              </Button>
-            </Stack>
-          </Paper>
+          <div className="bg-primary-gradient rounded-xl p-8 text-white">
+            <h3 className="text-2xl font-black tracking-tight mb-3">
+              {t('trainings.aiCardTitle')}
+            </h3>
+            <p className="text-sm leading-relaxed text-white/85 mb-6">
+              <Trans i18nKey="trainings.aiCardText" components={{ strong: <strong /> }} />
+            </p>
+            <button
+              type="button"
+              disabled
+              title={t('common.comingSoon')}
+              className="bg-surface-container-lowest text-primary px-6 py-3 rounded-lg font-bold text-sm disabled:opacity-70"
+            >
+              {t('trainings.applySuggestion')}
+            </button>
+          </div>
 
           {/* Training Volume */}
-          <Paper p="xl" radius="md" withBorder>
-            <Group justify="space-between" mb="xs">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed">Training Volume</Text>
-              <Text size="xs" c="dimmed">Mon{'\u2014'}Sun</Text>
-            </Group>
-            <Text size="2.5rem" fw={800} lh={1}>
-              {(allTrainings.reduce((s, t) => s + (t.days?.length || 0), 0) * 1.2).toFixed(1)}
-              <Text span size="md" fw={400} c="dimmed"> hrs</Text>
-            </Text>
-            <Group gap={6} mt="md" align="flex-end" h={48}>
+          <div className="bg-surface-container-high rounded-xl p-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                {t('trainings.trainingVolume')}
+              </span>
+              <span className="text-[10px] text-on-surface-variant">
+                {t('trainings.monSun')}
+              </span>
+            </div>
+
+            <p className="text-5xl font-black text-on-surface leading-none">
+              {totalVolumeHours.toFixed(1)}
+              <span className="text-base font-normal text-on-surface-variant ms-1">
+                {t('trainings.hrs')}
+              </span>
+            </p>
+
+            <div className="flex items-end gap-1.5 h-12 mt-6">
               {weekdayVolume.map((count, i) => (
-                <Stack key={i} gap={2} align="center" style={{ flex: 1 }}>
-                  <Box
-                    w="100%"
-                    style={{
-                      height: `${8 + count * 36}px`,
-                      borderRadius: 4,
-                      backgroundColor:
-                        count > 0
-                          ? 'var(--mantine-color-indigo-5)'
-                          : 'var(--mantine-color-gray-3)',
-                    }}
-                  />
-                </Stack>
+                <div
+                  key={i}
+                  className={`flex-1 rounded ${count > 0 ? 'bg-primary' : 'bg-surface-container-highest'}`}
+                  style={{ height: `${8 + count * 36}px` }}
+                />
               ))}
-            </Group>
-            <Group justify="space-between" mt={4}>
-              <Text size="10px" c="dimmed">MON</Text>
-              <Text size="10px" c="dimmed">SUN</Text>
-            </Group>
-          </Paper>
-        </SimpleGrid>
+            </div>
+
+            <div className="flex justify-between mt-1">
+              <span className="text-[10px] text-on-surface-variant">
+                {t('trainings.mon')}
+              </span>
+              <span className="text-[10px] text-on-surface-variant">
+                {t('trainings.sun')}
+              </span>
+            </div>
+          </div>
+        </section>
       </Container>
 
       {/* Modals */}

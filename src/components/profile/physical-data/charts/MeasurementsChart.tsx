@@ -5,11 +5,17 @@
 import { Paper, Title, Text, Box, Stack, SimpleGrid } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useMemo } from 'react';
-import type { PhysicalData } from '../../../../types/physical-data.types';
+import { useTranslation } from 'react-i18next';
+
 import { formatChartDate } from '../helpers/calcImprovement';
 import type { MeasurementsChartProps } from '../../../../types/physical-data-components.types';
 
 export function MeasurementsChart({ data }: MeasurementsChartProps) {
+  const { t } = useTranslation();
+
+  // Series names are also matched in the tooltip formatter below, so keep them in one place
+  const weightSeriesName = t('physicalData.weight');
+  const bodyFatSeriesName = t('physicalData.bodyFatPct');
 
   // Sort data by date (oldest first for chronological chart)
   const sortedData = useMemo(() => {
@@ -45,7 +51,7 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
     return (
       <Paper p="xl" withBorder>
         <Text c="dimmed" ta="center">
-          No data available for charts
+          {t('physicalData.noChartData')}
         </Text>
       </Paper>
     );
@@ -54,15 +60,15 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
   return (
     <Stack gap="lg">
       <div>
-        <Title order={3}>Performance Trends</Title>
-        <Text size="sm" c="dimmed">Weight vs Body Fat percentage correlation over 6 months</Text>
+        <Title order={3}>{t('physicalData.performanceTrends')}</Title>
+        <Text size="sm" c="dimmed">{t('physicalData.performanceTrendsSubtitle')}</Text>
       </div>
       
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
         {/* Dual-axis Weight + Body Fat Chart */}
         <Paper p="md" withBorder>
           <Stack gap="sm">
-            <Title order={4} size="h5">Weight & Body Fat</Title>
+            <Title order={4} size="h5">{t('physicalData.weightAndBodyFat')}</Title>
             <Box style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={weightBodyFatData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
@@ -72,7 +78,7 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                     <YAxis
                       yAxisId="left"
                       orientation="left"
-                      label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#6366f1' } }}
+                      label={{ value: t('common.kg'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#6366f1' } }}
                       style={{ fontSize: '11px' }}
                       tick={{ fill: '#6366f1' }}
                     />
@@ -88,7 +94,9 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                     )}
                     <Tooltip
                       formatter={(value: number, name: string) =>
-                        name === 'Weight' ? [`${value} kg`, name] : [`${value}%`, name]
+                        name === weightSeriesName
+                          ? [`${value} ${t('common.kg')}`, name]
+                          : [`${value}%`, name]
                       }
                       contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
                     />
@@ -101,7 +109,7 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                       strokeWidth={2.5}
                       dot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}
                       activeDot={{ r: 6, fill: '#6366f1' }}
-                      name="Weight"
+                      name={weightSeriesName}
                     />
                     {hasBodyFat && (
                       <Line
@@ -112,7 +120,7 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                         strokeWidth={2.5}
                         dot={{ r: 4, fill: '#06b6d4', strokeWidth: 0 }}
                         activeDot={{ r: 6, fill: '#06b6d4' }}
-                        name="Body Fat %"
+                        name={bodyFatSeriesName}
                         connectNulls={false}
                       />
                     )}
@@ -126,27 +134,27 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
         {measurementsData.length > 0 && (
           <Paper p="md" withBorder>
             <Stack gap="sm">
-              <Title order={4} size="h5">Body Measurements</Title>
+              <Title order={4} size="h5">{t('physicalData.bodyMeasurements')}</Title>
                 <Box style={{ width: '100%', height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
                       <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: '#64748b' }} />
                       <YAxis
-                        label={{ value: 'cm', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#64748b' } }}
+                        label={{ value: t('physicalData.cm'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#64748b' } }}
                         style={{ fontSize: '11px' }}
                         tick={{ fill: '#64748b' }}
                       />
                       <Tooltip
-                        formatter={(value: number) => `${value} cm`}
+                        formatter={(value: number) => `${value} ${t('physicalData.cm')}`}
                         contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
                       />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line type="monotone" dataKey="chest" stroke="#6366f1" strokeWidth={2} name="Chest" dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="waist" stroke="#06b6d4" strokeWidth={2} name="Waist" dot={{ r: 3, fill: '#06b6d4', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="hips" stroke="#f97316" strokeWidth={2} name="Hips" dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="arms" stroke="#22c55e" strokeWidth={2} name="Arms" dot={{ r: 3, fill: '#22c55e', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="legs" stroke="#8b5cf6" strokeWidth={2} name="Legs" dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="chest" stroke="#6366f1" strokeWidth={2} name={t('physicalData.chest')} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="waist" stroke="#06b6d4" strokeWidth={2} name={t('physicalData.waist')} dot={{ r: 3, fill: '#06b6d4', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="hips" stroke="#f97316" strokeWidth={2} name={t('physicalData.hips')} dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="arms" stroke="#22c55e" strokeWidth={2} name={t('physicalData.arms')} dot={{ r: 3, fill: '#22c55e', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="legs" stroke="#8b5cf6" strokeWidth={2} name={t('physicalData.legs')} dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </Box>

@@ -5,33 +5,39 @@
 import type { ReactNode } from 'react';
 import { Stack, Title, Paper, Text, Group, ThemeIcon, Divider, Box } from '@mantine/core';
 import { IconCoffee, IconSoup, IconMoon, IconApple } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import type { MealSectionProps } from '../../../types/nutrition-components.types';
 import type { MealType } from '../../../types/nutrition.types';
 
-const mealTypeMeta: Record<MealType, { label: string; color: string; icon: ReactNode }> = {
-  breakfast: { label: 'Breakfast', color: 'orange', icon: <IconCoffee size={16} /> },
-  lunch:     { label: 'Lunch',     color: 'yellow', icon: <IconSoup size={16} /> },
-  dinner:    { label: 'Dinner',    color: 'indigo', icon: <IconMoon size={16} /> },
-  snack:     { label: 'Snack',     color: 'green',  icon: <IconApple size={16} /> },
+const mealTypeMeta: Record<MealType, { labelKey: string; color: string; icon: ReactNode }> = {
+  breakfast: { labelKey: 'nutrition.breakfast', color: 'orange', icon: <IconCoffee size={16} /> },
+  lunch:     { labelKey: 'nutrition.lunch',     color: 'yellow', icon: <IconSoup size={16} /> },
+  dinner:    { labelKey: 'nutrition.dinner',    color: 'indigo', icon: <IconMoon size={16} /> },
+  snack:     { labelKey: 'nutrition.snack',     color: 'green',  icon: <IconApple size={16} /> },
 };
 
 export function MealSection({ meals }: MealSectionProps) {
+  const { t } = useTranslation();
+
   if (meals.length === 0) {
     return (
       <Stack gap="md" mb="xl">
-        <Title order={2}>Daily Meal Layout</Title>
-        <Text c="dimmed" size="sm" ta="center">No meals added to this plan yet</Text>
+        <Title order={2}>{t('nutrition.dailyMealLayout')}</Title>
+        <Text c="dimmed" size="sm" ta="center">{t('nutrition.noMeals')}</Text>
       </Stack>
     );
   }
 
   return (
     <Stack gap="md" mb="xl">
-      <Title order={2}>Daily Meal Layout</Title>
+      <Title order={2}>{t('nutrition.dailyMealLayout')}</Title>
 
       <Stack gap="sm">
         {meals.map((meal, mealIndex) => {
-          const meta = mealTypeMeta[meal.mealType] ?? { label: meal.mealType, color: 'gray', icon: <IconApple size={16} /> };
+          const meta = mealTypeMeta[meal.mealType];
+          const mealLabel = meta ? t(meta.labelKey) : meal.mealType;
+          const mealColor = meta?.color ?? 'gray';
+          const mealIcon = meta?.icon ?? <IconApple size={16} />;
           const totalKcal = meal.foods.reduce((s, f) => s + f.calories, 0);
           const totalP    = meal.foods.reduce((s, f) => s + f.protein, 0);
           const totalC    = meal.foods.reduce((s, f) => s + f.carbs, 0);
@@ -42,12 +48,12 @@ export function MealSection({ meals }: MealSectionProps) {
               {/* Meal type header row */}
               <Group justify="space-between" mb="xs">
                 <Group gap="xs">
-                  <ThemeIcon variant="light" color={meta.color} size="sm" radius="xl">
-                    {meta.icon}
+                  <ThemeIcon variant="light" color={mealColor} size="sm" radius="xl">
+                    {mealIcon}
                   </ThemeIcon>
-                  <Text size="sm" fw={600} c={meta.color}>{meta.label}</Text>
+                  <Text size="sm" fw={600} c={mealColor}>{mealLabel}</Text>
                 </Group>
-                <Text size="sm" fw={700} c="dimmed">{totalKcal.toFixed(0)} kcal</Text>
+                <Text size="sm" fw={700} c="dimmed">{totalKcal.toFixed(0)} {t('nutrition.kcal')}</Text>
               </Group>
 
               {/* Food names */}
@@ -61,7 +67,7 @@ export function MealSection({ meals }: MealSectionProps) {
                   </Text>
                 ))}
                 {meal.foods.length === 0 && (
-                  <Text size="sm" c="dimmed">No foods added</Text>
+                  <Text size="sm" c="dimmed">{t('nutrition.noFoods')}</Text>
                 )}
               </Stack>
 
@@ -70,15 +76,15 @@ export function MealSection({ meals }: MealSectionProps) {
               {/* Inline macros */}
               <Group gap="md" mt="xs">
                 <Box>
-                  <Text size="xs" c="dimmed">Protein</Text>
+                  <Text size="xs" c="dimmed">{t('nutrition.protein')}</Text>
                   <Text size="sm" fw={700} c="blue">{totalP.toFixed(0)}g</Text>
                 </Box>
                 <Box>
-                  <Text size="xs" c="dimmed">Carbs</Text>
+                  <Text size="xs" c="dimmed">{t('nutrition.carbs')}</Text>
                   <Text size="sm" fw={700} c="yellow.7">{totalC.toFixed(0)}g</Text>
                 </Box>
                 <Box>
-                  <Text size="xs" c="dimmed">Fats</Text>
+                  <Text size="xs" c="dimmed">{t('nutrition.fats')}</Text>
                   <Text size="sm" fw={700} c="green">{totalF.toFixed(0)}g</Text>
                 </Box>
               </Group>

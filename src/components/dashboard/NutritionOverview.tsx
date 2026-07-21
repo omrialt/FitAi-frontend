@@ -1,21 +1,8 @@
-import {
-  Paper,
-  Title,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Divider,
-  ThemeIcon,
-} from '@mantine/core';
-import {
-  IconToolsKitchen2,
-  IconApple,
-  IconChevronRight,
-  IconStar,
-} from '@tabler/icons-react';
+import { Paper, Title, Text, Group, Stack, Badge, Divider, ThemeIcon } from '@mantine/core';
+import { IconToolsKitchen2, IconApple, IconChevronRight, IconStar } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import type { NutritionPlan } from '../../types/nutrition.types';
+import { useTranslation } from 'react-i18next';
+
 import type { NutritionOverviewProps } from '../../types/dashboard-components.types';
 
 const targetColor: Record<string, string> = {
@@ -26,6 +13,7 @@ const targetColor: Record<string, string> = {
 
 export function NutritionOverview({ plans }: NutritionOverviewProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const display = plans.slice(0, 4);
 
   return (
@@ -33,7 +21,7 @@ export function NutritionOverview({ plans }: NutritionOverviewProps) {
       <Group justify="space-between" mb="lg">
         <Group gap="xs">
           <IconToolsKitchen2 size={20} color="var(--mantine-color-green-5)" />
-          <Title order={4}>My Nutrition Plans</Title>
+          <Title order={4}>{t('nutrition.title')}</Title>
         </Group>
         <Badge variant="light" color="green" size="sm">
           {plans.length}
@@ -43,7 +31,7 @@ export function NutritionOverview({ plans }: NutritionOverviewProps) {
       {display.length === 0 ? (
         <Stack align="center" gap="md" py="xl">
           <Text c="dimmed" ta="center">
-            You don't have any nutrition plans yet.
+            {t('dashboard.noNutritionPlansYet')}
           </Text>
         </Stack>
       ) : (
@@ -75,13 +63,13 @@ export function NutritionOverview({ plans }: NutritionOverviewProps) {
                     </Text>
                     <Group gap="xs">
                       <Text size="xs" c="dimmed">
-                        {plan.totalCalories} kcal
+                        {plan.totalCalories} {t('nutrition.kcal')}
                       </Text>
                       <Text size="xs" c="dimmed">
                         ·
                       </Text>
                       <Text size="xs" c="dimmed">
-                        {plan.meals.length} meals
+                        {t('nutrition.mealCount', { count: plan.meals.length })}
                       </Text>
                     </Group>
                   </Stack>
@@ -105,7 +93,7 @@ export function NutritionOverview({ plans }: NutritionOverviewProps) {
                       color={targetColor[plan.target] || 'gray'}
                       variant="light"
                     >
-                      {plan.target}
+                      {t(`nutrition.${plan.target}`, { defaultValue: plan.target })}
                     </Badge>
                   )}
                   <IconChevronRight
@@ -125,7 +113,7 @@ export function NutritionOverview({ plans }: NutritionOverviewProps) {
               onClick={() => navigate('/nutrition-plans')}
               mt="xs"
             >
-              View all {plans.length} plans →
+              {t('dashboard.viewAllPlans', { count: plans.length })}
             </Text>
           )}
         </Stack>

@@ -1,20 +1,8 @@
-import {
-  Paper,
-  Title,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Divider,
-  ThemeIcon,
-} from '@mantine/core';
-import {
-  IconListDetails,
-  IconBarbell,
-  IconChevronRight,
-} from '@tabler/icons-react';
+import { Paper, Title, Text, Group, Stack, Badge, Divider, ThemeIcon } from '@mantine/core';
+import { IconListDetails, IconBarbell, IconChevronRight } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import type { TrainingPlan } from '../../types/training-plan.types';
+import { useTranslation } from 'react-i18next';
+
 import type { TrainingOverviewProps } from '../../types/dashboard-components.types';
 
 const difficultyColor: Record<string, string> = {
@@ -25,6 +13,7 @@ const difficultyColor: Record<string, string> = {
 
 export function TrainingOverview({ plans }: TrainingOverviewProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const display = plans.slice(0, 4);
 
   return (
@@ -32,7 +21,7 @@ export function TrainingOverview({ plans }: TrainingOverviewProps) {
       <Group justify="space-between" mb="lg">
         <Group gap="xs">
           <IconListDetails size={20} color="var(--mantine-color-indigo-5)" />
-          <Title order={4}>My Training Plans</Title>
+          <Title order={4}>{t('trainings.title')}</Title>
         </Group>
         <Badge variant="light" color="indigo" size="sm">
           {plans.length}
@@ -42,7 +31,7 @@ export function TrainingOverview({ plans }: TrainingOverviewProps) {
       {display.length === 0 ? (
         <Stack align="center" gap="md" py="xl">
           <Text c="dimmed" ta="center">
-            You don't have any training plans yet.
+            {t('dashboard.noTrainingPlansYet')}
           </Text>
         </Stack>
       ) : (
@@ -74,17 +63,15 @@ export function TrainingOverview({ plans }: TrainingOverviewProps) {
                     </Text>
                     <Group gap="xs">
                       <Text size="xs" c="dimmed">
-                        {plan.days.length} days
+                        {t('dashboard.dayCount', { count: plan.days.length })}
                       </Text>
                       <Text size="xs" c="dimmed">
                         ·
                       </Text>
                       <Text size="xs" c="dimmed">
-                        {plan.days.reduce(
-                          (s, d) => s + d.exercises.length,
-                          0,
-                        )}{' '}
-                        exercises
+                        {t('trainings.exerciseCount', {
+                          count: plan.days.reduce((s, d) => s + d.exercises.length, 0),
+                        })}
                       </Text>
                     </Group>
                   </Stack>
@@ -95,7 +82,7 @@ export function TrainingOverview({ plans }: TrainingOverviewProps) {
                     color={difficultyColor[plan.difficulty] || 'gray'}
                     variant="light"
                   >
-                    {plan.difficulty}
+                    {t(`trainings.${plan.difficulty}`, { defaultValue: plan.difficulty })}
                   </Badge>
                   <IconChevronRight
                     size={14}
@@ -114,7 +101,7 @@ export function TrainingOverview({ plans }: TrainingOverviewProps) {
               onClick={() => navigate('/my-trainings')}
               mt="xs"
             >
-              View all {plans.length} plans →
+              {t('dashboard.viewAllPlans', { count: plans.length })}
             </Text>
           )}
         </Stack>

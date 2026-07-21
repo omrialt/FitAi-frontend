@@ -21,16 +21,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useTranslation } from "react-i18next";
 import { MealCard } from "./MealCard";
 import type { Meal, Food, MealType } from "../../../types/nutrition.types";
 import type { MealsSectionProps } from '../../../types/nutrition-components.types';
-
-const mealTypeOptions: { value: MealType; label: string }[] = [
-  { value: "breakfast", label: "Breakfast" },
-  { value: "lunch", label: "Lunch" },
-  { value: "dinner", label: "Dinner" },
-  { value: "snack", label: "Snack" },
-];
 
 export function MealsSection({
   meals,
@@ -42,6 +36,15 @@ export function MealsSection({
   onUpdateFood,
   onReorderMeals,
 }: MealsSectionProps) {
+  const { t } = useTranslation();
+
+  const mealTypeOptions: { value: MealType; label: string }[] = [
+    { value: "breakfast", label: t('nutrition.breakfast') },
+    { value: "lunch", label: t('nutrition.lunch') },
+    { value: "dinner", label: t('nutrition.dinner') },
+    { value: "snack", label: t('nutrition.snack') },
+  ];
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -86,11 +89,11 @@ export function MealsSection({
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={4}>Meals</Title>
+        <Title order={4}>{t('nutrition.meals')}</Title>
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <Button leftSection={<IconPlus size={16} />} size="sm">
-              Add Meal
+              {t('nutrition.addMeal')}
             </Button>
           </Menu.Target>
 
@@ -107,26 +110,26 @@ export function MealsSection({
       {meals.length === 0 ? (
         <Paper p="md" withBorder>
           <Text c="dimmed" ta="center">
-            No meals added yet. Click "Add Meal" to get started.
+            {t('nutrition.noMealsYet', { action: t('nutrition.addMeal') })}
           </Text>
         </Paper>
       ) : (
         <>
           <Group>
             <Badge size="lg" variant="light">
-              {meals.length} {meals.length === 1 ? "Meal" : "Meals"}
+              {t('nutrition.mealCount', { count: meals.length })}
             </Badge>
             <Badge size="lg" variant="light" color="orange">
-              {totalCalories.toFixed(0)} kcal
+              {totalCalories.toFixed(0)} {t('nutrition.kcal')}
             </Badge>
             <Badge size="lg" variant="light" color="blue">
-              Protein: {totalProtein.toFixed(1)}g
+              {t('nutrition.protein')}: {totalProtein.toFixed(1)}g
             </Badge>
             <Badge size="lg" variant="light" color="green">
-              Carbs: {totalCarbs.toFixed(1)}g
+              {t('nutrition.carbs')}: {totalCarbs.toFixed(1)}g
             </Badge>
             <Badge size="lg" variant="light" color="red">
-              Fats: {totalFat.toFixed(1)}g
+              {t('nutrition.fats')}: {totalFat.toFixed(1)}g
             </Badge>
           </Group>
 

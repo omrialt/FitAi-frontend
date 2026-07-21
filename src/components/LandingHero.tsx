@@ -48,10 +48,11 @@ export function LandingHero() {
 
   return (
     <Box>
-      {/* Hero Section — dark athletic */}
+      {/* Hero — Performance Lab indigo/violet gradient */}
       <Box
         style={{
-          background: 'linear-gradient(160deg, #0a0f1e 0%, #111827 60%, #1a1040 100%)',
+          background:
+            'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 45%, var(--color-tertiary) 100%)',
           color: 'white',
           paddingTop: '88px',
           paddingBottom: '96px',
@@ -59,9 +60,9 @@ export function LandingHero() {
           overflow: 'hidden',
         }}
       >
-        {/* Background glow blobs */}
-        <Box style={{ position: 'absolute', top: '-80px', right: '-60px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <Box style={{ position: 'absolute', bottom: '-120px', left: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        {/* Ambient light, kept decorative */}
+        <Box style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <Box style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <Container size="xl" style={{ position: 'relative', zIndex: 1 }}>
           <Grid gutter={60} align="center">
@@ -72,15 +73,15 @@ export function LandingHero() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 8,
-                    background: 'rgba(99,102,241,0.15)',
-                    border: '1px solid rgba(99,102,241,0.3)',
+                    background: 'rgba(255,255,255,0.15)',
+                    border: '1px solid rgba(255,255,255,0.25)',
                     borderRadius: '100px',
                     padding: '6px 16px',
                     width: 'fit-content',
                   }}
                 >
-                  <IconBolt size={14} color="#818cf8" />
-                  <Text size="xs" fw={600} style={{ color: '#818cf8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  <IconBolt size={14} color="#ffffff" />
+                  <Text size="xs" fw={700} style={{ color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                     {t('landing.badge')}
                   </Text>
                 </Box>
@@ -96,7 +97,7 @@ export function LandingHero() {
                   }}
                 >
                   {t('landing.heroTitle1')}{' '}
-                  <span style={{ background: 'linear-gradient(90deg, #818cf8, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <span style={{ color: 'var(--color-secondary-fixed-dim)' }}>
                     {t('landing.heroTitle2')}
                   </span>
                 </Title>
@@ -177,10 +178,10 @@ export function LandingHero() {
 
                 <Stack gap="sm">
                   {[
-                    { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), color: '#818cf8' },
+                    { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), color: 'var(--color-primary)' },
                     { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), color: '#34d399' },
                     { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), color: '#fb923c' },
-                    { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), color: '#a78bfa' },
+                    { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), color: 'var(--color-tertiary)' },
                   ].map((item) => (
                     <Box
                       key={item.label}
@@ -212,7 +213,7 @@ export function LandingHero() {
                     gap: 10,
                   }}
                 >
-                  <IconBolt size={16} color="#818cf8" />
+                  <IconBolt size={16} color='var(--color-primary)' />
                   <Text size="sm" fw={600} style={{ color: 'white' }}>{t('landing.performanceGain')}</Text>
                   <Text size="sm" fw={800} style={{ color: '#a3e635', marginInlineStart: 'auto' }}>+14.2%</Text>
                 </Box>
@@ -341,8 +342,8 @@ export function LandingHero() {
               >
                 <Stack gap="sm">
                   {[
-                    { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} />, color: '#818cf8' },
-                    { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} />, color: '#a78bfa' },
+                    { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} />, color: 'var(--color-primary)' },
+                    { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} />, color: 'var(--color-tertiary)' },
                     { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} />, color: '#60a5fa' },
                   ].map((item) => (
                     <Group key={item.label} gap="md" style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 16px' }}>
@@ -406,7 +407,7 @@ export function LandingHero() {
       </Box>
 
       {/* Footer */}
-      <Box style={{ background: '#0a0f1e', paddingTop: 48, paddingBottom: 48 }}>
+      <Box style={{ background: 'var(--color-inverse-surface)', paddingTop: 48, paddingBottom: 48 }}>
         <Container size="xl">
           <Grid gutter="xl">
             <Grid.Col span={{ base: 12, md: 4 }}>

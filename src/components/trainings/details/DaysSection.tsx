@@ -5,7 +5,6 @@
 import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantine/core';
 import { Activity } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { TrainingDay, Exercise } from '../../../types/training-plan.types';
 import { ExerciseCard } from './ExerciseCard';
 import type { DaysSectionProps } from '../../../types/trainings-components.types';
 
