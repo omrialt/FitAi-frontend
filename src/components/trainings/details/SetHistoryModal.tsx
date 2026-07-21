@@ -350,7 +350,7 @@ export function SetHistoryModal({
                   <Table.Tr>
                     <Table.Td colSpan={4}>
                       <Checkbox
-                        label="Sync to all sets"
+                        label={t('trainings.syncToAllSets')}
                         checked={syncToAllSets}
                         onChange={(e) => setSyncToAllSets(e.currentTarget.checked)}
                         size="xs"

@@ -234,7 +234,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             >
               <Image
                 src="/assets/fitai_logo_transparent.png"
-                alt="FitAI Logo"
+                alt={t("layout.logoAlt")}
                 h={40}
                 w="auto"
                 fit="contain"
@@ -252,7 +252,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 { value: "en", label: "EN" },
                 { value: "he", label: "עב" },
               ]}
-              aria-label="Language"
+              aria-label={t("layout.language")}
             />
             <Tooltip
               label={
@@ -265,7 +265,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={() => toggleColorScheme()}
                 variant="default"
                 size="lg"
-                aria-label="Toggle color scheme"
+                aria-label={t("layout.toggleColorScheme")}
                 className="theme-toggle"
               >
                 {colorScheme === "dark" ? (
@@ -343,7 +343,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   color="indigo"
                   size="lg"
                   onClick={() => navigate("/register")}
-                  aria-label="Register"
+                  aria-label={t("nav.register")}
                 >
                   <IconUserPlus size={18} />
                 </ActionIcon>

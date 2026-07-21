@@ -1,5 +1,10 @@
-@import "tailwindcss";
+/* The webfont @import MUST stay first. `@import "tailwindcss"` is inlined in
+   place by the Tailwind Vite plugin, so anything after it is preceded by
+   thousands of rules — and the CSS spec requires @import to come before all
+   rules. Browsers silently discard a late @import, which meant Inter never
+   loaded and the whole app rendered in fallback fonts. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
 @import './styles/theme.css';
 
 /* Design tokens now live in ./styles/theme.css, imported above — extracted
