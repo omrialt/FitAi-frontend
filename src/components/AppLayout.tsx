@@ -214,8 +214,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     >
       {/* Header */}
       <AppShell.Header className="appshell-header">
-        <Group h="100%" px="md" justify="space-between">
-          <Group gap="md">
+        <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+          <Group gap="md" wrap="nowrap">
             <Burger
               opened={opened}
               onClick={toggle}
@@ -243,7 +243,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Link>
           </Group>
 
-          <Group gap="xs">
+          <Group gap="xs" wrap="nowrap">
             <SegmentedControl
               size="xs"
               value={i18n.language === "he" ? "he" : "en"}
@@ -329,7 +329,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenu.Root>
             </Activity>
             <Activity mode={!isAuthenticated || !user ? "visible" : "hidden"}>
-              <Group gap="xs">
+              {/* On mobile the burger menu already exposes Login/Register,
+                  so these header buttons are hidden below `sm` to keep the
+                  header on a single row. */}
+              <Group gap="xs" wrap="nowrap" visibleFrom="sm">
                 <UnstyledButton
                   className="header-link"
                   onClick={() => navigate("/login")}
@@ -396,7 +399,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <AppShell.Main>{children}</AppShell.Main>
 
       {/* Footer: bottom nav on mobile (when signed in), copyright on desktop */}
-      <AppShell.Footer p="xs" style={{ position: "relative" }} className="appshell-footer">
+      <AppShell.Footer p="xs" className="appshell-footer">
         {isAuthenticated && user ? (
           <>
             <Box hiddenFrom="sm" h="100%">

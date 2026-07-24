@@ -253,8 +253,9 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
 
       {/* Week grid */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="grid grid-cols-7 min-w-[900px]">
+        <div className="md:overflow-x-auto">
+          {/* Mobile: stacked day agenda (1 col). md+: the 7-column week grid. */}
+          <div className="grid grid-cols-1 md:grid-cols-7 md:min-w-[900px]">
             {DAYS_OF_WEEK.map((dayName, index) => {
               const date = addDays(currentWeekStart, index);
               const dateKey = format(date, 'yyyy-MM-dd');
@@ -264,7 +265,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
               return (
                 <div
                   key={dateKey}
-                  className={`min-h-[420px] p-3 ${index < 6 ? 'border-e border-outline-variant/10' : ''} ${
+                  className={`min-h-0 md:min-h-[420px] p-3 ${index < 6 ? 'border-b border-outline-variant/10 md:border-b-0 md:border-e' : ''} ${
                     today ? 'bg-primary/5' : ''
                   }`}
                 >
