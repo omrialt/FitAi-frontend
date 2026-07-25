@@ -6,6 +6,7 @@ import {
   DashboardPage,
   GoogleCallbackPage,
   LoginPage,
+  MyClientsPage,
   MyNutritionsPage,
   MyTrainingsPage,
   NotFoundPage,
@@ -85,6 +86,15 @@ function App() {
         element={
           <ProtectedRoute roles={["admin"]}>
             <AdminUsersPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* My Clients - trainer/admin only */}
+      <Route
+        path="/clients"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <MyClientsPage />
           </ProtectedRoute>
         }
       />
