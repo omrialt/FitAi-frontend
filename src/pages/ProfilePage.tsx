@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { profileSchema, type ProfileFormData } from '../schemas/profile.schemas';
 import type { UpdateProfileDto } from '../types/user.types';
-import { ProfileDetails, ProfileForm } from '../components/profile';
+import { ProfileDetails, ProfileForm, TrainerConnectionPanel } from '../components/profile';
 import { AppLayout } from '../components/AppLayout';
 import userService from '../services/user.service';
 import { toast } from 'sonner';
@@ -201,6 +201,9 @@ const ProfilePage: React.FC = () => {
               {t('profile.pageSubtitle')}
             </p>
           </div>
+
+          {/* Trainer connection: pending invites + current trainer */}
+          <TrainerConnectionPanel />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Profile Overview - Left Column */}

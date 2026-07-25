@@ -7,6 +7,7 @@ export { default as CompleteProfilePage } from './CompleteProfilePage';
 export { default as DashboardPage } from './DashboardPage';
 export { default as GoogleCallbackPage } from './GoogleCallbackPage';
 export { default as LoginPage } from './LoginPage';
+export { default as MyClientsPage } from './MyClientsPage';
 export { default as MyNutritionsPage } from './MyNutritionsPage';
 export { default as MyTrainingsPage } from './MyTrainingsPage';
 export { default as NotFoundPage } from './NotFoundPage';

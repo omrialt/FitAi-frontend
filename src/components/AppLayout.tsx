@@ -1,5 +1,5 @@
 ﻿// React 19: No forwardRef needed - refs work directly on components
-import { useMemo, Activity } from "react";
+import { useMemo, useEffect, Activity } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
@@ -15,6 +15,8 @@ import {
   ScrollArea,
   Box,
   Image,
+  Indicator,
+  Badge,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -30,12 +32,14 @@ import {
   IconApple,
   IconCalendar,
   IconUsers,
+  IconUsersGroup,
   IconHeartRateMonitor,
 } from "@tabler/icons-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
+import { usePendingInvitesStore } from "../store/pendingInvitesStore";
 import { MobileBottomNav } from "./MobileBottomNav";
 import type { UserRole } from "../types/auth.types";
 import type { NavItem, AppLayoutProps } from '../types/layout.types';
@@ -105,6 +109,11 @@ const getNavigationItems = (
         path: "/",
       },
       {
+        icon: <IconUsersGroup size={20} stroke={1.5} />,
+        label: "nav.myClients",
+        path: "/clients",
+      },
+      {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
         path: "/my-trainings",
@@ -139,6 +148,11 @@ const getNavigationItems = (
         icon: <IconUsers size={20} stroke={1.5} />,
         label: "nav.users",
         path: "/users",
+      },
+      {
+        icon: <IconUsersGroup size={20} stroke={1.5} />,
+        label: "nav.myClients",
+        path: "/clients",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
@@ -178,6 +192,23 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   // Get auth state from Zustand store
   const { user, isAuthenticated, logout } = useAuthStore();
+
+  // Trainer invitations awaiting a response, surfaced as a badge on the avatar.
+  // TrainerConnectionPanel keeps this in sync as invites are accepted/declined.
+  const pendingInvites = usePendingInvitesStore((state) => state.count);
+  const refreshPendingInvites = usePendingInvitesStore((state) => state.refresh);
+  const clearPendingInvites = usePendingInvitesStore((state) => state.clear);
+
+  // Keyed on the user id, not the `user` object: an unrelated profile edit
+  // (avatar, name) changes that object's identity and would otherwise refetch.
+  const userId = user?._id;
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      refreshPendingInvites();
+    } else {
+      clearPendingInvites();
+    }
+  }, [isAuthenticated, userId, refreshPendingInvites, clearPendingInvites]);
 
   // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
@@ -282,18 +313,29 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenu.Trigger asChild>
                   <UnstyledButton className="user-button">
                     <Group gap="xs">
-                      <Avatar
-                        color="indigo"
-                        radius="xl"
-                        size="md"
-                        src={user?.avatarUrl}
+                      <Indicator
+                        color="red"
+                        size={18}
+                        offset={4}
+                        disabled={pendingInvites === 0}
+                        label={pendingInvites > 9 ? "9+" : pendingInvites}
+                        aria-label={t("layout.pendingInvites", {
+                          count: pendingInvites,
+                        })}
                       >
-                        <Activity
-                          mode={!user?.avatarUrl ? "visible" : "hidden"}
+                        <Avatar
+                          color="indigo"
+                          radius="xl"
+                          size="md"
+                          src={user?.avatarUrl}
                         >
-                          <IconUser size={18} />
-                        </Activity>
-                      </Avatar>
+                          <Activity
+                            mode={!user?.avatarUrl ? "visible" : "hidden"}
+                          >
+                            <IconUser size={18} />
+                          </Activity>
+                        </Avatar>
+                      </Indicator>
                       <Box visibleFrom="sm">
                         <Text size="sm" fw={500}>
                           {user?.fullName}
@@ -314,6 +356,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                     >
                       <IconUser size={16} />
                       <span>{t("layout.profile")}</span>
+                      {pendingInvites > 0 && (
+                        <Badge color="red" size="sm" circle ml="auto">
+                          {pendingInvites}
+                        </Badge>
+                      )}
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator className="dropdown-separator" />
                     <DropdownMenu.Item

@@ -17,6 +17,16 @@ export interface AuthStore {
   updateUser: (userData: Partial<User>) => void;
 }
 
+export interface PendingInvitesStore {
+  /** Trainer invitations awaiting the current user's response. */
+  count: number;
+
+  // Actions
+  setCount: (count: number) => void;
+  refresh: () => Promise<void>;
+  clear: () => void;
+}
+
 export interface UIStore {
   // Modals
   activeModal: string | null;
