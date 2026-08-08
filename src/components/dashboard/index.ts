@@ -8,3 +8,4 @@ export { UpcomingSchedule } from './UpcomingSchedule';
 export { QuickActions } from './QuickActions';
 export { TrainingOverview } from './TrainingOverview';
 export { NutritionOverview } from './NutritionOverview';
+export { TrainingRecordCard } from './TrainingRecordCard';

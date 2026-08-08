@@ -20,6 +20,7 @@ import {
   ActiveNutritionCard,
   BodyProgressCard,
   RecentRecommendations,
+  TrainingRecordCard,
 } from '../components/dashboard';
 import '../styles/Dashboard.css';
 
@@ -56,6 +57,7 @@ function DashboardContent() {
     weightProgress,
     bmi,
     progressStats,
+    workoutStats,
     aiRecommendations,
     refetch,
   } = useDashboard();
@@ -115,6 +117,9 @@ function DashboardContent() {
           />
           <ActiveNutritionCard plan={activeNutritionPlan} />
         </section>
+
+        {/* Training record — streak, adherence and personal bests */}
+        <TrainingRecordCard stats={workoutStats} />
 
         {/* Progress + insights */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">

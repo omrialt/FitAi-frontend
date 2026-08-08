@@ -15,7 +15,10 @@ import {
   RegisterPage,
   ResetPasswordPage,
   TrainingPlanDetailsPage,
-  PhysicalDataPage
+  PhysicalDataPage,
+  VerifyEmailPage,
+  WorkoutSessionPage,
+  ClientDetailPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 
@@ -80,6 +83,9 @@ function App() {
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      {/* Email verification link target — unguarded: the whole point is that
+          the recipient may not be signed in on this device */}
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
       {/* Admin Users Page - admin only */}
       <Route
         path="/users"
@@ -118,6 +124,27 @@ function App() {
         element={
           <ProtectedRoute>
             <PhysicalDataPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Live workout logger — one plan day at a time */}
+      <Route
+        path="/workout/:planId/:dayIndex"
+        element={
+          <ProtectedRoute>
+            <WorkoutSessionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* A single client's data, read-only. The backend still enforces that
+          the connection is accepted; this route only hides the entry point. */}
+      <Route
+        path="/clients/:clientId"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <ClientDetailPage />
           </ProtectedRoute>
         }
       />

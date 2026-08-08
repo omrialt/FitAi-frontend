@@ -6,6 +6,7 @@ import type { CurrentStatus } from './current-status.types';
 import type { TrainingPlan } from './training-plan.types';
 import type { NutritionPlan } from './nutrition.types';
 import type { PhysicalData, WeightProgressData } from './physical-data.types';
+import type { WorkoutStats } from './workout-session.types';
 
 export interface ProgressStats {
   _id: string;
@@ -42,5 +43,7 @@ export interface DashboardData {
   weightProgress: WeightProgressData | null;
   bmi: { bmi: number; category: string } | null;
   progressStats: ProgressStats | null;
+  /** Streak, adherence and personal bests, derived from WorkoutSession. */
+  workoutStats: WorkoutStats | null;
   aiRecommendations: AiRecommendation[];
 }

@@ -24,6 +24,10 @@ const PRESET_METADATA: Record<string, MetadataOptions> = {
     title: 'Profile - FitAI',
     description: 'Manage your profile and settings',
   },
+  'verify-email': {
+    title: 'Verify your email - FitAI',
+    description: 'Confirm your email address to finish setting up FitAi',
+  },
 };
 
 /**

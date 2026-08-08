@@ -101,9 +101,13 @@ export function ActiveTrainingCard({
     ? Math.ceil(plan.rotationCycleLength / 7)
     : null;
 
-  // Find today's training day by matching dayOfWeek
+  // Find today's training day by matching dayOfWeek. The index is what the
+  // workout logger addresses, so resolve it here rather than re-deriving it
+  // from the day object on the other side of a route change.
   const todayDow = new Date().getDay();
-  const todayDay = plan.days.find((d) => d.dayOfWeek === todayDow) || plan.days[0];
+  const todayIndex = plan.days.findIndex((d) => d.dayOfWeek === todayDow);
+  const dayIndex = todayIndex >= 0 ? todayIndex : 0;
+  const todayDay = plan.days[dayIndex];
   const todayProtocol = todayDay?.exercises?.slice(0, 3) ?? [];
 
   return (
@@ -177,6 +181,20 @@ export function ActiveTrainingCard({
         </div>
       ) : (
         <p className="text-sm text-on-surface-variant">{t('dashboard.restDay')}</p>
+      )}
+
+      {/* The entry point into the workout logger. Offered only when the day
+          actually has exercises — starting a session on a rest day would open
+          an empty form. */}
+      {todayProtocol.length > 0 && (
+        <button
+          type="button"
+          onClick={() => navigate(`/workout/${plan._id}/${dayIndex}`)}
+          className="mt-5 w-full flex items-center justify-center gap-2 bg-primary-gradient text-white px-5 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.01] transition-transform"
+        >
+          <StitchIcon name="play_arrow" size={16} />
+          {t('workout.startSession')}
+        </button>
       )}
 
       {nextWorkoutDate && (
