@@ -18,6 +18,7 @@ import {
   PhysicalDataPage,
   VerifyEmailPage,
   WorkoutSessionPage,
+  WorkoutHistoryPage,
   ClientDetailPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
@@ -134,6 +135,16 @@ function App() {
         element={
           <ProtectedRoute>
             <WorkoutSessionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* The user's own training log — the read side of the logger above */}
+      <Route
+        path="/workout-history"
+        element={
+          <ProtectedRoute>
+            <WorkoutHistoryPage />
           </ProtectedRoute>
         }
       />

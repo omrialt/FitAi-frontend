@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ExerciseCard } from './ExerciseCard';
 import type { DaysSectionProps } from '../../../types/trainings-components.types';
 
-export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectionProps) {
+export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
   const { t } = useTranslation();
 
   return (
@@ -62,7 +62,6 @@ export function DaysSection({ days, onVideoClick, onExerciseUpdate }: DaysSectio
                           exercise={exercise}
                           exerciseNumber={exIndex + 1}
                           onVideoClick={onVideoClick}
-                          onExerciseUpdate={onExerciseUpdate ? (updatedExercise) => onExerciseUpdate(dayIndex, exIndex, updatedExercise) : undefined}
                         />
                       ))}
                     </SimpleGrid>

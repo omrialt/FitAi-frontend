@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
@@ -30,6 +31,13 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
           {t('workout.trainingRecord')}
         </h3>
+        {/* These are summaries; the sessions behind them live one click away */}
+        <Link
+          to="/workout-history"
+          className="ms-auto text-xs font-bold text-primary hover:underline"
+        >
+          {t('workout.viewHistory')}
+        </Link>
       </div>
 
       {!hasHistory ? (

@@ -17,7 +17,7 @@ import { useApi } from "../hooks/useApi";
 import { useAuth } from "../hooks/useAuth";
 import { useExport } from "../hooks/useExport";
 import userService from "../services/user.service";
-import type { TrainingPlan, Exercise } from "../types/training-plan.types";
+import type { TrainingPlan } from "../types/training-plan.types";
 import type { User } from "../types/auth.types";
 import { DaysSection, VideoModal } from "../components/trainings/details";
 import { EditTrainingModal } from "../components/trainings/EditTrainingModal";
@@ -135,35 +135,6 @@ export default function TrainingPlanDetailsPage() {
     setVideoModalOpened(true);
   };
 
-  // Handle exercise update (for history changes)
-  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => {
-    if (!plan || !id) return;
-
-    // Create updated days array
-    const updatedDays = [...plan.days];
-    updatedDays[dayIndex] = {
-      ...updatedDays[dayIndex],
-      exercises: [
-        ...updatedDays[dayIndex].exercises.slice(0, exerciseIndex),
-        updatedExercise,
-        ...updatedDays[dayIndex].exercises.slice(exerciseIndex + 1),
-      ],
-    };
-
-    try {
-      const updated = await updatePlan(`/training-plans/${id}`, {
-        method: 'PUT',
-        data: { days: updatedDays },
-      });
-      if (updated?.data) {
-        setPlan(updated.data);
-        toast.success(t('trainings.historyUpdated'));
-      }
-    } catch {
-      toast.error(t('trainings.historyUpdateFailed'));
-    }
-  };
-
   // Export handlers
   const handleExportPDF = () => {
     if (plan) {
@@ -241,7 +212,6 @@ export default function TrainingPlanDetailsPage() {
         <DaysSection 
           days={plan.days} 
           onVideoClick={handleVideoClick}
-          onExerciseUpdate={canEdit ? handleExerciseUpdate : undefined}
         />
 
         {/* Active Users Section - visible to trainers/admins */}

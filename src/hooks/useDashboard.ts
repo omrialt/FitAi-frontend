@@ -147,19 +147,29 @@ export function useDashboard() {
       // Calculate and sync lastWorkoutDate / nextWorkoutDate from active plan schedule
       if (activeTrainingPlan && user._id) {
         const workoutDates = calcWorkoutDates(activeTrainingPlan);
+
+        // "Last workout" means the last one actually performed, so it comes
+        // from the training log — not from the plan's weekly schedule. The
+        // schedule can only say when a workout was *due*, which is why logging
+        // a session used to leave the banner showing the previous plan day.
+        // The schedule stays the fallback for users with no sessions yet.
+        const lastWorkoutDate = workoutStats?.streak.lastWorkoutAt
+          ? new Date(workoutStats.streak.lastWorkoutAt)
+          : workoutDates.lastWorkoutDate;
+
         const needsUpdate =
-          !datesEqual(currentStatus?.lastWorkoutDate, workoutDates.lastWorkoutDate) ||
+          !datesEqual(currentStatus?.lastWorkoutDate, lastWorkoutDate) ||
           !datesEqual(currentStatus?.nextWorkoutDate, workoutDates.nextWorkoutDate);
 
         if (needsUpdate) {
           try {
             await currentStatusService.update(user._id, {
-              lastWorkoutDate: workoutDates.lastWorkoutDate,
+              lastWorkoutDate,
               nextWorkoutDate: workoutDates.nextWorkoutDate,
             });
             // Update local currentStatus with the new dates
             if (currentStatus) {
-              currentStatus.lastWorkoutDate = workoutDates.lastWorkoutDate;
+              currentStatus.lastWorkoutDate = lastWorkoutDate;
               currentStatus.nextWorkoutDate = workoutDates.nextWorkoutDate;
             }
           } catch {

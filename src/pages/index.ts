@@ -20,4 +20,5 @@ export { default as ResetPasswordPage } from './ResetPasswordPage';
 export { default as CalendarPage } from './CalendarPage';
 export { default as VerifyEmailPage } from './VerifyEmailPage';
 export { default as WorkoutSessionPage } from './WorkoutSessionPage';
+export { default as WorkoutHistoryPage } from './WorkoutHistoryPage';
 export { default as ClientDetailPage } from './ClientDetailPage';

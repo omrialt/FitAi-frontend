@@ -6,7 +6,6 @@ import type {
   TrainingPlan,
   TrainingDay,
   Exercise,
-  WeightHistoryEntry,
   Difficulty,
   Target,
   ProgramType,
@@ -99,43 +98,12 @@ export interface TrainingsTableProps {
 export interface DaysSectionProps {
   days: TrainingDay[];
   onVideoClick: (videoUrl: string) => void;
-  onExerciseUpdate?: (
-    dayIndex: number,
-    exerciseIndex: number,
-    updatedExercise: Exercise
-  ) => void;
 }
 
 export interface ExerciseCardProps {
   exercise: Exercise;
   exerciseNumber: number;
   onVideoClick: (videoUrl: string) => void;
-  onExerciseUpdate?: (updatedExercise: Exercise) => void;
-}
-
-export interface ChartDataPoint {
-  date: string;
-  weight: number;
-  reps: number;
-  isTarget?: boolean;
-}
-
-export interface SetHistoryChartProps {
-  chartData: ChartDataPoint[];
-}
-
-export interface SetHistoryModalProps {
-  opened: boolean;
-  onClose: () => void;
-  history: WeightHistoryEntry[];
-  onHistoryChange: (
-    newHistory: WeightHistoryEntry[],
-    syncToAllSets?: boolean
-  ) => void;
-  setNumber: number;
-  exerciseName: string;
-  targetWeight: number;
-  targetReps: number;
 }
 
 export interface VideoModalProps {

@@ -1,13 +1,18 @@
 /**
  * ExerciseCard - Display individual exercise with sets table
+ *
+ * The table shows what the plan prescribes and nothing else. Performed sets
+ * used to be editable here through a per-set "sets history" modal that wrote
+ * back into the plan document; that was replaced by the workout log, which
+ * records sessions in their own collection. Two writable records of the same
+ * thing could only disagree, so this side is now read-only prescription and
+ * /workout-history is the record of what actually happened.
  */
 
 import { Card, Text, Group, Badge, Table, Box, Button } from '@mantine/core';
-import { IconVideo, IconHistory, IconPlus } from '@tabler/icons-react';
-import { useState, Activity } from 'react';
+import { IconVideo } from '@tabler/icons-react';
+import { Activity } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { WeightHistoryEntry } from '../../../types/training-plan.types';
-import { SetHistoryModal } from './SetHistoryModal';
 import type { ExerciseCardProps } from '../../../types/trainings-components.types';
 
 const exerciseTypeColors: Record<string, string> = {
@@ -16,50 +21,8 @@ const exerciseTypeColors: Record<string, string> = {
   superset: 'grape',
 };
 
-export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExerciseUpdate }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, exerciseNumber, onVideoClick }: ExerciseCardProps) {
   const { t } = useTranslation();
-  const [historyModalOpened, setHistoryModalOpened] = useState(false);
-  const [selectedSetIndex, setSelectedSetIndex] = useState<number | null>(null);
-
-  const handleHistoryClick = (setIndex: number) => {
-    setSelectedSetIndex(setIndex);
-    setHistoryModalOpened(true);
-  };
-
-  const handleHistoryChange = (newHistory: WeightHistoryEntry[], syncToAllSets: boolean = false) => {
-    if (selectedSetIndex === null || !onExerciseUpdate) return;
-
-    const updatedSets = [...exercise.sets];
-    
-    if (syncToAllSets) {
-      // Add the new record to all sets
-      const newRecord = newHistory[newHistory.length - 1]; // Get the last added record
-      updatedSets.forEach((set, index) => {
-        updatedSets[index] = {
-          ...set,
-          history: [...set.history, newRecord],
-        };
-      });
-    } else {
-      // Update only the selected set
-      updatedSets[selectedSetIndex] = {
-        ...updatedSets[selectedSetIndex],
-        history: newHistory,
-      };
-    }
-
-    const updatedExercise = {
-      ...exercise,
-      sets: updatedSets,
-    };
-
-    onExerciseUpdate(updatedExercise);
-  };
-
-  const closeHistoryModal = () => {
-    setHistoryModalOpened(false);
-    setSelectedSetIndex(null);
-  };
 
   return (
     <Card shadow="sm" p="md" withBorder>
@@ -101,7 +64,6 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
                 <Table.Th>{t('trainings.set')}</Table.Th>
                 <Table.Th>{t('trainings.targetReps')}</Table.Th>
                 <Table.Th>{t('trainings.targetWeight')}</Table.Th>
-                <Table.Th>{t('trainings.setsHistory')}</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -112,23 +74,6 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
                   </Table.Td>
                   <Table.Td>{set.targetReps}</Table.Td>
                   <Table.Td>{set.targetWeight} {t('common.kg')}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color={set.history && set.history.length > 0 ? 'blue' : 'teal'}
-                      leftSection={
-                        set.history && set.history.length > 0 ? (
-                          <IconHistory size={14} />
-                        ) : (
-                          <IconPlus size={14} />
-                        )
-                      }
-                      onClick={() => handleHistoryClick(setIndex)}
-                    >
-                      {set.history && set.history.length > 0 ? t('common.show') : t('common.add')}
-                    </Button>
-                  </Table.Td>
                 </Table.Tr>
               ))}
             </Table.Tbody>
@@ -140,21 +85,6 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick, onExercis
         <Text c="dimmed" size="sm">
           {t('trainings.noSets')}
         </Text>
-      </Activity>
-
-      <Activity mode={selectedSetIndex !== null ? "visible" : "hidden"}>
-        {selectedSetIndex !== null && (
-          <SetHistoryModal
-            opened={historyModalOpened}
-            onClose={closeHistoryModal}
-            history={exercise.sets[selectedSetIndex]?.history || []}
-            onHistoryChange={handleHistoryChange}
-            setNumber={selectedSetIndex + 1}
-            exerciseName={exercise.name}
-            targetWeight={exercise.sets[selectedSetIndex]?.targetWeight || 0}
-            targetReps={exercise.sets[selectedSetIndex]?.targetReps || 0}
-          />
-        )}
       </Activity>
     </Card>
   );

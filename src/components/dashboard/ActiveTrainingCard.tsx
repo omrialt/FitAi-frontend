@@ -1,14 +1,11 @@
 import { Text, Group, Badge, Stack, Modal, ScrollArea } from '@mantine/core';
 import { IconBarbell } from '@tabler/icons-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StitchIcon } from '../common/StitchIcon';
-import type { TrainingPlan, Exercise } from '../../types/training-plan.types';
 import type { ActiveTrainingCardProps } from '../../types/dashboard-components.types';
 import { DaysSection } from '../trainings/details/DaysSection';
 import { VideoModal } from '../trainings/details/VideoModal';
-import { trainingPlanService } from '../../services/training-plan.service';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 const difficultyColor: Record<string, string> = {
@@ -20,46 +17,16 @@ const difficultyColor: Record<string, string> = {
 export function ActiveTrainingCard({
   plan,
   currentStatus,
-  onPlanUpdate,
 }: ActiveTrainingCardProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [modalOpened, setModalOpened] = useState(false);
   const [videoModalOpened, setVideoModalOpened] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState('');
-  const [localPlan, setLocalPlan] = useState<TrainingPlan | null>(plan);
-
-  useEffect(() => {
-    setLocalPlan(plan);
-  }, [plan]);
 
   const handleVideoClick = (videoUrl: string) => {
     setCurrentVideoUrl(videoUrl);
     setVideoModalOpened(true);
-  };
-
-  const handleExerciseUpdate = async (dayIndex: number, exerciseIndex: number, updatedExercise: Exercise) => {
-    if (!localPlan) return;
-
-    const updatedDays = [...localPlan.days];
-    updatedDays[dayIndex] = {
-      ...updatedDays[dayIndex],
-      exercises: [
-        ...updatedDays[dayIndex].exercises.slice(0, exerciseIndex),
-        updatedExercise,
-        ...updatedDays[dayIndex].exercises.slice(exerciseIndex + 1),
-      ],
-    };
-
-    try {
-      await trainingPlanService.update(localPlan._id, { days: updatedDays });
-      const updatedPlan = { ...localPlan, days: updatedDays };
-      setLocalPlan(updatedPlan);
-      onPlanUpdate?.(updatedPlan);
-      toast.success(t('trainings.historyUpdated'));
-    } catch {
-      toast.error(t('trainings.historyUpdateFailed'));
-    }
   };
 
   if (!plan) {
@@ -218,10 +185,10 @@ export function ActiveTrainingCard({
       title={
         <Group gap="xs">
           <IconBarbell size={18} color="var(--mantine-color-indigo-5)" />
-          <Text fw={600} size="lg">{localPlan?.title}</Text>
-          {localPlan && (
-            <Badge color={difficultyColor[localPlan.difficulty] || 'gray'} size="sm">
-              {t(`trainings.${localPlan.difficulty}`, { defaultValue: localPlan.difficulty })}
+          <Text fw={600} size="lg">{plan?.title}</Text>
+          {plan && (
+            <Badge color={difficultyColor[plan.difficulty] || 'gray'} size="sm">
+              {t(`trainings.${plan.difficulty}`, { defaultValue: plan.difficulty })}
             </Badge>
           )}
         </Group>
@@ -229,15 +196,14 @@ export function ActiveTrainingCard({
       size="xl"
       scrollAreaComponent={ScrollArea.Autosize}
     >
-      {localPlan && (
+      {plan && (
         <Stack gap="md">
-          {localPlan.description && (
-            <Text size="sm" c="dimmed">{localPlan.description}</Text>
+          {plan.description && (
+            <Text size="sm" c="dimmed">{plan.description}</Text>
           )}
           <DaysSection
-            days={localPlan.days}
+            days={plan.days}
             onVideoClick={handleVideoClick}
-            onExerciseUpdate={handleExerciseUpdate}
           />
         </Stack>
       )}

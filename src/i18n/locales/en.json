@@ -10,7 +10,8 @@
     "physicalData": "Physical Data",
     "schedule": "Schedule",
     "users": "Users",
-    "myClients": "My Clients"
+    "myClients": "My Clients",
+    "workoutHistory": "Workout history"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -227,19 +228,11 @@
     "sets": "Sets",
     "targetReps": "Target Reps",
     "targetWeight": "Target Weight",
-    "setsHistory": "Sets History",
     "noSets": "No sets defined",
-    "targetLabel": "Target",
-    "historyTitle": "History - {{exercise}} (Set {{set}})",
-    "records": "Records",
     "reps": "reps",
     "repsHeader": "Reps",
     "weightKg": "Weight (kg)",
     "weight": "Weight",
-    "syncToAllSets": "Sync to all sets",
-    "noHistory": "No history recorded yet",
-    "addRecord": "Add Record",
-    "progressChart": "Progress Chart",
     "exerciseVideo": "Exercise Video",
     "addDay": "Add Day",
     "dayName": "Day Name",
@@ -267,8 +260,6 @@
     "noEditPermission": "You do not have permission to edit this training plan",
     "noDeletePermission": "You do not have permission to delete this training plan",
     "planUpdated": "Plan updated successfully",
-    "historyUpdated": "Exercise history updated successfully",
-    "historyUpdateFailed": "Failed to update exercise history",
     "form": {
       "title": "Title",
       "titlePlaceholder": "Enter training plan title",
@@ -903,6 +894,13 @@
     "freeSession": "Unplanned workout",
     "minutesShort": "{{minutes}} min",
     "exerciseCount_one": "{{count}} exercise",
-    "exerciseCount_other": "{{count}} exercises"
+    "exerciseCount_other": "{{count}} exercises",
+    "historyTitle": "Workout history",
+    "historySubtitle": "Every session you have logged, newest first.",
+    "historyLoadFailed": "We could not load your training log. Please try again.",
+    "viewHistory": "View log",
+    "setCountShort_one": "1 set",
+    "setCountShort_other": "{{count}} sets",
+    "volume": "{{volume}} kg total"
   }
 }

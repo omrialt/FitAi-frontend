@@ -10,7 +10,8 @@
     "physicalData": "נתונים גופניים",
     "schedule": "לוח זמנים",
     "users": "משתמשים",
-    "myClients": "המתאמנים שלי"
+    "myClients": "המתאמנים שלי",
+    "workoutHistory": "יומן אימונים"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -241,19 +242,11 @@
     "sets": "סטים",
     "targetReps": "חזרות יעד",
     "targetWeight": "משקל יעד",
-    "setsHistory": "היסטוריית סטים",
     "noSets": "לא הוגדרו סטים",
-    "targetLabel": "יעד",
-    "historyTitle": "היסטוריה - {{exercise}} (סט {{set}})",
-    "records": "רשומות",
     "reps": "חזרות",
     "repsHeader": "חזרות",
     "weightKg": "משקל (ק\"ג)",
     "weight": "משקל",
-    "syncToAllSets": "סנכרון לכל הסטים",
-    "noHistory": "עדיין לא נרשמה היסטוריה",
-    "addRecord": "הוספת רשומה",
-    "progressChart": "גרף התקדמות",
     "exerciseVideo": "סרטון תרגיל",
     "addDay": "הוספת יום",
     "dayName": "שם היום",
@@ -281,8 +274,6 @@
     "noEditPermission": "אין לכם הרשאה לערוך את תוכנית האימון הזו",
     "noDeletePermission": "אין לכם הרשאה למחוק את תוכנית האימון הזו",
     "planUpdated": "התוכנית עודכנה בהצלחה",
-    "historyUpdated": "היסטוריית התרגיל עודכנה בהצלחה",
-    "historyUpdateFailed": "עדכון היסטוריית התרגיל נכשל",
     "form": {
       "title": "כותרת",
       "titlePlaceholder": "הזינו שם לתוכנית האימון",
@@ -935,6 +926,15 @@
     "exerciseCount_one": "תרגיל אחד",
     "exerciseCount_other": "{{count}} תרגילים",
     "exerciseCount_two": "{{count}} תרגילים",
-    "exerciseCount_many": "{{count}} תרגילים"
+    "exerciseCount_many": "{{count}} תרגילים",
+    "historyTitle": "יומן האימונים",
+    "historySubtitle": "כל האימונים שתיעדתם, מהחדש לישן.",
+    "historyLoadFailed": "לא הצלחנו לטעון את יומן האימונים. נסו שוב.",
+    "viewHistory": "צפייה ביומן",
+    "setCountShort_one": "סט אחד",
+    "setCountShort_two": "{{count}} סטים",
+    "setCountShort_other": "{{count}} סטים",
+    "setCountShort_many": "{{count}} סטים",
+    "volume": "סה\"כ {{volume}} ק\"ג"
   }
 }

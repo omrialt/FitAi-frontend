@@ -34,6 +34,7 @@ import {
   IconUsers,
   IconUsersGroup,
   IconHeartRateMonitor,
+  IconHistory,
 } from "@tabler/icons-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
@@ -83,6 +84,11 @@ const getNavigationItems = (
         path: "/my-trainings",
       },
       {
+        icon: <IconHistory size={20} stroke={1.5} />,
+        label: "nav.workoutHistory",
+        path: "/workout-history",
+      },
+      {
         icon: <IconApple size={20} stroke={1.5} />,
         label: "nav.nutritionPlans",
         path: "/nutrition-plans",
@@ -117,6 +123,11 @@ const getNavigationItems = (
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
         path: "/my-trainings",
+      },
+      {
+        icon: <IconHistory size={20} stroke={1.5} />,
+        label: "nav.workoutHistory",
+        path: "/workout-history",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
