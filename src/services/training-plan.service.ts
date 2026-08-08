@@ -8,10 +8,19 @@ export const trainingPlanService = {
     return response.data.data;
   },
 
-  // Get a single training plan by ID
+  /**
+   * Get a single training plan by ID.
+   *
+   * The backend wraps every response as `{ data, timestamp, path }`
+   * (TransformInterceptor), so the plan is at `response.data.data`. This used
+   * to return `response.data` — the envelope — while its signature promised a
+   * `TrainingPlan`, so callers got an object with no `days` and TypeScript had
+   * no way to notice. That silently broke `duplicate()` (which spreads the
+   * result) and the dashboard's fallback lookup for an active plan.
+   */
   getById: async (id: string): Promise<TrainingPlan> => {
     const response = await api.get(`/training-plans/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
   // Create a new training plan
@@ -58,10 +67,16 @@ export const trainingPlanService = {
     return response.data;
   },
 
-  // Get plans with shared access for a user
+  /**
+   * Plans owned by a user plus those shared with them.
+   *
+   * Also unwraps the envelope now. `useDashboard` re-unwraps defensively and
+   * passes the value straight through when there is nothing left to unwrap, so
+   * it keeps working either way.
+   */
   getByUserWithShared: async (userId: string): Promise<TrainingPlan[]> => {
     const response = await api.get(`/training-plans/user/${userId}/with-shared`);
-    return response.data;
+    return response.data.data;
   },
 
   // Get child clones of a parent plan

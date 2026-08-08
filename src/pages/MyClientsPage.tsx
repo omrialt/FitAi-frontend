@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Stack,
@@ -35,6 +36,7 @@ import type { User } from "../types/auth.types";
  */
 export default function MyClientsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [connections, setConnections] = useState<TrainerConnection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,6 +154,17 @@ export default function MyClientsPage() {
               <Badge color="yellow" variant="light">
                 {t("clients.pending")}
               </Badge>
+            )}
+            {/* Only an accepted connection grants read access, so the link is
+                offered only where it will actually resolve. */}
+            {!isPending && client?._id && (
+              <Button
+                size="xs"
+                variant="light"
+                onClick={() => navigate(`/clients/${client._id}`)}
+              >
+                {t("clients.viewClient")}
+              </Button>
             )}
             <ActionIcon
               variant="subtle"

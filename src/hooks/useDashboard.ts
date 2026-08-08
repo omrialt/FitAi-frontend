@@ -12,12 +12,15 @@ import { currentStatusService } from '../services/current-status.service';
 import { trainingPlanService } from '../services/training-plan.service';
 import { nutritionPlanService } from '../services/nutrition-plan.service';
 import { physicalDataService } from '../services/physical-data.service';
+import { progressStatsService } from '../services/progress-stats.service';
+import { workoutSessionService } from '../services/workout-session.service';
 import api from '../services/api';
 import type { CurrentStatus } from '../types/current-status.types';
 import type { TrainingPlan } from '../types/training-plan.types';
 import type { NutritionPlan } from '../types/nutrition.types';
 import type { PhysicalData, WeightProgressData } from '../types/physical-data.types';
 import type { ProgressStats, AiRecommendation, DashboardData } from '../types/dashboard.types';
+import type { WorkoutStats } from '../types/workout-session.types';
 export type { ProgressStats, AiRecommendation, DashboardData };
 
 export function useDashboard() {
@@ -32,6 +35,7 @@ export function useDashboard() {
     weightProgress: null,
     bmi: null,
     progressStats: null,
+    workoutStats: null,
     aiRecommendations: [],
   });
   const [loading, setLoading] = useState(true);
@@ -53,6 +57,8 @@ export function useDashboard() {
         physicalDataService.getWeightProgress(user._id),       // [4] already unwrapped
         physicalDataService.calculateBMI(user._id),            // [5] already unwrapped
         api.get(`/ai-recommendations/user/${user._id}`).then((r) => r.data?.data || r.data), // [6] manually unwrapped
+        progressStatsService.getByUserId(user._id),            // [7] already unwrapped
+        workoutSessionService.getStats(user._id),              // [8] already unwrapped
       ]);
 
       // Helper: extract fulfilled value or null
@@ -78,8 +84,14 @@ export function useDashboard() {
       const bmi = fulfilled(results[5]) as { bmi: number; category: string } | null;
 
       // Direct API calls that manually unwrap
-      const progressStats = null;
       const aiRecommendations = (fulfilled(results[6]) as AiRecommendation[]) || [];
+
+      // The workout-count tiles and the weight/fat trend arrows read this.
+      // It used to be hardcoded to null, which is why every count rendered 0
+      // and no arrow ever appeared — the tiles were fine, nothing fed them.
+      // `allSettled` keeps a failure here from blanking the rest of the page.
+      const progressStats = fulfilled(results[7]) as ProgressStats | null;
+      const workoutStats = fulfilled(results[8]) as WorkoutStats | null;
 
       // Resolve active plans from current status.
       // Backend populates activeTrainingPlanId & activeMenuId,
@@ -166,6 +178,7 @@ export function useDashboard() {
         weightProgress,
         bmi,
         progressStats,
+        workoutStats,
         aiRecommendations: Array.isArray(aiRecommendations)
           ? aiRecommendations
           : [],

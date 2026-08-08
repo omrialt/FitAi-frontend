@@ -45,7 +45,16 @@
     "declined": "Invitation declined",
     "unlinked": "Trainer removed",
     "acceptFailed": "Could not accept the invitation",
-    "declineFailed": "Could not decline the invitation"
+    "declineFailed": "Could not decline the invitation",
+    "viewClient": "View",
+    "backToClients": "Back to clients",
+    "readOnlyBadge": "Read only",
+    "latestMeasurement": "Latest measurement",
+    "noPlans": "This client has no training plans yet.",
+    "dayCount_one": "{{count}} day",
+    "dayCount_other": "{{count}} days",
+    "noAccessTitle": "No access to this client",
+    "noAccessBody": "The connection is not active. A client's data is readable only while they have an accepted connection with you."
   },
   "layout": {
     "profile": "Profile",
@@ -492,7 +501,8 @@
     "loadingSchedule": "Loading schedule...",
     "noUpcomingEvents": "No upcoming events this week. Sync your training plan to Google Calendar to see your schedule here.",
     "workout": "Workout",
-    "event": "Event"
+    "event": "Event",
+    "weightTrendChart": "Weight trend over time"
   },
   "auth": {
     "brandHeadline": "Precision tracking for the",
@@ -577,7 +587,18 @@
     "loginFailed": "Login failed. Please check your credentials.",
     "registerFailed": "Registration failed. Please try again.",
     "profileUpdated": "Profile updated successfully!",
-    "profileUpdateFailed": "Failed to update profile"
+    "profileUpdateFailed": "Failed to update profile",
+    "verifyTitle": "Verify your email",
+    "verifySubtitle": "Confirm this address to finish setting up your account.",
+    "verifyInProgress": "Confirming your email address…",
+    "verifySuccess": "Your email address is confirmed.",
+    "verifyContinue": "Go to FitAi",
+    "verifyFailed": "This verification link is invalid or has expired.",
+    "verifyMissingToken": "This link is missing its verification code.",
+    "verifyResendPrompt": "Enter your email address and we'll send a fresh link.",
+    "verifyResendButton": "Send a new link",
+    "verifyResent": "If that address needs verifying, a new link is on its way.",
+    "verifyResendFailed": "Could not send the link. Please try again shortly."
   },
   "profile": {
     "settingsTitle": "Profile Settings",
@@ -844,5 +865,44 @@
     "footerTerms": "Terms",
     "footerContact": "Contact",
     "footerCopyright": "© 2026 Performance Lab. All rights reserved."
+  },
+  "workout": {
+    "startSession": "Start today's workout",
+    "elapsed": "{{minutes}} min",
+    "setsDone": "sets logged",
+    "reps": "Reps",
+    "weight": "Kg",
+    "addSet": "Add a set",
+    "markSetDone": "Mark set {{number}} as done",
+    "finish": "Finish workout",
+    "saving": "Saving…",
+    "saved": "Workout logged.",
+    "saveFailed": "Could not save the workout. Try again.",
+    "nothingLogged": "Mark at least one set as done before finishing.",
+    "loadFailed": "Could not load this training day.",
+    "dayNotFound": "That training day no longer exists in this plan.",
+    "sessionNotes": "Session notes",
+    "sessionNotesPlaceholder": "How did it feel? Anything to remember for next time?",
+    "rest": "Rest",
+    "restOver": "Rest over",
+    "stopTimer": "Stop the rest timer",
+    "trainingRecord": "Training record",
+    "noHistoryYet": "No workouts logged yet. Finish a session and your streak, adherence and personal bests will appear here.",
+    "currentStreak": "Current streak",
+    "bestStreak": "Best: {{weeks}} weeks",
+    "weeksUnit": "weeks",
+    "totalWorkouts": "Workouts logged",
+    "adherence": "Adherence",
+    "noActivePlan": "No active plan to measure against",
+    "plannedVsDone": "{{completed}} of {{planned}} planned",
+    "plannedVsDoneWindow": "{{completed}} of {{planned}} planned in the last {{days}} days",
+    "personalBests": "Personal bests",
+    "noPersonalBests": "No personal bests yet — log a set with a weight and one will appear.",
+    "recentSessions": "Recent workouts",
+    "noSessions": "No workouts logged yet.",
+    "freeSession": "Unplanned workout",
+    "minutesShort": "{{minutes}} min",
+    "exerciseCount_one": "{{count}} exercise",
+    "exerciseCount_other": "{{count}} exercises"
   }
 }

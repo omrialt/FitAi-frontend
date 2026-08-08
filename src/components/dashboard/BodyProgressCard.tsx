@@ -46,6 +46,69 @@ function Trend({ value, unit, t }: { value: number | null | undefined; unit: str
   );
 }
 
+/**
+ * Weight series as a sparkline.
+ *
+ * The dashboard already fetched this series on every load and then dropped it —
+ * the value was passed down to this card and never read. A sparkline is the
+ * smallest honest use for it: the tiles above give the latest number and the
+ * 30-day delta, and this gives the shape of the path between them.
+ *
+ * Plain SVG rather than a chart library: two dozen points, no axes, no
+ * interaction. `preserveAspectRatio="none"` lets it stretch to the card width
+ * while the stroke stays a constant screen width via `vector-effect`.
+ */
+function WeightSparkline({
+  points,
+  label,
+}: {
+  points: Array<{ date: Date | string; weight: number }>;
+  label: string;
+}) {
+  // Two points are the minimum that describes a direction.
+  if (points.length < 2) return null;
+
+  // `/physical-data/user/:id/progress` returns newest-first. Plotting in that
+  // order drew time right-to-left, so a steady gain rendered as a decline —
+  // sorting here means the chart is correct whatever order the API returns.
+  const weights = [...points]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((p) => p.weight);
+  const min = Math.min(...weights);
+  const max = Math.max(...weights);
+  // A flat series would divide by zero; render it down the middle instead.
+  const span = max - min || 1;
+
+  const path = weights
+    .map((w, i) => {
+      const x = (i / (weights.length - 1)) * 100;
+      // SVG y grows downward, so a heavier reading has to sit lower on screen.
+      const y = 30 - ((w - min) / span) * 28 - 1;
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(' ');
+
+  return (
+    <svg
+      viewBox="0 0 100 30"
+      preserveAspectRatio="none"
+      className="w-full h-10 mt-4 text-tertiary"
+      role="img"
+      aria-label={label}
+    >
+      <path
+        d={path}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
+}
+
 /** One metric tile in the 2x2 grid. */
 function Tile({
   label,
@@ -69,6 +132,7 @@ function Tile({
 
 export function BodyProgressCard({
   latestPhysicalData,
+  weightProgress,
   progressStats,
   onDataUpdate,
 }: BodyProgressCardProps) {
@@ -161,6 +225,11 @@ export function BodyProgressCard({
                 }
               />
             </div>
+
+            <WeightSparkline
+              points={weightProgress?.data ?? []}
+              label={t('dashboard.weightTrendChart')}
+            />
 
             <p className="text-[10px] text-on-surface-variant/70 mt-4">
               {t('dashboard.lastRecorded')}{' '}
