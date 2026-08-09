@@ -35,7 +35,7 @@ function Trend({ value, unit, t }: { value: number | null | undefined; unit: str
   return (
     <p
       className={`text-[10px] font-bold flex items-center gap-0.5 mt-1 ${
-        up ? 'text-green-600' : 'text-red-600'
+        up ? 'text-success' : 'text-danger'
       }`}
     >
       <StitchIcon name={up ? 'trending_up' : 'trending_down'} size={11} />

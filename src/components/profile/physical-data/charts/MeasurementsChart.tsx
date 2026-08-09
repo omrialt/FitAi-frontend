@@ -72,24 +72,24 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
             <Box style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={weightBodyFatData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
-                    <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: '#64748b' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                    <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: 'var(--color-chart-axis)' }} />
                     {/* Left Y-axis: Weight (kg) */}
                     <YAxis
                       yAxisId="left"
                       orientation="left"
-                      label={{ value: t('common.kg'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#6366f1' } }}
+                      label={{ value: t('common.kg'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'var(--color-chart-1)' } }}
                       style={{ fontSize: '11px' }}
-                      tick={{ fill: '#6366f1' }}
+                      tick={{ fill: 'var(--color-chart-1)' }}
                     />
                     {/* Right Y-axis: Body Fat (%) */}
                     {hasBodyFat && (
                       <YAxis
                         yAxisId="right"
                         orientation="right"
-                        label={{ value: '%', angle: 90, position: 'insideRight', style: { fontSize: '11px', fill: '#06b6d4' } }}
+                        label={{ value: '%', angle: 90, position: 'insideRight', style: { fontSize: '11px', fill: 'var(--color-chart-2)' } }}
                         style={{ fontSize: '11px' }}
-                        tick={{ fill: '#06b6d4' }}
+                        tick={{ fill: 'var(--color-chart-2)' }}
                       />
                     )}
                     <Tooltip
@@ -98,17 +98,17 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                           ? [`${value} ${t('common.kg')}`, name]
                           : [`${value}%`, name]
                       }
-                      contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid var(--color-chart-grid)', fontSize: '12px' }}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Line
                       yAxisId="left"
                       type="monotone"
                       dataKey="weight"
-                      stroke="#6366f1"
+                      stroke="var(--color-chart-1)"
                       strokeWidth={2.5}
-                      dot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}
-                      activeDot={{ r: 6, fill: '#6366f1' }}
+                      dot={{ r: 4, fill: 'var(--color-chart-1)', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: 'var(--color-chart-1)' }}
                       name={weightSeriesName}
                     />
                     {hasBodyFat && (
@@ -116,10 +116,10 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                         yAxisId="right"
                         type="monotone"
                         dataKey="bodyFat"
-                        stroke="#06b6d4"
+                        stroke="var(--color-chart-2)"
                         strokeWidth={2.5}
-                        dot={{ r: 4, fill: '#06b6d4', strokeWidth: 0 }}
-                        activeDot={{ r: 6, fill: '#06b6d4' }}
+                        dot={{ r: 4, fill: 'var(--color-chart-2)', strokeWidth: 0 }}
+                        activeDot={{ r: 6, fill: 'var(--color-chart-2)' }}
                         name={bodyFatSeriesName}
                         connectNulls={false}
                       />
@@ -138,23 +138,23 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                 <Box style={{ width: '100%', height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(226,232,240,0.6)" />
-                      <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: '#64748b' }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                      <XAxis dataKey="date" style={{ fontSize: '11px' }} tick={{ fill: 'var(--color-chart-axis)' }} />
                       <YAxis
-                        label={{ value: t('physicalData.cm'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: '#64748b' } }}
+                        label={{ value: t('physicalData.cm'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'var(--color-chart-axis)' } }}
                         style={{ fontSize: '11px' }}
-                        tick={{ fill: '#64748b' }}
+                        tick={{ fill: 'var(--color-chart-axis)' }}
                       />
                       <Tooltip
                         formatter={(value: number) => `${value} ${t('physicalData.cm')}`}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid rgba(226,232,240,0.6)', fontSize: '12px' }}
+                        contentStyle={{ borderRadius: '8px', border: '1px solid var(--color-chart-grid)', fontSize: '12px' }}
                       />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line type="monotone" dataKey="chest" stroke="#6366f1" strokeWidth={2} name={t('physicalData.chest')} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="waist" stroke="#06b6d4" strokeWidth={2} name={t('physicalData.waist')} dot={{ r: 3, fill: '#06b6d4', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="hips" stroke="#f97316" strokeWidth={2} name={t('physicalData.hips')} dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="arms" stroke="#22c55e" strokeWidth={2} name={t('physicalData.arms')} dot={{ r: 3, fill: '#22c55e', strokeWidth: 0 }} />
-                      <Line type="monotone" dataKey="legs" stroke="#8b5cf6" strokeWidth={2} name={t('physicalData.legs')} dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="chest" stroke="var(--color-chart-1)" strokeWidth={2} name={t('physicalData.chest')} dot={{ r: 3, fill: 'var(--color-chart-1)', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="waist" stroke="var(--color-chart-2)" strokeWidth={2} name={t('physicalData.waist')} dot={{ r: 3, fill: 'var(--color-chart-2)', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="hips" stroke="var(--color-chart-4)" strokeWidth={2} name={t('physicalData.hips')} dot={{ r: 3, fill: 'var(--color-chart-4)', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="arms" stroke="var(--color-success)" strokeWidth={2} name={t('physicalData.arms')} dot={{ r: 3, fill: 'var(--color-success)', strokeWidth: 0 }} />
+                      <Line type="monotone" dataKey="legs" stroke="var(--color-chart-3)" strokeWidth={2} name={t('physicalData.legs')} dot={{ r: 3, fill: 'var(--color-chart-3)', strokeWidth: 0 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </Box>

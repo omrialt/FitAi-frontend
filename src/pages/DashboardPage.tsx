@@ -109,27 +109,35 @@ function DashboardContent() {
           bmi={bmi}
         />
 
-        {/* Active plans */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ActiveTrainingCard
-            plan={activeTrainingPlan}
-            currentStatus={currentStatus}
-          />
-          <ActiveNutritionCard plan={activeNutritionPlan} />
-        </section>
+        {/* Bento.
+            One column on phones, two from lg, and three from xl with the first
+            track wider (1.25fr) — the active training plan is by far the
+            densest card here and is what the screen is opened for, so it gets
+            the extra width rather than being squeezed to a third. Columns are
+            explicit wrappers instead of loose grid children so each one keeps
+            its own vertical rhythm as the tracks change. */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1.25fr_1fr_1fr] gap-8 items-start">
+          <div className="flex flex-col gap-8">
+            <ActiveTrainingCard
+              plan={activeTrainingPlan}
+              currentStatus={currentStatus}
+            />
+            <TrainingRecordCard stats={workoutStats} />
+          </div>
 
-        {/* Training record — streak, adherence and personal bests */}
-        <TrainingRecordCard stats={workoutStats} />
+          <div className="flex flex-col gap-8">
+            <ActiveNutritionCard plan={activeNutritionPlan} />
+            <BodyProgressCard
+              latestPhysicalData={latestPhysicalData}
+              weightProgress={weightProgress}
+              progressStats={progressStats}
+              onDataUpdate={refetch}
+            />
+          </div>
 
-        {/* Progress + insights */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <BodyProgressCard
-            latestPhysicalData={latestPhysicalData}
-            weightProgress={weightProgress}
-            progressStats={progressStats}
-            onDataUpdate={refetch}
-          />
-          <RecentRecommendations recommendations={aiRecommendations} />
+          <div className="flex flex-col gap-8">
+            <RecentRecommendations recommendations={aiRecommendations} />
+          </div>
         </section>
       </div>
     </Container>

@@ -74,7 +74,7 @@ export function RestTimer() {
       <div className="h-1 w-full bg-surface-container-high">
         <div
           className={`h-full transition-[width] duration-200 ease-linear ${
-            done ? 'bg-green-500' : 'bg-primary'
+            done ? 'bg-success' : 'bg-primary'
           }`}
           style={{ width: `${Math.min(100, progress * 100)}%` }}
         />
@@ -83,7 +83,7 @@ export function RestTimer() {
       <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-3 px-4 py-3">
         <span
           className={`flex items-center gap-2 font-black tabular-nums ${
-            done ? 'text-green-600' : 'text-on-surface'
+            done ? 'text-success' : 'text-on-surface'
           }`}
           aria-live="polite"
         >

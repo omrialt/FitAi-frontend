@@ -139,7 +139,7 @@ export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableP
                       </div>
                       {record.bodyFatPercent && (
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-green-100 text-green-700">
+                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-success-container text-on-success-container">
                             {t('physicalData.bodyFatBadge')}
                           </span>
                           <TableImprovementCell value={bodyFatImprovement} />

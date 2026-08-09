@@ -80,8 +80,8 @@ export function LandingHero() {
                     width: 'fit-content',
                   }}
                 >
-                  <IconBolt size={14} color="#ffffff" />
-                  <Text size="xs" fw={700} style={{ color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  <IconBolt size={14} color="var(--color-on-primary-container)" />
+                  <Text size="xs" fw={700} style={{ color: 'var(--color-on-primary-container)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                     {t('landing.badge')}
                   </Text>
                 </Box>
@@ -97,7 +97,7 @@ export function LandingHero() {
                   }}
                 >
                   {t('landing.heroTitle1')}{' '}
-                  <span style={{ color: 'var(--color-secondary-fixed-dim)' }}>
+                  <span style={{ color: 'var(--color-secondary)' }}>
                     {t('landing.heroTitle2')}
                   </span>
                 </Title>
@@ -169,9 +169,9 @@ export function LandingHero() {
               >
                 <Group justify="space-between" mb="md">
                   <Group gap="xs">
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }} />
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }} />
+                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-danger)' }} />
+                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-warning)' }} />
+                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-success)' }} />
                   </Group>
                   <Text size="xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('landing.mockTitle')}</Text>
                 </Group>
@@ -179,8 +179,8 @@ export function LandingHero() {
                 <Stack gap="sm">
                   {[
                     { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), color: 'var(--color-primary)' },
-                    { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), color: '#34d399' },
-                    { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), color: '#fb923c' },
+                    { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), color: 'var(--color-success)' },
+                    { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), color: 'var(--color-warning)' },
                     { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), color: 'var(--color-tertiary)' },
                   ].map((item) => (
                     <Box
@@ -215,7 +215,7 @@ export function LandingHero() {
                 >
                   <IconBolt size={16} color='var(--color-primary)' />
                   <Text size="sm" fw={600} style={{ color: 'white' }}>{t('landing.performanceGain')}</Text>
-                  <Text size="sm" fw={800} style={{ color: '#a3e635', marginInlineStart: 'auto' }}>+14.2%</Text>
+                  <Text size="sm" fw={800} style={{ color: 'var(--color-success)', marginInlineStart: 'auto' }}>+14.2%</Text>
                 </Box>
               </Box>
             </Grid.Col>
@@ -224,7 +224,7 @@ export function LandingHero() {
       </Box>
 
       {/* Features Section */}
-      <Box style={{ background: '#f8fafc', paddingTop: 80, paddingBottom: 80 }}>
+      <Box style={{ background: 'var(--color-surface)', paddingTop: 80, paddingBottom: 80 }}>
         <Container size="xl">
           <Stack gap="xl">
             <Stack gap="sm" align="center" style={{ textAlign: 'center' }}>
@@ -232,7 +232,7 @@ export function LandingHero() {
                 size="xs"
                 fw={700}
                 style={{
-                  color: '#6366f1',
+                  color: 'var(--color-primary)',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                 }}
@@ -260,8 +260,8 @@ export function LandingHero() {
                   <Box
                     className="landing-feature-card"
                     style={{
-                      background: 'white',
-                      border: '1px solid #e2e8f0',
+                      background: 'var(--color-surface-container-lowest)',
+                      border: '1px solid var(--color-outline-variant)',
                       borderRadius: '16px',
                       padding: '28px',
                       height: '100%',
@@ -294,7 +294,7 @@ export function LandingHero() {
       </Box>
 
       {/* Science Section */}
-      <Box style={{ background: '#0f172a', paddingTop: 72, paddingBottom: 72 }}>
+      <Box style={{ background: 'var(--color-surface-container-low)', paddingTop: 72, paddingBottom: 72 }}>
         <Container size="lg">
           <Grid gutter={60} align="center">
             <Grid.Col span={{ base: 12, md: 6 }}>
@@ -305,28 +305,28 @@ export function LandingHero() {
                     fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
                     fontWeight: 800,
                     letterSpacing: '-0.03em',
-                    color: 'white',
+                    color: 'var(--color-on-surface)',
                   }}
                 >
                   {t('landing.scienceTitle')}
                 </Title>
-                <Text style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.75 }}>
+                <Text style={{ color: 'var(--color-on-surface-variant)', lineHeight: 1.75 }}>
                   {t('landing.scienceText')}
                 </Text>
                 <Group gap="xl">
                   <Stack gap={2}>
                     <Group gap={6}>
-                      <IconBolt size={16} color="#a3e635" />
-                      <Text fw={700} size="sm" style={{ color: 'white' }}>{t('landing.dailyLoad')}</Text>
+                      <IconBolt size={16} color="var(--color-success)" />
+                      <Text fw={700} size="sm" style={{ color: 'var(--color-on-surface)' }}>{t('landing.dailyLoad')}</Text>
                     </Group>
-                    <Text size="xs" style={{ color: '#a3e635' }}>{t('landing.dailyLoadValue')}</Text>
+                    <Text size="xs" style={{ color: 'var(--color-success)' }}>{t('landing.dailyLoadValue')}</Text>
                   </Stack>
                   <Stack gap={2}>
                     <Group gap={6}>
-                      <IconShieldCheck size={16} color="#34d399" />
-                      <Text fw={700} size="sm" style={{ color: 'white' }}>{t('landing.recovery')}</Text>
+                      <IconShieldCheck size={16} color="var(--color-success)" />
+                      <Text fw={700} size="sm" style={{ color: 'var(--color-on-surface)' }}>{t('landing.recovery')}</Text>
                     </Group>
-                    <Text size="xs" style={{ color: '#34d399' }}>{t('landing.recoveryValue')}</Text>
+                    <Text size="xs" style={{ color: 'var(--color-success)' }}>{t('landing.recoveryValue')}</Text>
                   </Stack>
                 </Group>
               </Stack>
@@ -334,8 +334,8 @@ export function LandingHero() {
             <Grid.Col span={{ base: 12, md: 6 }}>
               <Box
                 style={{
-                  background: 'rgba(99,102,241,0.08)',
-                  border: '1px solid rgba(99,102,241,0.2)',
+                  background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)',
                   borderRadius: '16px',
                   padding: '28px',
                 }}
@@ -344,15 +344,15 @@ export function LandingHero() {
                   {[
                     { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} />, color: 'var(--color-primary)' },
                     { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} />, color: 'var(--color-tertiary)' },
-                    { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} />, color: '#60a5fa' },
+                    { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} />, color: 'var(--color-info)' },
                   ].map((item) => (
-                    <Group key={item.label} gap="md" style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 16px' }}>
+                    <Group key={item.label} gap="md" style={{ background: 'var(--color-surface-container)', borderRadius: 10, padding: '12px 16px' }}>
                       <ThemeIcon variant="light" color="indigo" size="md" radius="md">
                         {item.icon}
                       </ThemeIcon>
                       <Stack gap={2}>
-                        <Text size="sm" fw={600} style={{ color: 'white' }}>{item.label}</Text>
-                        <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.desc}</Text>
+                        <Text size="sm" fw={600} style={{ color: 'var(--color-on-surface)' }}>{item.label}</Text>
+                        <Text size="xs" style={{ color: 'var(--color-on-surface-variant)' }}>{item.desc}</Text>
                       </Stack>
                     </Group>
                   ))}
@@ -366,7 +366,7 @@ export function LandingHero() {
       {/* CTA Section */}
       <Box
         style={{
-          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%)',
           color: 'white',
           paddingTop: '72px',
           paddingBottom: '72px',

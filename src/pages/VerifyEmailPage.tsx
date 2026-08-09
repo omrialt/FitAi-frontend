@@ -80,11 +80,14 @@ function VerifyEmailPage() {
         subtitle={t('auth.verifySubtitle')}
       >
         {status === 'verifying' && (
-          <div className="flex flex-col items-center gap-4 py-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center animate-pulse">
-              <StitchIcon name="mail" size={24} />
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <div className="grid h-17 w-17 place-items-center rounded-[20px] bg-info-container text-on-info-container ring-1 ring-info/20 animate-pulse">
+              <StitchIcon name="mail" size={28} />
             </div>
-            <p className="text-sm text-on-surface-variant">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-info">
+              {t('auth.verifyStatePending')}
+            </span>
+            <p className="max-w-[32ch] text-sm leading-relaxed text-on-surface-variant">
               {t('auth.verifyInProgress')}
             </p>
           </div>
@@ -92,10 +95,13 @@ function VerifyEmailPage() {
 
         {status === 'verified' && (
           <div className="flex flex-col items-center gap-4 py-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
-              <StitchIcon name="check" size={24} />
+            <div className="grid h-17 w-17 place-items-center rounded-[20px] bg-success-container text-on-success-container ring-1 ring-success/25">
+              <StitchIcon name="check" size={28} />
             </div>
-            <p className="text-sm font-bold text-on-surface">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-success">
+              {t('auth.verifyStateVerified')}
+            </span>
+            <p className="text-base font-black tracking-tight text-on-surface">
               {t('auth.verifySuccess')}
             </p>
             {/* Not AuthSubmit: that renders type="submit", and there is no
@@ -112,8 +118,14 @@ function VerifyEmailPage() {
 
         {(status === 'failed' || status === 'missingToken') && (
           <form onSubmit={handleResend} className="space-y-5">
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-error-container text-on-error-container">
-              <p className="text-xs font-medium">
+            <div className="flex flex-col items-center gap-3 pb-2 text-center">
+              <div className="grid h-17 w-17 place-items-center rounded-[20px] bg-danger-container text-on-danger-container ring-1 ring-danger/25">
+                <StitchIcon name="warning" size={28} />
+              </div>
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-danger">
+                {t('auth.verifyStateExpired')}
+              </span>
+              <p className="max-w-[32ch] text-sm leading-relaxed text-on-surface-variant">
                 {status === 'missingToken'
                   ? t('auth.verifyMissingToken')
                   : t('auth.verifyFailed')}

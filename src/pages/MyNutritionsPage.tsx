@@ -431,7 +431,7 @@ function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan
             {t('nutrition.plansTotal', { count: totalPlans })}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-400" />
+            <span className="w-2 h-2 rounded-full bg-success" />
             <span className="text-[10px] font-bold opacity-90">
               {t('common.active')}
             </span>
@@ -473,7 +473,7 @@ function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan
       {/* Average Rating */}
       <div className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/10">
         <div className="flex items-center justify-between mb-4">
-          <span className="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+          <span className="w-10 h-10 rounded-lg bg-success-container text-on-success-container flex items-center justify-center">
             <StitchIcon name="check_circle" size={20} />
           </span>
           <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
@@ -494,7 +494,7 @@ function NutritionStatsBento({ nutritionPlans }: { nutritionPlans: NutritionPlan
               key={i}
               className={`w-6 h-6 rounded-full text-[8px] font-bold text-white flex items-center justify-center border-2 border-surface-container-lowest ${
                 i !== 3 && ratingPct > (i / weekDays.length) * 100
-                  ? 'bg-green-500'
+                  ? 'bg-success'
                   : 'bg-surface-container-highest'
               }`}
               style={{ marginInlineStart: i > 0 ? -6 : 0 }}

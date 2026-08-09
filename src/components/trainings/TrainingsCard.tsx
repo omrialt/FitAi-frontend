@@ -17,7 +17,7 @@ const getDifficultyPill = (difficulty: string) => {
       return 'bg-surface-container-high text-on-surface-variant';
     case 'intermediate':
     case 'advanced':
-      return 'bg-secondary-fixed text-on-secondary-container';
+      return 'bg-secondary-container text-on-secondary-container';
     case 'elite':
       return 'bg-error-container text-on-error-container';
     default:
@@ -108,10 +108,10 @@ export function TrainingsCard({
         <Row label={`${t('trainings.status')}:`}>
           <span className="flex items-center gap-1.5">
             <span
-              className={`w-2 h-2 rounded-full ${training.isActive ? 'bg-green-600' : 'bg-outline'}`}
+              className={`w-2 h-2 rounded-full ${training.isActive ? 'bg-success' : 'bg-outline'}`}
             />
             <span
-              className={`text-sm font-medium ${training.isActive ? 'text-green-700' : 'text-on-surface-variant'}`}
+              className={`text-sm font-medium ${training.isActive ? 'text-success' : 'text-on-surface-variant'}`}
             >
               {training.isActive ? t('trainings.active') : t('trainings.inactive')}
             </span>

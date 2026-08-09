@@ -61,7 +61,7 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({
         <span
           className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full ${
             user.isActive
-              ? 'bg-green-100 text-green-700'
+              ? 'bg-success-container text-on-success-container'
               : 'bg-surface-container-high text-on-surface-variant'
           }`}
         >

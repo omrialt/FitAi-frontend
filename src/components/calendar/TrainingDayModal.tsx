@@ -69,7 +69,7 @@ const TrainingDayModal: React.FC<TrainingDayModalProps> = ({
               {exercise.muscleGroup}
             </span>
             {isSupersetOrDropset && (
-              <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-tertiary-fixed text-tertiary">
+              <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-tertiary-container text-on-tertiary-container">
                 {typeLabel}
               </span>
             )}

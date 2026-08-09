@@ -68,10 +68,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 placeholder={t('profile.emailPlaceholder')}
                 readOnly={isGoogleAuth}
                 disabled={isGoogleAuth}
-                error={
-                  errors.email?.message ??
-                  (isGoogleAuth ? t('profile.emailLockedGoogle') : undefined)
-                }
+                error={errors.email?.message}
+                hint={isGoogleAuth ? t('profile.emailLockedGoogle') : undefined}
                 {...field}
               />
             )}
@@ -161,11 +159,11 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               placeholder={t('profile.newPasswordPlaceholder')}
               autoComplete="new-password"
               disabled={isGoogleAuth}
-              error={
-                errors.password?.message ??
-                (isGoogleAuth
+              error={errors.password?.message}
+              hint={
+                isGoogleAuth
                   ? t('profile.passwordLockedGoogle')
-                  : t('profile.passwordLeaveBlank'))
+                  : t('profile.passwordLeaveBlank')
               }
               {...field}
             />

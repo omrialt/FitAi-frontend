@@ -43,7 +43,7 @@ function TrendBadge({
   return (
     <p
       className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${
-        isGood ? 'text-green-600' : 'text-error'
+        isGood ? 'text-success' : 'text-error'
       }`}
     >
       <StitchIcon name={diff < 0 ? 'trending_down' : 'trending_up'} size={11} />
@@ -63,23 +63,23 @@ function getBodyFatZone(
 ): { label: string; pill: string } {
   const isMale = gender === 'male';
   if (bodyFat < (isMale ? 6 : 14))
-    return { label: t('physicalData.zone.essentialFat'), pill: 'bg-blue-100 text-blue-700' };
+    return { label: t('physicalData.zone.essentialFat'), pill: 'bg-info-container text-on-info-container' };
   if (bodyFat < (isMale ? 14 : 21))
     return { label: t('physicalData.zone.athletic'), pill: 'bg-primary/10 text-primary' };
   if (bodyFat < (isMale ? 18 : 25))
-    return { label: t('physicalData.zone.optimal'), pill: 'bg-green-100 text-green-700' };
+    return { label: t('physicalData.zone.optimal'), pill: 'bg-success-container text-on-success-container' };
   if (bodyFat < (isMale ? 25 : 32))
-    return { label: t('physicalData.zone.acceptable'), pill: 'bg-amber-100 text-amber-700' };
+    return { label: t('physicalData.zone.acceptable'), pill: 'bg-warning-container text-on-warning-container' };
   return { label: t('physicalData.zone.highRange'), pill: 'bg-error-container text-on-error-container' };
 }
 
 function getBMIZone(bmi: number, t: TFunction): { label: string; pill: string } {
   if (bmi < 18.5)
-    return { label: t('physicalData.zone.underweight'), pill: 'bg-blue-100 text-blue-700' };
+    return { label: t('physicalData.zone.underweight'), pill: 'bg-info-container text-on-info-container' };
   if (bmi < 25)
-    return { label: t('physicalData.zone.healthyRange'), pill: 'bg-green-100 text-green-700' };
+    return { label: t('physicalData.zone.healthyRange'), pill: 'bg-success-container text-on-success-container' };
   if (bmi < 30)
-    return { label: t('physicalData.zone.overweight'), pill: 'bg-amber-100 text-amber-700' };
+    return { label: t('physicalData.zone.overweight'), pill: 'bg-warning-container text-on-warning-container' };
   return { label: t('physicalData.zone.obese'), pill: 'bg-error-container text-on-error-container' };
 }
 
@@ -174,7 +174,7 @@ export function LatestRecordCard({
         {/* Body fat */}
         <MetricTile
           icon="water_drop"
-          chip="bg-secondary-fixed text-on-secondary-container"
+          chip="bg-secondary-container text-on-secondary-container"
           label={t('physicalData.bodyFatPct')}
         >
           <p className="text-3xl font-black text-on-surface leading-none">
@@ -195,7 +195,7 @@ export function LatestRecordCard({
         {/* BMI */}
         <MetricTile
           icon="balance"
-          chip="bg-tertiary-fixed text-tertiary"
+          chip="bg-tertiary-container text-on-tertiary-container"
           label={t('physicalData.bmiIndex')}
         >
           <p className="text-3xl font-black text-on-surface leading-none">
@@ -218,7 +218,7 @@ export function LatestRecordCard({
         {/* Lean mass estimate */}
         <MetricTile
           icon="exercise"
-          chip="bg-orange-100 text-orange-600"
+          chip="bg-warning-container text-on-warning-container"
           label={t('physicalData.leanMuscleFocus')}
           accent
         >

@@ -83,7 +83,7 @@ export function AdminUserViewModal({ opened, onClose, user }: AdminUserViewModal
               <span
                 className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
                   user.isActive
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-success-container text-on-success-container'
                     : 'bg-surface-container-high text-on-surface-variant'
                 }`}
               >
@@ -128,7 +128,7 @@ export function AdminUserViewModal({ opened, onClose, user }: AdminUserViewModal
                 key={s.label}
                 className="bg-surface-container-low rounded-xl p-4 text-center"
               >
-                <p className="text-2xl font-black text-on-surface">{s.value}</p>
+                <p className="text-2xl font-black tabular-nums tracking-tight text-on-surface">{s.value}</p>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mt-1">
                   {s.label}
                 </p>

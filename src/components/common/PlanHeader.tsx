@@ -4,7 +4,7 @@
  */
 
 import { Group, Stack, Text, Badge, Button, Box, Divider, Menu, Avatar } from "@mantine/core";
-import { IconEdit, IconFlame, IconClock, IconTarget, IconTrendingUp, IconDownload, IconFileTypePdf, IconFileTypeXls } from "@tabler/icons-react";
+import { IconEdit, IconFlame, IconTarget, IconTrendingUp, IconDownload, IconFileTypePdf, IconFileTypeXls } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { StarRating } from "./StarRating";
 import type { NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
@@ -212,56 +212,57 @@ export function PlanHeader({
             </Group>
           </>
         )}
-        {/* Training-specific stats */}
+        {/* Training-specific stats.
+            Screen 10 opens the plan on a labelled facts grid rather than a
+            run of loose chips: these are six comparable attributes, and as an
+            inline group they had no shared alignment and no labels — "65" and
+            "6" sat next to each other with only an icon to say which was
+            minutes and which was weeks. Each cell now names its own value, and
+            empty facts drop out rather than leaving a hole. */}
         {trainingPlan && (
-          <>
-            {trainingPlan.estimatedCalories && (
-              <Group gap="xs">
-                <IconFlame size={20} color="orange" />
-                <Text size="sm" fw={500}>
-                  {trainingPlan.estimatedCalories} {t("common.kcal")}
-                </Text>
-              </Group>
-            )}
-
-            {trainingPlan.estimatedDuration && (
-              <Group gap="xs">
-                <IconClock size={20} color="blue" />
-                <Text size="sm" fw={500}>
-                  {trainingPlan.estimatedDuration} {t("common.minShort")}
-                </Text>
-              </Group>
-            )}
-
-            {trainingPlan.focus && (
-              <Text size="sm" c="dimmed">
-                {t("common.focusLabel")}{" "}
-                <Text component="span" fw={500}>
-                  {trainingPlan.focus}
-                </Text>
-              </Text>
-            )}
-
-            {trainingPlan.programType && (
-              <Text size="sm" c="dimmed">
-                {t("common.typeLabel")}{" "}
-                <Text component="span" fw={500}>
-                  {trainingPlan.programType === "fixedDays"
-                    ? t("common.fixedDays")
-                    : t("common.rotation")}
-                </Text>
-              </Text>
-            )}
-
-            {trainingPlan.rotationCycleLength && (
-              <Text size="sm" c="dimmed">
-                {t("common.cycleLabel")}{" "}
-                <Text component="span" fw={500}>
-                  {t("common.dayCount", { count: trainingPlan.rotationCycleLength })}
-                </Text>
-              </Text>
-            )}
-          </>
+          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
+            {(
+              [
+                trainingPlan.programType && {
+                  k: t("common.typeLabel"),
+                  v:
+                    trainingPlan.programType === "fixedDays"
+                      ? t("common.fixedDays")
+                      : t("common.rotation"),
+                },
+                trainingPlan.rotationCycleLength && {
+                  k: t("common.cycleLabel"),
+                  v: t("common.dayCount", {
+                    count: trainingPlan.rotationCycleLength,
+                  }),
+                },
+                trainingPlan.estimatedDuration && {
+                  k: t("common.durationLabel"),
+                  v: `${trainingPlan.estimatedDuration} ${t("common.minShort")}`,
+                },
+                trainingPlan.estimatedCalories && {
+                  k: t("common.caloriesLabel"),
+                  v: `${trainingPlan.estimatedCalories} ${t("common.kcal")}`,
+                },
+                trainingPlan.focus && {
+                  k: t("common.focusLabel"),
+                  v: trainingPlan.focus,
+                },
+              ].filter(Boolean) as { k: string; v: string }[]
+            ).map((fact) => (
+              <div
+                key={fact.k}
+                className="flex flex-col gap-0.5 rounded-xl border border-outline-variant/40 bg-surface-container-low p-3"
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-on-surface-variant">
+                  {fact.k}
+                </span>
+                <span className="text-sm font-bold tabular-nums text-on-surface">
+                  {fact.v}
+                </span>
+              </div>
+            ))}
+          </div>
         )}
 
         {creatorName && (

@@ -1,143 +1,331 @@
 /**
- * Performance Lab design tokens ("kinetic_indigo").
+ * FitAI design tokens — "design system phase one", dark-first.
  *
- * Extracted once from the Stitch exports in /stitch_fitai — every screen's
- * code.html inlined the same 47 Material 3 tokens, so they live here instead.
- * Two consumers read them:
- *   1. Tailwind v4, via the @theme block below, which generates utilities like
- *      `bg-surface-container-lowest` and `text-on-surface`. This is what lets
- *      Stitch markup be pasted in essentially unchanged.
- *   2. Mantine, via mantineTheme.ts, which maps the same variables onto its own
- *      theme so Mantine components and Tailwind markup never disagree on color.
+ * Source of truth: the claude.ai design project "FitAI design system phase one"
+ * (tokens.css). Dark is authored first and light is derived, which is the
+ * reverse of the Stitch palette this replaced — that one defined only a light
+ * ramp, so dark mode had no token story at all and fell back to Mantine plus a
+ * handful of hardcoded hexes.
  *
- * Source of truth: stitch_fitai/kinetic_indigo/DESIGN.md
+ * Token *names* are deliberately unchanged from the Stitch set, so every
+ * existing utility (`bg-surface-container-low`, `text-on-surface-variant`, …)
+ * keeps compiling against the new values without touching component markup.
+ *
+ * Two things the design's tokens.css does not carry, kept here because the app
+ * depends on them:
+ *   - the `dark` custom variant bridging Tailwind to Mantine's color-scheme
+ *     attribute (section 0);
+ *   - the helper classes the Stitch markup uses inline (section 6).
  */
 
 /**
- * Stitch exports assume Tailwind's `darkMode: "class"` (a `.dark` class on
- * <html>), but this app switches themes with Mantine, which sets
- * data-mantine-color-scheme. Without this bridge every `dark:` utility pasted
- * from a Stitch screen would silently never apply. Redefining the variant lets
- * the existing theme toggle drive both systems at once.
+ * ── 0. dark variant bridge ───────────────────────────────────────────────
+ * Tailwind's stock `dark:` assumes a `.dark` class on <html>; this app
+ * switches themes with Mantine, which sets data-mantine-color-scheme.
+ * Redefining the variant lets the one toggle drive both systems.
  */
 @custom-variant dark (&:where([data-mantine-color-scheme='dark'], [data-mantine-color-scheme='dark'] *));
 
+/* ── 1. @theme: LIGHT is the declared default (Tailwind needs literal values
+      here to generate utilities). Dark overrides follow in section 2. ───── */
 @theme {
-  /* Primary — indigo core */
+  /* typography */
+  --font-sans: "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* brand */
   --color-primary: #4648d4;
   --color-on-primary: #ffffff;
   --color-primary-container: #6063ee;
-  --color-on-primary-container: #fffbff;
-  --color-primary-fixed: #e1e0ff;
-  --color-primary-fixed-dim: #c0c1ff;
-  --color-on-primary-fixed: #07006c;
-  --color-on-primary-fixed-variant: #2f2ebe;
-  --color-inverse-primary: #c0c1ff;
-
-  /* Secondary — cyan */
-  --color-secondary: #00687a;
+  --color-on-primary-container: #ffffff;
+  --color-secondary: #0c7f99;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #57dffe;
-  --color-on-secondary-container: #006172;
-  --color-secondary-fixed: #acedff;
-  --color-secondary-fixed-dim: #4cd7f6;
-  --color-on-secondary-fixed: #001f26;
-  --color-on-secondary-fixed-variant: #004e5c;
-
-  /* Tertiary — violet */
-  --color-tertiary: #6b38d4;
+  --color-secondary-container: #cdeff7;
+  --color-on-secondary-container: #06303a;
+  --color-tertiary: #7a3fc4;
   --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #8455ef;
-  --color-on-tertiary-container: #fffbff;
-  --color-tertiary-fixed: #e9ddff;
-  --color-tertiary-fixed-dim: #d0bcff;
-  --color-on-tertiary-fixed: #23005c;
-  --color-on-tertiary-fixed-variant: #5516be;
+  --color-tertiary-container: #ece0ff;
+  --color-on-tertiary-container: #2c0f52;
 
-  /* Error */
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-
-  /* Surface tier scale — see the "No-Line" philosophy in DESIGN.md:
-     structure comes from these background shifts, not from 1px borders. */
-  --color-surface: #f8f9fa;
-  --color-surface-bright: #f8f9fa;
-  --color-surface-dim: #d9dadb;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f4f5;
-  --color-surface-container: #edeeef;
-  --color-surface-container-high: #e7e8e9;
-  --color-surface-container-highest: #e1e3e4;
-  --color-surface-variant: #e1e3e4;
-  --color-surface-tint: #494bd6;
-  --color-on-surface: #191c1d;
-  --color-on-surface-variant: #464554;
-  --color-inverse-surface: #2e3132;
-  --color-inverse-on-surface: #f0f1f2;
-
-  /* Background */
+  /* surfaces — light: higher elevation = lighter/whiter */
   --color-background: #f8f9fa;
-  --color-on-background: #191c1d;
+  --color-on-background: #1b1c21;
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #e2e3e8;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3f6;
+  --color-surface-container: #eceef2;
+  --color-surface-container-high: #e6e8ed;
+  --color-surface-container-highest: #e0e2e9;
+  --color-surface-variant: #e2e4ec;
+  --color-on-surface: #1b1c21;
+  --color-on-surface-variant: #4a4d5c;
+  --color-outline: #767a8a;
+  --color-outline-variant: #c6c9d4;
+  --color-inverse-surface: #2b2d38;
+  --color-inverse-primary: #8385ff;
 
-  /* Outline — only ever used at low opacity ("Ghost Border") */
-  --color-outline: #767586;
-  --color-outline-variant: #c7c4d7;
+  /* status — new semantic set, replaces all hardcoded green/amber/blue */
+  --color-success: #157f4f;
+  --color-on-success: #ffffff;
+  --color-success-container: #cdf2de;
+  --color-on-success-container: #06301d;
+  --color-warning: #a4630a;
+  --color-on-warning: #ffffff;
+  --color-warning-container: #ffe8c2;
+  --color-on-warning-container: #402700;
+  --color-danger: #c02436;
+  --color-on-danger: #ffffff;
+  --color-danger-container: #ffdbdf;
+  --color-on-danger-container: #480910;
+  --color-error: #c02436;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdbdf;
+  --color-on-error-container: #480910;
+  --color-info: #1b62b8;
+  --color-on-info: #ffffff;
+  --color-info-container: #d6e7ff;
+  --color-on-info-container: #0a2547;
+  --color-neutral-chip: #e6e8ed;
+  --color-on-neutral-chip: #4a4d5c;
 
-  /* Type — Inter throughout, per DESIGN.md section 3 */
-  --font-headline: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-label: 'Inter', system-ui, -apple-system, sans-serif;
+  /* chart theme */
+  --color-chart-1: #4648d4;
+  --color-chart-2: #0c7f99;
+  --color-chart-3: #7a3fc4;
+  --color-chart-4: #a4630a;
+  --color-chart-grid: #d8dbe4;
+  --color-chart-axis: #767a8a;
 
-  /* Shape */
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  /* radius */
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-sheet: 20px;
+  --radius-pill: 999px;
+
+  /* motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-sheet: 320ms;
+}
+
+/* ── 2. DARK — every token overridden. Attribute-driven so it matches the
+      Mantine color-scheme switch already in the app. ────────────────────── */
+:root[data-mantine-color-scheme="dark"],
+:root[data-theme="dark"] {
+  --color-primary: #8385ff;              /* lifted for text/icon contrast */
+  --color-on-primary: #14163a;
+  --color-primary-container: #2f31a6;    /* deep indigo kept for fills */
+  --color-on-primary-container: #dcddff;
+  --color-secondary: #5fd8f0;
+  --color-on-secondary: #06303a;
+  --color-secondary-container: #0e4d5e;
+  --color-on-secondary-container: #b6ecf8;
+  --color-tertiary: #c08cff;
+  --color-on-tertiary: #2c0f52;
+  --color-tertiary-container: #4a2480;
+  --color-on-tertiary-container: #e8d4ff;
+
+  /* dark surfaces — higher elevation = LIGHTER, faint indigo cast */
+  --color-background: #0d0e12;
+  --color-on-background: #e6e7ea;
+  --color-surface: #101118;
+  --color-surface-dim: #0a0b0f;
+  --color-surface-bright: #262833;
+  --color-surface-container-lowest: #0a0b0f;
+  --color-surface-container-low: #14161d;
+  --color-surface-container: #181a22;
+  --color-surface-container-high: #1f2129;
+  --color-surface-container-highest: #262833;
+  --color-surface-variant: #2b2d38;
+  --color-on-surface: #e6e7ea;
+  --color-on-surface-variant: #a2a5b4;
+  --color-outline: #545869;
+  --color-outline-variant: #2e3140;
+  --color-inverse-surface: #e6e7ea;
+  --color-inverse-primary: #4648d4;
+
+  --color-success: #4ade9b;
+  --color-on-success: #04301d;
+  --color-success-container: #10402c;
+  --color-on-success-container: #b7f2d4;
+  --color-warning: #f5b544;
+  --color-on-warning: #402700;
+  --color-warning-container: #4a3312;
+  --color-on-warning-container: #ffe4b0;
+  --color-danger: #ff6b7a;
+  --color-on-danger: #480910;
+  --color-danger-container: #5e1420;
+  --color-on-danger-container: #ffdbdf;
+  --color-error: #ff6b7a;
+  --color-on-error: #480910;
+  --color-error-container: #5e1420;
+  --color-on-error-container: #ffdbdf;
+  --color-info: #6db4ff;
+  --color-on-info: #0a2547;
+  --color-info-container: #143a63;
+  --color-on-info-container: #cfe5ff;
+  --color-neutral-chip: #1f2129;
+  --color-on-neutral-chip: #a2a5b4;
+
+  --color-chart-1: #8385ff;
+  --color-chart-2: #5fd8f0;
+  --color-chart-3: #c08cff;
+  --color-chart-4: #f5b544;
+  --color-chart-grid: #22242e;   /* grid = surface shift, not a line color */
+  --color-chart-axis: #6a6e80;
+
+  /* elevation without drop shadows */
+  --ghost-border: 1px solid rgb(255 255 255 / 0.06);
+  --ghost-border-strong: 1px solid rgb(255 255 255 / 0.10);
+  --glow-primary: 0 0 0 1px rgb(131 133 255 / 0.22), 0 12px 40px -12px rgb(70 72 212 / 0.55);
+  --glass-bg: rgb(16 17 24 / 0.72);
+  --glass-blur: saturate(140%) blur(20px);
+}
+
+/* ── 3. focus ring — brand, not a stray indigo ─────────────────────────── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── 4. Mantine bridge — themed components inherit the same tokens ─────── */
+:root {
+  --mantine-color-body: var(--color-background);
+  --mantine-color-text: var(--color-on-surface);
+  --mantine-color-dimmed: var(--color-on-surface-variant);
+  --mantine-color-default: var(--color-surface-container-low);
+  --mantine-color-default-hover: var(--color-surface-container);
+  --mantine-color-default-border: var(--color-outline-variant);
+  --mantine-color-anchor: var(--color-primary);
+  --mantine-radius-default: var(--radius-card);
+  --mantine-primary-color-filled: var(--color-primary-container);
+  --mantine-primary-color-filled-hover: var(--color-primary);
+  --mantine-primary-color-contrast: var(--color-on-primary);
 }
 
 /**
- * Ambient shadow (DESIGN.md section 4): indigo-tinted rather than gray, so
- * floating elements read as lit rather than as dropped.
+ * The same bridge again, at each scheme's specificity.
+ *
+ * Mantine ships its own `:root[data-mantine-color-scheme="dark"]` *and*
+ * `="light"` blocks, which outrank a bare `:root` — so without these the
+ * mappings above silently lost to Mantine's stock palette and Mantine surfaces
+ * drifted away from the token surfaces sitting right next to them. It was
+ * visible in both directions: dark fell back to Mantine's dark-7, and light
+ * painted `--mantine-color-body` pure #fff against a #f8f9fa token background.
+ * The var() targets are identical; they simply resolve per scheme. These win
+ * the specificity tie because index.css is imported after
+ * @mantine/core/styles.css in main.tsx.
  */
-.shadow-ambient {
-  box-shadow: 0 12px 32px -8px rgba(70, 72, 212, 0.08);
+:root[data-mantine-color-scheme="light"] {
+  --mantine-color-body: var(--color-background);
+  --mantine-color-text: var(--color-on-surface);
+  --mantine-color-dimmed: var(--color-on-surface-variant);
+  --mantine-color-default: var(--color-surface-container-low);
+  --mantine-color-default-hover: var(--color-surface-container);
+  --mantine-color-default-border: var(--color-outline-variant);
+  --mantine-color-anchor: var(--color-primary);
+  --mantine-primary-color-filled: var(--color-primary-container);
+  --mantine-primary-color-filled-hover: var(--color-primary);
+  --mantine-primary-color-contrast: var(--color-on-primary);
+}
+
+:root[data-mantine-color-scheme="dark"] {
+  --mantine-color-body: var(--color-background);
+  --mantine-color-text: var(--color-on-surface);
+  --mantine-color-dimmed: var(--color-on-surface-variant);
+  --mantine-color-default: var(--color-surface-container-low);
+  --mantine-color-default-hover: var(--color-surface-container);
+  --mantine-color-default-border: var(--color-outline-variant);
+  --mantine-color-anchor: var(--color-primary);
+  --mantine-primary-color-filled: var(--color-primary-container);
+  --mantine-primary-color-filled-hover: var(--color-primary);
+  --mantine-primary-color-contrast: var(--color-on-primary-container);
+}
+.mantine-Card-root, .mantine-Paper-root {
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-card);
+  box-shadow: none;
+}
+.mantine-Modal-content, .mantine-Drawer-content {
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-sheet);
+}
+.mantine-Modal-overlay, .mantine-Drawer-overlay { background: rgb(6 7 10 / 0.72); backdrop-filter: blur(4px); }
+.mantine-Input-input, .mantine-TextInput-input, .mantine-Select-input, .mantine-Textarea-input {
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-control);
+  min-height: 48px;
+  font-variant-numeric: tabular-nums;
+}
+.mantine-Input-input::placeholder { color: var(--color-on-surface-variant); }
+.mantine-Table-table { --table-border-color: var(--color-outline-variant); }
+.mantine-Table-thead th {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  font: 600 11px/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mantine-Table-tbody tr:hover td { background: var(--color-surface-container-low); }
+
+/* ── 5. logical properties only — RTL safe ─────────────────────────────── */
+[dir="rtl"] .flip-x { transform: scaleX(-1); }
+
+/**
+ * Hebrew is not a tracked script — the app sets a global -0.011em on :root for
+ * the Latin faces, and inherited into Hebrew it visibly cramps the glyphs.
+ * Scoped to the root element only, so utilities that set their own tracking
+ * (the uppercase mono labels) still win for themselves; this just neutralises
+ * what would otherwise be inherited.
+ */
+:root[dir="rtl"] {
+  letter-spacing: 0 !important;
+  /* Hebrew takes +2% line-height: its glyphs have no descenders to speak of but
+     a taller x-height, so the Latin leading reads tight on the same size. */
+  line-height: 1.53;
 }
 
 /**
- * Ghost border: the accessibility fallback when a boundary is unavoidable.
- * Never a fully opaque line.
+ * The tracked uppercase mono eyebrow is a Latin device. IBM Plex Mono carries
+ * no Hebrew, so those labels fall back to Heebo anyway, and the 0.14–0.18em
+ * tracking then pulls apart glyphs that should read as one word — uppercase
+ * being a no-op in Hebrew, the tracking is all that survives, and it only does
+ * harm. Utilities set tracking on the element itself, so the root rule above
+ * cannot reach them; this can.
  */
-.border-ghost {
-  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+[dir="rtl"] .font-mono {
+  letter-spacing: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /**
- * Utilities the Stitch exports declare inline in every screen's <style> block.
- * Lifted here so the markup keeps working when pasted in, without each screen
- * re-declaring them.
+ * ── 6. helper classes ────────────────────────────────────────────────────
+ * The Stitch markup declares these inline in every screen's <style> block;
+ * they live here so pasted markup keeps working without each screen
+ * re-declaring them. Carried over from the previous token file, retuned for
+ * the dark-first palette — the ghost border and glass panel now read from the
+ * dark section's variables when it is active, instead of hardcoding a light
+ * treatment that vanished on dark surfaces.
  */
 
-/* Primary CTA fill — the "Glass & Gradient" rule, 135° primary -> primary-container */
-.bg-primary-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-container) 100%
-  );
-}
-
-/* Floating menus and mobile nav: 70% surface + 20px blur, per DESIGN.md */
-.glass-panel {
-  background: color-mix(in srgb, var(--color-surface-container-lowest) 70%, transparent);
-  backdrop-filter: blur(20px);
-}
-
-[data-mantine-color-scheme='dark'] .glass-panel {
-  background: color-mix(in srgb, var(--color-inverse-surface) 70%, transparent);
-}
-
-/* The auth screens name these differently from the dashboard screens; alias so
-   markup copied from either renders identically. */
+/* Primary CTA fill — 135° primary -> primary-container */
+.bg-primary-gradient,
 .auth-gradient {
   background: linear-gradient(
     135deg,
@@ -146,12 +334,40 @@
   );
 }
 
-.ghost-border {
-  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+/* Floating menus and mobile nav */
+.glass-panel {
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 70%, transparent);
+  backdrop-filter: blur(20px);
 }
 
+[data-mantine-color-scheme='dark'] .glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* The accessibility fallback when a boundary is unavoidable — never a fully
+   opaque line. */
+.ghost-border,
+.border-ghost {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 55%, transparent);
+}
+
+[data-mantine-color-scheme='dark'] .ghost-border,
+[data-mantine-color-scheme='dark'] .border-ghost {
+  border: var(--ghost-border);
+}
+
+/* Ambient shadow: indigo-tinted rather than gray, so floating elements read as
+   lit rather than as dropped. Dark mode has no drop shadows at all — depth
+   comes from the glow instead. */
+.shadow-ambient,
 .ambient-glow {
   box-shadow: 0 12px 32px -8px rgba(70, 72, 212, 0.08);
+}
+
+[data-mantine-color-scheme='dark'] .shadow-ambient,
+[data-mantine-color-scheme='dark'] .ambient-glow {
+  box-shadow: var(--glow-primary);
 }
 
 .no-scrollbar {

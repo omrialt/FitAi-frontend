@@ -11,7 +11,8 @@
     "schedule": "Schedule",
     "users": "Users",
     "myClients": "My Clients",
-    "workoutHistory": "Workout history"
+    "workoutHistory": "Workout history",
+    "more": "More"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -55,7 +56,9 @@
     "dayCount_one": "{{count}} day",
     "dayCount_other": "{{count}} days",
     "noAccessTitle": "No access to this client",
-    "noAccessBody": "The connection is not active. A client's data is readable only while they have an accepted connection with you."
+    "noAccessBody": "The connection is not active. A client's data is readable only while they have an accepted connection with you.",
+    "noAccessLabel": "No access",
+    "totalConnections": "Total connections"
   },
   "layout": {
     "profile": "Profile",
@@ -116,9 +119,9 @@
     "exportToPDF": "Export to PDF",
     "exportToExcel": "Export to Excel",
     "editPlan": "Edit Plan",
-    "focusLabel": "Focus:",
-    "typeLabel": "Type:",
-    "cycleLabel": "Cycle:",
+    "focusLabel": "Focus",
+    "typeLabel": "Type",
+    "cycleLabel": "Cycle",
     "createdLabel": "Created:",
     "kcal": "kcal",
     "minShort": "min",
@@ -153,7 +156,10 @@
     "chooseAccessLevel": "Choose access level",
     "viewOnly": "View Only",
     "share": "Share",
-    "revoke": "Revoke"
+    "revoke": "Revoke",
+    "close": "Close",
+    "durationLabel": "Duration",
+    "caloriesLabel": "Est. calories"
   },
   "trainings": {
     "title": "My Training Plans",
@@ -589,7 +595,10 @@
     "verifyResendPrompt": "Enter your email address and we'll send a fresh link.",
     "verifyResendButton": "Send a new link",
     "verifyResent": "If that address needs verifying, a new link is on its way.",
-    "verifyResendFailed": "Could not send the link. Please try again shortly."
+    "verifyResendFailed": "Could not send the link. Please try again shortly.",
+    "verifyStatePending": "Pending",
+    "verifyStateVerified": "Verified",
+    "verifyStateExpired": "Link expired"
   },
   "profile": {
     "settingsTitle": "Profile Settings",
@@ -751,7 +760,7 @@
     "users": "Users",
     "noUsers": "No users found",
     "searchByName": "Search by name...",
-    "filterByRole": "Filter by Role",
+    "filterByRole": "Filter by role",
     "allRoles": "All Roles",
     "role_user": "User",
     "role_trainer": "Trainer",
@@ -792,7 +801,9 @@
   "notFound": {
     "title": "Page Not Found",
     "text": "The page you are looking for does not exist or has been moved.",
-    "goHome": "Go to Home"
+    "goHome": "Go to Home",
+    "eyebrow": "Set not found",
+    "goTrainings": "Go to my trainings"
   },
   "landing": {
     "badge": "Elite Performance Ready",

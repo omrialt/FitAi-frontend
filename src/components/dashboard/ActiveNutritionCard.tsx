@@ -35,7 +35,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
     return (
       <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
+          <div className="w-8 h-8 rounded-lg bg-success-container flex items-center justify-center text-on-success-container">
             <StitchIcon name="restaurant" size={18} />
           </div>
           <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
@@ -97,8 +97,8 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
       label: t('nutrition.fats'),
       grams: totals.fat,
       percent: pct(totals.fat),
-      stroke: '#fb923c',
-      bar: 'bg-orange-400',
+      stroke: 'var(--color-warning)',
+      bar: 'bg-warning',
     },
   ];
 
@@ -117,7 +117,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
     <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
       <div className="flex items-start justify-between gap-4 mb-6">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center text-white shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-success flex items-center justify-center text-white shrink-0">
             <StitchIcon name="restaurant" size={20} />
           </div>
           <div className="min-w-0">
@@ -176,7 +176,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
             })}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-black text-on-surface leading-none">
+            <span className="text-2xl font-black tabular-nums tracking-tight text-on-surface leading-none">
               {calories.toLocaleString()}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mt-1">
@@ -217,7 +217,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           {t('nutrition.mealCount', { count: plan.meals.length })}
         </span>
         {plan.averageRating > 0 && (
-          <span className="text-[10px] font-bold text-amber-600">
+          <span className="text-[10px] font-bold text-warning">
             ★ {plan.averageRating.toFixed(1)}
           </span>
         )}

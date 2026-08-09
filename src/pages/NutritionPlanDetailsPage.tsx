@@ -290,8 +290,13 @@ export default function NutritionPlanDetailsPage() {
               <div className="flex items-center justify-center gap-10 mt-6 flex-wrap">
                 {[
                   { label: t('nutrition.protein'), value: totalP, color: 'text-primary' },
-                  { label: t('nutrition.carbs'), value: totalC, color: 'text-on-secondary-container' },
-                  { label: t('nutrition.fats'), value: totalF, color: 'text-orange-500' },
+                  // Screen 14 keys the macros to the chart theme: protein on
+                  // chart-1, carbs on chart-2, fats on chart-4. `secondary` is
+                  // chart-2; `on-secondary-container` was the fill meant for
+                  // text sitting *inside* a secondary chip, so it read too dark
+                  // in light mode for a standalone figure.
+                  { label: t('nutrition.carbs'), value: totalC, color: 'text-secondary' },
+                  { label: t('nutrition.fats'), value: totalF, color: 'text-warning' },
                 ].map((m) => (
                   <div key={m.label} className="text-center">
                     <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
@@ -315,13 +320,13 @@ export default function NutritionPlanDetailsPage() {
           plan.activeByUsers && plan.activeByUsers.length > 0 && (
             <section className="mb-8">
               <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                <span className="w-8 h-8 rounded-lg bg-success-container text-on-success-container flex items-center justify-center">
                   <StitchIcon name="check_circle" size={18} />
                 </span>
                 <h2 className="text-lg font-extrabold tracking-tight text-on-surface">
                   {t('common.activeUsers')}
                 </h2>
-                <span className="text-[10px] font-black px-2 py-1 rounded-full bg-green-100 text-green-700">
+                <span className="text-[10px] font-black px-2 py-1 rounded-full bg-success-container text-on-success-container">
                   {plan.activeByUsers.length}
                 </span>
               </div>
@@ -340,7 +345,7 @@ export default function NutritionPlanDetailsPage() {
                       key={index}
                       className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/10 flex items-center gap-4"
                     >
-                      <span className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                      <span className="w-10 h-10 rounded-full bg-success-container text-on-success-container flex items-center justify-center shrink-0">
                         <StitchIcon name="person" size={20} />
                       </span>
                       <div className="flex-1 min-w-0">
@@ -351,7 +356,7 @@ export default function NutritionPlanDetailsPage() {
                           </p>
                         )}
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-green-100 text-green-700 shrink-0">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-success-container text-on-success-container shrink-0">
                         {t('common.active')}
                       </span>
                     </div>

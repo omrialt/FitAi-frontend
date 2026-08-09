@@ -23,23 +23,31 @@ const getTargetPill = (
     case "bulk":
       return { pill: 'bg-primary/10 text-primary', labelKey: 'nutrition.muscleGain' };
     case "maintain":
-      return { pill: 'bg-green-100 text-green-700', labelKey: 'nutrition.maintain' };
+      return { pill: 'bg-success-container text-on-success-container', labelKey: 'nutrition.maintain' };
     default:
       return { pill: 'bg-surface-container-high text-on-surface-variant' };
   }
 };
 
 /** Tint of the leading plan avatar, colour-coded by target. */
+/**
+ * Fill *and* its paired foreground.
+ *
+ * This returned the fill alone and the call site hardcoded `text-white`, which
+ * only worked while the palette was light-only. In dark these fills invert to
+ * light tints (#4ade9b, #ff6b7a, #8385ff), so white-on-them fails contrast —
+ * the `on-*` token is the whole point of the pair.
+ */
 const getAvatarTint = (target?: string): string => {
   switch (target?.toLowerCase()) {
     case "cut":
-      return 'bg-error';
+      return 'bg-danger text-on-danger';
     case "bulk":
-      return 'bg-primary';
+      return 'bg-primary text-on-primary';
     case "maintain":
-      return 'bg-green-600';
+      return 'bg-success text-on-success';
     default:
-      return 'bg-outline';
+      return 'bg-outline text-surface';
   }
 };
 
@@ -103,7 +111,7 @@ export function NutritionsTable({
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
                       <span
-                        className={`w-10 h-10 rounded-lg text-white text-lg font-black flex items-center justify-center shrink-0 ${getAvatarTint(plan.target)}`}
+                        className={`w-10 h-10 rounded-lg text-lg font-black flex items-center justify-center shrink-0 ${getAvatarTint(plan.target)}`}
                       >
                         {plan.title[0]?.toUpperCase()}
                       </span>
@@ -161,7 +169,7 @@ export function NutritionsTable({
                   {/* Rating */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-1">
-                      <span className="text-amber-500">
+                      <span className="text-warning">
                         <StitchIcon name="verified" size={14} />
                       </span>
                       <span className="text-sm font-bold text-on-surface">

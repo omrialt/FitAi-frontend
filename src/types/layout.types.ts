@@ -10,6 +10,13 @@ export interface NavItem {
   label: string;
   path: string;
   active?: boolean;
+  /**
+   * Shown as its own tab in the mobile bottom nav. The design gives that bar
+   * four destinations plus More, so everything without this flag is reachable
+   * through the More sheet rather than being dropped off the end of the bar —
+   * which is what used to happen to Schedule.
+   */
+  primary?: boolean;
 }
 
 export interface AppLayoutProps {

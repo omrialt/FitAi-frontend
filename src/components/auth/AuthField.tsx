@@ -15,12 +15,19 @@ interface AuthFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon: StitchIconName;
   error?: string;
+  /**
+   * Informational note under the field — "locked · Google" and similar.
+   * Distinct from `error` on purpose: the profile form used to pass that note
+   * *as* an error, so a neutral fact about where the value came from rendered
+   * in danger red.
+   */
+  hint?: string;
   /** Optional control rendered opposite the label (e.g. "Forgot?"). */
   action?: React.ReactNode;
 }
 
 export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
-  function AuthField({ label, icon, error, action, id, type = 'text', ...rest }, ref) {
+  function AuthField({ label, icon, error, hint, action, id, type = 'text', ...rest }, ref) {
     const { t } = useTranslation();
     const [revealed, setRevealed] = useState(false);
 
@@ -31,7 +38,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
       <div className="space-y-2">
         <div className="flex justify-between items-center mx-1">
           <label
-            className="text-xs font-bold uppercase tracking-wider text-on-surface-variant"
+            className="text-[11.5px] font-bold text-on-surface-variant"
             htmlFor={id}
           >
             {label}
@@ -50,10 +57,16 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
             id={id}
             type={inputType}
             aria-invalid={error ? true : undefined}
-            className={`w-full ps-12 ${isPassword ? 'pe-12' : 'pe-4'} py-3.5 bg-surface-container-low rounded-xl outline-none transition-all text-on-surface placeholder:text-outline/60 border ${
+            className={`h-12 w-full ps-12 ${isPassword ? 'pe-12' : 'pe-4'} rounded-lg outline-none transition-all text-sm placeholder:text-outline/60 border ${
+              rest.disabled
+                ? 'bg-surface border-outline-variant/40 text-on-surface-variant cursor-not-allowed'
+                : 'bg-surface-container-lowest text-on-surface'
+            } ${
               error
-                ? 'border-error focus:ring-4 focus:ring-error/10'
-                : 'border-transparent focus:border-primary focus:ring-4 focus:ring-primary/10'
+                ? 'border-danger focus:ring-[3px] focus:ring-danger/20'
+                : rest.disabled
+                  ? ''
+                  : 'border-outline-variant focus:border-primary focus:ring-[3px] focus:ring-primary/20'
             }`}
           />
 
@@ -69,7 +82,10 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           )}
         </div>
 
-        {error && <p className="text-xs text-error mx-1">{error}</p>}
+        {error && <p className="text-[11.5px] text-danger mx-1">{error}</p>}
+        {!error && hint && (
+          <p className="mx-1 font-mono text-[10.5px] text-on-surface-variant">{hint}</p>
+        )}
       </div>
     );
   },
@@ -97,7 +113,7 @@ export const AuthSelect = forwardRef<HTMLSelectElement, AuthSelectProps>(
     return (
       <div className="space-y-2">
         <label
-          className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mx-1 block"
+          className="text-[11.5px] font-bold text-on-surface-variant mx-1 block"
           htmlFor={id}
         >
           {label}
@@ -113,10 +129,10 @@ export const AuthSelect = forwardRef<HTMLSelectElement, AuthSelectProps>(
             ref={ref}
             id={id}
             aria-invalid={error ? true : undefined}
-            className={`w-full ps-12 pe-10 py-3.5 bg-surface-container-low rounded-xl outline-none transition-all text-on-surface appearance-none border ${
+            className={`h-12 w-full ps-12 pe-10 bg-surface-container-lowest rounded-lg outline-none transition-all text-sm text-on-surface appearance-none border ${
               error
-                ? 'border-error focus:ring-4 focus:ring-error/10'
-                : 'border-transparent focus:border-primary focus:ring-4 focus:ring-primary/10'
+                ? 'border-danger focus:ring-[3px] focus:ring-danger/20'
+                : 'border-outline-variant focus:border-primary focus:ring-[3px] focus:ring-primary/20'
             }`}
           >
             {placeholder && <option value="">{placeholder}</option>}
@@ -132,7 +148,7 @@ export const AuthSelect = forwardRef<HTMLSelectElement, AuthSelectProps>(
           </span>
         </div>
 
-        {error && <p className="text-xs text-error mx-1">{error}</p>}
+        {error && <p className="text-[11.5px] text-danger mx-1">{error}</p>}
       </div>
     );
   },
@@ -149,7 +165,7 @@ export function AuthSubmit({
       {...rest}
       type="submit"
       disabled={loading || rest.disabled}
-      className="w-full auth-gradient text-white py-3.5 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-transform disabled:opacity-60 disabled:hover:scale-100"
+      className="grid h-[52px] w-full place-items-center bg-primary-gradient text-white rounded-lg text-[15px] font-extrabold shadow-lg shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-transform disabled:opacity-60 disabled:hover:scale-100"
     >
       {children}
     </button>
@@ -168,7 +184,7 @@ export function GoogleButton({
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-surface-container-lowest ghost-border rounded-xl text-on-surface font-semibold hover:bg-surface-container-low transition-all active:scale-[0.98]"
+      className="flex min-h-[52px] w-full items-center justify-center gap-3 px-4 bg-surface-container-highest border border-outline-variant rounded-lg text-[14.5px] font-bold text-on-surface hover:bg-surface-container-high transition-all active:scale-[0.98]"
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
         <path
@@ -198,7 +214,7 @@ export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="relative flex items-center py-2">
       <div className="grow border-t border-outline-variant/30" />
-      <span className="shrink mx-4 text-xs font-bold uppercase tracking-widest text-outline">
+      <span className="shrink mx-4 font-mono text-[10.5px] uppercase tracking-[0.12em] text-on-surface-variant whitespace-nowrap">
         {label}
       </span>
       <div className="grow border-t border-outline-variant/30" />

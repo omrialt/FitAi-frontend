@@ -55,23 +55,23 @@ export function QuickStatsCards({
       label: t('dashboard.nutritionPlans'),
       value: pad(nutritionPlans.length),
       icon: 'restaurant',
-      chip: 'bg-green-100 text-green-600',
-      hover: 'hover:border-green-500/30',
+      chip: 'bg-success-container text-on-success-container',
+      hover: 'hover:border-success/30',
     },
     {
       id: 'workouts7d',
       label: t('dashboard.workouts7d'),
       value: pad(progressStats?.last7Days?.workoutsCompleted ?? 0),
       icon: 'calendar_view_week',
-      chip: 'bg-blue-100 text-blue-600',
-      hover: 'hover:border-blue-500/30',
+      chip: 'bg-info-container text-on-info-container',
+      hover: 'hover:border-info/30',
     },
     {
       id: 'workouts30d',
       label: t('dashboard.workouts30d'),
       value: pad(progressStats?.last30Days?.workoutsCompleted ?? 0),
       icon: 'history',
-      chip: 'bg-secondary-fixed text-on-secondary-container',
+      chip: 'bg-secondary-container text-on-secondary-container',
       hover: 'hover:border-secondary-container/30',
     },
     {
@@ -79,8 +79,8 @@ export function QuickStatsCards({
       label: t('dashboard.totalExercises'),
       value: pad(totalExercises),
       icon: 'exercise',
-      chip: 'bg-teal-100 text-teal-600',
-      hover: 'hover:border-teal-500/30',
+      chip: 'bg-secondary-container text-on-secondary-container',
+      hover: 'hover:border-secondary/30',
     },
     {
       id: 'bmi',
@@ -88,7 +88,7 @@ export function QuickStatsCards({
       // BMI is a ratio, not a count — never zero-padded
       value: bmi ? bmi.bmi.toFixed(1) : t('common.none'),
       icon: 'monitor_weight',
-      chip: 'bg-tertiary-fixed text-tertiary',
+      chip: 'bg-tertiary-container text-on-tertiary-container',
       hover: 'hover:border-tertiary/30',
     },
   ];

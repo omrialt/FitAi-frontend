@@ -1,4 +1,4 @@
-﻿// React 19: No forwardRef needed - refs work directly on components
+// React 19: No forwardRef needed - refs work directly on components
 import { useMemo, useEffect, Activity } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -76,11 +76,13 @@ const getNavigationItems = (
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
         label: "nav.dashboard",
+        primary: true,
         path: "/",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
+        primary: true,
         path: "/my-trainings",
       },
       {
@@ -91,11 +93,13 @@ const getNavigationItems = (
       {
         icon: <IconApple size={20} stroke={1.5} />,
         label: "nav.nutritionPlans",
+        primary: true,
         path: "/nutrition-plans",
       },
       {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
         label: "nav.physicalData",
+        primary: true,
         path: "/physical-data",
       },
       {
@@ -112,16 +116,19 @@ const getNavigationItems = (
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
         label: "nav.dashboard",
+        primary: true,
         path: "/",
       },
       {
         icon: <IconUsersGroup size={20} stroke={1.5} />,
         label: "nav.myClients",
+        primary: true,
         path: "/clients",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
+        primary: true,
         path: "/my-trainings",
       },
       {
@@ -132,6 +139,7 @@ const getNavigationItems = (
       {
         icon: <IconApple size={20} stroke={1.5} />,
         label: "nav.nutritionPlans",
+        primary: true,
         path: "/nutrition-plans",
       },
       {
@@ -153,21 +161,25 @@ const getNavigationItems = (
       {
         icon: <IconDashboard size={20} stroke={1.5} />,
         label: "nav.dashboard",
+        primary: true,
         path: "/",
       },
       {
         icon: <IconUsers size={20} stroke={1.5} />,
         label: "nav.users",
+        primary: true,
         path: "/users",
       },
       {
         icon: <IconUsersGroup size={20} stroke={1.5} />,
         label: "nav.myClients",
+        primary: true,
         path: "/clients",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.trainingPlans",
+        primary: true,
         path: "/my-trainings",
       },
       {
@@ -251,7 +263,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
-      footer={{ height: 48 }}
+      // Height grows by the safe-area inset rather than the bar padding itself:
+      // AppShell sets a fixed border-box height, so padding there shrinks the
+      // usable strip instead of clearing the home indicator.
+      footer={{ height: 'calc(48px + env(safe-area-inset-bottom, 0px))' }}
       padding="md"
     >
       {/* Header */}

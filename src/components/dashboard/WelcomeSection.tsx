@@ -23,15 +23,15 @@ function getGreetingKey(): string {
 const phaseConfig = {
   bulk: {
     labelKey: 'dashboard.phaseBulking',
-    pill: 'bg-orange-100 text-orange-700 border-orange-200/50',
+    pill: 'bg-warning-container text-on-warning-container border-warning/50',
   },
   cut: {
     labelKey: 'dashboard.phaseCutting',
-    pill: 'bg-red-100 text-red-700 border-red-200/50',
+    pill: 'bg-danger-container text-on-danger-container border-danger/50',
   },
   maintain: {
     labelKey: 'dashboard.phaseMaintaining',
-    pill: 'bg-teal-100 text-teal-700 border-teal-200/50',
+    pill: 'bg-secondary-container text-on-secondary-container border-secondary/50',
   },
 };
 
@@ -68,7 +68,7 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
 
       <div className="flex items-center gap-6 relative z-10">
         <div className="relative shrink-0">
-          <div className="w-20 h-20 rounded-full border-4 border-white shadow-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full border-4 border-surface-container-low shadow-xl overflow-hidden bg-primary/10 flex items-center justify-center">
             {user.avatarUrl ? (
               <img
                 alt={user.fullName}
@@ -80,7 +80,7 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
             )}
           </div>
           {/* Active indicator */}
-          <div className="absolute -bottom-1 -end-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
+          <div className="absolute -bottom-1 -end-1 w-6 h-6 bg-success border-4 border-surface-container-low rounded-full" />
         </div>
 
         <div>

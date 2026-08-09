@@ -28,8 +28,24 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
     startOfWeek(new Date(), { weekStartsOn: 0 }),
   );
+  /** Mobile day-strip selection. Follows the week when the week changes. */
+  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [modalOpened, setModalOpened] = useState(false);
+
+  /**
+   * Keep the strip selection inside the week on show. Paging to another week
+   * with a stale selection would leave the agenda describing a day that is no
+   * longer on the strip; landing on today when it is in view is the useful
+   * default, and the first day of the week otherwise.
+   */
+  useEffect(() => {
+    const today = new Date();
+    const inWeek = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+    setSelectedDay(
+      inWeek.find((d) => isSameDay(d, today)) ?? currentWeekStart,
+    );
+  }, [currentWeekStart]);
 
   const { events, loading, error, refetch } = useWeeklyCalendar(currentWeekStart);
   const { status: googleStatus, connect, disconnect } = useGoogleCalendar();
@@ -133,7 +149,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
         className={`w-full text-start rounded-lg p-3 border-s-4 transition-colors ${
           isTraining
             ? 'bg-primary/5 border-s-primary hover:bg-primary/10 cursor-pointer'
-            : 'bg-secondary-fixed/40 border-s-secondary cursor-default'
+            : 'bg-secondary-container/40 border-s-secondary cursor-default'
         }`}
       >
         <p className={`text-[10px] font-black ${isTraining ? 'text-primary' : 'text-on-secondary-container'}`}>
@@ -251,10 +267,83 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
         </div>
       )}
 
-      {/* Week grid */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
+      {/* ── Mobile: day strip + agenda ──
+          Screen 16 is explicit that this is "never a 7-col grid" on mobile.
+          Stacking the seven columns into one, which is what this used to do,
+          is technically not a grid but has the same problem it was avoiding:
+          seven day headers to scroll past to reach Thursday. The strip makes
+          the week a single glance and one tap, and the agenda below lists only
+          days that actually hold something. */}
+      <div className="md:hidden space-y-4">
+        <div className="flex gap-1.5">
+          {DAYS_OF_WEEK.map((dayName, index) => {
+            const date = addDays(currentWeekStart, index);
+            const dateKey = format(date, 'yyyy-MM-dd');
+            const count = (eventsByDay[dateKey] || []).length;
+            const today = isToday(date);
+            const selected = isSameDay(date, selectedDay);
+
+            return (
+              <button
+                key={dateKey}
+                type="button"
+                onClick={() => setSelectedDay(date)}
+                aria-pressed={selected}
+                aria-label={`${dayName} ${format(date, 'd')}`}
+                className={`flex min-h-[62px] flex-1 flex-col items-center justify-center gap-[3px] rounded-xl border transition-colors ${
+                  selected
+                    ? 'border-primary bg-primary/12'
+                    : 'border-outline-variant/40 bg-surface-container-low'
+                }`}
+              >
+                <span
+                  className={`font-mono text-[10px] ${
+                    today ? 'text-primary' : 'text-on-surface-variant'
+                  }`}
+                >
+                  {dayName.slice(0, 3)}
+                </span>
+                <span
+                  className={`text-[15px] font-extrabold tabular-nums ${
+                    selected || today ? 'text-on-surface' : 'text-on-surface-variant'
+                  }`}
+                >
+                  {format(date, 'd')}
+                </span>
+                {/* Presence dot, not a count — the agenda below carries detail */}
+                <span
+                  className={`h-[5px] w-[5px] rounded-full ${
+                    count > 0 ? 'bg-primary' : 'bg-transparent'
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="space-y-2">
+          <p
+            className={`font-mono text-[10px] uppercase tracking-[0.14em] ${
+              isToday(selectedDay) ? 'text-primary' : 'text-on-surface-variant'
+            }`}
+          >
+            {format(selectedDay, 'EEEE d', { locale: dateLocale })}
+            {isToday(selectedDay) ? ` · ${t('calendar.today')}` : ''}
+          </p>
+
+          {(eventsByDay[format(selectedDay, 'yyyy-MM-dd')] || []).length === 0 ? (
+            <p className="rounded-xl border border-outline-variant/20 bg-surface-container-low p-4 text-sm text-on-surface-variant">
+              {t('calendar.noEvents')}
+            </p>
+          ) : (
+            (eventsByDay[format(selectedDay, 'yyyy-MM-dd')] || []).map(renderEvent)
+          )}
+        </div>
+      </div>
+
+      {/* Week grid — the desktop enhancement */}
+      <div className="hidden md:block bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div className="md:overflow-x-auto">
-          {/* Mobile: stacked day agenda (1 col). md+: the 7-column week grid. */}
           <div className="grid grid-cols-1 md:grid-cols-7 md:min-w-[900px]">
             {DAYS_OF_WEEK.map((dayName, index) => {
               const date = addDays(currentWeekStart, index);

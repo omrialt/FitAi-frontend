@@ -45,8 +45,12 @@ export function VideoModal({ opened, onClose, videoUrl }: VideoModalProps) {
       size="900"
       centered
     >
-      {/* 16:9 frame */}
-      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-inverse-surface">
+      {/* 16:9 frame.
+          Letterboxing is black in both themes, so this is one of the few places
+          a literal beats a token: `bg-inverse-surface` looked right only while
+          the palette was light-only — once dark landed it inverted to near-white
+          and framed the video in a bright box. */}
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
         <iframe
           src={activeSrc}
           className="absolute inset-0 w-full h-full border-0"

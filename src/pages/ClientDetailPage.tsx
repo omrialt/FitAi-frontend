@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Center, Loader, Alert } from '@mantine/core';
+import { Container, Center, Loader } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
@@ -165,18 +165,39 @@ export default function ClientDetailPage() {
     );
   }
 
+  /**
+   * No-access state.
+   *
+   * The design gives this its own full screen rather than an inline warning
+   * strip: hitting it means the trainer has no relationship with this athlete,
+   * so there is no page underneath for a banner to annotate — and it needs a
+   * way back, which an Alert does not provide.
+   */
   if (forbidden) {
     return (
       <AppLayout>
-        <Container size="lg" py="xl">
-          <Alert
-            icon={<IconAlertCircle size={16} />}
-            title={t('clients.noAccessTitle')}
-            color="yellow"
-            variant="light"
-          >
-            {t('clients.noAccessBody')}
-          </Alert>
+        <Container size="sm" py="xl">
+          <div className="flex flex-col items-center gap-3 py-16 text-center">
+            <span className="grid h-15 w-15 place-items-center rounded-[18px] bg-danger-container text-on-danger-container ring-1 ring-danger/20">
+              <IconAlertCircle size={26} />
+            </span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-danger">
+              {t('clients.noAccessLabel')}
+            </span>
+            <h1 className="max-w-[22ch] text-2xl font-black leading-tight tracking-tight text-on-surface">
+              {t('clients.noAccessTitle')}
+            </h1>
+            <p className="max-w-[34ch] text-sm leading-relaxed text-on-surface-variant">
+              {t('clients.noAccessBody')}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/clients')}
+              className="mt-1 grid h-12 place-items-center rounded-lg border border-outline-variant bg-surface-container-high px-5 text-sm font-bold text-on-surface"
+            >
+              {t('clients.backToClients')}
+            </button>
+          </div>
         </Container>
       </AppLayout>
     );

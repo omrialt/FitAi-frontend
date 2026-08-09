@@ -21,18 +21,18 @@ interface CategoryStyle {
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   training: {
     icon: 'lightbulb',
-    iconClass: 'text-green-500',
-    pill: 'bg-green-100 text-green-700',
+    iconClass: 'text-success',
+    pill: 'bg-success-container text-on-success-container',
   },
   nutrition: {
     icon: 'warning',
-    iconClass: 'text-orange-500',
-    pill: 'bg-orange-100 text-orange-700',
+    iconClass: 'text-warning',
+    pill: 'bg-warning-container text-on-warning-container',
   },
   general: {
     icon: 'bedtime',
-    iconClass: 'text-blue-500',
-    pill: 'bg-blue-100 text-blue-700',
+    iconClass: 'text-info',
+    pill: 'bg-info-container text-on-info-container',
   },
 };
 
@@ -53,7 +53,7 @@ export function RecentRecommendations({
       </div>
 
       <div className="flex items-center gap-3 mb-6 relative z-10">
-        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
+        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
           <StitchIcon name="brain" size={18} />
         </div>
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">

@@ -78,10 +78,10 @@ export function AdminUsersTable({ users, onView }: AdminUsersTableProps) {
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${u.isActive ? 'bg-green-600' : 'bg-outline'}`}
+                      className={`w-2 h-2 rounded-full shrink-0 ${u.isActive ? 'bg-success' : 'bg-outline'}`}
                     />
                     <span
-                      className={`text-sm font-medium ${u.isActive ? 'text-green-700' : 'text-on-surface-variant'}`}
+                      className={`text-sm font-medium ${u.isActive ? 'text-success' : 'text-on-surface-variant'}`}
                     >
                       {u.isActive ? t('common.active') : t('common.inactive')}
                     </span>

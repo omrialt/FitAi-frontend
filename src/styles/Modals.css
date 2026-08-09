@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════
-   Modal System — Performance Lab
+   Modal System — FitAI design system
    Applies to all Mantine Modal components
 ══════════════════════════════════════ */
 
@@ -14,19 +14,14 @@
 .modal-sticky-footer {
   position: sticky;
   bottom: 0;
-  background: white;
-  border-top: 1px solid rgba(226, 232, 240, 0.6);
+  background: var(--color-surface-container);
+  border-top: 1px solid var(--color-outline-variant);
   padding: 14px 0 0;
   margin-top: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-}
-
-[data-mantine-color-scheme='dark'] .modal-sticky-footer {
-  background: #0f172a;
-  border-top-color: rgba(30, 41, 59, 0.7);
 }
 
 /* Cancel always left, action always right */
@@ -47,19 +42,19 @@
 
 /* Modal content container */
 .mantine-Modal-content {
-  border-radius: 16px !important;
-  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.2), 0 8px 24px -8px rgba(0, 0, 0, 0.14) !important;
+  border-radius: var(--radius-sheet) !important;
+  box-shadow: 0 20px 60px -10px rgb(0 0 0 / 0.2), 0 8px 24px -8px rgb(0 0 0 / 0.14) !important;
+}
+
+[data-mantine-color-scheme='dark'] .mantine-Modal-content {
+  box-shadow: var(--glow-primary) !important;
 }
 
 /* Modal header */
 .mantine-Modal-header {
-  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  border-bottom: 1px solid var(--color-outline-variant);
   padding-bottom: 14px;
   margin-bottom: 4px;
-}
-
-[data-mantine-color-scheme='dark'] .mantine-Modal-header {
-  border-bottom-color: rgba(30, 41, 59, 0.6);
 }
 
 /* Modal title */
@@ -67,11 +62,7 @@
   font-weight: 700 !important;
   font-size: 1.1rem !important;
   letter-spacing: -0.02em;
-  color: #1e293b;
-}
-
-[data-mantine-color-scheme='dark'] .mantine-Modal-title {
-  color: #f1f5f9;
+  color: var(--color-on-surface);
 }
 
 /* Modal body */
@@ -85,7 +76,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--color-on-surface-variant);
   margin-bottom: 12px;
   margin-top: 4px;
 }
@@ -102,25 +93,25 @@
 }
 
 .confirm-modal-icon.danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
 }
 
 .confirm-modal-icon.warning {
-  background: rgba(249, 115, 22, 0.1);
-  color: #f97316;
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
 }
 
 .confirm-modal-icon.success {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
 }
 
 /* ── Loading state overlay inside modal ── */
 .modal-loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 80%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,5 +120,69 @@
 }
 
 [data-mantine-color-scheme='dark'] .modal-loading-overlay {
-  background: rgba(15, 23, 42, 0.8);
+  background: color-mix(in srgb, var(--color-surface-container) 80%, transparent);
+}
+
+
+/* ══════════════════════════════════════
+   Bottom sheets under 768px
+
+   Per the design: "every modal is a bottom sheet under 768px". Rather than
+   converting each Modal call site to a Drawer — there are a dozen and they
+   carry their own form state — the sheet is expressed here as a presentation
+   change on the Mantine parts every modal already renders. One rule set, and
+   every existing and future modal picks it up.
+══════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Pin the dialog to the bottom edge instead of centring it. */
+  .mantine-Modal-inner {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .mantine-Modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    /* Never a full-height takeover: the scrim above it is what says "this is
+       dismissible", so some of the page must stay visible behind it. */
+    max-height: 92vh;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
+    border-bottom: 0;
+    position: relative;
+    animation: sheet-slide-up var(--duration-sheet) var(--ease-standard);
+  }
+
+  /* Grab handle.
+     Anchored to the content box, not the header: Mantine's header is a flex
+     row, so a ::before there is blockified into a flex item and renders as a
+     stray dash beside the title rather than a centred bar above it. */
+  .mantine-Modal-content::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-variant);
+    z-index: 1;
+  }
+
+  /* Clear the handle. */
+  .mantine-Modal-header,
+  .mantine-Modal-content > .mantine-Modal-body:first-child {
+    padding-top: 22px;
+  }
+
+  /* Clear of the home indicator on iOS. */
+  .modal-sticky-footer {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+@keyframes sheet-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
 }

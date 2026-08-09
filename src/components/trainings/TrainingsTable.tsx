@@ -21,9 +21,9 @@ const getDifficultyMeta = (
     case "beginner":
       return { labelKey: "trainings.beginner", pill: "bg-surface-container-high text-on-surface-variant" };
     case "intermediate":
-      return { labelKey: "trainings.intermediate", pill: "bg-secondary-fixed text-on-secondary-container" };
+      return { labelKey: "trainings.intermediate", pill: "bg-secondary-container text-on-secondary-container" };
     case "advanced":
-      return { labelKey: "trainings.advanced", pill: "bg-secondary-fixed text-on-secondary-container" };
+      return { labelKey: "trainings.advanced", pill: "bg-secondary-container text-on-secondary-container" };
     case "elite":
       return { labelKey: "trainings.elite", pill: "bg-error-container text-on-error-container" };
     default:
@@ -47,11 +47,11 @@ const getPlanIcon = (difficulty: string): StitchIconName => {
 const getPlanChip = (difficulty: string) => {
   switch (difficulty?.toLowerCase()) {
     case "beginner":
-      return "bg-tertiary-fixed text-tertiary";
+      return "bg-tertiary-container text-on-tertiary-container";
     case "intermediate":
-      return "bg-secondary-fixed text-on-secondary-container";
+      return "bg-secondary-container text-on-secondary-container";
     case "advanced":
-      return "bg-orange-100 text-orange-600";
+      return "bg-warning-container text-on-warning-container";
     case "elite":
       return "bg-error-container text-on-error-container";
     default:
@@ -207,13 +207,13 @@ export function TrainingsTable({
                     <div className="flex items-center gap-2">
                       <span
                         className={`w-2 h-2 rounded-full shrink-0 ${
-                          training.isActive ? 'bg-green-600' : 'bg-outline'
+                          training.isActive ? 'bg-success' : 'bg-outline'
                         }`}
                       />
                       <span
                         className={`text-sm font-medium ${
                           training.isActive
-                            ? 'text-green-700'
+                            ? 'text-success'
                             : 'text-on-surface-variant'
                         }`}
                       >

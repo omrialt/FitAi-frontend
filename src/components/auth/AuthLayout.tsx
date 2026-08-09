@@ -4,19 +4,25 @@ import { useTranslation } from 'react-i18next';
 import { StitchIcon } from '../common/StitchIcon';
 
 /**
- * Split-panel shell shared by the auth screens (login, register, reset,
- * complete-profile), per the Stitch auth designs.
+ * Shell shared by the auth screens (login, register, reset, complete-profile).
  *
- * The brand panel collapses below `lg`, where the form takes the full width and
- * grows its own compact header — matching the mobile exports.
+ * Rebuilt to the guest surface in screens 01–03: a radial indigo bloom from the
+ * top of the viewport rather than a card sitting on a flat page. The previous
+ * version split the screen into a solid `surface-container-high` panel beside
+ * the form — that read as a grey slab once the dark-first palette landed, and
+ * the design's guest surfaces carry depth as ambient glow, never as a filled
+ * block.
  *
- * The designs include a "Join 5,000+ athletes" social-proof card on the brand
- * panel. That is a factual claim about the business, so it is deliberately not
- * reproduced; add it once there is a real number to show.
+ * The brand copy still appears from `lg`, but now shares the same wash as the
+ * form instead of being fenced off in its own panel.
+ *
+ * The designs include a "Join 5,000+ athletes" social-proof card. That is a
+ * factual claim about the business, so it is deliberately not reproduced; add
+ * it once there is a real number to show.
  */
 
 interface AuthLayoutProps {
-  /** Heading above the form (desktop panel). */
+  /** Heading above the form. */
   title: string;
   /** Supporting line under the heading. */
   subtitle: string;
@@ -27,13 +33,13 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen w-full bg-surface flex items-center justify-center p-4 lg:p-8">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden ambient-glow bg-surface-container-lowest">
-        {/* Brand panel — desktop only */}
-        <aside className="hidden lg:flex flex-col justify-between bg-surface-container-high p-12">
-          <div>
-            <div className="flex items-center gap-3 mb-16">
-              <div className="w-11 h-11 auth-gradient rounded-xl flex items-center justify-center">
+    <div className="guest-wash min-h-screen w-full p-4 lg:p-8">
+      <div className="mx-auto flex min-h-[calc(100vh-2rem)] lg:min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center justify-center">
+        <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          {/* Brand copy — from lg, on the same wash as the form */}
+          <aside className="hidden lg:flex lg:flex-col">
+            <div className="mb-14 flex items-center gap-3">
+              <div className="bg-primary-gradient grid h-11 w-11 place-items-center rounded-xl shadow-lg shadow-primary/30">
                 <StitchIcon name="bolt" size={24} className="text-white" />
               </div>
               <span className="text-2xl font-black tracking-tight text-on-surface">
@@ -41,42 +47,34 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
               </span>
             </div>
 
-            <h1 className="text-5xl font-black tracking-tight text-on-surface leading-[1.1] mb-6">
+            <h1 className="mb-6 text-5xl font-black leading-[1.05] tracking-[-0.04em] text-on-surface">
               {t('auth.brandHeadline')}{' '}
-              <span className="text-primary italic">
-                {t('auth.brandHeadlineAccent')}
-              </span>
+              <span className="text-primary">{t('auth.brandHeadlineAccent')}</span>
             </h1>
-            <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">
+            <p className="max-w-md text-lg leading-relaxed text-on-surface-variant">
               {t('auth.brandSubcopy')}
             </p>
-          </div>
-        </aside>
+          </aside>
 
-        {/* Form panel */}
-        <main className="flex items-center justify-center p-8 lg:p-12 bg-surface-container-lowest">
-          <div className="w-full max-w-[400px] mx-auto space-y-8">
-            {/* Compact header on mobile, where the brand panel is hidden */}
-            <div className="space-y-2 lg:hidden flex flex-col items-center text-center">
-              <div className="w-12 h-12 auth-gradient rounded-xl flex items-center justify-center mb-4">
-                <StitchIcon name="bolt" size={28} className="text-white" />
+          {/* Form */}
+          <main className="w-full">
+            <div className="mx-auto w-full max-w-[400px] space-y-6">
+              {/* The mark leads the column below lg, where the brand copy is hidden */}
+              <div className="bg-primary-gradient grid h-11 w-11 place-items-center rounded-xl shadow-lg shadow-primary/30 lg:hidden">
+                <StitchIcon name="bolt" size={24} className="text-white" />
               </div>
-              <h2 className="text-3xl font-black tracking-tight text-on-surface">
-                {title}
-              </h2>
-              <p className="text-on-surface-variant">{subtitle}</p>
-            </div>
 
-            <div className="hidden lg:block space-y-2">
-              <h2 className="text-3xl font-black tracking-tight text-on-surface">
-                {title}
-              </h2>
-              <p className="text-on-surface-variant">{subtitle}</p>
-            </div>
+              <div className="space-y-1.5">
+                <h2 className="text-[30px] font-black leading-[1.05] tracking-[-0.04em] text-on-surface">
+                  {title}
+                </h2>
+                <p className="text-sm text-on-surface-variant">{subtitle}</p>
+              </div>
 
-            {children}
-          </div>
-        </main>
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

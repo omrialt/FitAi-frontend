@@ -25,7 +25,7 @@ function StarRating({
       {[1, 2, 3, 4, 5].map((i) => (
         <span
           key={i}
-          className={i <= Math.round(rating) ? 'text-amber-500' : 'text-outline/40'}
+          className={i <= Math.round(rating) ? 'text-warning' : 'text-outline/40'}
         >
           <StitchIcon name="verified" size={14} />
         </span>
@@ -48,11 +48,11 @@ const TARGET_LABEL_KEYS: Record<string, string> = {
 const getTargetPill = (target?: string) => {
   switch (target?.toLowerCase()) {
     case 'maintain':
-      return 'bg-blue-100 text-blue-700';
+      return 'bg-info-container text-on-info-container';
     case 'cut':
       return 'bg-error-container text-on-error-container';
     case 'bulk':
-      return 'bg-green-100 text-green-700';
+      return 'bg-success-container text-on-success-container';
     default:
       return 'bg-surface-container-high text-on-surface-variant';
   }
@@ -117,7 +117,7 @@ export function NutritionsCard({
 
       {/* Calories */}
       <div className="flex items-center gap-2 mt-4 pt-4 border-t border-outline-variant/10">
-        <span className="text-orange-500">
+        <span className="text-warning">
           <StitchIcon name="bolt" size={16} />
         </span>
         <span className="text-sm font-bold text-on-surface">

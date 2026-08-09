@@ -333,7 +333,7 @@ export default function WorkoutSessionPage() {
                     key={si}
                     className={`flex flex-wrap items-center gap-2 rounded-lg border p-2 transition-colors ${
                       set.done
-                        ? 'border-green-500/40 bg-green-500/5'
+                        ? 'border-success/40 bg-success/5'
                         : 'border-transparent bg-surface-container-low'
                     }`}
                   >
@@ -354,7 +354,7 @@ export default function WorkoutSessionPage() {
                         onChange={(e) =>
                           patchSet(ei, si, { reps: e.target.value })
                         }
-                        className="w-16 rounded-md border border-outline-variant/30 bg-surface-container-lowest px-2 py-1.5 text-center tabular-nums text-on-surface outline-none focus:border-primary"
+                        className="h-12 w-16 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
                       />
                     </label>
 
@@ -372,7 +372,7 @@ export default function WorkoutSessionPage() {
                         onChange={(e) =>
                           patchSet(ei, si, { weight: e.target.value })
                         }
-                        className="w-20 rounded-md border border-outline-variant/30 bg-surface-container-lowest px-2 py-1.5 text-center tabular-nums text-on-surface outline-none focus:border-primary"
+                        className="h-12 w-20 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
                       />
                     </label>
 
@@ -381,13 +381,13 @@ export default function WorkoutSessionPage() {
                       onClick={() => toggleDone(ei, si)}
                       aria-pressed={set.done}
                       aria-label={t('workout.markSetDone', { number: si + 1 })}
-                      className={`ms-auto flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+                      className={`ms-auto flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
                         set.done
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-success text-white'
                           : 'bg-surface-container-high text-on-surface-variant hover:bg-primary hover:text-white'
                       }`}
                     >
-                      <StitchIcon name="check" size={18} />
+                      <StitchIcon name="check" size={22} />
                     </button>
                   </div>
                 ))}
@@ -396,9 +396,9 @@ export default function WorkoutSessionPage() {
               <button
                 type="button"
                 onClick={() => addSet(ei)}
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+                className="mt-3 inline-flex min-h-12 items-center gap-1.5 rounded-lg border border-outline-variant/40 px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/10"
               >
-                <StitchIcon name="add" size={14} />
+                <StitchIcon name="add" size={16} />
                 {t('workout.addSet')}
               </button>
             </section>

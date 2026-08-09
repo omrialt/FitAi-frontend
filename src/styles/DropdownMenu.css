@@ -1,25 +1,36 @@
-/* Dropdown Menu Styles for Radix UI */
+/* Dropdown Menu Styles for Radix UI
+ *
+ * Reads the design tokens rather than restating a palette. The whole
+ * `[data-mantine-color-scheme='dark']` half of this file is gone: it existed to
+ * hand-maintain a second set of slate/indigo hexes, and every one of those
+ * values now falls out of the token layer automatically when the scheme flips.
+ */
 
 .dropdown-menu-content {
   min-width: 220px;
-  background-color: white;
-  border-radius: 10px;
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius-card);
   padding: 5px;
-  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.18), 0 2px 8px -2px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(226, 232, 240, 0.6);
-  animation-duration: 200ms;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 32px -8px rgb(0 0 0 / 0.18), 0 2px 8px -2px rgb(0 0 0 / 0.08);
+  border: 1px solid var(--color-outline-variant);
+  animation-duration: var(--duration-base);
+  animation-timing-function: var(--ease-emphasized);
   will-change: transform, opacity;
   z-index: 1000;
+}
+
+/* Dark surfaces carry depth as a glow, not a drop shadow. */
+[data-mantine-color-scheme='dark'] .dropdown-menu-content {
+  box-shadow: var(--glow-primary);
 }
 
 .dropdown-menu-item {
   all: unset;
   font-size: 13px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1;
-  color: #374151;
-  border-radius: 6px;
+  color: var(--color-on-surface);
+  border-radius: var(--radius-control);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -27,31 +38,32 @@
   position: relative;
   user-select: none;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
 .dropdown-menu-item[data-disabled] {
-  color: #9ca3af;
+  color: var(--color-on-surface-variant);
+  opacity: 0.6;
   pointer-events: none;
 }
 
 .dropdown-menu-item[data-highlighted] {
-  background-color: rgba(99, 102, 241, 0.07);
-  color: #6366f1;
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
 }
 
 .dropdown-menu-item-danger {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .dropdown-menu-item-danger[data-highlighted] {
-  background-color: rgba(239, 68, 68, 0.07);
-  color: #dc2626;
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
 }
 
 .dropdown-menu-separator {
   height: 1px;
-  background-color: rgba(226, 232, 240, 0.8);
+  background-color: var(--color-outline-variant);
   margin: 4px 6px;
 }
 
@@ -59,32 +71,8 @@
   padding: 6px 10px;
   font-size: 11px;
   line-height: 1;
-  color: #94a3b8;
+  color: var(--color-on-surface-variant);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-}
-
-/* Dark mode */
-[data-mantine-color-scheme='dark'] .dropdown-menu-content {
-  background-color: #0f172a;
-  border-color: rgba(30, 41, 59, 0.8);
-  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5), 0 2px 8px -2px rgba(0, 0, 0, 0.3);
-}
-
-[data-mantine-color-scheme='dark'] .dropdown-menu-item {
-  color: #cbd5e1;
-}
-
-[data-mantine-color-scheme='dark'] .dropdown-menu-item[data-highlighted] {
-  background-color: rgba(99, 102, 241, 0.1);
-  color: #818cf8;
-}
-
-[data-mantine-color-scheme='dark'] .dropdown-menu-separator {
-  background-color: rgba(30, 41, 59, 0.8);
-}
-
-[data-mantine-color-scheme='dark'] .dropdown-menu-label {
-  color: #64748b;
 }

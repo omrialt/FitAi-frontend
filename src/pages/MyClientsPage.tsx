@@ -206,10 +206,37 @@ export default function MyClientsPage() {
           </Center>
         ) : (
           <Stack gap="xl">
+            {/* Roster summary — screen 18 opens on these three figures, so the
+                state of the practice is legible before any scrolling. */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { v: active.length, k: t("clients.activeClients"), c: "text-on-surface" },
+                { v: pending.length, k: t("clients.pendingInvites"), c: "text-warning" },
+                { v: connections.length, k: t("clients.totalConnections"), c: "text-primary" },
+              ].map((s) => (
+                <div
+                  key={s.k}
+                  className="flex flex-col gap-px rounded-xl border border-outline-variant/40 bg-surface-container-low p-3"
+                >
+                  <span className={`text-2xl font-black tabular-nums tracking-tight ${s.c}`}>
+                    {s.v}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase leading-tight tracking-[0.08em] text-on-surface-variant">
+                    {s.k}
+                  </span>
+                </div>
+              ))}
+            </div>
+
             <Box>
-              <Title order={3} mb="sm">
-                {t("clients.activeClients")}
-              </Title>
+              <div className="mb-3 flex items-center gap-2">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant">
+                  {t("clients.activeClients")}
+                </span>
+                <span className="rounded-pill bg-success-container px-2 py-0.5 text-[10px] font-extrabold text-on-success-container">
+                  {active.length}
+                </span>
+              </div>
               {active.length === 0 ? (
                 <Text c="dimmed">{t("clients.noClients")}</Text>
               ) : (
@@ -218,9 +245,14 @@ export default function MyClientsPage() {
             </Box>
 
             <Box>
-              <Title order={3} mb="sm">
-                {t("clients.pendingInvites")}
-              </Title>
+              <div className="mb-3 flex items-center gap-2">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant">
+                  {t("clients.pendingInvites")}
+                </span>
+                <span className="rounded-pill bg-warning-container px-2 py-0.5 text-[10px] font-extrabold text-on-warning-container">
+                  {pending.length}
+                </span>
+              </div>
               {pending.length === 0 ? (
                 <Text c="dimmed">{t("clients.noPending")}</Text>
               ) : (

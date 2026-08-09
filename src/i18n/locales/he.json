@@ -11,7 +11,8 @@
     "schedule": "לוח זמנים",
     "users": "משתמשים",
     "myClients": "המתאמנים שלי",
-    "workoutHistory": "יומן אימונים"
+    "workoutHistory": "יומן אימונים",
+    "more": "עוד"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -57,7 +58,9 @@
     "noAccessTitle": "אין גישה למתאמן הזה",
     "noAccessBody": "החיבור אינו פעיל. נתוני מתאמן ניתנים לצפייה רק כל עוד קיים ביניכם חיבור מאושר.",
     "dayCount_two": "{{count}} ימים",
-    "dayCount_many": "{{count}} ימים"
+    "dayCount_many": "{{count}} ימים",
+    "noAccessLabel": "אין גישה",
+    "totalConnections": "סה\"כ קשרים"
   },
   "layout": {
     "profile": "פרופיל",
@@ -120,9 +123,9 @@
     "exportToPDF": "ייצוא ל-PDF",
     "exportToExcel": "ייצוא ל-Excel",
     "editPlan": "עריכת תוכנית",
-    "focusLabel": "מיקוד:",
-    "typeLabel": "סוג:",
-    "cycleLabel": "מחזור:",
+    "focusLabel": "מיקוד",
+    "typeLabel": "סוג",
+    "cycleLabel": "מחזור",
     "createdLabel": "נוצר:",
     "kcal": "קק\"ל",
     "minShort": "דק'",
@@ -161,7 +164,10 @@
     "chooseAccessLevel": "בחרו רמת גישה",
     "viewOnly": "צפייה בלבד",
     "share": "שיתוף",
-    "revoke": "ביטול גישה"
+    "revoke": "ביטול גישה",
+    "close": "סגירה",
+    "durationLabel": "משך",
+    "caloriesLabel": "קלוריות משוער"
   },
   "trainings": {
     "title": "תוכניות האימון שלי",
@@ -619,7 +625,10 @@
     "verifyResendPrompt": "הזינו את כתובת המייל ונשלח קישור חדש.",
     "verifyResendButton": "שלחו קישור חדש",
     "verifyResent": "אם הכתובת זקוקה לאימות, קישור חדש בדרך אליכם.",
-    "verifyResendFailed": "לא הצלחנו לשלוח את הקישור. נסו שוב בעוד רגע."
+    "verifyResendFailed": "לא הצלחנו לשלוח את הקישור. נסו שוב בעוד רגע.",
+    "verifyStatePending": "ממתין",
+    "verifyStateVerified": "אומת",
+    "verifyStateExpired": "הקישור פג"
   },
   "profile": {
     "settingsTitle": "הגדרות פרופיל",
@@ -822,7 +831,9 @@
   "notFound": {
     "title": "הדף לא נמצא",
     "text": "הדף שחיפשתם אינו קיים או שהועבר.",
-    "goHome": "חזרה לדף הבית"
+    "goHome": "חזרה לדף הבית",
+    "eyebrow": "הסט לא נמצא",
+    "goTrainings": "מעבר לאימונים שלי"
   },
   "landing": {
     "badge": "מוכנים לביצועי עילית",

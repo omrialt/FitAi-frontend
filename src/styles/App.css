@@ -1,7 +1,10 @@
-@import "tailwindcss";
-
 /* ======================================================
    Global App Styles
+
+   `@import "tailwindcss"` used to sit at the top of this file as well as in
+   index.css. This file is imported *by* index.css, after Tailwind is already
+   inlined there, so the second copy was both redundant and a late @import —
+   exactly the ordering hazard index.css warns about.
    ====================================================== */
 #root {
   min-height: 100vh;
@@ -11,12 +14,12 @@
 /* Landing feature card hover */
 .landing-feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.14), 0 4px 10px -4px rgba(0,0,0,0.08);
-  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--color-primary) 14%, transparent),
+              0 4px 10px -4px rgb(0 0 0 / 0.08);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 [data-mantine-color-scheme='dark'] .landing-feature-card:hover {
-  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.22), 0 4px 10px -4px rgba(0,0,0,0.3);
-  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: var(--glow-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
-
