@@ -55,7 +55,7 @@ export function NutritionsFilters({
             value={search}
             onChange={(e) => onSearchChange(e.currentTarget.value)}
           />
-          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
             <StitchIcon name="search" size={18} />
           </span>
         </div>
@@ -75,7 +75,7 @@ export function NutritionsFilters({
               </option>
             ))}
           </select>
-          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
             <StitchIcon name="expand_more" size={18} />
           </span>
         </div>
@@ -98,7 +98,7 @@ export function NutritionsFilters({
               </option>
             ))}
           </select>
-          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
             <StitchIcon name="expand_more" size={18} />
           </span>
         </div>

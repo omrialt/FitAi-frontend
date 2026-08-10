@@ -257,7 +257,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <AppShell
-      header={{ height: 64 }}
+      header={{ height: { base: 56, md: 64 } }}
       navbar={{
         width: 240,
         breakpoint: "sm",
@@ -266,7 +266,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       // Height grows by the safe-area inset rather than the bar padding itself:
       // AppShell sets a fixed border-box height, so padding there shrinks the
       // usable strip instead of clearing the home indicator.
-      footer={{ height: 'calc(48px + env(safe-area-inset-bottom, 0px))' }}
+      footer={{ height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }}
       padding="md"
     >
       {/* Header */}
@@ -303,6 +303,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <Group gap="xs" wrap="nowrap">
             <SegmentedControl
               size="xs"
+              visibleFrom="sm"
               value={i18n.language === "he" ? "he" : "en"}
               onChange={(lng) => i18n.changeLanguage(lng)}
               data={[
@@ -322,6 +323,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={() => toggleColorScheme()}
                 variant="default"
                 size="lg"
+                visibleFrom="sm"
                 aria-label={t("layout.toggleColorScheme")}
                 className="theme-toggle"
               >
@@ -480,6 +482,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                 items={navigationItems}
                 currentPath={location.pathname}
                 onNavigate={handleNavClick}
+                colorScheme={colorScheme}
+                onToggleColorScheme={toggleColorScheme}
+                language={i18n.language === "he" ? "he" : "en"}
+                onChangeLanguage={(lng) => i18n.changeLanguage(lng)}
+                onLogout={handleLogout}
               />
             </Box>
             <Group justify="center" h="100%" visibleFrom="sm">

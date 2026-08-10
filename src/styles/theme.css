@@ -294,6 +294,20 @@
 }
 
 /**
+ * Numerals stay LTR inside RTL text.
+ *
+ * Without an isolate, Hebrew's bidi algorithm reorders a measurement's parts —
+ * `+1.4 ק״ג` renders with the sign, the digits and the unit in the wrong
+ * sequence. Scoped to `.tabular-nums` because that class already marks exactly
+ * the stat figures and measurements this applies to, so no call site changes;
+ * `.num` is there for numeric spans that are not tabular.
+ */
+[dir="rtl"] :where(.tabular-nums, .num) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/**
  * The tracked uppercase mono eyebrow is a Latin device. IBM Plex Mono carries
  * no Hebrew, so those labels fall back to Heebo anyway, and the 0.14–0.18em
  * tracking then pulls apart glyphs that should read as one word — uppercase
@@ -305,12 +319,64 @@
   letter-spacing: normal;
 }
 
+/**
+ * ── 5b. motion ───────────────────────────────────────────────────────────
+ * The handoff's motion table, as reusable pieces rather than per-component
+ * one-offs. Everything here is covered by the reduce block below: transforms
+ * collapse to instant state swaps and the shimmer becomes a static tint.
+ */
+
+/* Set completion: 1 -> 1.12 -> 1 on the emphasized curve. */
+@keyframes set-pop {
+  0%   { transform: scale(1); }
+  55%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.animate-set-pop {
+  animation: set-pop 180ms var(--ease-emphasized);
+}
+
+/* Skeleton shimmer: 1.4s linear, 200% -> -200%. */
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+.skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-surface-container) 0%,
+    var(--color-surface-container-high) 50%,
+    var(--color-surface-container) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius-control);
+}
+
+/* Press feedback on every target that is big enough to be one. */
+@media (hover: none) {
+  :where(button, [role="button"], a):active {
+    transform: scale(0.97);
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* A 1ms shimmer is still a flicker; make it a flat tint instead. */
+  .skeleton {
+    background-image: none;
+    background-color: var(--color-surface-container-high);
+  }
+
+  :where(button, [role="button"], a):active {
+    transform: none;
   }
 }
 

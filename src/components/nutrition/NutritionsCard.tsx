@@ -25,7 +25,7 @@ function StarRating({
       {[1, 2, 3, 4, 5].map((i) => (
         <span
           key={i}
-          className={i <= Math.round(rating) ? 'text-warning' : 'text-outline/40'}
+          className={i <= Math.round(rating) ? 'text-warning' : 'text-on-surface-variant/40'}
         >
           <StitchIcon name="verified" size={14} />
         </span>

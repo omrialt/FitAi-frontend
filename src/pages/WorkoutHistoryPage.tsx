@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Container, Center, Loader, Alert } from '@mantine/core';
+import { Container, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
@@ -179,9 +179,27 @@ export default function WorkoutHistoryPage() {
         </header>
 
         {loading ? (
-          <Center h={240}>
-            <Loader size="lg" />
-          </Center>
+          /* Skeleton rather than a spinner: the handoff calls for shimmer on
+             lists and charts, and a spinner tells you nothing about what is
+             arriving. These blocks match the session-card rhythm below. */
+          <div className="flex flex-col gap-3" aria-busy="true" aria-live="polite">
+            <span className="sr-only">{t('common.loading')}</span>
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-5"
+              >
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div className="skeleton h-4 w-40" />
+                  <div className="skeleton h-3 w-24" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="skeleton h-9 w-full" />
+                  <div className="skeleton h-9 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : error ? (
           <Alert
             icon={<IconAlertCircle size={16} />}

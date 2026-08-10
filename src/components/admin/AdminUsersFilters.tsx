@@ -45,7 +45,7 @@ export function AdminUsersFilters({
             value={nameFilter}
             onChange={(e) => setNameFilter(e.currentTarget.value)}
           />
-          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
             <StitchIcon name="search" size={18} />
           </span>
         </div>

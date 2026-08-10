@@ -381,10 +381,10 @@ export default function WorkoutSessionPage() {
                       onClick={() => toggleDone(ei, si)}
                       aria-pressed={set.done}
                       aria-label={t('workout.markSetDone', { number: si + 1 })}
-                      className={`ms-auto flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
+                      className={`ms-auto flex h-12 w-14 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
                         set.done
-                          ? 'bg-success text-white'
-                          : 'bg-surface-container-high text-on-surface-variant hover:bg-primary hover:text-white'
+                          ? 'bg-success text-on-success shadow-[0_0_8px_0_var(--color-success)]'
+                          : 'bg-surface-container-high text-on-surface-variant hover:bg-primary hover:text-on-primary'
                       }`}
                     >
                       <StitchIcon name="check" size={22} />

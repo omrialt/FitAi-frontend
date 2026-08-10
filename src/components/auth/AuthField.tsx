@@ -47,7 +47,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
         </div>
 
         <div className="relative group">
-          <span className="absolute start-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors pointer-events-none">
+          <span className="absolute start-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors pointer-events-none">
             <StitchIcon name={icon} size={20} />
           </span>
 
@@ -57,7 +57,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
             id={id}
             type={inputType}
             aria-invalid={error ? true : undefined}
-            className={`h-12 w-full ps-12 ${isPassword ? 'pe-12' : 'pe-4'} rounded-lg outline-none transition-all text-sm placeholder:text-outline/60 border ${
+            className={`h-12 w-full ps-12 ${isPassword ? 'pe-12' : 'pe-4'} rounded-lg outline-none transition-all text-sm placeholder:text-on-surface-variant/70 border ${
               rest.disabled
                 ? 'bg-surface border-outline-variant/40 text-on-surface-variant cursor-not-allowed'
                 : 'bg-surface-container-lowest text-on-surface'
@@ -75,7 +75,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
               type="button"
               onClick={() => setRevealed((v) => !v)}
               aria-label={t(revealed ? 'auth.hidePassword' : 'auth.showPassword')}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+              className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <StitchIcon name="visibility" size={20} />
             </button>
@@ -120,7 +120,7 @@ export const AuthSelect = forwardRef<HTMLSelectElement, AuthSelectProps>(
         </label>
 
         <div className="relative group">
-          <span className="absolute start-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors pointer-events-none">
+          <span className="absolute start-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors pointer-events-none">
             <StitchIcon name={icon} size={20} />
           </span>
 
@@ -143,7 +143,7 @@ export const AuthSelect = forwardRef<HTMLSelectElement, AuthSelectProps>(
             ))}
           </select>
 
-          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          <span className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
             <StitchIcon name="expand_more" size={18} />
           </span>
         </div>
