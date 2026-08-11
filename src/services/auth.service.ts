@@ -55,6 +55,39 @@ class AuthService {
   }
 
   /**
+   * Trade the single-use code from the Google redirect for a session.
+   *
+   * The backend used to hand the browser accessToken, refreshToken and the
+   * whole user object as query parameters, which put a working login into
+   * browser history and into the Referer of the next request. It now sends one
+   * opaque code and we POST it back here.
+   */
+  async exchangeGoogleCode(
+    code: string,
+  ): Promise<{ user: User; tokens: AuthTokens; needsProfile: boolean }> {
+    const response = await api.post<{
+      data?: { user: User; tokens: AuthTokens; needsProfile: boolean };
+      user?: User;
+      tokens?: AuthTokens;
+      needsProfile?: boolean;
+    }>('/auth/google/exchange', { code });
+
+    // Responses are wrapped in `data` by the transform interceptor on most
+    // routes but not all; accept either shape rather than guessing.
+    const payload = response.data.data ?? response.data;
+
+    if (!payload?.user || !payload?.tokens) {
+      throw new Error('Malformed exchange response');
+    }
+
+    return {
+      user: payload.user,
+      tokens: payload.tokens,
+      needsProfile: payload.needsProfile ?? false,
+    };
+  }
+
+  /**
    * Get current user profile
    */
   async getProfile(): Promise<User> {
