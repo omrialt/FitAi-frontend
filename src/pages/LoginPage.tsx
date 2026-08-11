@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAuth } from '../hooks/useAuth';
+import { useAuth, errorCode, EMAIL_NOT_VERIFIED } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
@@ -38,10 +38,29 @@ function LoginPage() {
   } = useFormHandler<LoginFormData>({
     schema: loginSchema,
     onSubmit: async (data) => {
-      await login(data);
+      try {
+        setUnverifiedEmail(null);
+        await login(data);
+      } catch (error) {
+        // The password was right; the address just is not verified. Show the
+        // resend panel instead of an error, since there is nothing for the
+        // user to correct in the form.
+        if (errorCode(error) === EMAIL_NOT_VERIFIED) {
+          setUnverifiedEmail(data.email);
+          return;
+        }
+        throw error;
+      }
     },
     showErrorToast: false, // useAuth handles toast notifications
     mode: 'onTouched',
+  });
+
+  // Set when a sign-in is refused for want of email verification.
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const { execute: resendVerification, loading: resendLoading } = useApi<void>({
+    showSuccessToast: true,
+    successMessage: t('auth.verificationResent'),
   });
 
   // Inline "forgot password" flow, shown in place of the credential form
@@ -108,6 +127,32 @@ function LoginPage() {
             />
 
             <AuthDivider label={t('auth.orContinueWithEmail')} />
+
+            {unverifiedEmail && (
+              <div
+                role="status"
+                className="rounded-xl border border-ghost bg-surface-container-lowest p-4 space-y-3"
+              >
+                <p className="text-sm text-on-surface">
+                  {t('auth.verifyBeforeSignIn', { email: unverifiedEmail })}
+                </p>
+                <button
+                  type="button"
+                  disabled={resendLoading}
+                  onClick={() =>
+                    void resendVerification('/auth/resend-verification', {
+                      method: 'POST',
+                      data: { email: unverifiedEmail },
+                    })
+                  }
+                  className="text-sm font-bold text-primary hover:text-primary-container transition-colors disabled:opacity-60"
+                >
+                  {resendLoading
+                    ? t('common.loading')
+                    : t('auth.resendVerification')}
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <AuthField
