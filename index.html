@@ -1,10 +1,41 @@
 <!doctype html>
+<!--
+  `lang` starts as the i18n default and is rewritten at runtime by main.tsx,
+  next to where it sets `dir`. A static lang="en" told every screen reader to
+  pronounce the Hebrew UI with English phonetics.
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <title>FitAi — Training &amp; Nutrition Planning</title>
+    <meta
+      name="description"
+      content="Plan workouts and nutrition, log every set, track measurements, and share progress with your trainer."
+    />
+    <!-- Matches --color-primary in theme.css, so the mobile browser chrome
+         does not clash with the app's own header. -->
+    <meta name="theme-color" content="#4648d4" />
+
+    <!-- Without these, every link shared to WhatsApp or LinkedIn renders as a
+         bare URL. The image is the only logo actually referenced by the app. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FitAi" />
+    <meta property="og:title" content="FitAi — Training &amp; Nutrition Planning" />
+    <meta
+      property="og:description"
+      content="Plan workouts and nutrition, log every set, track measurements, and share progress with your trainer."
+    />
+    <meta property="og:image" content="/assets/fitai_logo_transparent.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FitAi — Training &amp; Nutrition Planning" />
+    <meta
+      name="twitter:description"
+      content="Plan workouts and nutrition, log every set, track measurements, and share progress with your trainer."
+    />
+    <meta name="twitter:image" content="/assets/fitai_logo_transparent.png" />
   </head>
   <body>
     <div id="root"></div>

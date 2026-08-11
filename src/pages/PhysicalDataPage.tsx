@@ -35,7 +35,9 @@ export default function PhysicalDataPage() {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: t('nav.dashboard'), href: '/dashboard' },
+    // The dashboard is mounted at '/', not '/dashboard' — the old href fell
+    // through to the 404 page.
+    { label: t('nav.dashboard'), href: '/' },
     { label: t('layout.profile'), href: '/profile' },
     { label: t('physicalData.title') },
   ];

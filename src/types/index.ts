@@ -151,10 +151,8 @@ export type {
   ActiveNutritionCardProps,
   ActiveTrainingCardProps,
   BodyProgressCardProps,
-  NutritionOverviewProps,
   QuickStatsCardsProps,
   RecentRecommendationsProps,
-  TrainingOverviewProps,
   WelcomeSectionProps,
 } from './dashboard-components.types';
 

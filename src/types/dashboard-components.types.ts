@@ -25,10 +25,6 @@ export interface BodyProgressCardProps {
   onDataUpdate?: () => void;
 }
 
-export interface NutritionOverviewProps {
-  plans: NutritionPlan[];
-}
-
 export interface QuickStatsCardsProps {
   trainingPlans: TrainingPlan[];
   nutritionPlans: NutritionPlan[];
@@ -38,10 +34,6 @@ export interface QuickStatsCardsProps {
 
 export interface RecentRecommendationsProps {
   recommendations: AiRecommendation[];
-}
-
-export interface TrainingOverviewProps {
-  plans: TrainingPlan[];
 }
 
 export interface WelcomeSectionProps {

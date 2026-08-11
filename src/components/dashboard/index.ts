@@ -4,8 +4,4 @@ export { ActiveTrainingCard } from './ActiveTrainingCard';
 export { ActiveNutritionCard } from './ActiveNutritionCard';
 export { BodyProgressCard } from './BodyProgressCard';
 export { RecentRecommendations } from './RecentRecommendations';
-export { UpcomingSchedule } from './UpcomingSchedule';
-export { QuickActions } from './QuickActions';
-export { TrainingOverview } from './TrainingOverview';
-export { NutritionOverview } from './NutritionOverview';
 export { TrainingRecordCard } from './TrainingRecordCard';
