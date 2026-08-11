@@ -1,0 +1,43 @@
+# Nothing checked this repo before a deploy. Deploys are push-to-deploy
+# straight to Vercel, so a type error or a broken build only surfaced once it
+# was live.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# A new push to the same branch makes the previous run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Non-blocking: the repo carries a standing baseline of 12 errors and 2
+      # warnings in files nobody is touching. A check that is red from day one
+      # is a check nobody reads. Flip to blocking once the baseline is clear.
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Test
+        run: npm test
+
+      # Runs `tsc -b` before vite build, so this is the type check too.
+      - name: Build
+        run: npm run build
