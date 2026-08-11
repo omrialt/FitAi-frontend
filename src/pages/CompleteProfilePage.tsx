@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '../store/authStore';
+import { authService } from '../services/auth.service';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { useApiMutation } from '../hooks/useApi';
 import { completeProfileSchema, type CompleteProfileFormData } from '../schemas/auth.schemas';
@@ -63,22 +64,48 @@ function CompleteProfilePage() {
     },
   });
 
-  // Handle OAuth callback - store tokens and user from URL params
+  // Handle the OAuth hand-off. A new Google user lands here rather than on
+  // /auth/google/callback, so this page has to redeem the code too.
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
-    const userParam = searchParams.get('user');
+    const adopt = async () => {
+      const code = searchParams.get('code');
 
-    if (accessToken && refreshToken && userParam) {
-      try {
-        const userData = JSON.parse(userParam);
-        login(userData, { accessToken, refreshToken });
-        toast.success(t('auth.welcomeCompleteProfile'));
-      } catch {
-        toast.error(t('auth.authDataError'));
-        navigate('/login');
+      if (code) {
+        try {
+          const { user: userData, tokens } =
+            await authService.exchangeGoogleCode(code);
+          login(userData, tokens);
+          toast.success(t('auth.welcomeCompleteProfile'));
+        } catch {
+          toast.error(t('auth.authDataError'));
+          navigate('/login');
+        }
+        return;
       }
-    }
+
+      // Legacy shape, kept until both repos are deployed. See the note in
+      // GoogleCallbackPage.
+      const accessToken = searchParams.get('accessToken');
+      const refreshToken = searchParams.get('refreshToken');
+      const userParam = searchParams.get('user');
+
+      if (accessToken && refreshToken && userParam) {
+        try {
+          const userData = JSON.parse(userParam);
+          login(userData, { accessToken, refreshToken });
+          toast.success(t('auth.welcomeCompleteProfile'));
+        } catch {
+          toast.error(t('auth.authDataError'));
+          navigate('/login');
+        }
+      }
+    };
+
+    void adopt();
+    // `t` is stable per language in react-i18next, and adding it would re-run
+    // the exchange on a language switch — the code is single-use, so a second
+    // attempt would fail.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, login, navigate]);
 
   // Pre-fill first name and last name from user's full name if available
