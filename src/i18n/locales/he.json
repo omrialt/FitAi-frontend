@@ -951,5 +951,25 @@
     "setCountShort_other": "{{count}} סטים",
     "setCountShort_many": "{{count}} סטים",
     "volume": "סה\"כ {{volume}} ק\"ג"
+  },
+  "account": {
+    "sectionTitle": "הנתונים שלך",
+    "sectionSubtitle": "אפשר להוריד עותק של כל מה שנשמר עליך, או למחוק את החשבון לצמיתות.",
+    "exportTitle": "ייצוא הנתונים",
+    "exportDescription": "קובץ JSON אחד עם הפרופיל, תוכניות האימון והתזונה, המדידות והיסטוריית האימונים.",
+    "exportAction": "הורדה",
+    "exporting": "מכין…",
+    "exportReady": "הייצוא הורד בהצלחה",
+    "exportFailed": "לא הצלחנו להכין את הייצוא. נסה שוב.",
+    "deleteTitle": "מחיקת חשבון",
+    "deleteDescription": "מוחק לצמיתות את החשבון ואת כל התוכניות, המדידות והאימונים שנרשמו בו.",
+    "deleteAction": "מחיקת חשבון",
+    "deleteConfirm": "הפעולה תמחק את החשבון ואת כל הנתונים שלך בשירות.",
+    "deleteWarning": "אי אפשר לבטל את הפעולה.",
+    "confirmPasswordLabel": "הזן את הסיסמה שלך לאישור",
+    "confirmEmailLabel": "הקלד את כתובת המייל שלך לאישור",
+    "deleting": "מוחק…",
+    "deleted": "החשבון נמחק — {{total}} רשומות הוסרו",
+    "deleteFailed": "לא הצלחנו למחוק את החשבון"
   }
 }
