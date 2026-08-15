@@ -12,6 +12,7 @@ import './index.css'
 import './i18n'
 import { dirFor } from './i18n'
 import App from './App.tsx'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
 
 /**
  * Mantine theme, aligned to the FitAI design tokens.
@@ -137,8 +138,13 @@ function Root() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <DirectionProvider>
-      <Root />
-    </DirectionProvider>
+    {/* Outside every provider on purpose: a throw inside MantineProvider,
+        Radix's Theme or i18n would otherwise escape the boundary and blank the
+        page, which is the exact failure this exists to prevent. */}
+    <ErrorBoundary>
+      <DirectionProvider>
+        <Root />
+      </DirectionProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

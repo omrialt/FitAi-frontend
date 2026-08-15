@@ -917,5 +917,25 @@
     "setCountShort_one": "1 set",
     "setCountShort_other": "{{count}} sets",
     "volume": "{{volume}} kg total"
+  },
+  "account": {
+    "sectionTitle": "Your data",
+    "sectionSubtitle": "Download a copy of everything stored about you, or delete your account for good.",
+    "exportTitle": "Export your data",
+    "exportDescription": "One JSON file with your profile, training and nutrition plans, measurements and workout history.",
+    "exportAction": "Download",
+    "exporting": "Preparing…",
+    "exportReady": "Your export has been downloaded",
+    "exportFailed": "Could not prepare the export. Please try again.",
+    "deleteTitle": "Delete account",
+    "deleteDescription": "Permanently removes your account and every plan, measurement and workout logged against it.",
+    "deleteAction": "Delete account",
+    "deleteConfirm": "This deletes your account and all of your data across the service.",
+    "deleteWarning": "This cannot be undone.",
+    "confirmPasswordLabel": "Enter your password to confirm",
+    "confirmEmailLabel": "Type your email address to confirm",
+    "deleting": "Deleting…",
+    "deleted": "Account deleted — {{total}} records removed",
+    "deleteFailed": "Could not delete the account"
   }
 }
