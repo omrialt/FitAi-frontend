@@ -50,10 +50,20 @@ class UserService {
   }
 
   /**
+   * Get the signed-in user's own profile.
+   *
+   * `/users/me` resolves from the access token, so nothing here has to know
+   * the id — which is what the paired `updateProfile` below always assumed.
+   */
+  async getProfile(): Promise<User> {
+    const response = await api.get<{ data: User }>('/users/me');
+    return response.data.data;
+  }
+
+  /**
    * Update current user profile
    */
   async updateProfile(data: UpdateProfileDto): Promise<User> {
-    // Assumes current user ID is stored in auth state
     const response = await api.patch<{ data: User }>('/users/me', data);
     return response.data.data;
   }
