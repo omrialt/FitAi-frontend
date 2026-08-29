@@ -54,3 +54,14 @@ export interface ExerciseSearchQuery {
   equipment?: Equipment;
   limit?: number;
 }
+
+/**
+ * Substitutes for a plan's free-text exercise name.
+ *
+ * `matched: null` is an ordinary answer meaning "the catalogue does not know
+ * this exercise, so offer nothing" — never an error to surface.
+ */
+export interface ExerciseSubstitutes {
+  matched: Exercise | null;
+  alternatives: Exercise[];
+}

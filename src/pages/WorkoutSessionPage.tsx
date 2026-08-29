@@ -9,12 +9,14 @@ import { AppLayout } from '../components/AppLayout';
 import { StitchIcon } from '../components/common/StitchIcon';
 import { PlateCalculator } from '../components/workout/PlateCalculator';
 import { RestTimer } from '../components/workout/RestTimer';
+import { SwapExercise } from '../components/workout/SwapExercise';
 import {
   BAR_OPTIONS_KG,
   readStoredBar,
   storeBar,
 } from '../components/workout/plateMath';
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
+import { enqueue, mintClientId } from '../services/offline-queue';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
 import { workoutSessionService } from '../services/workout-session.service';
@@ -83,6 +85,17 @@ export default function WorkoutSessionPage() {
     dismiss: dismissDraft,
   } = useWorkoutDraft<ExerciseDraft>(planId, dayIndex);
 
+  /**
+   * The loader below must not depend on `t`.
+   *
+   * `t` changes identity when the language changes, and the effect rebuilds
+   * the draft from the plan — so switching language mid-workout discarded
+   * every set already logged. The message is read through a ref so the effect
+   * depends only on which plan day is open.
+   */
+  const tRef = useRef(t);
+  tRef.current = t;
+
   const day = useMemo(
     () => (plan && Number.isInteger(dayIdx) ? plan.days[dayIdx] : undefined),
     [plan, dayIdx],
@@ -115,7 +128,7 @@ export default function WorkoutSessionPage() {
           })),
         );
       } catch {
-        if (!cancelled) toast.error(t('workout.loadFailed'));
+        if (!cancelled) toast.error(tRef.current('workout.loadFailed'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -124,7 +137,7 @@ export default function WorkoutSessionPage() {
     return () => {
       cancelled = true;
     };
-  }, [planId, dayIndex, t]);
+  }, [planId, dayIndex]);
 
   // Session clock. Ticks every 15s — a workout is measured in minutes, and a
   // per-second re-render of the whole list buys nothing.
@@ -243,6 +256,31 @@ export default function WorkoutSessionPage() {
     );
   }, []);
 
+  /**
+   * Swaps one exercise for another **in this session only**.
+   *
+   * The plan is left alone on purpose: the workout deviated from it, and that
+   * is exactly what a session record is for. Logged sets are kept — the
+   * targets came from the plan either way, and discarding work already done
+   * because the rack was busy would be the worst possible response.
+   */
+  const swapExercise = useCallback(
+    (ei: number, next: { name: string; muscleGroup?: string }) => {
+      setDraft((current) =>
+        current.map((exercise, i) =>
+          i !== ei
+            ? exercise
+            : {
+                ...exercise,
+                name: next.name,
+                muscleGroup: next.muscleGroup ?? exercise.muscleGroup,
+              },
+        ),
+      );
+    },
+    [],
+  );
+
   const completedSets = useMemo(
     () => draft.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0),
     [draft],
@@ -275,16 +313,38 @@ export default function WorkoutSessionPage() {
       }))
       .filter((exercise) => exercise.sets.length > 0);
 
+    const payload = {
+      // Minted before the first attempt, not after a failure: a request can
+      // succeed on the server and still fail on the wire, and only a key that
+      // already travelled with it makes the retry a no-op instead of a
+      // duplicate workout.
+      clientId: mintClientId(),
+      planId: plan?._id,
+      planTitle: plan?.title,
+      dayName: day?.dayName,
+      durationMinutes: minutesSince(startedAt.current),
+      notes: notes.trim() || undefined,
+      exercises,
+    };
+
     setSaving(true);
     try {
-      await workoutSessionService.create({
-        planId: plan?._id,
-        planTitle: plan?.title,
-        dayName: day?.dayName,
-        durationMinutes: minutesSince(startedAt.current),
-        notes: notes.trim() || undefined,
-        exercises,
-      });
+      try {
+        await workoutSessionService.create(payload);
+      } catch (error) {
+        // Only a request that never landed is queueable. A rejection from the
+        // server will never become valid by being sent again, and pretending
+        // it succeeded would lose the workout just as thoroughly.
+        const status = (error as { response?: { status?: number } })?.response
+          ?.status;
+        if (status && status !== 401) throw error;
+
+        await enqueue(payload.clientId, payload);
+        clearDraft();
+        toast.success(t('workout.savedOffline'));
+        navigate('/');
+        return;
+      }
 
       // ProgressStats is a stored snapshot, not a live view, so the dashboard's
       // workout counters would keep showing yesterday's number until something
@@ -556,6 +616,12 @@ export default function WorkoutSessionPage() {
                 <StitchIcon name="add" size={16} />
                 {t('workout.addSet')}
               </button>
+
+              {/* Draws nothing unless the catalogue recognises the exercise. */}
+              <SwapExercise
+                exerciseName={exercise.name}
+                onSwap={(next) => swapExercise(ei, next)}
+              />
             </section>
           ))}
         </div>

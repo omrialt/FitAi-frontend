@@ -1,0 +1,29 @@
+{
+  "name": "FitAi — Training & Nutrition",
+  "short_name": "FitAi",
+  "description": "Plan your training, log what you actually lifted, and watch it move.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1115",
+  "theme_color": "#4648d4",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/assets/fitai_logo_transparent.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Workout history",
+      "short_name": "History",
+      "url": "/workout-history"
+    }
+  ]
+}

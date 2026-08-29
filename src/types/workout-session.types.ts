@@ -37,6 +37,11 @@ export interface WorkoutSession {
 }
 
 export interface CreateWorkoutSessionDto {
+  /**
+   * Idempotency key minted before the first send attempt. Set for anything
+   * that went through the offline queue; resending it is a no-op server-side.
+   */
+  clientId?: string;
   planId?: string;
   planTitle?: string;
   dayName?: string;
@@ -103,4 +108,28 @@ export interface ExerciseHistory {
   points: ExerciseHistoryPoint[];
   /** Every exercise the user has ever logged, for the picker. */
   availableExercises: string[];
+}
+
+export type FatigueLevel = 'insufficient' | 'ok' | 'watch' | 'deload';
+
+/**
+ * Whether the recent training block looks like accumulating fatigue.
+ *
+ * `insufficient` is a first-class answer, not an error: without a baseline
+ * there is nothing to compare against, and a verdict invented from three
+ * sessions is how a signal like this loses trust on first contact.
+ */
+export interface FatigueSignal {
+  level: FatigueLevel;
+  reasons: (
+    | 'volume_dropping'
+    | 'effort_climbing'
+    | 'frequency_dropping'
+    | 'load_stalled'
+  )[];
+  volumeChangePercent: number | null;
+  recentRpe: number | null;
+  baselineRpe: number | null;
+  recentSessions: number;
+  baselineSessions: number;
 }

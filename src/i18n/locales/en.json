@@ -940,7 +940,25 @@
     "curveLoss": "Down {{amount}} kg estimated 1RM over this period",
     "curveBestSet": "Best set that day: {{weight}} kg × {{reps}}",
     "curveEstimated": "Estimated 1RM: {{value}} kg",
-    "curvePersonalBest": "Personal best"
+    "curvePersonalBest": "Personal best",
+    "swapExercise": "Taken — swap it",
+    "swapEquipment": "Equipment",
+    "swapAnyEquipment": "Any equipment",
+    "swapNoneForEquipment": "No alternative for this muscle with that equipment.",
+    "swapFailed": "Could not load alternatives.",
+    "swapSessionOnly": "The swap applies to this session only. The plan is unchanged.",
+    "savedOffline": "No signal — the workout is saved on this device and will send when you are back online.",
+    "offlineSynced_one": "One workout saved on this device has now been sent.",
+    "offlineSynced_other": "{{count}} workouts saved on this device have now been sent.",
+    "fatigueTitle": "Load and recovery",
+    "fatigue_ok": "Your load looks steady.",
+    "fatigue_watch": "One thing worth keeping an eye on.",
+    "fatigue_deload": "Several signs together — a lighter week may be due.",
+    "fatigueReason_volume_dropping": "Weekly volume is down {{percent}}% on the period before.",
+    "fatigueReason_effort_climbing": "Perceived effort rose from {{baseline}} to {{recent}}.",
+    "fatigueReason_frequency_dropping": "Fewer sessions per week than usual.",
+    "fatigueReason_load_stalled": "About the same volume, but it is feeling harder.",
+    "fatigueWindow": "Based on {{recent}} sessions in the last two weeks against {{baseline}} in the four before."
   },
   "account": {
     "sectionTitle": "Your data",
@@ -984,5 +1002,12 @@
     "equipment_kettlebell": "Kettlebell",
     "equipment_band": "Band",
     "equipment_other": "Other"
+  },
+  "aiReview": {
+    "generate": "Ask for a weekly review",
+    "working": "Writing…",
+    "created": "Your weekly review is ready.",
+    "notEnoughData": "Not enough logged training in the last four weeks for a review yet.",
+    "failed": "Could not generate a review. Please try again."
   }
 }
