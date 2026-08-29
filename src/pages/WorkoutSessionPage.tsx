@@ -11,7 +11,8 @@ import { PlateCalculator } from '../components/workout/PlateCalculator';
 import { RestTimer } from '../components/workout/RestTimer';
 import {
   BAR_OPTIONS_KG,
-  DEFAULT_BAR_KG,
+  readStoredBar,
+  storeBar,
 } from '../components/workout/plateMath';
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
 import { progressStatsService } from '../services/progress-stats.service';
@@ -52,18 +53,6 @@ interface ExerciseDraft {
   muscleGroup?: string;
   notes?: string;
   sets: SetDraft[];
-}
-
-/** The bar is a property of the gym, not of the workout, so it outlives the session. */
-const BAR_STORAGE_KEY = 'fitai-bar-weight';
-
-function readStoredBar(): number {
-  try {
-    const stored = Number(localStorage.getItem(BAR_STORAGE_KEY));
-    return BAR_OPTIONS_KG.includes(stored) ? stored : DEFAULT_BAR_KG;
-  } catch {
-    return DEFAULT_BAR_KG;
-  }
 }
 
 function minutesSince(start: number): number {
@@ -148,11 +137,7 @@ export default function WorkoutSessionPage() {
   }, []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(BAR_STORAGE_KEY, String(barKg));
-    } catch {
-      // A remembered bar is a convenience, not a requirement.
-    }
+    storeBar(barKg);
   }, [barKg]);
 
   /**
