@@ -1,8 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import {
   calculatePlates,
   groupPlates,
+  readStoredBar,
+  storeBar,
+  BAR_STORAGE_KEY,
   DEFAULT_BAR_KG,
 } from './plateMath';
 
@@ -83,5 +86,42 @@ describe('groupPlates', () => {
 
   it('handles an empty bar', () => {
     expect(groupPlates([])).toEqual([]);
+  });
+});
+
+describe('readStoredBar', () => {
+  beforeEach(() => localStorage.clear());
+
+  // The bug this exists for: `Number(localStorage.getItem(k))` is 0 when the
+  // key is absent, and 0 is a *valid* option meaning "no bar" — so a
+  // first-time user silently had the plate calculator switched off.
+  it('defaults to the standard bar when nothing is stored', () => {
+    expect(readStoredBar()).toBe(DEFAULT_BAR_KG);
+  });
+
+  it('still honours a deliberately stored "no bar"', () => {
+    storeBar(0);
+    expect(readStoredBar()).toBe(0);
+  });
+
+  it('round-trips a real bar weight', () => {
+    storeBar(15);
+    expect(readStoredBar()).toBe(15);
+    expect(localStorage.getItem(BAR_STORAGE_KEY)).toBe('15');
+  });
+
+  it('falls back when the stored value is not an offered option', () => {
+    localStorage.setItem(BAR_STORAGE_KEY, '17.5');
+    expect(readStoredBar()).toBe(DEFAULT_BAR_KG);
+  });
+
+  it('falls back on a non-numeric value', () => {
+    localStorage.setItem(BAR_STORAGE_KEY, 'heavy');
+    expect(readStoredBar()).toBe(DEFAULT_BAR_KG);
+  });
+
+  it('falls back on an empty string', () => {
+    localStorage.setItem(BAR_STORAGE_KEY, '');
+    expect(readStoredBar()).toBe(DEFAULT_BAR_KG);
   });
 });

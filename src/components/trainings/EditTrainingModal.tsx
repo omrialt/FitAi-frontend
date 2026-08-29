@@ -157,31 +157,36 @@ export function EditTrainingModal({
     setLocalDays(newDays);
   };
 
-  const updateExerciseField = (
-    dayIndex: number,
-    exerciseIndex: number,
-    field: string,
-    value: unknown
-  ) => {
-    const newDays = JSON.parse(JSON.stringify(localDays));
-    newDays[dayIndex].exercises[exerciseIndex][field] = value;
-    setLocalDays(newDays);
-  };
-
   /**
-   * Applies several fields in one write. `updateExerciseField` clones from the
-   * `localDays` it closed over, so calling it twice in the same tick silently
-   * discards the first change — which is exactly what picking a catalogue
-   * exercise (name + muscle group) would do.
+   * Both exercise writers take the updater form on purpose.
+   *
+   * Cloning from the `localDays` this closed over loses any write that landed
+   * earlier in the same tick, and picking a catalogue exercise does exactly
+   * that: Mantine's `Autocomplete` fires `onOptionSubmit` (name + muscle
+   * group) and then `onChange` (name only), so a closure-based writer let the
+   * second call silently revert the muscle group to whatever it was before.
+   * Reading `previous` inside the updater makes the two writes compose no
+   * matter which order they arrive in.
    */
   const updateExerciseFields = (
     dayIndex: number,
     exerciseIndex: number,
     patch: Record<string, unknown>
   ) => {
-    const newDays = JSON.parse(JSON.stringify(localDays));
-    Object.assign(newDays[dayIndex].exercises[exerciseIndex], patch);
-    setLocalDays(newDays);
+    setLocalDays((previous) => {
+      const newDays = JSON.parse(JSON.stringify(previous));
+      Object.assign(newDays[dayIndex].exercises[exerciseIndex], patch);
+      return newDays;
+    });
+  };
+
+  const updateExerciseField = (
+    dayIndex: number,
+    exerciseIndex: number,
+    field: string,
+    value: unknown
+  ) => {
+    updateExerciseFields(dayIndex, exerciseIndex, { [field]: value });
   };
 
   // Set handlers

@@ -115,3 +115,34 @@ export function groupPlates(perSide: number[]): { weight: number; count: number 
 
   return grouped;
 }
+
+/** The bar is a property of the gym, not of the workout, so it outlives the session. */
+export const BAR_STORAGE_KEY = 'fitai-bar-weight';
+
+/**
+ * The remembered bar, or the standard one.
+ *
+ * The subtlety that bit once: `Number(localStorage.getItem(k))` is `0` when the
+ * key is absent, and `0` is a *valid* option meaning "no bar". Reading the raw
+ * value first is what keeps a first-time user on a 20kg bar instead of silently
+ * turning the plate calculator off for them.
+ */
+export function readStoredBar(): number {
+  try {
+    const raw = localStorage.getItem(BAR_STORAGE_KEY);
+    if (raw === null || raw === '') return DEFAULT_BAR_KG;
+
+    const stored = Number(raw);
+    return BAR_OPTIONS_KG.includes(stored) ? stored : DEFAULT_BAR_KG;
+  } catch {
+    return DEFAULT_BAR_KG;
+  }
+}
+
+export function storeBar(barKg: number): void {
+  try {
+    localStorage.setItem(BAR_STORAGE_KEY, String(barKg));
+  } catch {
+    // A remembered bar is a convenience, not a requirement.
+  }
+}
