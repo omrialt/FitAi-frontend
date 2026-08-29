@@ -5,3 +5,5 @@ export { ActiveNutritionCard } from './ActiveNutritionCard';
 export { BodyProgressCard } from './BodyProgressCard';
 export { RecentRecommendations } from './RecentRecommendations';
 export { TrainingRecordCard } from './TrainingRecordCard';
+export { FatigueCard } from './FatigueCard';
+export { WeeklyReviewButton } from './WeeklyReviewButton';

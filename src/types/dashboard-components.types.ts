@@ -33,6 +33,8 @@ export interface QuickStatsCardsProps {
 }
 
 export interface RecentRecommendationsProps {
+  /** Optional control rendered in the header, e.g. the weekly-review trigger. */
+  action?: React.ReactNode;
   recommendations: AiRecommendation[];
 }
 

@@ -985,7 +985,16 @@
     "offlineSynced_one": "אימון אחד שנשמר במכשיר נשלח עכשיו.",
     "offlineSynced_two": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו.",
     "offlineSynced_many": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו.",
-    "offlineSynced_other": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו."
+    "offlineSynced_other": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו.",
+    "fatigueTitle": "עומס והתאוששות",
+    "fatigue_ok": "העומס נראה יציב.",
+    "fatigue_watch": "יש סימן אחד ששווה לשים לב אליו.",
+    "fatigue_deload": "כמה סימנים יחד — שווה לשקול שבוע הקלה.",
+    "fatigueReason_volume_dropping": "הנפח השבועי ירד ב‑{{percent}}% לעומת התקופה שלפני.",
+    "fatigueReason_effort_climbing": "המאמץ הנתפס עלה מ‑{{baseline}} ל‑{{recent}}.",
+    "fatigueReason_frequency_dropping": "פחות אימונים בשבוע מהרגיל.",
+    "fatigueReason_load_stalled": "אותו נפח בערך, אבל בתחושת מאמץ גבוהה יותר.",
+    "fatigueWindow": "מבוסס על {{recent}} אימונים בשבועיים האחרונים מול {{baseline}} בארבעה שלפניהם."
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
@@ -1029,5 +1038,12 @@
     "equipment_kettlebell": "קטלבל",
     "equipment_band": "גומייה",
     "equipment_other": "אחר"
+  },
+  "aiReview": {
+    "generate": "בקשת סקירה שבועית",
+    "working": "כותב…",
+    "created": "הסקירה השבועית מוכנה.",
+    "notEnoughData": "עוד אין מספיק אימונים מתועדים בארבעה השבועות האחרונים לסקירה.",
+    "failed": "לא הצלחנו להפיק סקירה. נסו שוב."
   }
 }

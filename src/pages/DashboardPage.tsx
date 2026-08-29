@@ -20,7 +20,9 @@ import {
   ActiveNutritionCard,
   BodyProgressCard,
   RecentRecommendations,
+  WeeklyReviewButton,
   TrainingRecordCard,
+  FatigueCard,
 } from '../components/dashboard';
 import '../styles/Dashboard.css';
 
@@ -123,6 +125,9 @@ function DashboardContent() {
               currentStatus={currentStatus}
             />
             <TrainingRecordCard stats={workoutStats} />
+            {/* Renders nothing until there is enough log to judge, so it stays
+                absent rather than apologetic on a new account. */}
+            {user?._id && <FatigueCard userId={user._id} />}
           </div>
 
           <div className="flex flex-col gap-8">
@@ -136,7 +141,10 @@ function DashboardContent() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <RecentRecommendations recommendations={aiRecommendations} />
+            <RecentRecommendations
+              recommendations={aiRecommendations}
+              action={<WeeklyReviewButton onCreated={refetch} />}
+            />
           </div>
         </section>
       </div>

@@ -9,6 +9,7 @@ import api from './api';
 import type {
   CreateWorkoutSessionDto,
   ExerciseHistory,
+  FatigueSignal,
   ListWorkoutSessionsQuery,
   WorkoutSession,
   WorkoutStats,
@@ -61,6 +62,14 @@ export const workoutSessionService = {
     const response = await api.get(
       `/workout-sessions/user/${userId}/exercise-history`,
       { params },
+    );
+    return response.data.data;
+  },
+
+  /** Whether the recent block looks like accumulating fatigue. */
+  getFatigue: async (userId: string): Promise<FatigueSignal> => {
+    const response = await api.get(
+      `/workout-sessions/user/${userId}/fatigue`,
     );
     return response.data.data;
   },

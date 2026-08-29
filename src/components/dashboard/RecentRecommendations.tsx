@@ -38,6 +38,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
 
 export function RecentRecommendations({
   recommendations,
+  action,
 }: RecentRecommendationsProps) {
   const { t, i18n } = useTranslation();
   const recent = recommendations.slice(0, 4);
@@ -60,10 +61,13 @@ export function RecentRecommendations({
           {t('dashboard.aiRecommendations')}
         </h3>
         {recommendations.length > 0 && (
-          <span className="ms-auto bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">
+          <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">
             {recommendations.length}
           </span>
         )}
+        {/* Rendered by the parent so this card stays a presentational list and
+            does not have to know the review feature exists. */}
+        {action && <span className="ms-auto">{action}</span>}
       </div>
 
       {recent.length === 0 ? (
