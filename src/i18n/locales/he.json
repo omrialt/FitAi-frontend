@@ -301,7 +301,8 @@
       "selectStartDate": "בחרו תאריך התחלה",
       "endDate": "תאריך סיום",
       "selectEndDate": "בחרו תאריך סיום"
-    }
+    },
+    "exerciseSearchPlaceholder": "חיפוש תרגיל או הקלדה חופשית"
   },
   "nutrition": {
     "title": "תוכניות התזונה שלי",
@@ -994,5 +995,28 @@
     "deleting": "מוחק…",
     "deleted": "החשבון נמחק — {{total}} רשומות הוסרו",
     "deleteFailed": "לא הצלחנו למחוק את החשבון"
+  },
+  "exercises": {
+    "muscle_chest": "חזה",
+    "muscle_back": "גב",
+    "muscle_shoulders": "כתפיים",
+    "muscle_biceps": "יד קדמית",
+    "muscle_triceps": "יד אחורית",
+    "muscle_forearms": "אמות",
+    "muscle_quads": "ארבע ראשי",
+    "muscle_hamstrings": "מיתר הברך",
+    "muscle_glutes": "ישבן",
+    "muscle_calves": "תאומים",
+    "muscle_core": "core",
+    "muscle_full_body": "גוף מלא",
+    "muscle_cardio": "אירובי",
+    "equipment_barbell": "מוט",
+    "equipment_dumbbell": "משקולות יד",
+    "equipment_machine": "מכונה",
+    "equipment_cable": "פולי",
+    "equipment_bodyweight": "משקל גוף",
+    "equipment_kettlebell": "קטלבל",
+    "equipment_band": "גומייה",
+    "equipment_other": "אחר"
   }
 }

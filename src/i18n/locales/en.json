@@ -287,7 +287,8 @@
       "selectStartDate": "Select start date",
       "endDate": "End Date",
       "selectEndDate": "Select end date"
-    }
+    },
+    "exerciseSearchPlaceholder": "Search the catalogue, or just type"
   },
   "nutrition": {
     "title": "My Nutrition Plans",
@@ -960,5 +961,28 @@
     "deleting": "Deleting…",
     "deleted": "Account deleted — {{total}} records removed",
     "deleteFailed": "Could not delete the account"
+  },
+  "exercises": {
+    "muscle_chest": "Chest",
+    "muscle_back": "Back",
+    "muscle_shoulders": "Shoulders",
+    "muscle_biceps": "Biceps",
+    "muscle_triceps": "Triceps",
+    "muscle_forearms": "Forearms",
+    "muscle_quads": "Quads",
+    "muscle_hamstrings": "Hamstrings",
+    "muscle_glutes": "Glutes",
+    "muscle_calves": "Calves",
+    "muscle_core": "Core",
+    "muscle_full_body": "Full body",
+    "muscle_cardio": "Cardio",
+    "equipment_barbell": "Barbell",
+    "equipment_dumbbell": "Dumbbell",
+    "equipment_machine": "Machine",
+    "equipment_cable": "Cable",
+    "equipment_bodyweight": "Bodyweight",
+    "equipment_kettlebell": "Kettlebell",
+    "equipment_band": "Band",
+    "equipment_other": "Other"
   }
 }

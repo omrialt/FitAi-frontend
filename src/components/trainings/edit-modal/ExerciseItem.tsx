@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'react-i18next';
 
+import { ExercisePicker } from './ExercisePicker';
 import type { ExerciseItemProps } from '../../../types/trainings-components.types';
 
 export function ExerciseItem({ 
@@ -12,6 +13,7 @@ export function ExerciseItem({
   dayIndex, 
   onRemove, 
   updateExerciseField,
+  updateExerciseFields,
   addSet,
   removeSet,
   updateSet,
@@ -60,12 +62,17 @@ export function ExerciseItem({
 
               <Grid gutter="xs">
         <Grid.Col span={{ base: 12, sm: 6 }}>
-          <TextInput
+          {/* Suggests from the catalogue but never rejects free text — and a
+              picked suggestion fills the muscle group, which is the field
+              nobody keeps consistent by hand. */}
+          <ExercisePicker
             label={t('common.name')}
             value={exercise.name || ''}
-            onChange={(e) => updateExerciseField(dayIndex, exerciseIndex, 'name', e.currentTarget.value)}
-            size="xs"
-            required
+            onChange={({ name, muscleGroup }) =>
+              muscleGroup
+                ? updateExerciseFields(dayIndex, exerciseIndex, { name, muscleGroup })
+                : updateExerciseField(dayIndex, exerciseIndex, 'name', name)
+            }
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6 }}>

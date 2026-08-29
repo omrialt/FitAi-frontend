@@ -168,6 +168,22 @@ export function EditTrainingModal({
     setLocalDays(newDays);
   };
 
+  /**
+   * Applies several fields in one write. `updateExerciseField` clones from the
+   * `localDays` it closed over, so calling it twice in the same tick silently
+   * discards the first change — which is exactly what picking a catalogue
+   * exercise (name + muscle group) would do.
+   */
+  const updateExerciseFields = (
+    dayIndex: number,
+    exerciseIndex: number,
+    patch: Record<string, unknown>
+  ) => {
+    const newDays = JSON.parse(JSON.stringify(localDays));
+    Object.assign(newDays[dayIndex].exercises[exerciseIndex], patch);
+    setLocalDays(newDays);
+  };
+
   // Set handlers
   const addSet = (dayIndex: number, exerciseIndex: number) => {
     const newDays = JSON.parse(JSON.stringify(localDays));
@@ -324,6 +340,7 @@ export function EditTrainingModal({
             addExercise={addExercise}
             removeExercise={removeExercise}
             updateExerciseField={updateExerciseField}
+            updateExerciseFields={updateExerciseFields}
             addSet={addSet}
             removeSet={removeSet}
             updateSet={updateSet}

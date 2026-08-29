@@ -142,6 +142,16 @@ export interface ExerciseItemProps {
     field: string,
     value: unknown
   ) => void;
+  /**
+   * Several fields at once. Needed because `updateExerciseField` clones from
+   * the state it closed over, so two calls in one tick lose the first write —
+   * and picking a catalogue exercise sets both the name and the muscle group.
+   */
+  updateExerciseFields: (
+    dayIndex: number,
+    exerciseIndex: number,
+    patch: Record<string, unknown>
+  ) => void;
   addSet: (dayIndex: number, exerciseIndex: number) => void;
   removeSet: (
     dayIndex: number,
@@ -191,6 +201,11 @@ export interface TrainingDayItemProps {
     field: string,
     value: unknown
   ) => void;
+  updateExerciseFields: (
+    dayIndex: number,
+    exerciseIndex: number,
+    patch: Record<string, unknown>
+  ) => void;
   addSet: (dayIndex: number, exerciseIndex: number) => void;
   removeSet: (
     dayIndex: number,
@@ -218,6 +233,11 @@ export interface TrainingDaysSectionProps {
     exerciseIndex: number,
     field: string,
     value: unknown
+  ) => void;
+  updateExerciseFields: (
+    dayIndex: number,
+    exerciseIndex: number,
+    patch: Record<string, unknown>
   ) => void;
   addSet: (dayIndex: number, exerciseIndex: number) => void;
   removeSet: (

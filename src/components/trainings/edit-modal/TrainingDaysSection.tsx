@@ -14,6 +14,7 @@ export function TrainingDaysSection({
   addExercise,
   removeExercise,
   updateExerciseField,
+  updateExerciseFields,
   addSet,
   removeSet,
   updateSet
@@ -41,6 +42,7 @@ export function TrainingDaysSection({
             addExercise={addExercise}
             removeExercise={removeExercise}
             updateExerciseField={updateExerciseField}
+                  updateExerciseFields={updateExerciseFields}
             addSet={addSet}
             removeSet={removeSet}
             updateSet={updateSet}
