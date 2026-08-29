@@ -916,7 +916,19 @@
     "viewHistory": "View log",
     "setCountShort_one": "1 set",
     "setCountShort_other": "{{count}} sets",
-    "volume": "{{volume}} kg total"
+    "volume": "{{volume}} kg total",
+    "rpe": "RPE",
+    "rpeFor": "Perceived effort for set {{number}}",
+    "barWeight": "Bar",
+    "noBar": "No bar",
+    "perSide": "Per side",
+    "barOnly": "Empty bar",
+    "plusBar": "+ {{weight}} bar",
+    "plateShortfall": "Closest: {{achieved}} kg",
+    "resumeTitle": "You have an unfinished workout here.",
+    "resumeDetail": "Started {{minutes}} min ago. Pick it up or start fresh?",
+    "resumeAction": "Resume",
+    "resumeDiscard": "Start fresh"
   },
   "account": {
     "sectionTitle": "Your data",

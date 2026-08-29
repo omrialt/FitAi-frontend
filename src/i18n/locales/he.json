@@ -950,7 +950,19 @@
     "setCountShort_two": "{{count}} סטים",
     "setCountShort_other": "{{count}} סטים",
     "setCountShort_many": "{{count}} סטים",
-    "volume": "סה\"כ {{volume}} ק\"ג"
+    "volume": "סה\"כ {{volume}} ק\"ג",
+    "rpe": "RPE",
+    "rpeFor": "מאמץ נתפס לסט {{number}}",
+    "barWeight": "מוט",
+    "noBar": "בלי מוט",
+    "perSide": "לכל צד",
+    "barOnly": "מוט ריק",
+    "plusBar": "+ מוט {{weight}}",
+    "plateShortfall": "הכי קרוב: {{achieved}} ק\"ג",
+    "resumeTitle": "יש כאן אימון שלא נסגר.",
+    "resumeDetail": "התחיל לפני {{minutes}} דק'. להמשיך ממנו או להתחיל מחדש?",
+    "resumeAction": "המשך",
+    "resumeDiscard": "התחלה מחדש"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
