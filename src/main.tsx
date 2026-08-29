@@ -11,6 +11,7 @@ import '@mantine/dates/styles.css'
 import './index.css'
 import './i18n'
 import { dirFor } from './i18n'
+import { OfflineSyncWatcher } from './components/common/OfflineSyncWatcher'
 import App from './App.tsx'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 
@@ -128,12 +129,29 @@ function Root() {
       <MantineProvider theme={mantineTheme}>
         <ThemedRadix>
           <DirectionSync />
+          <OfflineSyncWatcher />
           <App />
           <Toaster position="top-right" richColors dir={dirFor(i18n.language)} />
         </ThemedRadix>
       </MantineProvider>
     </BrowserRouter>
   );
+}
+
+/**
+ * Registers the shell cache so the logger opens without signal.
+ *
+ * After load, not during: the worker's install fetches the shell, and racing
+ * that against the app's own first paint makes the page slower for every user
+ * to benefit the offline case. Failure is silent — a browser that refuses
+ * service workers still gets a working app, just not an installable one.
+ */
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Unsupported, blocked by policy, or a non-secure origin.
+    });
+  });
 }
 
 createRoot(document.getElementById('root')!).render(

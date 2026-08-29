@@ -940,7 +940,16 @@
     "curveLoss": "Down {{amount}} kg estimated 1RM over this period",
     "curveBestSet": "Best set that day: {{weight}} kg × {{reps}}",
     "curveEstimated": "Estimated 1RM: {{value}} kg",
-    "curvePersonalBest": "Personal best"
+    "curvePersonalBest": "Personal best",
+    "swapExercise": "Taken — swap it",
+    "swapEquipment": "Equipment",
+    "swapAnyEquipment": "Any equipment",
+    "swapNoneForEquipment": "No alternative for this muscle with that equipment.",
+    "swapFailed": "Could not load alternatives.",
+    "swapSessionOnly": "The swap applies to this session only. The plan is unchanged.",
+    "savedOffline": "No signal — the workout is saved on this device and will send when you are back online.",
+    "offlineSynced_one": "One workout saved on this device has now been sent.",
+    "offlineSynced_other": "{{count}} workouts saved on this device have now been sent."
   },
   "account": {
     "sectionTitle": "Your data",

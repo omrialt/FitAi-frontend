@@ -974,7 +974,18 @@
     "curveLoss": "ירידה של {{amount}} ק\"ג ב‑1RM מוערך מאז תחילת התקופה",
     "curveBestSet": "הסט הטוב ביום: {{weight}} ק\"ג × {{reps}}",
     "curveEstimated": "1RM מוערך: {{value}} ק\"ג",
-    "curvePersonalBest": "שיא אישי"
+    "curvePersonalBest": "שיא אישי",
+    "swapExercise": "התרגיל תפוס — החלפה",
+    "swapEquipment": "ציוד",
+    "swapAnyEquipment": "כל ציוד",
+    "swapNoneForEquipment": "אין חלופה לקבוצת השריר הזו עם הציוד שנבחר.",
+    "swapFailed": "לא הצלחנו לטעון חלופות.",
+    "swapSessionOnly": "ההחלפה חלה על האימון הזה בלבד. התוכנית לא משתנה.",
+    "savedOffline": "אין קליטה — האימון נשמר במכשיר ויישלח כשתחזור רשת.",
+    "offlineSynced_one": "אימון אחד שנשמר במכשיר נשלח עכשיו.",
+    "offlineSynced_two": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו.",
+    "offlineSynced_many": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו.",
+    "offlineSynced_other": "{{count}} אימונים שנשמרו במכשיר נשלחו עכשיו."
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
