@@ -8,6 +8,7 @@
 import api from './api';
 import type {
   CreateWorkoutSessionDto,
+  ExerciseHistory,
   ListWorkoutSessionsQuery,
   WorkoutSession,
   WorkoutStats,
@@ -42,6 +43,25 @@ export const workoutSessionService = {
     const response = await api.get(`/workout-sessions/user/${userId}/stats`, {
       params: { days },
     });
+    return response.data.data;
+  },
+
+  /**
+   * One exercise's progression, one point per day trained. Omitting `name`
+   * asks the server for the exercise trained most often, so the chart opens on
+   * something real instead of an empty picker.
+   *
+   * `days` bounds the curve only — `availableExercises` always covers the
+   * whole log, so narrowing the window never hides the exercise being viewed.
+   */
+  getExerciseHistory: async (
+    userId: string,
+    params: { name?: string; days?: number } = {},
+  ): Promise<ExerciseHistory> => {
+    const response = await api.get(
+      `/workout-sessions/user/${userId}/exercise-history`,
+      { params },
+    );
     return response.data.data;
   },
 

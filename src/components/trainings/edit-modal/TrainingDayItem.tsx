@@ -17,6 +17,7 @@ export function TrainingDayItem({
   addExercise,
   removeExercise,
   updateExerciseField,
+  updateExerciseFields,
   addSet,
   removeSet,
   updateSet
@@ -109,6 +110,7 @@ export function TrainingDayItem({
                   dayIndex={dayIndex}
                   onRemove={() => removeExercise(dayIndex, exIndex)}
                   updateExerciseField={updateExerciseField}
+                  updateExerciseFields={updateExerciseFields}
                   addSet={addSet}
                   removeSet={removeSet}
                   updateSet={updateSet}

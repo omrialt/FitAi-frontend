@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Container, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
 import { AppLayout } from '../components/AppLayout';
 import { StitchIcon } from '../components/common/StitchIcon';
+import { StrengthCurve } from '../components/workout/StrengthCurve';
 import { useMetadata } from '../hooks/useMetadata';
 import { workoutSessionService } from '../services/workout-session.service';
 import { useAuthStore } from '../store/authStore';
@@ -112,6 +114,13 @@ function SessionCard({
                   >
                     {set.weight}
                     {t('common.kg')} × {set.reps}
+                    {/* Subdued rather than a separate chip: RPE qualifies the
+                        set, it is not another number of the same kind. */}
+                    {set.rpe != null && (
+                      <span className="ms-1 font-normal text-on-surface-variant">
+                        @{set.rpe}
+                      </span>
+                    )}
                   </span>
                 ))}
               </span>
@@ -141,6 +150,11 @@ export default function WorkoutHistoryPage() {
   const metadata = useMetadata({
     title: `${t('workout.historyTitle')} - FitAI`,
   });
+
+  // Set by the dashboard's personal-bests card, so tapping a best opens the
+  // curve for that lift rather than for whatever the server picks.
+  const [searchParams] = useSearchParams();
+  const focusExercise = searchParams.get('exercise') ?? undefined;
 
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [loading, setLoading] = useState(true);
@@ -177,6 +191,15 @@ export default function WorkoutHistoryPage() {
             {t('workout.historySubtitle')}
           </p>
         </header>
+
+        {/* Above the log on purpose: the trend is the reason to open this page,
+            and the session list is the evidence behind it. Only shown once
+            there is a log to draw from. */}
+        {user?._id && !loading && !error && sessions.length > 0 && (
+          <div className="mb-6">
+            <StrengthCurve userId={user._id} initialExercise={focusExercise} />
+          </div>
+        )}
 
         {loading ? (
           /* Skeleton rather than a spinner: the handoff calls for shimmer on

@@ -123,19 +123,25 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
             ) : (
               <ul className="flex flex-col gap-2">
                 {bests.slice(0, 5).map((best) => (
-                  <li
-                    key={best.exercise}
-                    className="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2"
-                  >
-                    <span className="min-w-0 truncate text-sm font-semibold text-on-surface">
-                      {best.exercise}
-                    </span>
-                    <span className="shrink-0 text-sm font-black tabular-nums text-on-surface">
-                      {best.weight}
-                      <span className="font-bold text-on-surface-variant">
-                        {t('common.kg')} × {best.reps}
+                  <li key={best.exercise}>
+                    {/* A best is the start of a question, not the end of one:
+                        the next thing you want is whether it is still moving,
+                        so each row opens that lift's curve. */}
+                    <Link
+                      to={`/workout-history?exercise=${encodeURIComponent(best.exercise)}`}
+                      className="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2 transition-colors hover:bg-surface-container-high"
+                    >
+                      <span className="min-w-0 truncate text-sm font-semibold text-on-surface">
+                        {best.exercise}
                       </span>
-                    </span>
+                      <span className="flex shrink-0 items-center gap-1 text-sm font-black tabular-nums text-on-surface">
+                        {best.weight}
+                        <span className="font-bold text-on-surface-variant">
+                          {t('common.kg')} × {best.reps}
+                        </span>
+                        <StitchIcon name="chevron_left" size={14} />
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>

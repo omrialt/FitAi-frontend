@@ -301,7 +301,8 @@
       "selectStartDate": "בחרו תאריך התחלה",
       "endDate": "תאריך סיום",
       "selectEndDate": "בחרו תאריך סיום"
-    }
+    },
+    "exerciseSearchPlaceholder": "חיפוש תרגיל או הקלדה חופשית"
   },
   "nutrition": {
     "title": "תוכניות התזונה שלי",
@@ -950,7 +951,30 @@
     "setCountShort_two": "{{count}} סטים",
     "setCountShort_other": "{{count}} סטים",
     "setCountShort_many": "{{count}} סטים",
-    "volume": "סה\"כ {{volume}} ק\"ג"
+    "volume": "סה\"כ {{volume}} ק\"ג",
+    "rpe": "RPE",
+    "rpeFor": "מאמץ נתפס לסט {{number}}",
+    "barWeight": "מוט",
+    "noBar": "בלי מוט",
+    "perSide": "לכל צד",
+    "barOnly": "מוט ריק",
+    "plusBar": "+ מוט {{weight}}",
+    "plateShortfall": "הכי קרוב: {{achieved}} ק\"ג",
+    "resumeTitle": "יש כאן אימון שלא נסגר.",
+    "resumeDetail": "התחיל לפני {{minutes}} דק'. להמשיך ממנו או להתחיל מחדש?",
+    "resumeAction": "המשך",
+    "resumeDiscard": "התחלה מחדש",
+    "strengthCurve": "עקומת הכוח",
+    "pickExercise": "בחירת תרגיל",
+    "windowMonths": "{{months}} חוד'",
+    "windowAll": "הכל",
+    "curveEmpty": "אין עדיין מספיק נתונים לתרגיל הזה. תעדו אותו עוד פעם או פעמיים והעקומה תופיע.",
+    "curveFailed": "לא הצלחנו לטעון את עקומת הכוח.",
+    "curveGain": "עלייה של {{amount}} ק\"ג ב‑1RM מוערך מאז תחילת התקופה",
+    "curveLoss": "ירידה של {{amount}} ק\"ג ב‑1RM מוערך מאז תחילת התקופה",
+    "curveBestSet": "הסט הטוב ביום: {{weight}} ק\"ג × {{reps}}",
+    "curveEstimated": "1RM מוערך: {{value}} ק\"ג",
+    "curvePersonalBest": "שיא אישי"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
@@ -971,5 +995,28 @@
     "deleting": "מוחק…",
     "deleted": "החשבון נמחק — {{total}} רשומות הוסרו",
     "deleteFailed": "לא הצלחנו למחוק את החשבון"
+  },
+  "exercises": {
+    "muscle_chest": "חזה",
+    "muscle_back": "גב",
+    "muscle_shoulders": "כתפיים",
+    "muscle_biceps": "יד קדמית",
+    "muscle_triceps": "יד אחורית",
+    "muscle_forearms": "אמות",
+    "muscle_quads": "ארבע ראשי",
+    "muscle_hamstrings": "מיתר הברך",
+    "muscle_glutes": "ישבן",
+    "muscle_calves": "תאומים",
+    "muscle_core": "core",
+    "muscle_full_body": "גוף מלא",
+    "muscle_cardio": "אירובי",
+    "equipment_barbell": "מוט",
+    "equipment_dumbbell": "משקולות יד",
+    "equipment_machine": "מכונה",
+    "equipment_cable": "פולי",
+    "equipment_bodyweight": "משקל גוף",
+    "equipment_kettlebell": "קטלבל",
+    "equipment_band": "גומייה",
+    "equipment_other": "אחר"
   }
 }

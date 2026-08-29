@@ -83,3 +83,24 @@ export interface WorkoutStats {
   adherence: AdherenceSummary;
   personalBests: PersonalBest[];
 }
+
+/** One session's best effort on one exercise — a point on the strength curve. */
+export interface ExerciseHistoryPoint {
+  /** ISO day (YYYY-MM-DD), not a timestamp: the x-axis is the calendar. */
+  date: string;
+  weight: number;
+  reps: number;
+  estimatedOneRepMax: number;
+  /** Weight x reps across every set of that exercise that day. */
+  volume: number;
+  sets: number;
+  /** True on the day this became the best estimated 1RM to date. */
+  isPersonalBest: boolean;
+}
+
+export interface ExerciseHistory {
+  exercise: string;
+  points: ExerciseHistoryPoint[];
+  /** Every exercise the user has ever logged, for the picker. */
+  availableExercises: string[];
+}
