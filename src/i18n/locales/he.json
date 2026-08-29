@@ -962,7 +962,18 @@
     "resumeTitle": "יש כאן אימון שלא נסגר.",
     "resumeDetail": "התחיל לפני {{minutes}} דק'. להמשיך ממנו או להתחיל מחדש?",
     "resumeAction": "המשך",
-    "resumeDiscard": "התחלה מחדש"
+    "resumeDiscard": "התחלה מחדש",
+    "strengthCurve": "עקומת הכוח",
+    "pickExercise": "בחירת תרגיל",
+    "windowMonths": "{{months}} חוד'",
+    "windowAll": "הכל",
+    "curveEmpty": "אין עדיין מספיק נתונים לתרגיל הזה. תעדו אותו עוד פעם או פעמיים והעקומה תופיע.",
+    "curveFailed": "לא הצלחנו לטעון את עקומת הכוח.",
+    "curveGain": "עלייה של {{amount}} ק\"ג ב‑1RM מוערך מאז תחילת התקופה",
+    "curveLoss": "ירידה של {{amount}} ק\"ג ב‑1RM מוערך מאז תחילת התקופה",
+    "curveBestSet": "הסט הטוב ביום: {{weight}} ק\"ג × {{reps}}",
+    "curveEstimated": "1RM מוערך: {{value}} ק\"ג",
+    "curvePersonalBest": "שיא אישי"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",

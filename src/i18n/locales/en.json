@@ -928,7 +928,18 @@
     "resumeTitle": "You have an unfinished workout here.",
     "resumeDetail": "Started {{minutes}} min ago. Pick it up or start fresh?",
     "resumeAction": "Resume",
-    "resumeDiscard": "Start fresh"
+    "resumeDiscard": "Start fresh",
+    "strengthCurve": "Strength curve",
+    "pickExercise": "Pick an exercise",
+    "windowMonths": "{{months}}m",
+    "windowAll": "All",
+    "curveEmpty": "Not enough data for this exercise yet. Log it once or twice more and the curve appears.",
+    "curveFailed": "Could not load the strength curve.",
+    "curveGain": "Up {{amount}} kg estimated 1RM over this period",
+    "curveLoss": "Down {{amount}} kg estimated 1RM over this period",
+    "curveBestSet": "Best set that day: {{weight}} kg × {{reps}}",
+    "curveEstimated": "Estimated 1RM: {{value}} kg",
+    "curvePersonalBest": "Personal best"
   },
   "account": {
     "sectionTitle": "Your data",
