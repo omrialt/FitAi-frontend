@@ -133,3 +133,64 @@ export interface FatigueSignal {
   recentSessions: number;
   baselineSessions: number;
 }
+
+// ─── progression ──────────────────────────────────────────────
+
+export type OverloadAction = 'add_weight' | 'add_reps' | 'hold';
+
+export type OverloadReason =
+  | 'range_topped'
+  | 'range_not_topped'
+  | 'effort_high'
+  | 'deloading';
+
+/**
+ * What to do next session for one exercise.
+ *
+ * Computed by the server from the log — there is no AI in this, which is why
+ * it works offline, costs nothing and gives the same answer twice.
+ */
+export interface OverloadSuggestion {
+  exercise: string;
+  /** ISO day of the last session containing it. */
+  lastPerformedAt: string;
+  lastTopSet: { weight: number; reps: number; sets: number };
+  /** Inferred from what the user actually does, not prescribed. */
+  repRange: { min: number; max: number };
+  action: OverloadAction;
+  reason: OverloadReason;
+  suggested: { weight: number; reps: number; sets: number };
+  /** 0 for bodyweight lifts, where reps are the only axis. */
+  incrementKg: number;
+  equipment: string | null;
+  lastRpe: number | null;
+}
+
+export interface OverloadPlan {
+  suggestions: OverloadSuggestion[];
+  /** When true every suggestion is `hold`, so the two cards cannot disagree. */
+  deloadRecommended: boolean;
+}
+
+export interface DeloadExercise {
+  exercise: string;
+  from: { weight: number; sets: number; reps: number };
+  to: { weight: number; sets: number; reps: number };
+}
+
+/**
+ * What backing off would look like, in kilos and sets.
+ *
+ * `recommended` is false for `watch` — the numbers are offered, nothing
+ * insists. An empty `exercises` list with `level: 'insufficient'` means the
+ * log cannot support a verdict yet, which is not the same as "you are fine".
+ */
+export interface DeloadPrescription {
+  recommended: boolean;
+  level: FatigueLevel;
+  reasons: FatigueSignal['reasons'];
+  loadPercent: number;
+  volumePercent: number;
+  durationDays: number;
+  exercises: DeloadExercise[];
+}

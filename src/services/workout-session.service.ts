@@ -13,6 +13,8 @@ import type {
   ListWorkoutSessionsQuery,
   WorkoutSession,
   WorkoutStats,
+  OverloadPlan,
+  DeloadPrescription,
 } from '../types/workout-session.types';
 
 export const workoutSessionService = {
@@ -71,6 +73,34 @@ export const workoutSessionService = {
     const response = await api.get(
       `/workout-sessions/user/${userId}/fatigue`,
     );
+    return response.data.data;
+  },
+
+  /**
+   * What to do next session, per exercise, from the real log.
+   *
+   * Omitting `exercise` returns every lift with enough history, which is what
+   * the trainings page wants; the session screen passes a name.
+   */
+  getOverload: async (
+    userId: string,
+    params: { exercise?: string; limit?: number } = {},
+  ): Promise<OverloadPlan> => {
+    const response = await api.get(
+      `/workout-sessions/user/${userId}/overload`,
+      { params },
+    );
+    return response.data.data;
+  },
+
+  /**
+   * What backing off would look like, in kilos and sets.
+   *
+   * Always 200 — "you do not need one" is the answer most of the time and is
+   * not a missing resource. Read `recommended`.
+   */
+  getDeload: async (userId: string): Promise<DeloadPrescription> => {
+    const response = await api.get(`/workout-sessions/user/${userId}/deload`);
     return response.data.data;
   },
 

@@ -23,7 +23,12 @@ import {
   WeeklyReviewButton,
   TrainingRecordCard,
   FatigueCard,
+  CoachChat,
 } from '../components/dashboard';
+import { OverloadCard } from '../components/workout/OverloadCard';
+import { DeloadCard } from '../components/workout/DeloadCard';
+import { coachService } from '../services/coach.service';
+import { useEffect, useState } from 'react';
 import '../styles/Dashboard.css';
 
 function DashboardPage() {
@@ -45,6 +50,23 @@ function DashboardPage() {
 }
 
 function DashboardContent() {
+  // Asked once per dashboard load. The chat is a paid feature the server can
+  // have switched off, and a button that 503s is worse than no button.
+  const [coachEnabled, setCoachEnabled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    coachService
+      .getStatus()
+      .then((status) => {
+        if (!cancelled) setCoachEnabled(status.chat);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const { t } = useTranslation();
   const {
     user,
@@ -128,9 +150,16 @@ function DashboardContent() {
             {/* Renders nothing until there is enough log to judge, so it stays
                 absent rather than apologetic on a new account. */}
             {user?._id && <FatigueCard userId={user._id} />}
+            {/* The prescription sits directly under the signal that prompts
+                it. Two cards on opposite sides of the screen would make the
+                user connect them, and most would not. */}
+            {user?._id && <DeloadCard userId={user._id} />}
           </div>
 
           <div className="flex flex-col gap-8">
+            {/* What to do next session, from the log. No key required, so this
+                is the one AI-shaped card on the dashboard that always works. */}
+            {user?._id && <OverloadCard userId={user._id} />}
             <ActiveNutritionCard plan={activeNutritionPlan} />
             <BodyProgressCard
               latestPhysicalData={latestPhysicalData}
@@ -145,6 +174,9 @@ function DashboardContent() {
               recommendations={aiRecommendations}
               action={<WeeklyReviewButton onCreated={refetch} />}
             />
+            {/* Hidden entirely when the server has no key, rather than offered
+                and failing. */}
+            <CoachChat enabled={coachEnabled} />
           </div>
         </section>
       </div>
