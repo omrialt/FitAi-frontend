@@ -7,3 +7,4 @@ export { RecentRecommendations } from './RecentRecommendations';
 export { TrainingRecordCard } from './TrainingRecordCard';
 export { FatigueCard } from './FatigueCard';
 export { WeeklyReviewButton } from './WeeklyReviewButton';
+export { CoachChat } from './CoachChat';

@@ -19,6 +19,7 @@ import { DeleteMeasurementModal } from '../components/profile/physical-data/moda
 import { useAuth } from '../hooks/useAuth';
 import physicalDataService from '../services/physical-data.service';
 import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../types/physical-data.types';
+import { BodyPhotoTimeline } from '../components/profile/BodyPhotoTimeline';
 
 export default function PhysicalDataPage() {
   const { t } = useTranslation();
@@ -172,6 +173,11 @@ export default function PhysicalDataPage() {
                 onDelete={openDeleteModal}
               />
             )}
+
+            {/* Sits with the measurements because it is the same question
+                asked differently — but sharing is decided per photo here and
+                is never inherited from whatever the measurements allow. */}
+            <BodyPhotoTimeline />
           </Stack>
         )}
 

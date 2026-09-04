@@ -9,6 +9,9 @@ import { Container, Box, Center, Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
+import { GeneratePlanModal } from "../components/trainings/GeneratePlanModal";
+import { TemplatePicker } from "../components/trainings/TemplatePicker";
+import { coachService } from "../services/coach.service";
 import { useDebounce } from "../hooks/useDebounce";
 import { useApi } from "../hooks/useApi";
 import { toast } from "sonner";
@@ -101,6 +104,25 @@ export default function MyTrainingsPage() {
   }, [allTrainings]);
 
   // Modals state
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [generateOpen, setGenerateOpen] = useState(false);
+  // The generator needs a server-side key; the templates never do, which is
+  // why only one of the two buttons is conditional.
+  const [planGenerationEnabled, setPlanGenerationEnabled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    coachService
+      .getStatus()
+      .then((status) => {
+        if (!cancelled) setPlanGenerationEnabled(status.planGeneration);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState<TrainingPlan | null>(
@@ -408,7 +430,13 @@ export default function MyTrainingsPage() {
 
         {/* AI Insights + Volume */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          {/* AI Optimized Training Load */}
+          {/* Build a plan.
+              Two buttons, and the order is the argument: the templates come
+              first because they are free, work with no API key, produce the
+              same programme every time, and cover the question most people are
+              actually asking. Generation is for the case a table cannot cover —
+              specific equipment, specific constraints — and it is offered as
+              the second option rather than the headline. */}
           <div className="bg-primary-gradient rounded-xl p-8 text-white">
             <h3 className="text-2xl font-black tracking-tight mb-3">
               {t('trainings.aiCardTitle')}
@@ -416,14 +444,29 @@ export default function MyTrainingsPage() {
             <p className="text-sm leading-relaxed text-white/85 mb-6">
               <Trans i18nKey="trainings.aiCardText" components={{ strong: <strong /> }} />
             </p>
-            <button
-              type="button"
-              disabled
-              title={t('common.comingSoon')}
-              className="bg-surface-container-lowest text-primary px-6 py-3 rounded-lg font-bold text-sm disabled:opacity-70"
-            >
-              {t('trainings.applySuggestion')}
-            </button>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setTemplatesOpen(true)}
+                className="bg-surface-container-lowest text-primary px-6 py-3 rounded-lg font-bold text-sm"
+              >
+                {t('coach.templatesTitle')}
+              </button>
+
+              {/* Absent rather than disabled when the server has no key. A
+                  button that has been greyed out since the first revision is
+                  exactly what this round replaced. */}
+              {planGenerationEnabled && (
+                <button
+                  type="button"
+                  onClick={() => setGenerateOpen(true)}
+                  className="border border-white/40 text-white px-6 py-3 rounded-lg font-bold text-sm"
+                >
+                  {t('coach.generate')}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Training Volume */}
@@ -482,6 +525,28 @@ export default function MyTrainingsPage() {
         onClose={() => setDeleteModalOpened(false)}
         training={selectedTraining}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Both land the user straight in the new plan. A templated or generated
+          plan is an ordinary editable plan from the moment it exists, so the
+          next screen is the one they would have reached by building it by
+          hand — not a preview, and not a list they have to find it in. */}
+      <TemplatePicker
+        open={templatesOpen}
+        onClose={() => setTemplatesOpen(false)}
+        onCreated={(planId) => {
+          setTemplatesOpen(false);
+          navigate(`/training-plans/${planId}`);
+        }}
+      />
+
+      <GeneratePlanModal
+        open={generateOpen}
+        onClose={() => setGenerateOpen(false)}
+        onCreated={(planId) => {
+          setGenerateOpen(false);
+          navigate(`/training-plans/${planId}`);
+        }}
       />
     </AppLayout>
   );

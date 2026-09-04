@@ -26,8 +26,26 @@ import {
   AddRating,
 } from "../components/nutrition/details";
 import { EditNutritionModal } from "../components/nutrition/EditNutritionModal";
+import { FoodTextLogger } from '../components/nutrition/FoodTextLogger';
+import { foodService } from '../services/coach.service';
 
 export default function NutritionPlanDetailsPage() {
+  // Both keys, or no feature. Asked once rather than guessed.
+  const [foodParseEnabled, setFoodParseEnabled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    foodService
+      .getStatus()
+      .then((status) => {
+        if (!cancelled) setFoodParseEnabled(status.parse);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -314,6 +332,13 @@ export default function NutritionPlanDetailsPage() {
 
         {/* Meals Section */}
         <MealSection meals={plan.meals} />
+
+        {/* Free-text logging, under the meals it describes. Renders nothing
+            when the server lacks either key — the manual meal editor above is
+            the fallback, and it is the same one that existed before. */}
+        <div className="mb-8">
+          <FoodTextLogger enabled={foodParseEnabled} />
+        </div>
 
         {/* Active Users Section - visible to trainers/admins */}
         {(currentUser?.role === 'trainer' || currentUser?.role === 'admin') && (
