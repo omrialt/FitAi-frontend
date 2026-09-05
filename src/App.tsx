@@ -22,6 +22,7 @@ import {
   ClientDetailPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
+import LogMealPage from './pages/LogMealPage';
 
 function App() {
   return (
@@ -171,6 +172,15 @@ function App() {
       />
 
       {/* 404 Not Found - catch all */}
+      <Route
+        path="/log-meal"
+        element={
+          <ProtectedRoute>
+            <LogMealPage />
+          </ProtectedRoute>
+        }
+      />
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

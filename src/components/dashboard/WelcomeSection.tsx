@@ -113,7 +113,7 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
         </button>
         <button
           type="button"
-          onClick={() => navigate('/nutrition-plans')}
+          onClick={() => navigate('/log-meal')}
           className="bg-surface-container-lowest text-on-surface px-6 py-3 rounded-lg font-bold text-sm border border-outline-variant/15 hover:bg-surface-container-low transition-colors"
         >
           {t('dashboard.logMeal')}
