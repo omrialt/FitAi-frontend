@@ -28,6 +28,7 @@ import {
 import { OverloadCard } from '../components/workout/OverloadCard';
 import { DeloadCard } from '../components/workout/DeloadCard';
 import { coachService } from '../services/coach.service';
+import { RemainingToday } from '../components/nutrition/RemainingToday';
 import { useEffect, useState } from 'react';
 import '../styles/Dashboard.css';
 
@@ -160,6 +161,9 @@ function DashboardContent() {
             {/* What to do next session, from the log. No key required, so this
                 is the one AI-shaped card on the dashboard that always works. */}
             {user?._id && <OverloadCard userId={user._id} />}
+            {/* Renders nothing until something is logged or a plan is active,
+                so it stays absent rather than empty on a new account. */}
+            <RemainingToday />
             <ActiveNutritionCard plan={activeNutritionPlan} />
             <BodyProgressCard
               latestPhysicalData={latestPhysicalData}
