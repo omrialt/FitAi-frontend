@@ -40,6 +40,12 @@ import type { SessionExercise } from '../types/workout-session.types';
  *     and saving is normal, and the log should show what happened.
  */
 
+/** One reduction inside a drop set, as typed. */
+interface DropDraft {
+  reps: string;
+  weight: string;
+}
+
 interface SetDraft {
   targetReps: number;
   targetWeight: number;
@@ -47,6 +53,14 @@ interface SetDraft {
   weight: string;
   /** Kept as a string like the other inputs; '' means "not reported". */
   rpe: string;
+  /**
+   * Reductions taken without rest, below the top portion above.
+   *
+   * Absent on an ordinary set rather than an empty array: the row only grows a
+   * drop section once the user asks for one, so a normal set stays a normal
+   * set and the screen does not get busier for the 90% case.
+   */
+  drops?: DropDraft[];
   done: boolean;
 }
 
@@ -231,6 +245,82 @@ export default function WorkoutSessionPage() {
     [],
   );
 
+  /**
+   * Starts a drop on a set, seeded from the weight above it.
+   *
+   * Seeded rather than blank because a drop is *always* lighter than what came
+   * before, so an empty box is one the user has to fill in from memory of a
+   * number already on screen. It stays editable — the seed is a starting point,
+   * not a claim about what they did.
+   */
+  const addDrop = useCallback((ei: number, si: number) => {
+    setDraft((current) =>
+      current.map((exercise, index) => {
+        if (index !== ei) return exercise;
+
+        return {
+          ...exercise,
+          sets: exercise.sets.map((set, setIndex) => {
+            if (setIndex !== si) return set;
+
+            const drops = set.drops ?? [];
+            const previous =
+              drops.length > 0
+                ? drops[drops.length - 1].weight
+                : set.weight || String(set.targetWeight);
+
+            return { ...set, drops: [...drops, { reps: '', weight: previous }] };
+          }),
+        };
+      }),
+    );
+  }, []);
+
+  const patchDrop = useCallback(
+    (ei: number, si: number, di: number, patch: Partial<DropDraft>) => {
+      setDraft((current) =>
+        current.map((exercise, index) =>
+          index !== ei
+            ? exercise
+            : {
+                ...exercise,
+                sets: exercise.sets.map((set, setIndex) =>
+                  setIndex !== si
+                    ? set
+                    : {
+                        ...set,
+                        drops: (set.drops ?? []).map((drop, dropIndex) =>
+                          dropIndex === di ? { ...drop, ...patch } : drop,
+                        ),
+                      },
+                ),
+              },
+        ),
+      );
+    },
+    [],
+  );
+
+  const removeDrop = useCallback((ei: number, si: number, di: number) => {
+    setDraft((current) =>
+      current.map((exercise, index) =>
+        index !== ei
+          ? exercise
+          : {
+              ...exercise,
+              sets: exercise.sets.map((set, setIndex) => {
+                if (setIndex !== si) return set;
+
+                const drops = (set.drops ?? []).filter((_, i) => i !== di);
+                // Back to undefined rather than [], so the set stops being a
+                // drop set entirely once the last reduction is removed.
+                return { ...set, drops: drops.length > 0 ? drops : undefined };
+              }),
+            },
+      ),
+    );
+  }, []);
+
   const addSet = useCallback((ei: number) => {
     setDraft((current) =>
       current.map((exercise, i) => {
@@ -303,13 +393,26 @@ export default function WorkoutSessionPage() {
         notes: exercise.notes,
         sets: exercise.sets
           .filter((set) => set.done)
-          .map((set) => ({
-            reps: Number(set.reps) || 0,
-            weight: Number(set.weight) || 0,
-            // Omitted rather than sent as 0: the server validates 1–10, and
-            // "not reported" is a real answer that must not become a value.
-            ...(set.rpe ? { rpe: Number(set.rpe) } : {}),
-          })),
+          .map((set) => {
+            // A drop with no reps typed is one the user started and did not
+            // perform — dropped rather than sent as 0, which would dilute the
+            // volume figure with work that never happened.
+            const drops = (set.drops ?? [])
+              .filter((drop) => Number(drop.reps) > 0)
+              .map((drop) => ({
+                reps: Number(drop.reps) || 0,
+                weight: Number(drop.weight) || 0,
+              }));
+
+            return {
+              reps: Number(set.reps) || 0,
+              weight: Number(set.weight) || 0,
+              // Omitted rather than sent as 0: the server validates 1–10, and
+              // "not reported" is a real answer that must not become a value.
+              ...(set.rpe ? { rpe: Number(set.rpe) } : {}),
+              ...(drops.length > 0 ? { drops } : {}),
+            };
+          }),
       }))
       .filter((exercise) => exercise.sets.length > 0);
 
@@ -514,12 +617,13 @@ export default function WorkoutSessionPage() {
                 {exercise.sets.map((set, si) => (
                   <div
                     key={si}
-                    className={`flex flex-wrap items-center gap-2 rounded-lg border p-2 transition-colors ${
+                    className={`rounded-lg border p-2 transition-colors ${
                       set.done
                         ? 'border-success/40 bg-success/5'
                         : 'border-transparent bg-surface-container-low'
                     }`}
                   >
+                   <div className="flex flex-wrap items-center gap-2">
                     <span className="w-7 shrink-0 text-center text-xs font-black tabular-nums text-on-surface-variant">
                       {si + 1}
                     </span>
@@ -604,6 +708,94 @@ export default function WorkoutSessionPage() {
                       weightKg={Number(set.weight) || set.targetWeight}
                       barKg={barKg}
                     />
+                   </div>
+
+                    {/* Drops sit inside the set's own block, indented and
+                        rule-connected, because a drop set is one set — showing
+                        them as siblings would make three entries out of one and
+                        put the set count out by two. */}
+                    {(set.drops?.length ?? 0) > 0 && (
+                      <div className="mt-2 flex flex-col gap-2 border-s-2 border-warning/40 ps-3">
+                        {set.drops?.map((drop, di) => (
+                          <div
+                            key={di}
+                            className="flex flex-wrap items-center gap-2"
+                          >
+                            <span className="w-7 shrink-0 text-center text-[10px] font-black uppercase tracking-wider text-warning">
+                              {t('workout.dropShort')}
+                            </span>
+
+                            <label className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                                {t('workout.reps')}
+                              </span>
+                              <input
+                                type="number"
+                                inputMode="numeric"
+                                min={0}
+                                value={drop.reps}
+                                aria-label={t('workout.dropRepsFor', {
+                                  set: si + 1,
+                                  drop: di + 1,
+                                })}
+                                onChange={(e) =>
+                                  patchDrop(ei, si, di, { reps: e.target.value })
+                                }
+                                className="h-11 w-16 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                              />
+                            </label>
+
+                            <label className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                                {t('workout.weight')}
+                              </span>
+                              <input
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                step="0.5"
+                                value={drop.weight}
+                                aria-label={t('workout.dropWeightFor', {
+                                  set: si + 1,
+                                  drop: di + 1,
+                                })}
+                                onChange={(e) =>
+                                  patchDrop(ei, si, di, {
+                                    weight: e.target.value,
+                                  })
+                                }
+                                className="h-11 w-20 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                              />
+                            </label>
+
+                            <button
+                              type="button"
+                              onClick={() => removeDrop(ei, si, di)}
+                              aria-label={t('workout.removeDrop', {
+                                drop: di + 1,
+                              })}
+                              className="ms-auto flex h-11 w-11 items-center justify-center rounded-lg text-error hover:bg-error/10"
+                            >
+                              <StitchIcon name="close" size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Capped at the six the server accepts, so the limit is
+                        felt as a missing button rather than as a rejected
+                        save after the work is already done. */}
+                    {(set.drops?.length ?? 0) < 6 && (
+                      <button
+                        type="button"
+                        onClick={() => addDrop(ei, si)}
+                        className="mt-2 inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-[11px] font-bold text-warning transition-colors hover:bg-warning/10"
+                      >
+                        <StitchIcon name="trending_down" size={14} />
+                        {t('workout.addDrop')}
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

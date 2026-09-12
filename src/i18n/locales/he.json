@@ -1027,7 +1027,12 @@
     "deloadRecommended": "מומלץ: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים.",
     "deloadOptional": "אפשרות: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים. לא חובה.",
     "deloadSetLine": "{{sets}}×{{reps}} · {{weight}} ק\"ג",
-    "deloadFootnote": "המשקלים מעוגלים כלפי מטה ל‑2.5 ק\"ג, כדי שיהיו מספרים שמוט באמת עושה."
+    "deloadFootnote": "המשקלים מעוגלים כלפי מטה ל‑2.5 ק\"ג, כדי שיהיו מספרים שמוט באמת עושה.",
+    "addDrop": "הוספת דרופ",
+    "dropShort": "דרופ",
+    "dropRepsFor": "חזרות בדרופ {{drop}} של סט {{set}}",
+    "dropWeightFor": "משקל בדרופ {{drop}} של סט {{set}}",
+    "removeDrop": "הסרת דרופ {{drop}}"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
@@ -1178,6 +1183,9 @@
     "u_kcal": "קלוריות",
     "u_g": "גרם",
     "loggedToday": "מה שתועד היום",
-    "searchSource": "הערכים מ‑USDA FoodData Central, לפי 100 גרם. הכמות שתזין קובעת את החישוב."
+    "searchSource": "הערכים מ‑USDA FoodData Central, לפי 100 גרם. הכמות שתזין קובעת את החישוב.",
+    "addWholeMeal": "כל הארוחה",
+    "addItem": "להוסיף {{name}}",
+    "itemsAndCalories": "{{count}} פריטים · {{calories}} קלוריות"
   }
 }

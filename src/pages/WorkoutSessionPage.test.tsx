@@ -319,6 +319,103 @@ describe('WorkoutSessionPage', () => {
     expect(screen.getByText(/2\/2/)).toBeInTheDocument();
   });
 
+  /**
+   * Drop sets. The set stays one set — the whole reason the reductions are
+   * nested rather than appended as siblings.
+   */
+  describe('drop sets', () => {
+    it('offers no drop rows until one is asked for', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      expect(screen.queryByLabelText(/workout.dropRepsFor/)).not.toBeInTheDocument();
+      expect(screen.getAllByText('workout.addDrop').length).toBeGreaterThan(0);
+    });
+
+    it('seeds a new drop from the weight above it', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getAllByText('workout.addDrop')[0]);
+
+      const weight = screen.getByLabelText(
+        /workout.dropWeightFor.*"set":1,"drop":1/,
+      ) as HTMLInputElement;
+      // The plan's target for set 1 — a starting point, not a claim.
+      expect(weight.value).toBe('60');
+
+      // Reps are deliberately blank: only the user knows how many they got.
+      const reps = screen.getByLabelText(
+        /workout.dropRepsFor.*"set":1,"drop":1/,
+      ) as HTMLInputElement;
+      expect(reps.value).toBe('');
+    });
+
+    it('sends the drops nested inside their set', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getAllByText('workout.addDrop')[0]);
+      fireEvent.change(
+        screen.getByLabelText(/workout.dropRepsFor.*"set":1,"drop":1/),
+        { target: { value: '6' } },
+      );
+      fireEvent.change(
+        screen.getByLabelText(/workout.dropWeightFor.*"set":1,"drop":1/),
+        { target: { value: '40' } },
+      );
+
+      fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":1/));
+      fireEvent.click(screen.getByText('workout.finish'));
+
+      await waitFor(() => {
+        expect(workoutSessionService.create).toHaveBeenCalled();
+      });
+
+      const [payload] = vi.mocked(workoutSessionService.create).mock.calls[0];
+      // One set, with the reduction inside it — not two sets.
+      expect(payload.exercises[0].sets).toHaveLength(1);
+      expect(payload.exercises[0].sets[0]).toEqual(
+        expect.objectContaining({
+          reps: 8,
+          weight: 60,
+          drops: [{ reps: 6, weight: 40 }],
+        }),
+      );
+    });
+
+    /**
+     * A drop started and never performed is not zero work — it is no work, and
+     * sending it as 0 reps would quietly dilute the volume figure.
+     */
+    it('drops an unfilled reduction rather than sending zero reps', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getAllByText('workout.addDrop')[0]);
+      fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":1/));
+      fireEvent.click(screen.getByText('workout.finish'));
+
+      await waitFor(() => {
+        expect(workoutSessionService.create).toHaveBeenCalled();
+      });
+
+      const [payload] = vi.mocked(workoutSessionService.create).mock.calls[0];
+      expect(payload.exercises[0].sets[0]).not.toHaveProperty('drops');
+    });
+
+    it('removes a drop again, and the set stops being a drop set', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getAllByText('workout.addDrop')[0]);
+      expect(screen.getByLabelText(/workout.dropRepsFor/)).toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText(/workout.removeDrop.*"drop":1/));
+      expect(screen.queryByLabelText(/workout.dropRepsFor/)).not.toBeInTheDocument();
+    });
+  });
+
   it('shows an error rather than an empty screen when the plan is gone', async () => {
     vi.mocked(trainingPlanService.getById).mockRejectedValue(new Error('404'));
 
