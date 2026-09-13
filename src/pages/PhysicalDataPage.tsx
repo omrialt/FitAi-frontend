@@ -16,9 +16,19 @@ import { MeasurementsChart } from '../components/profile/physical-data/charts/Me
 import { MeasurementsTable } from '../components/profile/physical-data/table/MeasurementsTable';
 import { MeasurementModal } from '../components/profile/physical-data/modals/MeasurementModal';
 import { DeleteMeasurementModal } from '../components/profile/physical-data/modals/DeleteMeasurementModal';
+import { TargetsList } from '../components/profile/physical-data/targets/TargetsList';
+import { TargetModal } from '../components/profile/physical-data/targets/TargetModal';
+import { DeleteTargetModal } from '../components/profile/physical-data/targets/DeleteTargetModal';
 import { useAuth } from '../hooks/useAuth';
 import physicalDataService from '../services/physical-data.service';
+import physicalTargetService from '../services/physical-target.service';
 import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../types/physical-data.types';
+import type {
+  PhysicalTarget,
+  CreatePhysicalTargetDto,
+  UpdatePhysicalTargetDto,
+  TargetProgress,
+} from '../types/physical-target.types';
 import { BodyPhotoTimeline } from '../components/profile/BodyPhotoTimeline';
 
 export default function PhysicalDataPage() {
@@ -28,10 +38,15 @@ export default function PhysicalDataPage() {
   const [latestRecord, setLatestRecord] = useState<PhysicalData | null>(null);
   const [bmiData, setBmiData] = useState<{ bmi: number; category: string } | null>(null);
   const [selectedMeasurement, setSelectedMeasurement] = useState<PhysicalData | null>(null);
+  const [targets, setTargets] = useState<PhysicalTarget[]>([]);
+  const [targetProgress, setTargetProgress] = useState<TargetProgress[]>([]);
+  const [selectedTarget, setSelectedTarget] = useState<PhysicalTarget | null>(null);
 
   // Modal states
   const [measurementModalOpened, setMeasurementModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [targetModalOpened, setTargetModalOpened] = useState(false);
+  const [deleteTargetModalOpened, setDeleteTargetModalOpened] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
 
   // Breadcrumb items
@@ -52,10 +67,14 @@ export default function PhysicalDataPage() {
       const records = await physicalDataService.getByUserId(user._id);
       const latest = await physicalDataService.getLatestByUserId(user._id);
       const bmi = await physicalDataService.calculateBMI(user._id).catch(() => null);
+      const userTargets = await physicalTargetService.getByUserId(user._id).catch(() => []);
+      const progress = await physicalTargetService.getProgress(user._id).catch(() => []);
 
       setPhysicalData(records);
       setLatestRecord(latest);
       setBmiData(bmi);
+      setTargets(userTargets);
+      setTargetProgress(progress);
     } catch (error) {
       console.error('Error loading physical data:', error);
       toast.error(t('physicalData.loadFailed'));
@@ -117,6 +136,54 @@ export default function PhysicalDataPage() {
     setDeleteModalOpened(true);
   };
 
+  // Target handlers
+  const handleAddTarget = async (data: CreatePhysicalTargetDto) => {
+    try {
+      await physicalTargetService.create(data);
+      await loadPhysicalData();
+      toast.success(t('physicalTargets.addedSuccess'));
+    } catch (error) {
+      console.error('Error adding target:', error);
+      toast.error(t('physicalTargets.addFailed'));
+    }
+  };
+
+  const handleEditTarget = async (id: string, data: UpdatePhysicalTargetDto) => {
+    try {
+      await physicalTargetService.update(id, data);
+      await loadPhysicalData();
+      toast.success(t('physicalTargets.updatedSuccess'));
+    } catch (error) {
+      console.error('Error updating target:', error);
+      toast.error(t('physicalTargets.updateFailed'));
+    }
+  };
+
+  const handleDeleteTarget = async () => {
+    if (!selectedTarget) return;
+
+    try {
+      await physicalTargetService.delete(selectedTarget._id);
+      await loadPhysicalData();
+      setDeleteTargetModalOpened(false);
+      setSelectedTarget(null);
+      toast.success(t('physicalTargets.deletedSuccess'));
+    } catch (error) {
+      console.error('Error deleting target:', error);
+      toast.error(t('physicalTargets.deleteFailed'));
+    }
+  };
+
+  const openEditTargetModal = (target: PhysicalTarget) => {
+    setSelectedTarget(target);
+    setTargetModalOpened(true);
+  };
+
+  const openDeleteTargetModal = (target: PhysicalTarget) => {
+    setSelectedTarget(target);
+    setDeleteTargetModalOpened(true);
+  };
+
   return (
     <AppLayout>
       <Container size="xl" py="xl">
@@ -124,10 +191,16 @@ export default function PhysicalDataPage() {
         <AppBreadcrumbs items={breadcrumbItems} />
 
         {/* Header */}
-        <PhysicalDataHeader onAddMeasurement={() => {
-          setSelectedMeasurement(null);
-          setMeasurementModalOpened(true);
-        }} />
+        <PhysicalDataHeader
+          onAddMeasurement={() => {
+            setSelectedMeasurement(null);
+            setMeasurementModalOpened(true);
+          }}
+          onSetTarget={() => {
+            setSelectedTarget(null);
+            setTargetModalOpened(true);
+          }}
+        />
 
         {/* Loading State */}
         {loadingData && (
@@ -164,6 +237,14 @@ export default function PhysicalDataPage() {
                 setMeasurementModalOpened(true);
               }} />
             )}
+
+            {/* Targets */}
+            <TargetsList
+              targets={targets}
+              progress={targetProgress}
+              onEdit={openEditTargetModal}
+              onDelete={openDeleteTargetModal}
+            />
 
             {/* Table */}
             {physicalData.length > 0 && (
@@ -202,6 +283,27 @@ export default function PhysicalDataPage() {
           }}
           measurement={selectedMeasurement}
           onConfirm={handleDeleteMeasurement}
+        />
+
+        <TargetModal
+          opened={targetModalOpened}
+          onClose={() => {
+            setTargetModalOpened(false);
+            setSelectedTarget(null);
+          }}
+          target={selectedTarget}
+          onSave={handleAddTarget}
+          onUpdate={handleEditTarget}
+        />
+
+        <DeleteTargetModal
+          opened={deleteTargetModalOpened}
+          onClose={() => {
+            setDeleteTargetModalOpened(false);
+            setSelectedTarget(null);
+          }}
+          target={selectedTarget}
+          onConfirm={handleDeleteTarget}
         />
       </Container>
     </AppLayout>

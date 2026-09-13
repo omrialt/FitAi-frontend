@@ -13,6 +13,7 @@ import type {
 
 export interface PhysicalDataHeaderProps {
   onAddMeasurement: () => void;
+  onSetTarget: () => void;
 }
 
 // ─── Cards ─────────────────────────────────────────────────────────────────
