@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { AppLayout } from '../components/AppLayout';
 import { StitchIcon } from '../components/common/StitchIcon';
 import { MealComposer } from '../components/nutrition/MealComposer';
+import { PlanFoodPicker } from '../components/nutrition/PlanFoodPicker';
 import { RemainingToday } from '../components/nutrition/RemainingToday';
 import { mealLogService, localDayString } from '../services/meal-log.service';
 import { foodService } from '../services/coach.service';
@@ -81,28 +82,31 @@ export default function LogMealPage() {
     [foods],
   );
 
-  /** Meals from the active plan, offered as a starting point. */
-  const planMeals = activeNutritionPlan?.meals ?? [];
+  /**
+   * Appends food taken from the plan — one item or a whole meal.
+   *
+   * Appends rather than replaces, which the first version did. Taking the
+   * chicken from lunch and the yoghurt from breakfast into one logged meal has
+   * to be possible, and anything added here can be removed in the composer
+   * below.
+   *
+   * The label and meal type are only set when a *whole* meal is added: a
+   * single item says nothing about which meal is being logged, and guessing
+   * would silently move the user's selection under them.
+   */
+  const addFromPlan = (
+    picked: LoggedFood[],
+    mealLabel?: string,
+    pickedType?: string,
+  ) => {
+    if (picked.length === 0) return;
 
-  const loadFromPlan = (index: number) => {
-    const meal = planMeals[index];
-    if (!meal) return;
-
-    setFoods(
-      meal.foods.map((f) => ({
-        name: f.name,
-        quantity: f.quantity ?? null,
-        unit: (f.unit as LoggedFood['unit']) ?? null,
-        calories: f.calories,
-        protein: f.protein,
-        carbs: f.carbs,
-        fat: f.fat,
-      })),
-    );
+    setFoods((current) => [...current, ...picked]);
     setSource('plan');
-    setLabel(t(`nutrition.meal_${meal.mealType}`, meal.mealType));
-    if (MEAL_TYPES.includes(meal.mealType as MealType)) {
-      setMealType(meal.mealType as MealType);
+
+    if (mealLabel) setLabel(mealLabel);
+    if (pickedType && MEAL_TYPES.includes(pickedType as MealType)) {
+      setMealType(pickedType as MealType);
     }
   };
 
@@ -180,30 +184,12 @@ export default function LogMealPage() {
               </div>
             </fieldset>
 
-            {/* Offered only when there is a plan to offer from — an empty
-                "load from plan" control would just be a dead button. */}
-            {planMeals.length > 0 && (
-              <fieldset className="mb-4">
-                <legend className="mb-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant">
-                  {t('mealLog.fromPlan')}
-                </legend>
-                <div className="flex flex-wrap gap-2">
-                  {planMeals.map((meal, i) => (
-                    <button
-                      key={`${meal.mealType}-${i}`}
-                      type="button"
-                      onClick={() => loadFromPlan(i)}
-                      className="min-h-10 rounded-lg border border-outline-variant/40 px-3 text-xs font-bold text-on-surface-variant"
-                    >
-                      {t(`nutrition.meal_${meal.mealType}`, meal.mealType)}
-                      <span className="ms-2 text-on-surface-variant/70">
-                        {meal.foods.length}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
-            )}
+            {/* Renders nothing without an active plan, so there is never a
+                dead "from plan" control on screen. */}
+            <PlanFoodPicker
+              plan={activeNutritionPlan}
+              onAddFoods={addFromPlan}
+            />
 
             <MealComposer
               foods={foods}

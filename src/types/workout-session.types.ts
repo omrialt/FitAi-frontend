@@ -7,11 +7,27 @@
  * not turn the training log into rows of "(unknown)".
  */
 
+/** One reduction inside a drop set. No RPE — the whole sequence shares one. */
+export interface PerformedDrop {
+  reps: number;
+  weight: number;
+}
+
 export interface PerformedSet {
   reps: number;
   weight: number;
   /** Rate of perceived exertion, 1–10. */
   rpe?: number;
+  /**
+   * Reductions taken without rest after the set above. `reps` and `weight`
+   * stay the **top** portion.
+   *
+   * The server counts drops toward volume and excludes them from every
+   * strength figure — personal bests, the strength curve's estimated 1RM, and
+   * the working weight the overload coach reads — because a drop happens
+   * pre-fatigued and is not evidence of strength at its own weight.
+   */
+  drops?: PerformedDrop[];
 }
 
 export interface SessionExercise {

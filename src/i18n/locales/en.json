@@ -991,7 +991,12 @@
     "deloadRecommended": "Recommended: {{load}}% of the load and {{volume}}% of the sets, for {{days}} days.",
     "deloadOptional": "An option: {{load}}% of the load and {{volume}}% of the sets, for {{days}} days. Nothing insists.",
     "deloadSetLine": "{{sets}}×{{reps}} · {{weight}} kg",
-    "deloadFootnote": "Weights are rounded down to 2.5 kg, so they are numbers a barbell actually makes."
+    "deloadFootnote": "Weights are rounded down to 2.5 kg, so they are numbers a barbell actually makes.",
+    "addDrop": "Add a drop",
+    "dropShort": "drop",
+    "dropRepsFor": "Reps for drop {{drop}} of set {{set}}",
+    "dropWeightFor": "Weight for drop {{drop}} of set {{set}}",
+    "removeDrop": "Remove drop {{drop}}"
   },
   "account": {
     "sectionTitle": "Your data",
@@ -1142,6 +1147,9 @@
     "u_kcal": "kcal",
     "u_g": "g",
     "loggedToday": "Logged today",
-    "searchSource": "Values from USDA FoodData Central, per 100g. The amount you enter scales them."
+    "searchSource": "Values from USDA FoodData Central, per 100g. The amount you enter scales them.",
+    "addWholeMeal": "Whole meal",
+    "addItem": "Add {{name}}",
+    "itemsAndCalories": "{{count}} items · {{calories}} kcal"
   }
 }
