@@ -21,7 +21,8 @@ import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
 import { workoutSessionService } from '../services/workout-session.service';
 import { useAuthStore } from '../store/authStore';
-import type { TrainingPlan } from '../types/training-plan.types';
+import { todaysPlanDayIndex } from '../utils/planDay';
+import type { TrainingDay, TrainingPlan } from '../types/training-plan.types';
 import type { SessionExercise } from '../types/workout-session.types';
 
 /**
@@ -75,6 +76,81 @@ function minutesSince(start: number): number {
   return Math.max(1, Math.round((Date.now() - start) / 60000));
 }
 
+/**
+ * A day of the plan as an unfilled sheet.
+ *
+ * The targets come across; nothing else does. The plan's numbers are
+ * placeholders, never prefilled values — a prefilled input invites tapping
+ * "done" through a workout you did not do.
+ */
+function blankDraft(day: TrainingDay): ExerciseDraft[] {
+  return day.exercises.map((exercise) => ({
+    name: exercise.name,
+    muscleGroup: exercise.muscleGroup,
+    notes: exercise.notes,
+    sets: exercise.sets.map((set) => ({
+      targetReps: set.targetReps,
+      targetWeight: set.targetWeight,
+      reps: '',
+      weight: '',
+      rpe: '',
+      done: false,
+    })),
+  }));
+}
+
+/**
+ * How a set row is laid out, which is the whole of the mobile fix.
+ *
+ * It was one `flex-wrap` row of fixed-width controls. On a desktop they fit on
+ * a line; on a 390px phone they did not, and flex-wrap breaks wherever it runs
+ * out of room rather than where the meaning is. What that produced, measured
+ * on a real phone width: three ragged lines per set, with the done button —
+ * the one control the user actually reaches for between sets — stranded alone
+ * on the second line, 116px from the inputs it belongs to. Eight sets of that
+ * is the "crushed" screen.
+ *
+ * So below `sm` the row is a grid that says where things go instead of leaving
+ * it to whatever fits:
+ *
+ *     [ # ] [ reps ] [ weight ] [ ✓ ]
+ *           [ rpe  ] [ plate calculator ]
+ *
+ * Reps, weight and the done button — the logging action — stay together on the
+ * first line; RPE (optional) and the plate breakdown (informational) drop to
+ * the second. The two input columns are `1fr` rather than fixed, so the row
+ * fits any phone instead of a particular one.
+ *
+ * From `sm` up it goes back to being the flex row it was, and every grid
+ * placement class below is inert — `display: flex` ignores them, so the
+ * desktop layout needs no resetting.
+ */
+const SET_ROW =
+  'grid grid-cols-[1.75rem_minmax(0,1fr)_minmax(0,1fr)_3.5rem] items-end gap-2 sm:flex sm:flex-wrap sm:items-center';
+
+/** The same shape one column narrower: the drop rows have no RPE. */
+const DROP_ROW =
+  'grid grid-cols-[1.75rem_minmax(0,1fr)_minmax(0,1fr)_2.75rem] items-end gap-2 sm:flex sm:flex-wrap sm:items-center';
+
+/**
+ * Caption above the control on a phone, beside it from `sm` up.
+ *
+ * Inline is what made the fixed widths necessary: caption plus input is wider
+ * than the third of a row a field can have, and something had to wrap.
+ */
+const FIELD = 'flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5';
+
+const FIELD_CAPTION =
+  'text-[10px] font-bold uppercase tracking-wider text-on-surface-variant';
+
+/**
+ * Full width of its grid cell on a phone, back to a fixed width from `sm`.
+ * `h-12` matches the done button, so the two line up when the grid aligns the
+ * row to its baseline.
+ */
+const FIELD_CONTROL =
+  'h-12 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary';
+
 export default function WorkoutSessionPage() {
   const { planId, dayIndex } = useParams<{ planId: string; dayIndex: string }>();
   const navigate = useNavigate();
@@ -115,6 +191,9 @@ export default function WorkoutSessionPage() {
     [plan, dayIdx],
   );
 
+  /** `-1` on a day the plan has nothing scheduled for; no option is marked. */
+  const todayIndex = useMemo(() => todaysPlanDayIndex(plan?.days), [plan?.days]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -122,25 +201,7 @@ export default function WorkoutSessionPage() {
       if (!planId) return;
       try {
         const loaded = await trainingPlanService.getById(planId);
-        if (cancelled) return;
-
-        setPlan(loaded);
-        const target = loaded.days[Number(dayIndex)];
-        setDraft(
-          (target?.exercises ?? []).map((exercise) => ({
-            name: exercise.name,
-            muscleGroup: exercise.muscleGroup,
-            notes: exercise.notes,
-            sets: exercise.sets.map((set) => ({
-              targetReps: set.targetReps,
-              targetWeight: set.targetWeight,
-              reps: '',
-              weight: '',
-              rpe: '',
-              done: false,
-            })),
-          })),
-        );
+        if (!cancelled) setPlan(loaded);
       } catch {
         if (!cancelled) toast.error(tRef.current('workout.loadFailed'));
       } finally {
@@ -151,7 +212,34 @@ export default function WorkoutSessionPage() {
     return () => {
       cancelled = true;
     };
-  }, [planId, dayIndex]);
+  }, [planId]);
+
+  /**
+   * The blank sheet for whichever day is open, rebuilt when that changes.
+   *
+   * Derived during render rather than in an effect, for two reasons.
+   *
+   * An effect would commit the header first and the sets one paint later, so
+   * opening the logger would flash an empty plan day. React re-runs the
+   * component before committing when state is set during render, so the sets
+   * are there in the first painted frame.
+   *
+   * And it makes the draft and the storage key impossible to get out of step.
+   * The crash net writes `draft` under a key built from `dayIndex`; anything
+   * that let one change a render before the other would write one day's
+   * workout under another day's key. Here they change together, by
+   * construction.
+   *
+   * Keyed by plan and index rather than by the day object, so that refetching
+   * the plan — new objects, same day — does not wipe sets already logged.
+   */
+  const dayKey = `${planId}:${dayIdx}`;
+  const [draftKey, setDraftKey] = useState<string | null>(null);
+
+  if (day && draftKey !== dayKey) {
+    setDraftKey(dayKey);
+    setDraft(blankDraft(day));
+  }
 
   // Session clock. Ticks every 15s — a workout is measured in minutes, and a
   // per-second re-render of the whole list buys nothing.
@@ -181,6 +269,35 @@ export default function WorkoutSessionPage() {
 
     saveDraft({ startedAt: startedAt.current, notes, exercises: draft });
   }, [draft, notes, loading, saveDraft]);
+
+  /**
+   * Opens another day of the same plan.
+   *
+   * The route is the single source of truth for which day is being logged —
+   * the crash net keys its storage by it, and so does the loader above — so
+   * this navigates rather than holding a second copy in state that the two
+   * could disagree about.
+   *
+   * The sets take care of themselves — they are derived from the open day
+   * during render, so they change in the same pass as the route. Notes are
+   * not: they belong to the day they were typed against.
+   *
+   * Nothing is lost by switching. Each day's draft is stored under its own
+   * key, so a day with sets already logged offers them back on return.
+   *
+   * `replace` because the days are one screen the user is adjusting, not four
+   * they visited: without it, leaving the logger means tapping back once per
+   * day they looked at.
+   */
+  const switchDay = useCallback(
+    (next: number) => {
+      if (!planId || next === dayIdx) return;
+
+      setNotes('');
+      navigate(`/workout/${planId}/${next}`, { replace: true });
+    },
+    [navigate, planId, dayIdx],
+  );
 
   /** Adopts the stored draft, clock included, and drops the offer. */
   const resume = useCallback(() => {
@@ -518,14 +635,14 @@ export default function WorkoutSessionPage() {
       {/* Bottom padding clears the fixed rest timer sitting above the app footer */}
       <Container size="md" py="md" pb={120}>
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
               {plan.title}
             </p>
             <h1 className="text-2xl font-black tracking-tight text-on-surface">
               {day.dayName}
             </h1>
-            <p className="mt-1 flex items-center gap-2 text-sm text-on-surface-variant">
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-on-surface-variant">
               <StitchIcon name="timer" size={15} />
               {t('workout.elapsed', { minutes: elapsed })}
               <span aria-hidden="true">·</span>
@@ -536,7 +653,35 @@ export default function WorkoutSessionPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* One line on a phone would be four controls in 350px. Full width
+              and allowed to wrap instead, which puts the day and the bar on
+              one line and the finish button on its own. */}
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+            {/* The day being logged, defaulting to whichever the dashboard
+                sent us to — today's. Offered because the plan's weekday is a
+                schedule, not a rule: the gym is busy, Tuesday's session gets
+                done on Wednesday, and the log should record the workout that
+                happened rather than the one the calendar expected. */}
+            {plan.days.length > 1 && (
+              <label className="flex w-full min-w-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant sm:w-auto">
+                {t('workout.planDay')}
+                <select
+                  value={dayIdx}
+                  aria-label={t('workout.planDay')}
+                  onChange={(e) => switchDay(Number(e.target.value))}
+                  className="h-9 min-w-0 flex-1 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm font-bold normal-case tracking-normal text-on-surface outline-none focus:border-primary sm:w-44 sm:flex-none"
+                >
+                  {plan.days.map((option, index) => (
+                    <option key={`${option.dayName}-${index}`} value={index}>
+                      {index === todayIndex
+                        ? t('workout.planDayToday', { day: option.dayName })
+                        : option.dayName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+
             <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
               {t('workout.barWeight')}
               <select
@@ -556,7 +701,7 @@ export default function WorkoutSessionPage() {
               type="button"
               onClick={finish}
               disabled={saving}
-              className="rounded-lg bg-primary-gradient px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
+              className="ms-auto rounded-lg bg-primary-gradient px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
             >
               {saving ? t('workout.saving') : t('workout.finish')}
             </button>
@@ -600,7 +745,7 @@ export default function WorkoutSessionPage() {
           {draft.map((exercise, ei) => (
             <section
               key={`${exercise.name}-${ei}`}
-              className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-5"
+              className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-3 sm:p-5"
             >
               <div className="mb-4 flex items-baseline justify-between gap-3">
                 <h2 className="text-base font-extrabold text-on-surface">
@@ -623,15 +768,16 @@ export default function WorkoutSessionPage() {
                         : 'border-transparent bg-surface-container-low'
                     }`}
                   >
-                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="w-7 shrink-0 text-center text-xs font-black tabular-nums text-on-surface-variant">
+                   <div className={SET_ROW}>
+                    {/* `h-12` so that aligning the row to the bottom of the
+                        inputs centres the number against them, rather than
+                        dropping it to the floor of a taller cell. */}
+                    <span className="flex h-12 w-7 shrink-0 items-center justify-center text-xs font-black tabular-nums text-on-surface-variant">
                       {si + 1}
                     </span>
 
-                    <label className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
-                        {t('workout.reps')}
-                      </span>
+                    <label className={FIELD}>
+                      <span className={FIELD_CAPTION}>{t('workout.reps')}</span>
                       <input
                         type="number"
                         inputMode="numeric"
@@ -641,12 +787,12 @@ export default function WorkoutSessionPage() {
                         onChange={(e) =>
                           patchSet(ei, si, { reps: e.target.value })
                         }
-                        className="h-12 w-16 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                        className={`${FIELD_CONTROL} sm:w-16`}
                       />
                     </label>
 
-                    <label className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                    <label className={FIELD}>
+                      <span className={FIELD_CAPTION}>
                         {t('workout.weight')}
                       </span>
                       <input
@@ -659,24 +805,24 @@ export default function WorkoutSessionPage() {
                         onChange={(e) =>
                           patchSet(ei, si, { weight: e.target.value })
                         }
-                        className="h-12 w-20 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                        className={`${FIELD_CONTROL} sm:w-20`}
                       />
                     </label>
 
                     {/* Optional on purpose. RPE is the input every future
                         fatigue or deload signal reads, but a required field
-                        would turn a two-tap set into a three-tap one. */}
-                    <label className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
-                        {t('workout.rpe')}
-                      </span>
+                        would turn a two-tap set into a three-tap one. Which is
+                        also why it is the field that drops to the second line
+                        on a phone. */}
+                    <label className={`${FIELD} col-start-2 row-start-2`}>
+                      <span className={FIELD_CAPTION}>{t('workout.rpe')}</span>
                       <select
                         value={set.rpe}
                         aria-label={t('workout.rpeFor', { number: si + 1 })}
                         onChange={(e) =>
                           patchSet(ei, si, { rpe: e.target.value })
                         }
-                        className="h-12 w-16 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-1 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                        className={`${FIELD_CONTROL} px-1 sm:w-16`}
                       >
                         <option value="">–</option>
                         {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map((value) => (
@@ -692,7 +838,7 @@ export default function WorkoutSessionPage() {
                       onClick={() => toggleDone(ei, si)}
                       aria-pressed={set.done}
                       aria-label={t('workout.markSetDone', { number: si + 1 })}
-                      className={`ms-auto flex h-12 w-14 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
+                      className={`col-start-4 row-start-1 ms-auto flex h-12 w-14 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
                         set.done
                           ? 'bg-success text-on-success shadow-[0_0_8px_0_var(--color-success)]'
                           : 'bg-surface-container-high text-on-surface-variant hover:bg-primary hover:text-on-primary'
@@ -703,10 +849,15 @@ export default function WorkoutSessionPage() {
 
                     {/* Reads what was typed, falling back to the plan's
                         target — the question at the rack is about the bar you
-                        are walking up to, not the one you already lifted. */}
+                        are walking up to, not the one you already lifted.
+                        Indented under the inputs on desktop, where it sits on
+                        its own line under the whole row; already in its own
+                        column on a phone, so the indent would only push it
+                        into a wrap. */}
                     <PlateCalculator
                       weightKg={Number(set.weight) || set.targetWeight}
                       barKg={barKg}
+                      className="col-start-3 col-span-2 row-start-2 ps-0 sm:ps-9"
                     />
                    </div>
 
@@ -717,16 +868,13 @@ export default function WorkoutSessionPage() {
                     {(set.drops?.length ?? 0) > 0 && (
                       <div className="mt-2 flex flex-col gap-2 border-s-2 border-warning/40 ps-3">
                         {set.drops?.map((drop, di) => (
-                          <div
-                            key={di}
-                            className="flex flex-wrap items-center gap-2"
-                          >
-                            <span className="w-7 shrink-0 text-center text-[10px] font-black uppercase tracking-wider text-warning">
+                          <div key={di} className={DROP_ROW}>
+                            <span className="flex h-11 w-7 shrink-0 items-center justify-center text-[10px] font-black uppercase tracking-wider text-warning">
                               {t('workout.dropShort')}
                             </span>
 
-                            <label className="flex items-center gap-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                            <label className={FIELD}>
+                              <span className={FIELD_CAPTION}>
                                 {t('workout.reps')}
                               </span>
                               <input
@@ -741,12 +889,12 @@ export default function WorkoutSessionPage() {
                                 onChange={(e) =>
                                   patchDrop(ei, si, di, { reps: e.target.value })
                                 }
-                                className="h-11 w-16 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                                className={`${FIELD_CONTROL} h-11 sm:w-16`}
                               />
                             </label>
 
-                            <label className="flex items-center gap-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                            <label className={FIELD}>
+                              <span className={FIELD_CAPTION}>
                                 {t('workout.weight')}
                               </span>
                               <input
@@ -764,7 +912,7 @@ export default function WorkoutSessionPage() {
                                     weight: e.target.value,
                                   })
                                 }
-                                className="h-11 w-20 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary"
+                                className={`${FIELD_CONTROL} h-11 sm:w-20`}
                               />
                             </label>
 

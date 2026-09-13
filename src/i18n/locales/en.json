@@ -937,6 +937,8 @@
     "rpe": "RPE",
     "rpeFor": "Perceived effort for set {{number}}",
     "barWeight": "Bar",
+    "planDay": "Day",
+    "planDayToday": "{{day}} — today",
     "noBar": "No bar",
     "perSide": "Per side",
     "barOnly": "Empty bar",

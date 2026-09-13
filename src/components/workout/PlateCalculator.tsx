@@ -18,9 +18,18 @@ interface PlateCalculatorProps {
   weightKg: number;
   /** The bar in use, in kg. Zero means "no bar", and hides the component. */
   barKg: number;
+  /**
+   * Placement, which only the set row knows: where this sits and how far it
+   * is indented differ between the phone grid and the desktop row.
+   */
+  className?: string;
 }
 
-export function PlateCalculator({ weightKg, barKg }: PlateCalculatorProps) {
+export function PlateCalculator({
+  weightKg,
+  barKg,
+  className = '',
+}: PlateCalculatorProps) {
   const { t } = useTranslation();
 
   const load = useMemo(
@@ -33,7 +42,9 @@ export function PlateCalculator({ weightKg, barKg }: PlateCalculatorProps) {
   const grouped = groupPlates(load.perSide);
 
   return (
-    <p className="flex w-full flex-wrap items-center gap-x-2 gap-y-1 ps-9 text-[11px] text-on-surface-variant">
+    <p
+      className={`flex w-full flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-on-surface-variant ${className}`}
+    >
       <span className="font-bold uppercase tracking-wider">
         {t('workout.perSide')}
       </span>

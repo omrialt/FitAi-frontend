@@ -971,6 +971,8 @@
     "rpe": "RPE",
     "rpeFor": "מאמץ נתפס לסט {{number}}",
     "barWeight": "מוט",
+    "planDay": "יום",
+    "planDayToday": "{{day}} — היום",
     "noBar": "בלי מוט",
     "perSide": "לכל צד",
     "barOnly": "מוט ריק",
