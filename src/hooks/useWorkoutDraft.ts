@@ -114,6 +114,14 @@ export function useWorkoutDraft<TExercise>(
 
   useEffect(() => {
     sweepExpired();
+
+    // Whatever was on offer belonged to the previous key. Every early return
+    // below leaves `pending` as it finds it, so without this a day with no
+    // stored draft would keep offering the last one that had one — and
+    // accepting it would paste one day's exercises onto another day's screen.
+    // Unreachable until the logger grew a day picker, since the key could not
+    // change while mounted.
+    setPending(null);
     if (!storageKey) return;
 
     try {

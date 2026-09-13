@@ -68,12 +68,20 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
+/**
+ * Weekdays are assigned relative to the day the suite happens to run on, so
+ * that "which option is marked today" is a fixed answer rather than one that
+ * changes seven times a week. `Lower` is today; the other two are not.
+ */
+const TODAY_DOW = new Date().getDay();
+
 const PLAN = {
   _id: 'plan-1',
   title: 'Upper / Lower Split',
   days: [
     {
       dayName: 'Upper A',
+      dayOfWeek: (TODAY_DOW + 1) % 7,
       exercises: [
         {
           name: 'Bench Press',
@@ -85,8 +93,33 @@ const PLAN = {
         },
       ],
     },
+    {
+      dayName: 'Lower',
+      dayOfWeek: TODAY_DOW,
+      exercises: [
+        {
+          name: 'Back Squat',
+          muscleGroup: 'legs',
+          sets: [{ targetReps: 5, targetWeight: 100 }],
+        },
+      ],
+    },
+    {
+      dayName: 'Upper B',
+      dayOfWeek: (TODAY_DOW + 2) % 7,
+      exercises: [
+        {
+          name: 'Pull Up',
+          muscleGroup: 'back',
+          sets: [{ targetReps: 6, targetWeight: 0 }],
+        },
+      ],
+    },
   ],
 };
+
+/** The same plan with nothing to choose between. */
+const ONE_DAY_PLAN = { ...PLAN, days: [PLAN.days[0]] };
 
 const DRAFT_KEY = 'fitai-workout-draft:plan-1:0';
 
@@ -124,7 +157,10 @@ describe('WorkoutSessionPage', () => {
   it('renders the plan day and its sets', async () => {
     renderPage();
 
-    expect(await screen.findByText('Upper A')).toBeInTheDocument();
+    // By role: the day picker carries the same name in an <option>.
+    expect(
+      await screen.findByRole('heading', { name: 'Upper A' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Bench Press')).toBeInTheDocument();
   });
 
@@ -413,6 +449,119 @@ describe('WorkoutSessionPage', () => {
 
       fireEvent.click(screen.getByLabelText(/workout.removeDrop.*"drop":1/));
       expect(screen.queryByLabelText(/workout.dropRepsFor/)).not.toBeInTheDocument();
+    });
+  });
+
+  /**
+   * The plan's weekday is a schedule, not a rule. The gym is busy, Tuesday's
+   * session gets done on Wednesday, and before this the logger could only ever
+   * record the day the dashboard sent it to.
+   */
+  describe('choosing which day is being logged', () => {
+    const picker = () =>
+      screen.getByRole('combobox', { name: 'workout.planDay' });
+
+    it('lists every day of the plan, marking the one that is today', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      const options = [...picker().querySelectorAll('option')].map(
+        (option) => option.textContent,
+      );
+
+      // Only `Lower` falls on today's weekday, so only it carries the marker.
+      expect(options).toEqual([
+        'Upper A',
+        'workout.planDayToday:{"day":"Lower"}',
+        'Upper B',
+      ]);
+    });
+
+    it('replaces the sheet with the chosen day', async () => {
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await user.selectOptions(picker(), '2');
+
+      expect(await screen.findByText('Pull Up')).toBeInTheDocument();
+      expect(screen.queryByText('Bench Press')).not.toBeInTheDocument();
+      // The heading follows the choice, and so does what a save would record.
+      expect(screen.getByRole('heading', { name: 'Upper B' })).toBeInTheDocument();
+    });
+
+    /**
+     * Each day keeps its own draft, so switching is not a way to lose work.
+     * Guards the crash net's storage key against being paired with another
+     * day's sets — the failure would be silent, and would surface as one
+     * workout logged under the wrong day.
+     */
+    it('keeps each day’s logged sets under its own key', async () => {
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":1/));
+      expect(screen.getByText(/1\/2/)).toBeInTheDocument();
+
+      await user.selectOptions(picker(), '1');
+      await screen.findByText('Back Squat');
+
+      // A fresh sheet, not the previous day's set carried across.
+      expect(screen.getByText(/0\/1/)).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(localStorage.getItem(DRAFT_KEY)).not.toBeNull();
+      });
+      expect(localStorage.getItem('fitai-workout-draft:plan-1:1')).toBeNull();
+    });
+
+    /**
+     * The stored offer belonged to the day that was open when it was read.
+     * Carrying it across would paste one day's exercises onto another's sheet.
+     */
+    it('withdraws a resume offer that belonged to the day left behind', async () => {
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          version: 1,
+          savedAt: Date.now(),
+          startedAt: Date.now() - 5 * 60_000,
+          notes: '',
+          exercises: [
+            {
+              name: 'Bench Press',
+              muscleGroup: 'chest',
+              sets: [
+                { targetReps: 8, targetWeight: 60, reps: '8', weight: '60', rpe: '', done: true },
+              ],
+            },
+          ],
+        }),
+      );
+      renderPage();
+
+      expect(await screen.findByText('workout.resumeTitle')).toBeInTheDocument();
+
+      await user.selectOptions(picker(), '1');
+      await screen.findByText('Back Squat');
+
+      expect(screen.queryByText('workout.resumeTitle')).not.toBeInTheDocument();
+    });
+
+    it('is not offered when the plan has a single day to log', async () => {
+      vi.mocked(trainingPlanService.getById).mockResolvedValue(
+        ONE_DAY_PLAN as unknown as Awaited<
+          ReturnType<typeof trainingPlanService.getById>
+        >,
+      );
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      expect(
+        screen.queryByRole('combobox', { name: 'workout.planDay' }),
+      ).not.toBeInTheDocument();
     });
   });
 

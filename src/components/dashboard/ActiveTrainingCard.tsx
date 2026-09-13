@@ -6,6 +6,7 @@ import { StitchIcon } from '../common/StitchIcon';
 import type { ActiveTrainingCardProps } from '../../types/dashboard-components.types';
 import { DaysSection } from '../trainings/details/DaysSection';
 import { VideoModal } from '../trainings/details/VideoModal';
+import { defaultPlanDayIndex } from '../../utils/planDay';
 import { useTranslation } from 'react-i18next';
 
 const difficultyColor: Record<string, string> = {
@@ -70,10 +71,10 @@ export function ActiveTrainingCard({
 
   // Find today's training day by matching dayOfWeek. The index is what the
   // workout logger addresses, so resolve it here rather than re-deriving it
-  // from the day object on the other side of a route change.
-  const todayDow = new Date().getDay();
-  const todayIndex = plan.days.findIndex((d) => d.dayOfWeek === todayDow);
-  const dayIndex = todayIndex >= 0 ? todayIndex : 0;
+  // from the day object on the other side of a route change. Shared with the
+  // logger's day picker, which highlights the same day as "today" — two
+  // copies of this rule would eventually disagree about what today is.
+  const dayIndex = defaultPlanDayIndex(plan.days);
   const todayDay = plan.days[dayIndex];
   const todayProtocol = todayDay?.exercises?.slice(0, 3) ?? [];
 
