@@ -19,14 +19,15 @@ const METRIC_LABEL_KEYS: Record<TargetMetric, string> = {
   legs: 'physicalData.legsCm',
 };
 
-const METRIC_UNIT: Record<TargetMetric, string> = {
-  weightKg: 'kg',
-  bodyFatPercent: '%',
-  chest: 'cm',
-  waist: 'cm',
-  hips: 'cm',
-  arms: 'cm',
-  legs: 'cm',
+// Unit label keys; null means a literal '%' (the same in every language).
+const METRIC_UNIT: Record<TargetMetric, string | null> = {
+  weightKg: 'common.kg',
+  bodyFatPercent: null,
+  chest: 'physicalData.cm',
+  waist: 'physicalData.cm',
+  hips: 'physicalData.cm',
+  arms: 'physicalData.cm',
+  legs: 'physicalData.cm',
 };
 
 function statusPill(status: string): string {
@@ -96,16 +97,25 @@ export function TargetCard({ target, progress, onEdit, onDelete }: TargetCardPro
         {metrics.map((metric) => {
           const metricProgress = progress?.metrics.find((m) => m.metric === metric);
           const pct = metricProgress?.percentComplete ?? 0;
-          const unit = METRIC_UNIT[metric];
+          const unitKey = METRIC_UNIT[metric];
+          const unit = unitKey ? t(unitKey) : '%';
 
           return (
             <div key={metric}>
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="font-bold text-on-surface">{t(METRIC_LABEL_KEYS[metric])}</span>
-                <span className="text-on-surface-variant">
-                  {metricProgress?.current != null ? metricProgress.current : '—'} {unit}
-                  {' → '}
-                  {target.targetValues[metric]} {unit}
+                {/* Each value is isolated so its number and unit never reorder
+                    against the surrounding text in RTL; the arrow is an icon so
+                    the global RTL rule in index.css mirrors it to point at the
+                    target in both directions. */}
+                <span className="inline-flex items-center gap-1 text-on-surface-variant">
+                  <bdi>
+                    {metricProgress?.current != null ? metricProgress.current : '—'} {unit}
+                  </bdi>
+                  <StitchIcon name="arrow_forward" size={12} />
+                  <bdi>
+                    {target.targetValues[metric]} {unit}
+                  </bdi>
                 </span>
               </div>
               <div className="h-2 rounded-full bg-surface-container-high overflow-hidden">

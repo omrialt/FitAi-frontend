@@ -138,6 +138,9 @@ export function TargetModal({ opened, onClose, target, onSave, onUpdate }: Targe
           label={t('physicalTargets.targetDate')}
           placeholder={t('physicalTargets.selectDate')}
           minDate={new Date()}
+          // Day-first reads naturally in Hebrew ("30 נובמבר 2026") and matches
+          // the app's dd/mm dates elsewhere; the default is US month-first.
+          valueFormat="D MMMM YYYY"
           value={targetDate}
           onChange={(date) => setTargetDate(date ? new Date(date) : null)}
           required
