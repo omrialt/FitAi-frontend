@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Theme } from '@radix-ui/themes'
 import { MantineProvider, createTheme, DirectionProvider, useDirection, useMantineColorScheme } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
+import 'dayjs/locale/he'
 import { Toaster } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import '@radix-ui/themes/styles.css'
@@ -127,12 +129,24 @@ function Root() {
   return (
     <BrowserRouter>
       <MantineProvider theme={mantineTheme}>
-        <ThemedRadix>
-          <DirectionSync />
-          <OfflineSyncWatcher />
-          <App />
-          <Toaster position="top-right" richColors dir={dirFor(i18n.language)} />
-        </ThemedRadix>
+        {/* Mantine date pickers format through dayjs, which knows nothing of
+            i18next: without this every calendar and date value stays English.
+            Hebrew weeks start on Sunday and the weekend is Friday-Saturday;
+            English keeps Mantine's defaults (Monday, Saturday-Sunday). */}
+        <DatesProvider
+          settings={{
+            locale: i18n.language,
+            firstDayOfWeek: i18n.language === 'he' ? 0 : 1,
+            weekendDays: i18n.language === 'he' ? [5, 6] : [0, 6],
+          }}
+        >
+          <ThemedRadix>
+            <DirectionSync />
+            <OfflineSyncWatcher />
+            <App />
+            <Toaster position="top-right" richColors dir={dirFor(i18n.language)} />
+          </ThemedRadix>
+        </DatesProvider>
       </MantineProvider>
     </BrowserRouter>
   );
