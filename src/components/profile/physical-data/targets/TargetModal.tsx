@@ -49,7 +49,13 @@ export function TargetModal({ opened, onClose, target, onSave, onUpdate }: Targe
       setName(target.name ?? '');
       setTargetDate(new Date(target.targetDate));
       setNotes(target.notes ?? '');
-      setValues({ ...target.targetValues });
+      // Copy only known metrics so a stray `_id` key is never sent back.
+      const loaded: MetricValues = {};
+      for (const { key } of METRICS) {
+        const value = target.targetValues[key];
+        if (value !== undefined) loaded[key] = value;
+      }
+      setValues(loaded);
     } else {
       setName('');
       setTargetDate(null);

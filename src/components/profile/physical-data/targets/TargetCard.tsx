@@ -46,7 +46,9 @@ export function TargetCard({ target, progress, onEdit, onDelete }: TargetCardPro
     else dueLabel = t('physicalTargets.overdue', { count: Math.abs(daysRemaining) });
   }
 
-  const metrics = (Object.keys(target.targetValues) as TargetMetric[]).filter(
+  // Iterate the known metrics, not the object's keys: targets stored before the
+  // backend dropped subdocument ids carry an extra `_id` key in targetValues.
+  const metrics = (Object.keys(METRIC_UNIT) as TargetMetric[]).filter(
     (metric) => target.targetValues[metric] !== undefined,
   );
 
