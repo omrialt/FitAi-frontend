@@ -10,7 +10,10 @@ import { StrengthCurve } from '../components/workout/StrengthCurve';
 import { useMetadata } from '../hooks/useMetadata';
 import { workoutSessionService } from '../services/workout-session.service';
 import { useAuthStore } from '../store/authStore';
-import type { WorkoutSession } from '../types/workout-session.types';
+import type {
+  PerformedSet,
+  WorkoutSession,
+} from '../types/workout-session.types';
 
 /**
  * The user's own training log.
@@ -39,6 +42,74 @@ function groupByDay(sessions: WorkoutSession[]): [string, WorkoutSession[]][] {
   return [...groups.entries()];
 }
 
+/**
+ * One logged set: `65 kg × 12`.
+ *
+ * `dir="ltr"` is the whole point of this being its own element. The chip is a
+ * run of digits, a Hebrew unit and a neutral ×, and under a right-to-left
+ * paragraph the bidi algorithm reorders those into a single number — 65 and
+ * 12 came out of the log reading "6512". Isolating the chip pins weight,
+ * unit and reps in that order in both languages, which is also the order
+ * everyone writes a set in.
+ */
+function SetChip({
+  set,
+  ordinal,
+  kg,
+}: {
+  set: PerformedSet;
+  ordinal: number;
+  kg: string;
+}) {
+  return (
+    <div
+      dir="ltr"
+      className="flex items-center gap-1.5 rounded-lg bg-surface-container-high px-2 py-1.5"
+    >
+      {/* The set number, kept clear of the digits it sits next to so it does
+          not read as part of the weight. */}
+      <span className="w-4 shrink-0 text-center text-[10px] font-black tabular-nums text-on-surface-variant">
+        {ordinal}
+      </span>
+
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-baseline gap-x-1 text-sm font-bold tabular-nums text-on-surface">
+          <span>{set.weight}</span>
+          <span className="text-[10px] font-semibold text-on-surface-variant">
+            {kg}
+          </span>
+          <span className="font-normal text-on-surface-variant">×</span>
+          <span>{set.reps}</span>
+          {/* Subdued rather than a separate chip: RPE qualifies the set, it is
+              not another number of the same kind. */}
+          {set.rpe != null && (
+            <span className="text-[10px] font-semibold text-on-surface-variant">
+              @{set.rpe}
+            </span>
+          )}
+        </span>
+
+        {/* Drops were logged but never shown here, so a drop set read as an
+            ordinary one. Indented under the top portion, which is what they
+            hang off. */}
+        {set.drops?.length ? (
+          <span className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 text-[10px] font-semibold tabular-nums text-on-surface-variant">
+            {set.drops.map((drop, i) => (
+              <span key={i} className="flex items-baseline gap-x-1">
+                <span aria-hidden="true">↳</span>
+                <span>{drop.weight}</span>
+                <span>{kg}</span>
+                <span>×</span>
+                <span>{drop.reps}</span>
+              </span>
+            ))}
+          </span>
+        ) : null}
+      </span>
+    </div>
+  );
+}
+
 function SessionCard({
   session,
   locale,
@@ -55,10 +126,18 @@ function SessionCard({
   // Volume is the one number that compares two sessions of the same workout
   // honestly — more weight at fewer reps and less weight at more reps both
   // move it in the right direction.
+  // Drops count, the way the server counts them: they are work performed, and
+  // leaving them out made a drop-set session look lighter than a plain one.
   const volume = session.exercises.reduce(
     (sum, exercise) =>
       sum +
-      exercise.sets.reduce((s, set) => s + set.weight * set.reps, 0),
+      exercise.sets.reduce(
+        (s, set) =>
+          s +
+          set.weight * set.reps +
+          (set.drops?.reduce((d, drop) => d + drop.weight * drop.reps, 0) ?? 0),
+        0,
+      ),
     0,
   );
 
@@ -100,33 +179,34 @@ function SessionCard({
         {session.exercises.map((exercise, index) => (
           <li
             key={`${exercise.name}-${index}`}
-            className="rounded-lg bg-surface-container-low px-3 py-2"
+            className="rounded-lg bg-surface-container-low px-3 py-2.5"
           >
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <span className="text-sm font-semibold text-on-surface">
+            {/* Name on its own line, sets in a grid beneath. The two used to
+                share a wrapping flex row, which on a phone left the sets
+                ragged — two on one line, one alone on the next, aligned to
+                nothing. A grid gives every set the same box. */}
+            <div className="mb-2 flex items-baseline justify-between gap-2">
+              <span className="min-w-0 truncate text-sm font-semibold text-on-surface">
                 {exercise.name}
               </span>
-              <span className="flex flex-wrap gap-2">
-                {exercise.sets.map((set, setIndex) => (
-                  <span
-                    key={setIndex}
-                    className="rounded-md bg-surface-container-high px-2 py-0.5 text-xs font-bold tabular-nums text-on-surface"
-                  >
-                    {set.weight}
-                    {t('common.kg')} × {set.reps}
-                    {/* Subdued rather than a separate chip: RPE qualifies the
-                        set, it is not another number of the same kind. */}
-                    {set.rpe != null && (
-                      <span className="ms-1 font-normal text-on-surface-variant">
-                        @{set.rpe}
-                      </span>
-                    )}
-                  </span>
-                ))}
+              <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                {t('workout.setCountShort', { count: exercise.sets.length })}
               </span>
             </div>
+
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+              {exercise.sets.map((set, setIndex) => (
+                <SetChip
+                  key={setIndex}
+                  set={set}
+                  ordinal={setIndex + 1}
+                  kg={t('common.kg')}
+                />
+              ))}
+            </div>
+
             {exercise.notes && (
-              <p className="mt-1 text-xs text-on-surface-variant">
+              <p className="mt-2 text-xs text-on-surface-variant">
                 {exercise.notes}
               </p>
             )}
