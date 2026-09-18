@@ -981,7 +981,10 @@ export default function WorkoutSessionPage() {
         </label>
       </Container>
 
-      <RestTimer />
+      {/* The bar carries the session clock too. `startedAt` is a ref, but
+          every write to it is paired with a `setElapsed`, so the new value
+          reaches the bar in the same render as the one that changed it. */}
+      <RestTimer sessionStartedAt={startedAt.current} />
     </AppLayout>
   );
 }
