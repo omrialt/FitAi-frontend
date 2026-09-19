@@ -23,7 +23,10 @@ import { workoutSessionService } from '../services/workout-session.service';
 import { useAuthStore } from '../store/authStore';
 import { todaysPlanDayIndex } from '../utils/planDay';
 import type { TrainingDay, TrainingPlan } from '../types/training-plan.types';
-import type { SessionExercise } from '../types/workout-session.types';
+import type {
+  SessionExercise,
+  WorkoutSession,
+} from '../types/workout-session.types';
 
 /**
  * Live workout logger.
@@ -52,6 +55,20 @@ interface SetDraft {
   targetWeight: number;
   reps: string;
   weight: string;
+  /**
+   * Whether the number above is the user's own, typed into *this* row.
+   *
+   * A set carries its reps and weight down to the sets below it, so a value
+   * on screen is either something the user entered or something copied from
+   * the set above. These two say which, and nothing else can tell them apart:
+   * a copied "10" and a typed "10" are the same string. Only a copied value
+   * may be overwritten by a later edit further up.
+   *
+   * Optional because a draft stored before the carry-down existed has neither,
+   * which is a third state — "unknown" — and not the same as `false`.
+   */
+  repsTyped?: boolean;
+  weightTyped?: boolean;
   /** Kept as a string like the other inputs; '' means "not reported". */
   rpe: string;
   /**
@@ -79,9 +96,12 @@ function minutesSince(start: number): number {
 /**
  * A day of the plan as an unfilled sheet.
  *
- * The targets come across; nothing else does. The plan's numbers are
- * placeholders, never prefilled values — a prefilled input invites tapping
- * "done" through a workout you did not do.
+ * The targets come across as placeholders and nothing is filled in. What the
+ * user performed last time is filled in — by `withLastPerformance` below,
+ * once it has been fetched — but the plan's own numbers are never a value.
+ * The distinction is the point: last Tuesday's 80kg is a fact about this
+ * user, while the plan's 80kg is a wish someone typed into a form, and only
+ * one of the two is worth a tap on "done".
  */
 function blankDraft(day: TrainingDay): ExerciseDraft[] {
   return day.exercises.map((exercise) => ({
@@ -93,10 +113,129 @@ function blankDraft(day: TrainingDay): ExerciseDraft[] {
       targetWeight: set.targetWeight,
       reps: '',
       weight: '',
+      repsTyped: false,
+      weightTyped: false,
       rpe: '',
       done: false,
     })),
   }));
+}
+
+/**
+ * Reads a stored draft as sets the user typed themselves.
+ *
+ * Whatever a resumed draft carries, they put there — an hour ago, in the gym.
+ * Without this, the first edit made to a set above one of them would carry
+ * down over work that was actually performed. Drafts written before the
+ * carry-down existed have no flags at all, hence the `??`: a draft that does
+ * carry them is believed, including where it says a value was only copied.
+ */
+function claimTypedSets(exercises: ExerciseDraft[]): ExerciseDraft[] {
+  return exercises.map((exercise) => ({
+    ...exercise,
+    sets: exercise.sets.map((set) => ({
+      ...set,
+      repsTyped: set.repsTyped ?? set.reps !== '',
+      weightTyped: set.weightTyped ?? set.weight !== '',
+    })),
+  }));
+}
+
+/**
+ * The last time this day was trained, laid over the blank sheet.
+ *
+ * Starting a session used to mean retyping the numbers from the session
+ * before it — the same eight sets, usually the same weights, entered again
+ * from memory or from the history screen in another tab. The log already
+ * knows them.
+ *
+ * What comes across is reps and weight, and only that:
+ *
+ *   - nothing is marked done. The sheet says what you *did* last time, not
+ *     what you have done today, and one is not evidence of the other;
+ *   - nothing is typed, in the `repsTyped` sense, so a number carried in from
+ *     last week still yields to one typed today and carries down the sets the
+ *     same way a fresh entry does;
+ *   - no RPE. It is a rating of how a particular set felt on a particular
+ *     day, and copying one forward would be inventing it;
+ *   - no drops. A reduction is a decision made at the rack, with the bar
+ *     already loaded — pre-drawing the rows would be the screen deciding for
+ *     the user that the set ends in a drop;
+ *   - no notes. "Right shoulder twinged" belongs to the day it happened.
+ *
+ * Exercises are matched by name, so an exercise swapped out last session
+ * leaves today's prescribed one blank rather than inheriting the substitute's
+ * numbers. Sets are matched by position, and a session that ran past the
+ * plan — an extra set or two, which the logger allows — brings those extra
+ * sets with it rather than dropping them on the floor.
+ */
+function withLastPerformance(
+  sheet: ExerciseDraft[],
+  session: WorkoutSession,
+): ExerciseDraft[] {
+  const performed = new Map(session.exercises.map((e) => [e.name, e]));
+
+  return sheet.map((exercise) => {
+    const last = performed.get(exercise.name);
+    if (!last || last.sets.length === 0) return exercise;
+
+    const sets = exercise.sets.map((set, i) => {
+      // Only the sets actually completed are filed, so a day that stopped
+      // three sets in leaves the rest of the sheet on its placeholders.
+      const done = last.sets[i];
+      if (!done) return set;
+      return { ...set, reps: String(done.reps), weight: String(done.weight) };
+    });
+
+    for (let i = exercise.sets.length; i < last.sets.length; i += 1) {
+      const previous = sets[sets.length - 1];
+      sets.push({
+        // The plan has no target for a set it does not prescribe, so the row
+        // inherits the last prescribed one's — the same thing "add a set"
+        // does, and for the same reason.
+        targetReps: previous?.targetReps ?? last.sets[i].reps,
+        targetWeight: previous?.targetWeight ?? last.sets[i].weight,
+        reps: String(last.sets[i].reps),
+        weight: String(last.sets[i].weight),
+        repsTyped: false,
+        weightTyped: false,
+        rpe: '',
+        done: false,
+      });
+    }
+
+    return { ...exercise, sets };
+  });
+}
+
+/**
+ * Whether this sheet holds anything the user did, as opposed to anything it
+ * came up with on its own.
+ *
+ * Both callers turn on that distinction and neither can use "is there a
+ * number in this box": the boxes fill themselves now, from last week's
+ * session and from the set above. So the question is asked of the flags —
+ * which record authorship — and of the marks only a tap can leave.
+ *
+ * The crash net reads it to decide whether there is a workout worth saving,
+ * and would otherwise persist a sheet nobody has touched and offer to
+ * "resume" it tomorrow. The prefill reads it to know whether it is still
+ * allowed to write, and would otherwise be a late network response
+ * overwriting sets the user had already logged.
+ */
+function hasUserInput(draft: ExerciseDraft[], notes: string): boolean {
+  if (notes.trim()) return true;
+
+  return draft.some((exercise) =>
+    exercise.sets.some(
+      (set) =>
+        set.done ||
+        set.rpe ||
+        set.repsTyped ||
+        set.weightTyped ||
+        (set.drops?.length ?? 0) > 0,
+    ),
+  );
 }
 
 /**
@@ -154,7 +293,7 @@ const FIELD_CONTROL =
 export default function WorkoutSessionPage() {
   const { planId, dayIndex } = useParams<{ planId: string; dayIndex: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
 
   const [plan, setPlan] = useState<TrainingPlan | null>(null);
@@ -164,6 +303,17 @@ export default function WorkoutSessionPage() {
   const [saving, setSaving] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [barKg, setBarKg] = useState(readStoredBar);
+  /**
+   * The last session of the open day, tagged with the day it was fetched for.
+   *
+   * Tagged rather than bare because the day can change under it: the picker
+   * switches day while a request for the previous one is still in flight, and
+   * an answer about Upper A must never be laid over Lower.
+   */
+  const [lastSession, setLastSession] = useState<{
+    dayName: string;
+    session: WorkoutSession | null;
+  } | null>(null);
 
   const startedAt = useRef(Date.now());
   const dayIdx = Number(dayIndex);
@@ -215,6 +365,61 @@ export default function WorkoutSessionPage() {
   }, [planId]);
 
   /**
+   * The last time this day was trained, fetched alongside the plan.
+   *
+   * One document: the newest session filed against this plan under this day's
+   * name. Failing to get it is not an error the user needs to hear about —
+   * the sheet simply opens on its placeholders, which is how this screen
+   * worked before.
+   */
+  useEffect(() => {
+    const dayName = day?.dayName;
+    const userId = user?._id;
+    if (!planId || !dayName || !userId) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const [session] = await workoutSessionService.getByUserId(userId, {
+          planId,
+          dayName,
+          limit: 1,
+        });
+        if (!cancelled) setLastSession({ dayName, session: session ?? null });
+      } catch {
+        if (!cancelled) setLastSession({ dayName, session: null });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [planId, day?.dayName, user?._id]);
+
+  /**
+   * Lays it over the sheet, but only while the sheet is still the app's own.
+   *
+   * The guard is what makes this safe to run late. The request resolves
+   * whenever the network says so — after a resumed draft has been adopted,
+   * after the user has already logged two sets on a slow connection — and in
+   * both of those cases the numbers on screen are the user's and this has
+   * nothing to say.
+   */
+  useEffect(() => {
+    if (!day || !lastSession?.session) return;
+    if (lastSession.dayName !== day.dayName) return;
+
+    const { session } = lastSession;
+    setDraft((current) =>
+      hasUserInput(current, notes) ? current : withLastPerformance(current, session),
+    );
+    // `notes` is read, not tracked: typing a note should not re-run the
+    // prefill, and once there is one the guard above has already closed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastSession, day]);
+
+  /**
    * The blank sheet for whichever day is open, rebuilt when that changes.
    *
    * Derived during render rather than in an effect, for two reasons.
@@ -262,10 +467,10 @@ export default function WorkoutSessionPage() {
   useEffect(() => {
     if (loading) return;
 
-    const touched = draft.some((exercise) =>
-      exercise.sets.some((set) => set.done || set.reps || set.weight || set.rpe),
-    );
-    if (!touched && !notes.trim()) return;
+    // Deliberately not "is there a number on screen": the sheet fills itself
+    // from last week's session now, and persisting that would offer to resume
+    // a workout that never started.
+    if (!hasUserInput(draft, notes)) return;
 
     saveDraft({ startedAt: startedAt.current, notes, exercises: draft });
   }, [draft, notes, loading, saveDraft]);
@@ -303,7 +508,7 @@ export default function WorkoutSessionPage() {
   const resume = useCallback(() => {
     if (!pending) return;
 
-    setDraft(pending.exercises);
+    setDraft(claimTypedSets(pending.exercises));
     setNotes(pending.notes);
     startedAt.current = pending.startedAt;
     setElapsed(minutesSince(pending.startedAt));
@@ -317,19 +522,74 @@ export default function WorkoutSessionPage() {
     setElapsed(0);
   }, [clearDraft]);
 
+  /**
+   * Applies one field of one set, carrying reps and weight down the exercise.
+   *
+   * A straight set is the same two numbers three or four times over, and the
+   * logger used to ask for all of them. Typing the reps and the weight on the
+   * first set now fills the sets below it, so the rest of the exercise is one
+   * tap on "done" per set.
+   *
+   * The copy is a suggestion, never a record, and it stops — rather than
+   * skipping past — at the first set that is not merely following along. A
+   * set is following along while it shows the same number the edited set was
+   * showing a moment ago, and has neither been typed into nor finished.
+   *
+   * That comparison is what lets this coexist with the sheet arriving
+   * prefilled from the last session. Both cases fall out of the one rule:
+   *
+   *   - last week was 60, 60, 60 and today's first set becomes 65. Sets two
+   *     and three were showing what set one was showing, so they are a flat
+   *     block being restated, and they follow;
+   *   - last week was 60, 62.5, 65 and the first set becomes 62.5. Set two
+   *     was already showing something else — a ramp the user actually
+   *     performed — so the carry stops there and the ramp survives.
+   *
+   * Without it, one edit at the top of a prefilled exercise would flatten
+   * every number the last session recorded, which is real information and
+   * nowhere else on the screen.
+   *
+   * RPE deliberately does not carry: it is a rating of how a set felt, and
+   * the whole point of the number is that it changes as the exercise goes on.
+   */
   const patchSet = useCallback(
     (ei: number, si: number, patch: Partial<SetDraft>) => {
       setDraft((current) =>
-        current.map((exercise, i) =>
-          i !== ei
-            ? exercise
-            : {
-                ...exercise,
-                sets: exercise.sets.map((set, j) =>
-                  j !== si ? set : { ...set, ...patch },
-                ),
-              },
-        ),
+        current.map((exercise, i) => {
+          if (i !== ei) return exercise;
+
+          const sets = exercise.sets.map((set, j) =>
+            j !== si ? set : { ...set, ...patch },
+          );
+
+          if (patch.reps !== undefined) {
+            // What this set was showing before the keystroke: the number the
+            // sets below are following, if they are following anything.
+            const followed = exercise.sets[si].reps;
+            sets[si] = { ...sets[si], repsTyped: true };
+
+            for (let j = si + 1; j < sets.length; j += 1) {
+              const next = sets[j];
+              if (next.done || next.repsTyped || next.reps !== followed) break;
+              sets[j] = { ...next, reps: patch.reps };
+            }
+          }
+
+          if (patch.weight !== undefined) {
+            const followed = exercise.sets[si].weight;
+            sets[si] = { ...sets[si], weightTyped: true };
+
+            for (let j = si + 1; j < sets.length; j += 1) {
+              const next = sets[j];
+              if (next.done || next.weightTyped || next.weight !== followed) {
+                break;
+              }
+              sets[j] = { ...next, weight: patch.weight };
+            }
+          }
+
+          return { ...exercise, sets };
+        }),
       );
     },
     [],
@@ -446,14 +706,17 @@ export default function WorkoutSessionPage() {
         return {
           ...exercise,
           // An extra set inherits the last one's targets — the common case is
-          // "one more like that".
+          // "one more like that" — and, untyped, the numbers actually put in
+          // it, the same way a set carries down to the one below it.
           sets: [
             ...exercise.sets,
             {
               targetReps: last?.targetReps ?? 0,
               targetWeight: last?.targetWeight ?? 0,
-              reps: '',
-              weight: '',
+              reps: last?.reps ?? '',
+              weight: last?.weight ?? '',
+              repsTyped: false,
+              weightTyped: false,
               rpe: '',
               done: false,
             },
@@ -487,6 +750,25 @@ export default function WorkoutSessionPage() {
     },
     [],
   );
+
+  /**
+   * The line that says where the numbers on screen came from.
+   *
+   * Derived rather than stored, which gets three behaviours for free: it is
+   * shown exactly when the prefill was applied and not when it was declined
+   * for a resumed draft, it clears itself the moment the user types — at
+   * which point the numbers are theirs and the provenance is noise — and it
+   * cannot outlive a switch to a day that has never been trained.
+   */
+  const filledFrom = useMemo(() => {
+    if (!day || lastSession?.dayName !== day.dayName) return null;
+    if (!lastSession.session || hasUserInput(draft, notes)) return null;
+
+    return new Date(lastSession.session.performedAt).toLocaleDateString(
+      i18n.language,
+      { day: 'numeric', month: 'short' },
+    );
+  }, [lastSession, day, draft, notes, i18n.language]);
 
   const completedSets = useMemo(
     () => draft.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0),
@@ -651,6 +933,12 @@ export default function WorkoutSessionPage() {
               </span>
               {t('workout.setsDone')}
             </p>
+            {filledFrom && (
+              <p className="mt-1 flex items-center gap-1.5 text-xs font-bold text-on-surface-variant">
+                <StitchIcon name="history" size={14} />
+                {t('workout.filledFromLast', { date: filledFrom })}
+              </p>
+            )}
           </div>
 
           {/* One line on a phone would be four controls in 350px. Full width

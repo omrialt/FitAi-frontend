@@ -931,6 +931,7 @@
     "startSession": "Start today's workout",
     "elapsed": "{{minutes}} min",
     "setsDone": "sets logged",
+    "filledFromLast": "Filled in from {{date}}",
     "reps": "Reps",
     "weight": "Kg",
     "addSet": "Add a set",

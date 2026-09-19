@@ -961,6 +961,7 @@
     "startSession": "התחילו את האימון",
     "elapsed": "{{minutes}} דק'",
     "setsDone": "סטים תועדו",
+    "filledFromLast": "מולא מהאימון ב־{{date}}",
     "reps": "חזרות",
     "weight": "ק\"ג",
     "addSet": "הוספת סט",
