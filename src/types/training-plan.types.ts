@@ -55,6 +55,8 @@ export interface TrainingPlan {
   sharedWith: string[];
   sharedAccess: SharedAccessEntry[];
   activeByUsers: string[] | Array<{ _id: string; fullName: string; email: string }>;
+  /** A pattern kept in the trainer's library, on nobody's calendar. */
+  isTemplate?: boolean;
   // Clone tracking fields
   initialParentId?: string | null;
   syncWithParent?: boolean;
@@ -70,6 +72,26 @@ export interface TrainingPlan {
   estimatedCalories?: number;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/**
+ * What happened to one client in a bulk assignment.
+ *
+ * A row per client rather than one overall verdict: a batch where two of five
+ * clients were skipped is neither a success nor a failure, and the trainer has
+ * to be told which two.
+ */
+export type AssignmentStatus = 'created' | 'skipped' | 'failed';
+export type AssignmentReason =
+  | 'not_your_client'
+  | 'already_assigned'
+  | 'write_failed';
+
+export interface AssignmentResult {
+  clientId: string;
+  status: AssignmentStatus;
+  planId?: string;
+  reason?: AssignmentReason;
 }
 
 export interface TrainingPlansResponse {

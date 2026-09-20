@@ -14,7 +14,8 @@
     "workoutHistory": "Workout history",
     "more": "More",
     "clientOverview": "Client overview",
-    "messages": "Messages"
+    "messages": "Messages",
+    "planLibrary": "Plan library"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -1248,5 +1249,37 @@
     "saved": "Note saved",
     "saveFailed": "The note was not saved. Your text is still in the box.",
     "loadFailed": "Could not load the note"
+  },
+  "planLibrary": {
+    "pageTitle": "Plan library",
+    "pageSubtitle": "One template, ten clients — without writing it out each time",
+    "saveAsTemplate": "Save a plan as a template",
+    "pickPlan": "Which plan",
+    "pickPlanPlaceholder": "Pick an existing plan",
+    "templateTitle": "Template name",
+    "templateTitleHint": "Leave empty to keep the original plan title",
+    "saved": "Template saved",
+    "saveFailed": "Could not save the template",
+    "loadFailed": "Could not load the library",
+    "loadPlansFailed": "Could not load your plans",
+    "empty": "The library is empty. Save an existing plan as a template to start.",
+    "assign": "Assign to clients",
+    "assignTitle": "Assign a template",
+    "pickClients": "Clients",
+    "pickClientsPlaceholder": "Pick clients from the list",
+    "startDate": "Start date",
+    "startDateHint": "Optional. Without one, the plan is created with no start date.",
+    "assignFailed": "The assignment failed",
+    "assignSummary": "{{created}} of {{total}} selected clients got the plan",
+    "status": {
+      "created": "Created",
+      "skipped": "Skipped",
+      "failed": "Failed"
+    },
+    "reason": {
+      "not_your_client": "Not your client",
+      "already_assigned": "Already assigned",
+      "write_failed": "Save failed"
+    }
   }
 }

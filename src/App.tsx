@@ -21,7 +21,8 @@ import {
   WorkoutHistoryPage,
   ClientDetailPage,
   TrainerDashboardPage,
-  MessagesPage
+  MessagesPage,
+  PlanLibraryPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import LogMealPage from './pages/LogMealPage';
@@ -171,6 +172,16 @@ function App() {
         element={
           <ProtectedRoute roles={["trainer", "admin"]}>
             <ClientDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* The trainer's template library and bulk assignment. */}
+      <Route
+        path="/plan-library"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <PlanLibraryPage />
           </ProtectedRoute>
         }
       />

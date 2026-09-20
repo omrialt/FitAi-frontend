@@ -14,7 +14,8 @@
     "workoutHistory": "יומן אימונים",
     "more": "עוד",
     "clientOverview": "סקירת מתאמנים",
-    "messages": "הודעות"
+    "messages": "הודעות",
+    "planLibrary": "ספריית תוכניות"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -1288,5 +1289,37 @@
     "saved": "ההערה נשמרה",
     "saveFailed": "ההערה לא נשמרה. הטקסט נשאר בתיבה.",
     "loadFailed": "לא ניתן לטעון את ההערה"
+  },
+  "planLibrary": {
+    "pageTitle": "ספריית תוכניות",
+    "pageSubtitle": "תבנית אחת, עשרה מתאמנים — בלי לכתוב אותה מחדש בכל פעם",
+    "saveAsTemplate": "שמירת תוכנית כתבנית",
+    "pickPlan": "איזו תוכנית",
+    "pickPlanPlaceholder": "בחרו תוכנית קיימת",
+    "templateTitle": "שם התבנית",
+    "templateTitleHint": "אם תשאירו ריק, יישמר שם התוכנית המקורית",
+    "saved": "התבנית נשמרה",
+    "saveFailed": "לא ניתן לשמור את התבנית",
+    "loadFailed": "לא ניתן לטעון את הספרייה",
+    "loadPlansFailed": "לא ניתן לטעון את התוכניות שלך",
+    "empty": "הספרייה ריקה. שמרו תוכנית קיימת כתבנית כדי להתחיל.",
+    "assign": "הקצאה למתאמנים",
+    "assignTitle": "הקצאת תבנית",
+    "pickClients": "מתאמנים",
+    "pickClientsPlaceholder": "בחרו מתאמנים מהרשימה",
+    "startDate": "תאריך התחלה",
+    "startDateHint": "לא חובה. אם לא תבחרו, התוכנית נוצרת בלי תאריך התחלה.",
+    "assignFailed": "ההקצאה נכשלה",
+    "assignSummary": "נוצרו {{created}} תוכניות מתוך {{total}} מתאמנים שנבחרו",
+    "status": {
+      "created": "נוצרה",
+      "skipped": "דולג",
+      "failed": "נכשל"
+    },
+    "reason": {
+      "not_your_client": "לא מתאמן שלך",
+      "already_assigned": "כבר הוקצתה",
+      "write_failed": "השמירה נכשלה"
+    }
   }
 }
