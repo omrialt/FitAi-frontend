@@ -20,7 +20,8 @@ import {
   WorkoutSessionPage,
   WorkoutHistoryPage,
   ClientDetailPage,
-  TrainerDashboardPage
+  TrainerDashboardPage,
+  MessagesPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import LogMealPage from './pages/LogMealPage';
@@ -170,6 +171,17 @@ function App() {
         element={
           <ProtectedRoute roles={["trainer", "admin"]}>
             <ClientDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Messaging. Open to every signed-in role: the client half of a
+          trainer↔client conversation has role "user". */}
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <MessagesPage />
           </ProtectedRoute>
         }
       />

@@ -13,7 +13,8 @@
     "myClients": "My Clients",
     "workoutHistory": "Workout history",
     "more": "More",
-    "clientOverview": "Client overview"
+    "clientOverview": "Client overview",
+    "messages": "Messages"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -1225,5 +1226,27 @@
       "deload_suggested": "Deload suggested",
       "no_active_plan": "No active plan"
     }
+  },
+  "messages": {
+    "pageTitle": "Messages",
+    "pageSubtitle": "Your conversation with your trainer or client",
+    "noThreads": "No active connection yet, so there is nobody to write to.",
+    "pickThread": "Pick a conversation from the list.",
+    "emptyThread": "Nothing has been written here yet.",
+    "noneYet": "No messages",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "sendFailed": "The message was not sent. Your text is still in the box.",
+    "loadFailed": "Could not load messages",
+    "messageClient": "Send a message"
+  },
+  "trainerNote": {
+    "title": "Private notes",
+    "privateBadge": "Private",
+    "privateExplainer": "Only you can see this. The client cannot.",
+    "placeholder": "Injuries, preferences, what worked and what did not…",
+    "saved": "Note saved",
+    "saveFailed": "The note was not saved. Your text is still in the box.",
+    "loadFailed": "Could not load the note"
   }
 }

@@ -13,7 +13,8 @@
     "myClients": "המתאמנים שלי",
     "workoutHistory": "יומן אימונים",
     "more": "עוד",
-    "clientOverview": "סקירת מתאמנים"
+    "clientOverview": "סקירת מתאמנים",
+    "messages": "הודעות"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -1265,5 +1266,27 @@
       "deload_suggested": "מומלץ דילוד",
       "no_active_plan": "אין תוכנית פעילה"
     }
+  },
+  "messages": {
+    "pageTitle": "הודעות",
+    "pageSubtitle": "שיחה בינך לבין המאמן או המתאמן שלך",
+    "noThreads": "אין לך עדיין חיבור פעיל, ולכן אין עם מי להתכתב.",
+    "pickThread": "בחר שיחה מהרשימה.",
+    "emptyThread": "עוד לא נכתבה כאן הודעה.",
+    "noneYet": "אין הודעות",
+    "placeholder": "כתוב הודעה…",
+    "send": "שליחה",
+    "sendFailed": "ההודעה לא נשלחה. הטקסט נשאר בתיבה.",
+    "loadFailed": "לא ניתן לטעון את ההודעות",
+    "messageClient": "שליחת הודעה"
+  },
+  "trainerNote": {
+    "title": "הערות פרטיות",
+    "privateBadge": "פרטי",
+    "privateExplainer": "רק אתה רואה את זה. המתאמן לא.",
+    "placeholder": "פציעות, העדפות, מה עבד ומה לא…",
+    "saved": "ההערה נשמרה",
+    "saveFailed": "ההערה לא נשמרה. הטקסט נשאר בתיבה.",
+    "loadFailed": "לא ניתן לטעון את ההערה"
   }
 }

@@ -34,6 +34,7 @@ import {
   IconUsers,
   IconUsersGroup,
   IconActivityHeartbeat,
+  IconMessage,
   IconHeartRateMonitor,
   IconHistory,
 } from "@tabler/icons-react";
@@ -41,6 +42,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
+import { useUnreadMessagesStore } from "../store/unreadMessagesStore";
 import { usePendingInvitesStore } from "../store/pendingInvitesStore";
 import { MobileBottomNav } from "./MobileBottomNav";
 import type { UserRole } from "../types/auth.types";
@@ -90,6 +92,11 @@ const getNavigationItems = (
         icon: <IconHistory size={20} stroke={1.5} />,
         label: "nav.workoutHistory",
         path: "/workout-history",
+      },
+      {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
@@ -143,6 +150,11 @@ const getNavigationItems = (
         path: "/workout-history",
       },
       {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
+      },
+      {
         icon: <IconApple size={20} stroke={1.5} />,
         label: "nav.nutritionPlans",
         primary: true,
@@ -186,6 +198,11 @@ const getNavigationItems = (
         icon: <IconActivityHeartbeat size={20} stroke={1.5} />,
         label: "nav.clientOverview",
         path: "/clients/overview",
+      },
+      {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,
@@ -233,16 +250,30 @@ export function AppLayout({ children }: AppLayoutProps) {
   const refreshPendingInvites = usePendingInvitesStore((state) => state.refresh);
   const clearPendingInvites = usePendingInvitesStore((state) => state.clear);
 
+  // Unread messages, surfaced as a badge on the Messages nav row.
+  const unreadMessages = useUnreadMessagesStore((state) => state.count);
+  const refreshUnread = useUnreadMessagesStore((state) => state.refresh);
+  const clearUnread = useUnreadMessagesStore((state) => state.clear);
+
   // Keyed on the user id, not the `user` object: an unrelated profile edit
   // (avatar, name) changes that object's identity and would otherwise refetch.
   const userId = user?._id;
   useEffect(() => {
     if (isAuthenticated && userId) {
       refreshPendingInvites();
+      refreshUnread();
     } else {
       clearPendingInvites();
+      clearUnread();
     }
-  }, [isAuthenticated, userId, refreshPendingInvites, clearPendingInvites]);
+  }, [
+    isAuthenticated,
+    userId,
+    refreshPendingInvites,
+    clearPendingInvites,
+    refreshUnread,
+    clearUnread,
+  ]);
 
   // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
@@ -459,6 +490,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <Text size="sm" fw={500}>
                       {item.label}
                     </Text>
+                    {item.path === "/messages" && unreadMessages > 0 && (
+                      <Badge size="sm" color="indigo" circle>
+                        {unreadMessages}
+                      </Badge>
+                    )}
                   </Group>
                 </UnstyledButton>
               );
