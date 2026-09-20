@@ -12,7 +12,8 @@
     "users": "Users",
     "myClients": "My Clients",
     "workoutHistory": "Workout history",
-    "more": "More"
+    "more": "More",
+    "clientOverview": "Client overview"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -1196,5 +1197,33 @@
     "addWholeMeal": "Whole meal",
     "addItem": "Add {{name}}",
     "itemsAndCalories": "{{count}} items · {{calories}} kcal"
+  },
+  "trainerDashboard": {
+    "pageTitle": "Client overview",
+    "pageSubtitle": "Who needs you this week — from what actually happened, not a guess",
+    "refresh": "Refresh",
+    "needsAttention": "Needs attention",
+    "allQuiet": "No client needs attention right now.",
+    "quietCount_one": "1 client with no alerts",
+    "quietCount_other": "{{count}} clients with no alerts",
+    "noClients": "No connected clients yet. Invite one to see the overview.",
+    "loadFailed": "Could not load the client overview",
+    "lastWorkout": "Last workout",
+    "sessions30": "Sessions in 30 days",
+    "adherence": "Adherence",
+    "weight": "Weight",
+    "kg": "kg",
+    "never": "Never",
+    "daysAgo_one": "1 day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "openClient": "Open {{name}}",
+    "alerts": {
+      "missed_workouts": "Missed workouts",
+      "never_trained": "Never trained",
+      "weight_stalled": "Weight stalled",
+      "no_measurements": "No measurements",
+      "deload_suggested": "Deload suggested",
+      "no_active_plan": "No active plan"
+    }
   }
 }

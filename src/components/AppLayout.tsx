@@ -33,6 +33,7 @@ import {
   IconCalendar,
   IconUsers,
   IconUsersGroup,
+  IconActivityHeartbeat,
   IconHeartRateMonitor,
   IconHistory,
 } from "@tabler/icons-react";
@@ -126,6 +127,11 @@ const getNavigationItems = (
         path: "/clients",
       },
       {
+        icon: <IconActivityHeartbeat size={20} stroke={1.5} />,
+        label: "nav.clientOverview",
+        path: "/clients/overview",
+      },
+      {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
         primary: true,
@@ -175,6 +181,11 @@ const getNavigationItems = (
         label: "nav.myClients",
         primary: true,
         path: "/clients",
+      },
+      {
+        icon: <IconActivityHeartbeat size={20} stroke={1.5} />,
+        label: "nav.clientOverview",
+        path: "/clients/overview",
       },
       {
         icon: <IconBarbell size={20} stroke={1.5} />,

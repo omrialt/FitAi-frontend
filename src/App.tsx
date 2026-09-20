@@ -19,7 +19,8 @@ import {
   VerifyEmailPage,
   WorkoutSessionPage,
   WorkoutHistoryPage,
-  ClientDetailPage
+  ClientDetailPage,
+  TrainerDashboardPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import LogMealPage from './pages/LogMealPage';
@@ -146,6 +147,18 @@ function App() {
         element={
           <ProtectedRoute>
             <WorkoutHistoryPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* The roster overview. A static segment outranks the `:clientId`
+          route below it in React Router's matcher, so "overview" is never
+          read as a client id. */}
+      <Route
+        path="/clients/overview"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <TrainerDashboardPage />
           </ProtectedRoute>
         }
       />

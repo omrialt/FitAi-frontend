@@ -12,7 +12,8 @@
     "users": "משתמשים",
     "myClients": "המתאמנים שלי",
     "workoutHistory": "יומן אימונים",
-    "more": "עוד"
+    "more": "עוד",
+    "clientOverview": "סקירת מתאמנים"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -1232,5 +1233,37 @@
     "addWholeMeal": "כל הארוחה",
     "addItem": "להוסיף {{name}}",
     "itemsAndCalories": "{{count}} פריטים · {{calories}} קלוריות"
+  },
+  "trainerDashboard": {
+    "pageTitle": "סקירת מתאמנים",
+    "pageSubtitle": "מי צריך אותך השבוע — לפי מה שקרה בפועל, לא לפי ניחוש",
+    "refresh": "רענון",
+    "needsAttention": "דורש התייחסות",
+    "allQuiet": "אף מתאמן לא דורש התייחסות כרגע.",
+    "quietCount_one": "מתאמן אחד ללא התראות",
+    "quietCount_other": "{{count}} מתאמנים ללא התראות",
+    "quietCount_two": "{{count}} מתאמנים ללא התראות",
+    "quietCount_many": "{{count}} מתאמנים ללא התראות",
+    "noClients": "אין לך עדיין מתאמנים מחוברים. הזמן מתאמן כדי לראות את הסקירה.",
+    "loadFailed": "לא ניתן לטעון את סקירת המתאמנים",
+    "lastWorkout": "אימון אחרון",
+    "sessions30": "אימונים ב-30 יום",
+    "adherence": "דבקות",
+    "weight": "משקל",
+    "kg": "ק\"ג",
+    "never": "מעולם לא",
+    "daysAgo_one": "לפני יום",
+    "daysAgo_other": "לפני {{count}} ימים",
+    "daysAgo_two": "לפני יומיים",
+    "daysAgo_many": "לפני {{count}} ימים",
+    "openClient": "פתיחת הכרטיס של {{name}}",
+    "alerts": {
+      "missed_workouts": "לא התאמן",
+      "never_trained": "מעולם לא התאמן",
+      "weight_stalled": "המשקל נתקע",
+      "no_measurements": "אין מדידות",
+      "deload_suggested": "מומלץ דילוד",
+      "no_active_plan": "אין תוכנית פעילה"
+    }
   }
 }
