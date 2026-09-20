@@ -21,6 +21,7 @@ import { AppLayout } from '../components/AppLayout';
 import { MessageThread } from '../components/messages/MessageThread';
 import messageService from '../services/message.service';
 import { useAuthStore } from '../store/authStore';
+import { useUnreadMessagesStore } from '../store/unreadMessagesStore';
 import type { Message, ThreadSummary } from '../types/message.types';
 
 /** How often an open thread asks for what it has not seen. */
@@ -43,6 +44,9 @@ export default function MessagesPage() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
+  // The nav badge lives in AppLayout, a different subtree — without this it
+  // keeps claiming unread mail while the user is reading it.
+  const refreshUnread = useUnreadMessagesStore((state) => state.refresh);
 
   const [threads, setThreads] = useState<ThreadSummary[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -83,7 +87,7 @@ export default function MessagesPage() {
         setMessages(thread);
         newestRef.current = thread.at(-1)?.createdAt ?? null;
         await messageService.markRead(otherUserId);
-        await loadThreads();
+        await Promise.all([loadThreads(), refreshUnread()]);
       } catch {
         toast.error(t('messages.loadFailed'));
         setMessages([]);
@@ -91,7 +95,7 @@ export default function MessagesPage() {
         setLoadingThread(false);
       }
     },
-    [t, loadThreads],
+    [t, loadThreads, refreshUnread],
   );
 
   useEffect(() => {
@@ -119,7 +123,7 @@ export default function MessagesPage() {
         setMessages((current) => [...current, ...fresh]);
         newestRef.current = fresh.at(-1)?.createdAt ?? newestRef.current;
         await messageService.markRead(selected);
-        await loadThreads();
+        await Promise.all([loadThreads(), refreshUnread()]);
       } catch {
         // A failed poll is not worth a toast every fifteen seconds; the next
         // one will pick the messages up.
@@ -128,7 +132,7 @@ export default function MessagesPage() {
 
     const id = window.setInterval(tick, POLL_MS);
     return () => window.clearInterval(id);
-  }, [selected, loadThreads]);
+  }, [selected, loadThreads, refreshUnread]);
 
   const handleSend = useCallback(
     async (body: string): Promise<boolean> => {
