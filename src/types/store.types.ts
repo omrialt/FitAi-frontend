@@ -27,6 +27,16 @@ export interface PendingInvitesStore {
   clear: () => void;
 }
 
+export interface UnreadMessagesStore {
+  /** Messages addressed to the current user that they have not opened. */
+  count: number;
+
+  // Actions
+  setCount: (count: number) => void;
+  refresh: () => Promise<void>;
+  clear: () => void;
+}
+
 export interface UIStore {
   // Modals
   activeModal: string | null;

@@ -12,7 +12,10 @@
     "users": "Users",
     "myClients": "My Clients",
     "workoutHistory": "Workout history",
-    "more": "More"
+    "more": "More",
+    "clientOverview": "Client overview",
+    "messages": "Messages",
+    "planLibrary": "Plan library"
   },
   "clients": {
     "pageTitle": "My Clients",
@@ -1196,5 +1199,87 @@
     "addWholeMeal": "Whole meal",
     "addItem": "Add {{name}}",
     "itemsAndCalories": "{{count}} items · {{calories}} kcal"
+  },
+  "trainerDashboard": {
+    "pageTitle": "Client overview",
+    "pageSubtitle": "Who needs you this week — from what actually happened, not a guess",
+    "refresh": "Refresh",
+    "needsAttention": "Needs attention",
+    "allQuiet": "No client needs attention right now.",
+    "quietCount_one": "1 client with no alerts",
+    "quietCount_other": "{{count}} clients with no alerts",
+    "noClients": "No connected clients yet. Invite one to see the overview.",
+    "loadFailed": "Could not load the client overview",
+    "lastWorkout": "Last workout",
+    "sessions30": "Sessions in 30 days",
+    "adherence": "Adherence",
+    "weight": "Weight",
+    "kg": "kg",
+    "never": "Never",
+    "daysAgo_one": "1 day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "openClient": "Open {{name}}",
+    "alerts": {
+      "missed_workouts": "Missed workouts",
+      "never_trained": "Never trained",
+      "weight_stalled": "Weight stalled",
+      "no_measurements": "No measurements",
+      "deload_suggested": "Deload suggested",
+      "no_active_plan": "No active plan"
+    }
+  },
+  "messages": {
+    "pageTitle": "Messages",
+    "pageSubtitle": "Your conversation with your trainer or client",
+    "noThreads": "No active connection yet, so there is nobody to write to.",
+    "pickThread": "Pick a conversation from the list.",
+    "emptyThread": "Nothing has been written here yet.",
+    "noneYet": "No messages",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "sendFailed": "The message was not sent. Your text is still in the box.",
+    "loadFailed": "Could not load messages",
+    "messageClient": "Send a message"
+  },
+  "trainerNote": {
+    "title": "Private notes",
+    "privateBadge": "Private",
+    "privateExplainer": "Only you can see this. The client cannot.",
+    "placeholder": "Injuries, preferences, what worked and what did not…",
+    "saved": "Note saved",
+    "saveFailed": "The note was not saved. Your text is still in the box.",
+    "loadFailed": "Could not load the note"
+  },
+  "planLibrary": {
+    "pageTitle": "Plan library",
+    "pageSubtitle": "One template, ten clients — without writing it out each time",
+    "saveAsTemplate": "Save a plan as a template",
+    "pickPlan": "Which plan",
+    "pickPlanPlaceholder": "Pick an existing plan",
+    "templateTitle": "Template name",
+    "templateTitleHint": "Leave empty to keep the original plan title",
+    "saved": "Template saved",
+    "saveFailed": "Could not save the template",
+    "loadFailed": "Could not load the library",
+    "loadPlansFailed": "Could not load your plans",
+    "empty": "The library is empty. Save an existing plan as a template to start.",
+    "assign": "Assign to clients",
+    "assignTitle": "Assign a template",
+    "pickClients": "Clients",
+    "pickClientsPlaceholder": "Pick clients from the list",
+    "startDate": "Start date",
+    "startDateHint": "Optional. Without one, the plan is created with no start date.",
+    "assignFailed": "The assignment failed",
+    "assignSummary": "{{created}} of {{total}} selected clients got the plan",
+    "status": {
+      "created": "Created",
+      "skipped": "Skipped",
+      "failed": "Failed"
+    },
+    "reason": {
+      "not_your_client": "Not your client",
+      "already_assigned": "Already assigned",
+      "write_failed": "Save failed"
+    }
   }
 }
