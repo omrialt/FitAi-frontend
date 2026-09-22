@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/AppLayout';
 import { AppBreadcrumbs } from '../components/common/AppBreadcrumbs';
 import { StitchIcon } from '../components/common/StitchIcon';
+import { WeightReps } from '../components/common/WeightReps';
 import { physicalDataService } from '../services/physical-data.service';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
@@ -389,12 +390,11 @@ export default function ClientDetailPage() {
                     <span className="truncate text-sm font-semibold text-on-surface">
                       {best.exercise}
                     </span>
-                    <span className="shrink-0 text-sm font-black tabular-nums text-on-surface">
-                      {best.weight}
-                      <span className="text-on-surface-variant">
-                        {t('common.kg')} × {best.reps}
-                      </span>
-                    </span>
+                    <WeightReps
+                      weight={best.weight}
+                      reps={best.reps}
+                      className="shrink-0 text-sm font-black text-on-surface"
+                    />
                   </li>
                 ))}
               </ul>
