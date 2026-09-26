@@ -45,7 +45,7 @@ vi.mock('../services/training-plan.service', () => ({
 }));
 
 vi.mock('../services/workout-session.service', () => ({
-  workoutSessionService: { create: vi.fn() },
+  workoutSessionService: { create: vi.fn(), getByUserId: vi.fn() },
 }));
 
 vi.mock('../services/progress-stats.service', () => ({
@@ -148,6 +148,9 @@ describe('WorkoutSessionPage', () => {
     vi.mocked(trainingPlanService.getById).mockResolvedValue(
       PLAN as unknown as Awaited<ReturnType<typeof trainingPlanService.getById>>,
     );
+    // No history by default: every test that predates the prefill expects the
+    // sheet to open empty.
+    vi.mocked(workoutSessionService.getByUserId).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -353,6 +356,320 @@ describe('WorkoutSessionPage', () => {
     fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":2/));
 
     expect(screen.getByText(/2\/2/)).toBeInTheDocument();
+  });
+
+  /**
+   * Carrying reps and weight down the exercise.
+   *
+   * The inputs have no accessible name of their own — the caption sits in the
+   * wrapping label and reads the same on every row — so they are picked out
+   * by their placeholder, which is the set's own target. Bench Press targets
+   * 8 reps on both sets and 60kg then 62.5kg, which makes the reps inputs an
+   * ordered pair and each weight input unique.
+   */
+  describe('carrying numbers down the sets', () => {
+    const repsInputs = () =>
+      screen.getAllByPlaceholderText('8') as HTMLInputElement[];
+
+    it('copies reps and weight into the sets below', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.change(repsInputs()[0], { target: { value: '10' } });
+      fireEvent.change(screen.getByPlaceholderText('60'), {
+        target: { value: '65' },
+      });
+
+      expect(repsInputs()[1].value).toBe('10');
+      expect((screen.getByPlaceholderText('62.5') as HTMLInputElement).value).toBe(
+        '65',
+      );
+    });
+
+    it('follows a correction to the set above', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      // Typing "1" on the way to "12" must not strand the set below on "1".
+      fireEvent.change(repsInputs()[0], { target: { value: '1' } });
+      fireEvent.change(repsInputs()[0], { target: { value: '12' } });
+
+      expect(repsInputs()[1].value).toBe('12');
+    });
+
+    it('stops at a set the user typed into themselves', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.click(screen.getAllByText('workout.addSet')[0]);
+      // Set 2 is the user's own, and set 3 follows it rather than set 1.
+      fireEvent.change(repsInputs()[1], { target: { value: '6' } });
+      fireEvent.change(repsInputs()[0], { target: { value: '12' } });
+
+      expect(repsInputs()[1].value).toBe('6');
+      expect(repsInputs()[2].value).toBe('6');
+      expect(repsInputs()[0].value).toBe('12');
+    });
+
+    it('leaves a set that is already done alone', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      // Marking done fills set 2 from its target: 8 reps.
+      fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":2/));
+      fireEvent.change(repsInputs()[0], { target: { value: '12' } });
+
+      expect(repsInputs()[1].value).toBe('8');
+    });
+
+    it('does not carry over sets restored from a draft', async () => {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          version: 1,
+          savedAt: Date.now(),
+          startedAt: Date.now() - 5 * 60_000,
+          notes: '',
+          exercises: [
+            {
+              name: 'Bench Press',
+              muscleGroup: 'chest',
+              sets: [
+                { targetReps: 8, targetWeight: 60, reps: '', weight: '', rpe: '', done: false },
+                { targetReps: 8, targetWeight: 62.5, reps: '5', weight: '70', rpe: '', done: false },
+              ],
+            },
+          ],
+        }),
+      );
+      renderPage();
+
+      fireEvent.click(await screen.findByText('workout.resumeAction'));
+      fireEvent.change(repsInputs()[0], { target: { value: '12' } });
+
+      // Written before the flags existed, so the numbers themselves are the
+      // evidence that a person put them there.
+      expect(repsInputs()[1].value).toBe('5');
+    });
+
+    it('starts an added set on the numbers of the one above it', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      fireEvent.change(repsInputs()[0], { target: { value: '10' } });
+      fireEvent.click(screen.getAllByText('workout.addSet')[0]);
+
+      expect(repsInputs()[2].value).toBe('10');
+    });
+  });
+
+  /**
+   * Opening the day on what happened last time.
+   *
+   * The plan prescribes 2 sets of Bench Press at 8 x 60 and 8 x 62.5; the
+   * sessions below are what the user is supposed to have actually done.
+   */
+  describe('the last session of this day', () => {
+    const repsInputs = () =>
+      screen.getAllByPlaceholderText('8') as HTMLInputElement[];
+    const lastSession = (
+      sets: { reps: number; weight: number }[],
+      name = 'Bench Press',
+    ) =>
+      vi.mocked(workoutSessionService.getByUserId).mockResolvedValue([
+        {
+          _id: 's-1',
+          performedAt: '2026-09-12T18:00:00.000Z',
+          dayName: 'Upper A',
+          exercises: [{ name, sets }],
+        },
+      ] as unknown as Awaited<
+        ReturnType<typeof workoutSessionService.getByUserId>
+      >);
+
+    it('asks for one session of exactly this plan day', async () => {
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await waitFor(() => {
+        expect(workoutSessionService.getByUserId).toHaveBeenCalledWith(
+          'user-1',
+          { planId: 'plan-1', dayName: 'Upper A', limit: 1 },
+        );
+      });
+    });
+
+    it('fills the sets in, without marking any of them done', async () => {
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 7, weight: 65 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await waitFor(() => expect(repsInputs()[0].value).toBe('9'));
+      expect(repsInputs()[1].value).toBe('7');
+      expect(
+        (screen.getByPlaceholderText('60') as HTMLInputElement).value,
+      ).toBe('65');
+      // Performed last week is not performed today.
+      expect(screen.getByText(/0\/2/)).toBeInTheDocument();
+    });
+
+    it('says where the numbers came from', async () => {
+      lastSession([{ reps: 9, weight: 65 }]);
+      renderPage();
+
+      expect(
+        await screen.findByText(/workout.filledFromLast/),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves an exercise the last session did not contain', async () => {
+      // A swap: last time this slot was an incline press.
+      lastSession([{ reps: 9, weight: 65 }], 'Incline Press');
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await waitFor(() =>
+        expect(workoutSessionService.getByUserId).toHaveBeenCalled(),
+      );
+      expect(repsInputs()[0].value).toBe('');
+    });
+
+    it('brings back a set performed beyond what the plan prescribes', async () => {
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 8, weight: 65 },
+        { reps: 6, weight: 65 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      // Three rows for a two-set day, and the counter agrees.
+      await waitFor(() => expect(repsInputs()).toHaveLength(3));
+      expect(repsInputs()[2].value).toBe('6');
+      expect(screen.getByText(/0\/3/)).toBeInTheDocument();
+    });
+
+    it('does not persist a sheet the user has not touched', async () => {
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 7, weight: 65 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[0].value).toBe('9'));
+
+      // The crash net writes 400ms after a change. Numbers that arrived on
+      // their own are not a workout in progress, and saving them would offer
+      // to "resume" a session nobody started.
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
+    });
+
+    it('logs only the sets that were marked done', async () => {
+      vi.mocked(workoutSessionService.create).mockResolvedValue(
+        {} as unknown as Awaited<
+          ReturnType<typeof workoutSessionService.create>
+        >,
+      );
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 7, weight: 65 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[0].value).toBe('9'));
+
+      fireEvent.click(screen.getByLabelText(/workout.markSetDone.*"number":1/));
+      fireEvent.click(screen.getByText('workout.finish'));
+
+      await waitFor(() => {
+        expect(workoutSessionService.create).toHaveBeenCalled();
+      });
+      const [payload] = vi.mocked(workoutSessionService.create).mock.calls[0];
+      expect(payload.exercises[0].sets).toEqual([
+        expect.objectContaining({ reps: 9, weight: 65 }),
+      ]);
+    });
+
+    it('yields to a draft the user resumed', async () => {
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 7, weight: 65 },
+      ]);
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          version: 1,
+          savedAt: Date.now(),
+          startedAt: Date.now() - 4 * 60_000,
+          notes: '',
+          exercises: [
+            {
+              name: 'Bench Press',
+              sets: [
+                { targetReps: 8, targetWeight: 60, reps: '5', weight: '80', repsTyped: true, weightTyped: true, rpe: '', done: true },
+                { targetReps: 8, targetWeight: 62.5, reps: '', weight: '', rpe: '', done: false },
+              ],
+            },
+          ],
+        }),
+      );
+      renderPage();
+
+      fireEvent.click(await screen.findByText('workout.resumeAction'));
+      await waitFor(() =>
+        expect(workoutSessionService.getByUserId).toHaveBeenCalled(),
+      );
+
+      // The workout in progress stands, and the provenance line with it.
+      expect(repsInputs()[0].value).toBe('5');
+      expect(
+        screen.queryByText(/workout.filledFromLast/),
+      ).not.toBeInTheDocument();
+    });
+
+    /**
+     * Where the prefill meets the carry-down. A set follows the one above it
+     * only while it is showing what that set was showing.
+     */
+    it('carries an edit across sets that repeat the same number', async () => {
+      lastSession([
+        { reps: 8, weight: 60 },
+        { reps: 8, weight: 60 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[1].value).toBe('8'));
+
+      fireEvent.change(repsInputs()[0], { target: { value: '10' } });
+
+      expect(repsInputs()[1].value).toBe('10');
+    });
+
+    it('keeps a ramp the last session actually performed', async () => {
+      lastSession([
+        { reps: 8, weight: 60 },
+        { reps: 6, weight: 70 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[1].value).toBe('6'));
+
+      fireEvent.change(repsInputs()[0], { target: { value: '10' } });
+      fireEvent.change(screen.getByPlaceholderText('60'), {
+        target: { value: '65' },
+      });
+
+      // Set 2 was heavier for fewer reps last week — its own numbers, not a
+      // copy of set 1's, so nothing above it may overwrite them.
+      expect(repsInputs()[1].value).toBe('6');
+      expect(
+        (screen.getByPlaceholderText('62.5') as HTMLInputElement).value,
+      ).toBe('70');
+    });
   });
 
   /**

@@ -83,3 +83,12 @@ describe('MobileBottomNav', () => {
     expect(screen.getByText('nav.more').closest('button')).toHaveAttribute('aria-current', 'page');
   });
 });
+
+describe('MobileBottomNav badges', () => {
+  it('puts a dot on More when an overflow item has unread items', () => {
+    const withBadge = items.map((i) => (i.path === '/schedule' ? { ...i, badge: 3 } : i));
+    renderNav({ items: withBadge });
+    const more = screen.getByText('nav.more').closest('button')!;
+    expect(more.querySelector('.bottom-tab__dot')).not.toBeNull();
+  });
+});

@@ -71,6 +71,15 @@ export interface CreateWorkoutSessionDto {
 export interface ListWorkoutSessionsQuery {
   from?: string;
   to?: string;
+  /** Only sessions logged against this plan. */
+  planId?: string;
+  /**
+   * Only sessions logged under this day's name — what the logger asks for to
+   * find the last time the open day was trained. A name and not an index,
+   * because reordering the plan's days must not repoint the query at another
+   * workout.
+   */
+  dayName?: string;
   limit?: number;
 }
 

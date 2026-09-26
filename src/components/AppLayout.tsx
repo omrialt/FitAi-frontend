@@ -32,6 +32,9 @@ import {
   IconCalendar,
   IconUsers,
   IconUsersGroup,
+  IconActivityHeartbeat,
+  IconMessage,
+  IconTemplate,
   IconHeartRateMonitor,
   IconHistory,
   IconArrowLeft,
@@ -43,6 +46,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
+import { useUnreadMessagesStore } from "../store/unreadMessagesStore";
 import { usePendingInvitesStore } from "../store/pendingInvitesStore";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { isNavActive } from "../utils/navMatch";
@@ -95,6 +99,11 @@ const getNavigationItems = (
         path: "/workout-history",
       },
       {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
+      },
+      {
         icon: <IconApple size={20} stroke={1.5} />,
         label: "nav.nutritionPlans",
         primary: true,
@@ -129,6 +138,16 @@ const getNavigationItems = (
         path: "/clients",
       },
       {
+        icon: <IconActivityHeartbeat size={20} stroke={1.5} />,
+        label: "nav.clientOverview",
+        path: "/clients/overview",
+      },
+      {
+        icon: <IconTemplate size={20} stroke={1.5} />,
+        label: "nav.planLibrary",
+        path: "/plan-library",
+      },
+      {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.myTrainings",
         primary: true,
@@ -138,6 +157,11 @@ const getNavigationItems = (
         icon: <IconHistory size={20} stroke={1.5} />,
         label: "nav.workoutHistory",
         path: "/workout-history",
+      },
+      {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
       },
       {
         icon: <IconApple size={20} stroke={1.5} />,
@@ -180,6 +204,21 @@ const getNavigationItems = (
         path: "/clients",
       },
       {
+        icon: <IconActivityHeartbeat size={20} stroke={1.5} />,
+        label: "nav.clientOverview",
+        path: "/clients/overview",
+      },
+      {
+        icon: <IconTemplate size={20} stroke={1.5} />,
+        label: "nav.planLibrary",
+        path: "/plan-library",
+      },
+      {
+        icon: <IconMessage size={20} stroke={1.5} />,
+        label: "nav.messages",
+        path: "/messages",
+      },
+      {
         icon: <IconBarbell size={20} stroke={1.5} />,
         label: "nav.trainingPlans",
         primary: true,
@@ -217,7 +256,8 @@ const getNavigationItems = (
 const DETAIL_ROUTES: Array<{ match: RegExp; title: string; parent: string }> = [
   { match: /^\/training-plans\/[^/]+/, title: "trainings.titleAdmin", parent: "/my-trainings" },
   { match: /^\/nutrition-plans\/[^/]+/, title: "nutrition.titleAdmin", parent: "/nutrition-plans" },
-  { match: /^\/clients\/[^/]+/, title: "clients.pageTitle", parent: "/clients" },
+  // `/clients/overview` is its own nav destination, not a client.
+  { match: /^\/clients\/(?!overview(?:\/|$))[^/]+/, title: "clients.pageTitle", parent: "/clients" },
   { match: /^\/workout\//, title: "nav.myTrainings", parent: "/my-trainings" },
   { match: /^\/log-meal/, title: "mealLog.title", parent: "/" },
   { match: /^\/profile/, title: "layout.profile", parent: "/" },
@@ -241,16 +281,30 @@ export function AppLayout({ children }: AppLayoutProps) {
   const refreshPendingInvites = usePendingInvitesStore((state) => state.refresh);
   const clearPendingInvites = usePendingInvitesStore((state) => state.clear);
 
+  // Unread messages, surfaced as a badge on the Messages nav row.
+  const unreadMessages = useUnreadMessagesStore((state) => state.count);
+  const refreshUnread = useUnreadMessagesStore((state) => state.refresh);
+  const clearUnread = useUnreadMessagesStore((state) => state.clear);
+
   // Keyed on the user id, not the `user` object: an unrelated profile edit
   // (avatar, name) changes that object's identity and would otherwise refetch.
   const userId = user?._id;
   useEffect(() => {
     if (isAuthenticated && userId) {
       refreshPendingInvites();
+      refreshUnread();
     } else {
       clearPendingInvites();
+      clearUnread();
     }
-  }, [isAuthenticated, userId, refreshPendingInvites, clearPendingInvites]);
+  }, [
+    isAuthenticated,
+    userId,
+    refreshPendingInvites,
+    clearPendingInvites,
+    refreshUnread,
+    clearUnread,
+  ]);
 
   // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
@@ -261,9 +315,10 @@ export function AppLayout({ children }: AppLayoutProps) {
           ...item,
           label: t(item.label),
           shortLabel: i18n.exists(shortKey) ? t(shortKey) : undefined,
+          badge: item.path === "/messages" && unreadMessages > 0 ? unreadMessages : undefined,
         };
       }),
-    [isAuthenticated, user?.role, t, i18n]
+    [isAuthenticated, user?.role, t, i18n, unreadMessages]
   );
 
   // Handle logout
@@ -508,6 +563,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <Text size="sm" fw={500}>
                       {item.label}
                     </Text>
+                    {item.badge ? (
+                      <Badge size="sm" color="indigo" circle>
+                        {item.badge}
+                      </Badge>
+                    ) : null}
                   </Group>
                 </UnstyledButton>
               );

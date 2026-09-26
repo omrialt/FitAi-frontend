@@ -26,3 +26,6 @@ dist-ssr
 
 .vercel
 .env*
+
+# Local Claude Code state (demo-approval marker) — never committed
+.claude/

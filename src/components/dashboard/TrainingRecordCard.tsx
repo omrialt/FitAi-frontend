@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { WeightReps } from '../common/WeightReps';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
+import { WeightReps } from '../common/WeightReps';
 import type { WorkoutStats } from '../../types/workout-session.types';
 
 /**
@@ -135,11 +135,11 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
                       <span className="min-w-0 truncate text-sm font-semibold text-on-surface">
                         {best.exercise}
                       </span>
-                      <span className="flex shrink-0 items-center gap-1 text-sm font-black text-on-surface">
+                      <span className="flex shrink-0 items-center gap-1">
                         <WeightReps
                           weight={best.weight}
                           reps={best.reps}
-                          unitClassName="font-bold text-on-surface-variant"
+                          className="text-sm font-black text-on-surface"
                         />
                         <StitchIcon name="chevron_right" size={14} />
                       </span>

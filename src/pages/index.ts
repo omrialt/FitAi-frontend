@@ -22,3 +22,6 @@ export { default as VerifyEmailPage } from './VerifyEmailPage';
 export { default as WorkoutSessionPage } from './WorkoutSessionPage';
 export { default as WorkoutHistoryPage } from './WorkoutHistoryPage';
 export { default as ClientDetailPage } from './ClientDetailPage';
+export { default as TrainerDashboardPage } from './TrainerDashboardPage';
+export { default as MessagesPage } from './MessagesPage';
+export { default as PlanLibraryPage } from './PlanLibraryPage';

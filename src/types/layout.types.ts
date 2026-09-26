@@ -23,6 +23,8 @@ export interface NavItem {
    * the full `label`.
    */
   shortLabel?: string;
+  /** Unread count shown on the item (sidebar, bottom bar, More sheet). */
+  badge?: number;
 }
 
 export interface AppLayoutProps {

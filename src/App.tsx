@@ -19,7 +19,10 @@ import {
   VerifyEmailPage,
   WorkoutSessionPage,
   WorkoutHistoryPage,
-  ClientDetailPage
+  ClientDetailPage,
+  TrainerDashboardPage,
+  MessagesPage,
+  PlanLibraryPage
 } from "./pages";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import LogMealPage from './pages/LogMealPage';
@@ -150,6 +153,18 @@ function App() {
         }
       />
 
+      {/* The roster overview. A static segment outranks the `:clientId`
+          route below it in React Router's matcher, so "overview" is never
+          read as a client id. */}
+      <Route
+        path="/clients/overview"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <TrainerDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* A single client's data, read-only. The backend still enforces that
           the connection is accepted; this route only hides the entry point. */}
       <Route
@@ -157,6 +172,27 @@ function App() {
         element={
           <ProtectedRoute roles={["trainer", "admin"]}>
             <ClientDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* The trainer's template library and bulk assignment. */}
+      <Route
+        path="/plan-library"
+        element={
+          <ProtectedRoute roles={["trainer", "admin"]}>
+            <PlanLibraryPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Messaging. Open to every signed-in role: the client half of a
+          trainer↔client conversation has role "user". */}
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <MessagesPage />
           </ProtectedRoute>
         }
       />

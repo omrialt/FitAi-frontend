@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { WeightReps } from '../components/common/WeightReps';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Center, Loader } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -8,11 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/AppLayout';
 import { AppBreadcrumbs } from '../components/common/AppBreadcrumbs';
 import { StitchIcon } from '../components/common/StitchIcon';
+import { WeightReps } from '../components/common/WeightReps';
 import { physicalDataService } from '../services/physical-data.service';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
 import { workoutSessionService } from '../services/workout-session.service';
 import userService from '../services/user.service';
+import { TrainerNotePanel } from '../components/trainer/TrainerNotePanel';
 import type { User } from '../types/auth.types';
 import type { PhysicalData } from '../types/physical-data.types';
 import type { ProgressStats } from '../types/dashboard.types';
@@ -73,7 +74,7 @@ function Panel({
   title,
   children,
 }: {
-  icon: 'fitness_center' | 'scale' | 'history' | 'trending_up';
+  icon: 'fitness_center' | 'scale' | 'history' | 'trending_up' | 'edit';
   title: string;
   children: React.ReactNode;
 }) {
@@ -229,10 +230,21 @@ export default function ClientDetailPage() {
             {client?.fullName ?? t('common.unknown')}
           </h1>
           <p className="text-sm text-on-surface-variant">{client?.email}</p>
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-surface-container-high px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-            <StitchIcon name="visibility" size={12} />
-            {t('clients.readOnlyBadge')}
-          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="inline-flex items-center gap-1.5 rounded-md bg-surface-container-high px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+              <StitchIcon name="visibility" size={12} />
+              {t('clients.readOnlyBadge')}
+            </p>
+            {/* The one thing a trainer can write to the client from here. */}
+            <button
+              type="button"
+              onClick={() => navigate(`/messages?with=${clientId}`)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/20"
+            >
+              <StitchIcon name="mail" size={12} />
+              {t('messages.messageClient')}
+            </button>
+          </div>
         </header>
 
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -382,12 +394,19 @@ export default function ClientDetailPage() {
                       weight={best.weight}
                       reps={best.reps}
                       className="shrink-0 text-sm font-black text-on-surface"
-                      unitClassName="text-on-surface-variant"
                     />
                   </li>
                 ))}
               </ul>
             )}
+          </Panel>
+        </div>
+
+        {/* Private, and said so on screen: the first place in the app where one
+            user writes *about* another rather than to them. */}
+        <div className="mt-6">
+          <Panel icon="edit" title={t('trainerNote.title')}>
+            {clientId && <TrainerNotePanel clientId={clientId} />}
           </Panel>
         </div>
       </Container>

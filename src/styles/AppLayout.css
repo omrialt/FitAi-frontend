@@ -291,6 +291,18 @@
   white-space: nowrap;
 }
 
+.bottom-tab__icon { position: relative; }
+.bottom-tab__dot {
+  position: absolute;
+  top: 3px;
+  inset-inline-end: 14px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  border: 2px solid var(--color-surface-container-lowest);
+}
+
 .bottom-tab[data-active] { color: var(--color-primary); }
 .bottom-tab[data-active] .bottom-tab__icon {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);

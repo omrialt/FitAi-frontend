@@ -26,6 +26,11 @@ describe('isNavActive', () => {
     expect(isNavActive('/clients', '/clients/42')).toBe(true);
   });
 
+  it('lights only the nested destination, not its parent', () => {
+    expect(isNavActive('/clients/overview', '/clients/overview')).toBe(true);
+    expect(isNavActive('/clients', '/clients/overview')).toBe(false);
+  });
+
   it('does not match on a shared string prefix', () => {
     expect(isNavActive('/clients', '/clientsettings')).toBe(false);
   });

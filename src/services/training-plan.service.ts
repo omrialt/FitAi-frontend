@@ -1,5 +1,5 @@
 import api from './api';
-import type { TrainingPlan, PaginationParams, TrainingPlansResponse } from '../types/training-plan.types';
+import type { TrainingPlan, PaginationParams, TrainingPlansResponse, AssignmentResult } from '../types/training-plan.types';
 
 export const trainingPlanService = {
   // Get all training plans with pagination
@@ -89,5 +89,41 @@ export const trainingPlanService = {
   activate: async (planId: string): Promise<TrainingPlan> => {
     const response = await api.post(`/training-plans/${planId}/activate`);
     return response.data;
+  },
+
+  /** The trainer's own plan library — templates, not the periodization ones. */
+  getLibrary: async (): Promise<TrainingPlan[]> => {
+    const response = await api.get('/training-plans/library');
+    return response.data.data;
+  },
+
+  /** Copy an existing plan into the library. The original is untouched. */
+  saveAsTemplate: async (
+    planId: string,
+    title?: string,
+  ): Promise<TrainingPlan> => {
+    const response = await api.post(
+      `/training-plans/${planId}/save-as-template`,
+      title ? { title } : {},
+    );
+    return response.data.data;
+  },
+
+  /**
+   * One template, many clients.
+   *
+   * Resolves even when some clients were skipped — the per-row status is the
+   * answer, not an error. A 200 here does not mean every client got a plan.
+   */
+  assignToClients: async (
+    templateId: string,
+    clientIds: string[],
+    options: { startDate?: string; force?: boolean } = {},
+  ): Promise<AssignmentResult[]> => {
+    const response = await api.post(`/training-plans/${templateId}/assign`, {
+      clientIds,
+      ...options,
+    });
+    return response.data.data;
   },
 };

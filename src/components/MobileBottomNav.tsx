@@ -53,11 +53,16 @@ function Tab({
   label,
   active,
   onClick,
+  badge,
+  badgeLabel,
 }: {
   icon: React.ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;
+  /** Shows a dot on the icon; the count itself lives in the More sheet. */
+  badge?: boolean;
+  badgeLabel?: string;
 }) {
   return (
     <UnstyledButton
@@ -66,8 +71,12 @@ function Tab({
       className="bottom-tab"
       data-active={active || undefined}
     >
-      <span className="bottom-tab__icon" aria-hidden="true">{icon}</span>
+      <span className="bottom-tab__icon" aria-hidden="true">
+        {icon}
+        {badge && <span className="bottom-tab__dot" />}
+      </span>
       <span className="bottom-tab__label">{label}</span>
+      {badge && badgeLabel && <span className="sr-only">{badgeLabel}</span>}
     </UnstyledButton>
   );
 }
@@ -134,6 +143,8 @@ export function MobileBottomNav({
       label={item.shortLabel ?? item.label}
       active={active(item.path)}
       onClick={() => go(item.path)}
+      badge={!!item.badge}
+      badgeLabel={item.badge ? String(item.badge) : undefined}
     />
   ));
 
@@ -166,6 +177,9 @@ export function MobileBottomNav({
             label={t('nav.more')}
             // Profile is reached from the More sheet too, so it lights More up.
             active={overflow.some((i) => active(i.path)) || currentPath.startsWith('/profile')}
+            // Unread messages live in the sheet on phones; the dot says so.
+            badge={overflow.some((i) => !!i.badge)}
+            badgeLabel={String(overflow.reduce((n, i) => n + (i.badge ?? 0), 0))}
             onClick={() => setMoreOpen(true)}
           />
         )}
@@ -246,6 +260,11 @@ export function MobileBottomNav({
                 <Text size="sm" fw={on ? 700 : 500} style={{ flex: 1, textAlign: 'start' }}>
                   {item.label}
                 </Text>
+                {item.badge ? (
+                  <span className="min-w-6 h-6 px-1.5 rounded-full bg-primary text-on-primary text-xs font-bold grid place-items-center tabular-nums">
+                    {item.badge}
+                  </span>
+                ) : null}
               </UnstyledButton>
             );
           })}
