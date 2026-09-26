@@ -190,11 +190,11 @@ const ProfilePage: React.FC = () => {
 
   return (
     <AppLayout>
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto py-8">
+      <div>
+        <div className="max-w-5xl mx-auto py-4 md:py-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-black tracking-tight text-on-surface">
+          <div className="mb-5 md:mb-8">
+            <h1 className="font-bold text-on-surface">
               {t('profile.pageTitle')}
             </h1>
             <p className="mt-2 text-on-surface-variant">

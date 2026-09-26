@@ -94,21 +94,26 @@ export function QuickStatsCards({
   ];
 
   return (
-    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    // Phones: compact tiles, icon beside the figure, so all six fit in about
+    // one screen-third instead of three screen-heights of whitespace.
+    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
       {tiles.map((tile) => (
         <div
           key={tile.id}
-          className={`bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 transition-all ${tile.hover}`}
+          className={`bg-surface-container-lowest p-3 md:p-5 rounded-xl border border-outline-variant/30 transition-colors flex items-center gap-3 md:block ${tile.hover}`}
         >
           <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${tile.chip}`}
+            className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center md:mb-4 ${tile.chip}`}
+            aria-hidden="true"
           >
             <StitchIcon name={tile.icon} size={20} />
           </div>
-          <p className="text-2xl font-black text-on-surface">{tile.value}</p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-            {tile.label}
-          </p>
+          <div className="min-w-0">
+            <p className="stat-number text-2xl md:text-3xl text-on-surface">{tile.value}</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant leading-tight mt-0.5">
+              {tile.label}
+            </p>
+          </div>
         </div>
       ))}
     </section>

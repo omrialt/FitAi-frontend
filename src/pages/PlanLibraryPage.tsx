@@ -104,8 +104,9 @@ export default function PlanLibraryPage() {
   return (
     <AppLayout>
       <Container size="lg" py="xl">
-        <Group justify="space-between" align="flex-start" mb="lg" wrap="nowrap">
-          <Box>
+        {/* Phones: title block, then a full-width action (see MyClientsPage). */}
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <Box style={{ minWidth: 0 }}>
             <Title order={1}>{t('planLibrary.pageTitle')}</Title>
             <Text c="dimmed" mt={4}>
               {t('planLibrary.pageSubtitle')}
@@ -114,10 +115,11 @@ export default function PlanLibraryPage() {
           <Button
             leftSection={<IconTemplate size={18} />}
             onClick={openSave}
+            className="w-full shrink-0 sm:w-auto"
           >
             {t('planLibrary.saveAsTemplate')}
           </Button>
-        </Group>
+        </div>
 
         {loading ? (
           <Center py="xl">
@@ -131,9 +133,11 @@ export default function PlanLibraryPage() {
           <Stack gap="sm">
             {templates.map((template) => (
               <Card key={template._id} withBorder radius="md" padding="md">
-                <Group justify="space-between" wrap="nowrap" align="flex-start">
+                {/* Phones: details full width, actions as a two-up row below —
+                    beside the title they truncated it to a few letters. */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <Box style={{ minWidth: 0 }}>
-                    <Text fw={600} truncate>
+                    <Text fw={600} lineClamp={2}>
                       {template.title}
                     </Text>
                     <Text size="sm" c="dimmed" truncate>
@@ -150,10 +154,10 @@ export default function PlanLibraryPage() {
                       </Badge>
                     </Group>
                   </Box>
-                  <Group gap="xs" wrap="nowrap">
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
                     <Button
                       size="xs"
-                      variant="subtle"
+                      variant="light"
                       onClick={() => navigate(`/training-plans/${template._id}`)}
                     >
                       {t('common.view')}
@@ -165,8 +169,8 @@ export default function PlanLibraryPage() {
                     >
                       {t('planLibrary.assign')}
                     </Button>
-                  </Group>
-                </Group>
+                  </div>
+                </div>
               </Card>
             ))}
           </Stack>

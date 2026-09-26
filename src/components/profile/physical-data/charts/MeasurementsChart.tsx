@@ -69,20 +69,25 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
         <Paper p="md" withBorder>
           <Stack gap="sm">
             <Title order={4} size="h5">{t('physicalData.weightAndBodyFat')}</Title>
-            <Box style={{ width: '100%', height: 300 }}>
+            <Box style={{ width: '100%', height: 'clamp(220px, 55vw, 300px)' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={weightBodyFatData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <LineChart data={weightBodyFatData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" vertical={false} />
                     <XAxis
                       dataKey="date"
+                      minTickGap={16}
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: 'var(--color-chart-axis)', fontFamily: 'var(--font-mono)', fontSize: 10 }}
                     />
-                    {/* Left Y-axis: Weight (kg) */}
+                    {/* Left Y-axis: Weight (kg). Domains hug the data — the default
+                        0-based axis flattened an 80 kg trend into the top 15%. */}
                     <YAxis
                       yAxisId="left"
                       orientation="left"
+                      width={36}
+                      allowDecimals={false}
+                      domain={['dataMin - 2', 'dataMax + 2']}
                       label={{ value: t('common.kg'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'var(--color-chart-1)' } }}
                       tickLine={false}
                       axisLine={false}
@@ -93,6 +98,9 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
                       <YAxis
                         yAxisId="right"
                         orientation="right"
+                        width={32}
+                        allowDecimals={false}
+                        domain={['dataMin - 1', 'dataMax + 1']}
                         label={{ value: '%', angle: 90, position: 'insideRight', style: { fontSize: '11px', fill: 'var(--color-chart-2)' } }}
                         tickLine={false}
                         axisLine={false}
@@ -149,17 +157,21 @@ export function MeasurementsChart({ data }: MeasurementsChartProps) {
           <Paper p="md" withBorder>
             <Stack gap="sm">
               <Title order={4} size="h5">{t('physicalData.bodyMeasurements')}</Title>
-                <Box style={{ width: '100%', height: 300 }}>
+                <Box style={{ width: '100%', height: 'clamp(220px, 55vw, 300px)' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={measurementsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                    <LineChart data={measurementsData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" vertical={false} />
                       <XAxis
                       dataKey="date"
+                      minTickGap={16}
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: 'var(--color-chart-axis)', fontFamily: 'var(--font-mono)', fontSize: 10 }}
                     />
                       <YAxis
+                        width={36}
+                        allowDecimals={false}
+                        domain={['dataMin - 3', 'dataMax + 3']}
                         label={{ value: t('physicalData.cm'), angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'var(--color-chart-axis)' } }}
                         tickLine={false}
                         axisLine={false}

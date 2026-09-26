@@ -142,14 +142,14 @@ export default function LogMealPage() {
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="mb-4 flex items-center gap-1 text-sm font-bold text-primary"
+          className="mb-4 hidden md:flex items-center gap-1 text-sm font-bold text-primary"
         >
-          <StitchIcon name="chevron_right" size={16} />
+          <StitchIcon name="chevron_left" size={16} />
           {t('mealLog.backToDashboard')}
         </button>
 
         <header className="mb-6">
-          <h1 className="text-2xl font-black tracking-tight text-on-surface">
+          <h1 className="font-bold text-on-surface">
             {t('mealLog.title')}
           </h1>
           <p className="mt-1 text-sm text-on-surface-variant">

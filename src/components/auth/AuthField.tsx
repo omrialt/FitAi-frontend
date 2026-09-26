@@ -75,7 +75,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
               type="button"
               onClick={() => setRevealed((v) => !v)}
               aria-label={t(revealed ? 'auth.hidePassword' : 'auth.showPassword')}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
+              className="tap absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <StitchIcon name="visibility" size={20} />
             </button>
@@ -214,7 +214,7 @@ export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="relative flex items-center py-2">
       <div className="grow border-t border-outline-variant/30" />
-      <span className="shrink mx-4 font-mono text-[10.5px] uppercase tracking-[0.12em] text-on-surface-variant whitespace-nowrap">
+      <span className="shrink mx-4 font-mono text-xs uppercase tracking-[0.12em] text-on-surface-variant whitespace-nowrap">
         {label}
       </span>
       <div className="grow border-t border-outline-variant/30" />

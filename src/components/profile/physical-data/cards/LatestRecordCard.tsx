@@ -99,7 +99,7 @@ function MetricTile({
 }) {
   return (
     <div
-      className={`p-4 rounded-xl border border-outline-variant/10 ${
+      className={`p-3 sm:p-4 rounded-xl border border-outline-variant/30 min-w-0 ${
         accent ? 'bg-surface-container-low' : 'bg-surface-container-lowest'
       }`}
     >
@@ -141,8 +141,8 @@ export function LatestRecordCard({
     measurements && Object.values(measurements).some(Boolean);
 
   return (
-    <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
-      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+    <div className="bg-surface-container-lowest rounded-xl p-4 md:p-6 border border-outline-variant/30 shadow-sm">
+      <div className="flex items-center justify-between gap-2 mb-4 md:mb-6 flex-wrap">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">
           {t('physicalData.latestMetrics')}
         </h3>
@@ -151,14 +151,14 @@ export function LatestRecordCard({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {/* Weight */}
         <MetricTile
           icon="monitor_weight"
           chip="bg-primary/10 text-primary"
           label={t('physicalData.currentWeight')}
         >
-          <p className="text-3xl font-black text-on-surface leading-none">
+          <p className="stat-number text-3xl text-on-surface">
             {record.weightKg}
             <span className="text-base font-normal text-on-surface-variant ms-1">
               {t('common.kg')}
@@ -177,7 +177,7 @@ export function LatestRecordCard({
           chip="bg-secondary-container text-on-secondary-container"
           label={t('physicalData.bodyFatPct')}
         >
-          <p className="text-3xl font-black text-on-surface leading-none">
+          <p className="stat-number text-3xl text-on-surface">
             {record.bodyFatPercent ?? dash}
             {record.bodyFatPercent != null && (
               <span className="text-base font-normal text-on-surface-variant ms-1">%</span>
@@ -198,7 +198,7 @@ export function LatestRecordCard({
           chip="bg-tertiary-container text-on-tertiary-container"
           label={t('physicalData.bmiIndex')}
         >
-          <p className="text-3xl font-black text-on-surface leading-none">
+          <p className="stat-number text-3xl text-on-surface">
             {bmi?.bmi != null ? bmi.bmi.toFixed(1) : dash}
             {bmi?.bmi != null && (
               <span className="text-base font-normal text-on-surface-variant ms-1">
@@ -224,7 +224,7 @@ export function LatestRecordCard({
         >
           {muscleMassPct != null ? (
             <>
-              <p className="text-3xl font-black text-on-surface leading-none">
+              <p className="stat-number text-3xl text-on-surface">
                 {muscleMassPct}
                 <span className="text-base font-normal text-on-surface-variant ms-1">%</span>
               </p>

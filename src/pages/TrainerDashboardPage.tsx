@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  ActionIcon,
   Container,
   Stack,
   Group,
@@ -70,14 +71,27 @@ export default function TrainerDashboardPage() {
   return (
     <AppLayout>
       <Container size="lg" py="xl">
+        {/* Refresh is secondary: an icon beside the title on phones (the
+            labelled button clipped to "רע" there), the full button from sm. */}
         <Group justify="space-between" align="flex-start" mb="lg" wrap="nowrap">
-          <Box>
+          <Box style={{ minWidth: 0 }}>
             <Title order={1}>{t('trainerDashboard.pageTitle')}</Title>
             <Text c="dimmed" mt={4}>
               {t('trainerDashboard.pageSubtitle')}
             </Text>
           </Box>
+          <ActionIcon
+            hiddenFrom="sm"
+            variant="light"
+            size="xl"
+            onClick={load}
+            loading={loading}
+            aria-label={t('trainerDashboard.refresh')}
+          >
+            <IconRefresh size={20} />
+          </ActionIcon>
           <Button
+            visibleFrom="sm"
             variant="light"
             leftSection={<IconRefresh size={18} />}
             onClick={load}

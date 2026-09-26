@@ -220,13 +220,13 @@ export default function ClientDetailPage() {
           <button
             type="button"
             onClick={() => navigate('/clients')}
-            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
+            className="mb-4 hidden md:inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
           >
             <StitchIcon name="chevron_left" size={16} />
             {t('clients.backToClients')}
           </button>
 
-          <h1 className="text-2xl font-black tracking-tight text-on-surface">
+          <h1 className="font-bold text-on-surface">
             {client?.fullName ?? t('common.unknown')}
           </h1>
           <p className="text-sm text-on-surface-variant">{client?.email}</p>

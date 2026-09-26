@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Center, Loader, Alert } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { StitchIcon } from "../components/common/StitchIcon";
 import { toast } from "sonner";
@@ -50,7 +50,7 @@ export default function NutritionPlanDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
 
   // State
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
@@ -263,7 +263,7 @@ export default function NutritionPlanDetailsPage() {
               ]}
             />
 
-            <div className="mb-6">
+            <div className="hidden md:block mb-6">
               <button
                 type="button"
                 onClick={() => navigate("/nutrition-plans")}

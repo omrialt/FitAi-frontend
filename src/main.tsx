@@ -49,6 +49,8 @@ const brandIndigo: [
 ];
 
 const UI_FONT = 'Heebo, Rubik, ui-sans-serif, system-ui, sans-serif';
+// Barlow Condensed has no Hebrew cut; Hebrew headings fall through to Heebo.
+const DISPLAY_FONT = '"Barlow Condensed", Heebo, Rubik, ui-sans-serif, system-ui, sans-serif';
 
 const mantineTheme = createTheme({
   // Heebo leads: it has a real Hebrew cut, so the RTL half of the app is no
@@ -60,8 +62,14 @@ const mantineTheme = createTheme({
   primaryShade: { light: 6, dark: 4 },
   defaultRadius: 'md',
   headings: {
-    fontFamily: UI_FONT,
+    fontFamily: DISPLAY_FONT,
     fontWeight: '700',
+  },
+  // Mobile-first defaults: phones get the larger control size, and the
+  // (pointer: coarse) rules in theme.css lift the rest to 44px.
+  components: {
+    Button: { defaultProps: { size: 'md' } },
+    Drawer: { defaultProps: { radius: 'lg' } },
   },
 });
 

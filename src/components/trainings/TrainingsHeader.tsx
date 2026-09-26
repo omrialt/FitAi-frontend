@@ -17,7 +17,7 @@ export function TrainingsHeader({ onCreateNew }: TrainingsHeaderProps) {
   return (
     <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
       <div className="max-w-2xl">
-        <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+        <h1 className="font-bold text-on-surface mb-2">
           {isAdmin ? t('trainings.titleAdmin') : t('trainings.title')}
         </h1>
         <p className="text-on-surface-variant leading-relaxed">

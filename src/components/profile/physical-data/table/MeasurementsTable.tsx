@@ -51,7 +51,7 @@ export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableP
             type="button"
             title={t('physicalData.filter')}
             aria-label={t('physicalData.filter')}
-            className="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
           >
             <StitchIcon name="rebase" size={18} />
           </button>
@@ -59,14 +59,92 @@ export function MeasurementsTable({ data, onEdit, onDelete }: MeasurementsTableP
             type="button"
             title={t('physicalData.exportData')}
             aria-label={t('physicalData.exportData')}
-            className="w-10 h-10 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 flex items-center justify-center transition-colors"
           >
             <StitchIcon name="report" size={18} />
           </button>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Phones: one card per record. The 10-column table needs ~900px, which
+          on a 390px screen meant scrolling sideways past 8 columns to reach
+          the edit/delete buttons. */}
+      <ul className="only-mobile list-none m-0 px-4 pb-4 space-y-3">
+        {sortedData.map((record, index) => {
+          const previousRecord =
+            index < sortedData.length - 1 ? sortedData[index + 1] : null;
+          const weightImprovement = calcImprovement(record.weightKg, previousRecord?.weightKg, true);
+          const bodyFatImprovement = calcImprovement(record.bodyFatPercent, previousRecord?.bodyFatPercent, true);
+          const girths = (
+            [
+              ['chestCm', record.measurements?.chest],
+              ['waistCm', record.measurements?.waist],
+              ['hipsCm', record.measurements?.hips],
+              ['armsCm', record.measurements?.arms],
+              ['legsCm', record.measurements?.legs],
+            ] as const
+          ).filter(([, v]) => !!v);
+
+          return (
+            <li
+              key={record._id}
+              className="rounded-xl bg-surface-container-low border border-outline-variant/40 p-4"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-bold text-on-surface">
+                  {formatDate(record.dateRecorded)}
+                </span>
+                <div className="flex items-center -me-2">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(record)}
+                    aria-label={t('common.edit')}
+                    className="w-11 h-11 rounded-lg text-primary hover:bg-primary/10 flex items-center justify-center"
+                  >
+                    <StitchIcon name="edit" size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(record)}
+                    aria-label={t('common.delete')}
+                    className="w-11 h-11 rounded-lg text-error hover:bg-error-container flex items-center justify-center"
+                  >
+                    <StitchIcon name="delete" size={20} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-2 grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-on-surface-variant">{t('physicalData.weightKgHeader')}</p>
+                  <p className="stat-number text-3xl text-on-surface">{record.weightKg}</p>
+                  <TableImprovementCell value={weightImprovement} />
+                </div>
+                <div>
+                  <p className="text-xs text-on-surface-variant">{t('physicalData.bodyFatPct')}</p>
+                  <p className="stat-number text-3xl text-on-surface">
+                    {record.bodyFatPercent ? `${record.bodyFatPercent}%` : dash}
+                  </p>
+                  {record.bodyFatPercent && <TableImprovementCell value={bodyFatImprovement} />}
+                </div>
+              </div>
+
+              {girths.length > 0 && (
+                <dl className="mt-3 pt-3 border-t border-outline-variant/40 grid grid-cols-3 gap-x-3 gap-y-2 m-0">
+                  {girths.map(([key, value]) => (
+                    <div key={key}>
+                      <dt className="text-[11px] text-on-surface-variant">{t(`physicalData.${key}`)}</dt>
+                      <dd className="m-0 text-sm font-semibold text-on-surface tabular-nums">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="only-desktop overflow-x-auto">
         <table className="w-full min-w-[900px] border-collapse">
           <thead className="bg-surface-container-low">
             <tr>

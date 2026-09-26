@@ -117,7 +117,7 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({
               disabled={isUploading}
               title={t('profile.uploadAvatar')}
               aria-label={t('profile.uploadAvatar')}
-              className="absolute bottom-0 end-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow-md border border-outline-variant/15 hover:bg-surface-container-low transition-colors flex items-center justify-center disabled:opacity-50"
+              className="tap absolute bottom-0 end-0 w-9 h-9 bg-surface-container-lowest rounded-full shadow-md border border-outline-variant/15 hover:bg-surface-container-low transition-colors flex items-center justify-center disabled:opacity-50"
             >
               <StitchIcon
                 name={isUploading ? 'sync' : 'edit'}

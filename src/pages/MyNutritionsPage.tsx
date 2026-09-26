@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Container, Box, Center, Loader } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { StitchIcon } from "../components/common/StitchIcon";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -44,7 +44,7 @@ export default function MyNutritionsPage() {
   }, []);
 
   const { user } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   // Filters state

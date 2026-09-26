@@ -264,7 +264,7 @@ export default function WorkoutHistoryPage() {
       {metadata}
       <Container size="md" py="md">
         <header className="mb-6">
-          <h1 className="text-2xl font-black tracking-tight text-on-surface">
+          <h1 className="font-bold text-on-surface">
             {t('workout.historyTitle')}
           </h1>
           <p className="mt-1 text-sm text-on-surface-variant">

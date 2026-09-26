@@ -35,7 +35,7 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
         {/* These are summaries; the sessions behind them live one click away */}
         <Link
           to="/workout-history"
-          className="ms-auto text-xs font-bold text-primary hover:underline"
+          className="tap ms-auto text-xs font-bold text-primary hover:underline"
         >
           {t('workout.viewHistory')}
         </Link>
@@ -130,7 +130,7 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
                         so each row opens that lift's curve. */}
                     <Link
                       to={`/workout-history?exercise=${encodeURIComponent(best.exercise)}`}
-                      className="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2 transition-colors hover:bg-surface-container-high"
+                      className="flex min-h-11 items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2 transition-colors hover:bg-surface-container-high"
                     >
                       <span className="min-w-0 truncate text-sm font-semibold text-on-surface">
                         {best.exercise}
@@ -141,7 +141,7 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
                           reps={best.reps}
                           className="text-sm font-black text-on-surface"
                         />
-                        <StitchIcon name="chevron_left" size={14} />
+                        <StitchIcon name="chevron_right" size={14} />
                       </span>
                     </Link>
                   </li>

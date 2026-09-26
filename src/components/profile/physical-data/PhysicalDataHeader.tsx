@@ -14,7 +14,7 @@ export function PhysicalDataHeader({ onAddMeasurement, onSetTarget }: PhysicalDa
   return (
     <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
       <div>
-        <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+        <h1 className="font-bold text-on-surface mb-2">
           {t('physicalData.title')}
         </h1>
         <p className="text-on-surface-variant">{t('physicalData.subtitle')}</p>

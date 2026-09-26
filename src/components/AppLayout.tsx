@@ -3,7 +3,6 @@ import { useMemo, useEffect, Activity } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
-  Burger,
   Group,
   Text,
   UnstyledButton,
@@ -17,8 +16,8 @@ import {
   Image,
   Indicator,
   Badge,
+  Button,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
   IconDashboard,
   IconSun,
@@ -38,6 +37,10 @@ import {
   IconTemplate,
   IconHeartRateMonitor,
   IconHistory,
+  IconArrowLeft,
+  IconToolsKitchen2,
+  IconScale,
+  IconPlayerPlay,
 } from "@tabler/icons-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
@@ -46,6 +49,7 @@ import { useAuthStore } from "../store/authStore";
 import { useUnreadMessagesStore } from "../store/unreadMessagesStore";
 import { usePendingInvitesStore } from "../store/pendingInvitesStore";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { isNavActive } from "../utils/navMatch";
 import type { UserRole } from "../types/auth.types";
 import type { NavItem, AppLayoutProps } from '../types/layout.types';
 import "../styles/AppLayout.css";
@@ -108,7 +112,6 @@ const getNavigationItems = (
       {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
         label: "nav.physicalData",
-        primary: true,
         path: "/physical-data",
       },
       {
@@ -245,8 +248,25 @@ const getNavigationItems = (
   ];
 };
 
+/**
+ * Screens a user drills into from a list. On phones these get a back button in
+ * place of the logo, and a short title, because the bottom nav alone cannot
+ * say "you are one level down".
+ */
+const DETAIL_ROUTES: Array<{ match: RegExp; title: string; parent: string }> = [
+  { match: /^\/training-plans\/[^/]+/, title: "trainings.titleAdmin", parent: "/my-trainings" },
+  { match: /^\/nutrition-plans\/[^/]+/, title: "nutrition.titleAdmin", parent: "/nutrition-plans" },
+  // `/clients/overview` is its own nav destination, not a client.
+  { match: /^\/clients\/(?!overview(?:\/|$))[^/]+/, title: "clients.pageTitle", parent: "/clients" },
+  { match: /^\/workout\//, title: "nav.myTrainings", parent: "/my-trainings" },
+  { match: /^\/log-meal/, title: "mealLog.title", parent: "/" },
+  { match: /^\/profile/, title: "layout.profile", parent: "/" },
+];
+
+/** In-session workout owns the thumb zone; the global bottom nav steps aside. */
+const FOCUS_ROUTES = [/^\/workout\//];
+
 export function AppLayout({ children }: AppLayoutProps) {
-  const [opened, { toggle, close }] = useDisclosure();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -289,11 +309,16 @@ export function AppLayout({ children }: AppLayoutProps) {
   // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
     () =>
-      getNavigationItems(isAuthenticated, user?.role || null).map((item) => ({
-        ...item,
-        label: t(item.label),
-      })),
-    [isAuthenticated, user?.role, t]
+      getNavigationItems(isAuthenticated, user?.role || null).map((item) => {
+        const shortKey = item.label.replace(/^nav\./, "nav.short.");
+        return {
+          ...item,
+          label: t(item.label),
+          shortLabel: i18n.exists(shortKey) ? t(shortKey) : undefined,
+          badge: item.path === "/messages" && unreadMessages > 0 ? unreadMessages : undefined,
+        };
+      }),
+    [isAuthenticated, user?.role, t, i18n, unreadMessages]
   );
 
   // Handle logout
@@ -302,55 +327,93 @@ export function AppLayout({ children }: AppLayoutProps) {
     navigate("/login");
   };
 
-  // Handle navigation item click
-  const handleNavClick = (path: string) => {
-    navigate(path);
-    close(); // Close mobile menu after navigation
+  const handleNavClick = (path: string) => navigate(path);
+
+  const detail = DETAIL_ROUTES.find((r) => r.match.test(location.pathname));
+  const isFocusRoute = FOCUS_ROUTES.some((r) => r.test(location.pathname));
+  const signedIn = isAuthenticated && !!user;
+
+  // react-router stamps a history index; 0 means this tab landed here directly
+  // (a shared link, a refresh), where "back" would leave the app.
+  const goBack = () => {
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
+    if (idx > 0) navigate(-1);
+    else navigate(detail?.parent ?? "/");
   };
+
+  // The athlete's bottom-bar FAB. Trainers and admins have no single "log"
+  // action, so their bar is four destinations plus More.
+  const quickActions =
+    user?.role === "user"
+      ? [
+          { icon: <IconPlayerPlay size={20} stroke={1.5} />, label: t("nav.startWorkout"), path: "/my-trainings" },
+          { icon: <IconToolsKitchen2 size={20} stroke={1.5} />, label: t("nav.logMeal"), path: "/log-meal" },
+          { icon: <IconScale size={20} stroke={1.5} />, label: t("nav.logMeasurement"), path: "/physical-data" },
+        ]
+      : undefined;
 
   return (
     <AppShell
       header={{ height: { base: 56, md: 64 } }}
+      // Phones navigate with the bottom bar only; the sidebar arrives at `md`,
+      // where there is width to spare for it.
       navbar={{
         width: 240,
-        breakpoint: "sm",
-        collapsed: { mobile: !opened },
+        breakpoint: "md",
+        collapsed: { mobile: true },
       }}
       // Height grows by the safe-area inset rather than the bar padding itself:
       // AppShell sets a fixed border-box height, so padding there shrinks the
       // usable strip instead of clearing the home indicator.
-      footer={{ height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }}
-      padding="md"
+      footer={{
+        height: {
+          // Guests have no bottom nav, and a copyright strip is not worth 40px
+          // of a phone screen.
+          base: signedIn ? "calc(64px + env(safe-area-inset-bottom, 0px))" : 0,
+          md: 40,
+        },
+        collapsed: isFocusRoute,
+      }}
+      // Responsive gutter, kept equal to --page-gutter in theme.css. Set here
+      // rather than in CSS: Mantine folds the navbar offset into the same
+      // padding, and overriding it in CSS slid the content under the sidebar.
+      padding={{ base: 16, sm: 24, lg: 32 }}
     >
       {/* Header */}
       <AppShell.Header className="appshell-header">
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
-          <Group gap="md" wrap="nowrap">
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            {/* FitAI Logo */}
+          <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
+            {detail && (
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="lg"
+                hiddenFrom="md"
+                onClick={goBack}
+                aria-label={t("common.back")}
+                className="header-back"
+              >
+                <IconArrowLeft size={22} stroke={1.75} />
+              </ActionIcon>
+            )}
             <Link
               to="/"
-              style={{
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
+              className={`header-brand ${detail ? "header-brand--detail" : ""}`}
             >
               <Image
                 src="/assets/fitai_logo_transparent.png"
                 alt={t("layout.logoAlt")}
-                h={40}
+                h={36}
                 w="auto"
                 fit="contain"
                 className="header-logo"
               />
             </Link>
+            {detail && (
+              <Text className="header-title" hiddenFrom="md" fw={700} truncate>
+                {t(detail.title)}
+              </Text>
+            )}
           </Group>
 
           <Group gap="xs" wrap="nowrap">
@@ -457,10 +520,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenu.Root>
             </Activity>
             <Activity mode={!isAuthenticated || !user ? "visible" : "hidden"}>
-              {/* On mobile the burger menu already exposes Login/Register,
-                  so these header buttons are hidden below `sm` to keep the
-                  header on a single row. */}
-              <Group gap="xs" wrap="nowrap" visibleFrom="sm">
+              {/* Guests have no bottom nav, so sign-in stays in the header at
+                  every width. */}
+              <Group gap="xs" wrap="nowrap">
                 <UnstyledButton
                   className="header-link"
                   onClick={() => navigate("/login")}
@@ -469,15 +531,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                     {t("nav.login")}
                   </Text>
                 </UnstyledButton>
-                <ActionIcon
-                  variant="filled"
+                <Button
+                  size="compact-md"
                   color="indigo"
-                  size="lg"
                   onClick={() => navigate("/register")}
-                  aria-label={t("nav.register")}
+                  leftSection={<IconUserPlus size={16} />}
                 >
-                  <IconUserPlus size={18} />
-                </ActionIcon>
+                  {t("nav.register")}
+                </Button>
               </Group>
             </Activity>
           </Group>
@@ -485,27 +546,28 @@ export function AppLayout({ children }: AppLayoutProps) {
       </AppShell.Header>
 
       {/* Navbar */}
-      <AppShell.Navbar p="md" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <AppShell.Navbar p="md" style={{ display: 'flex', flexDirection: 'column' }}>
         <AppShell.Section grow component={ScrollArea} style={{ flex: 1 }}>
           <Stack gap="xs">
             {navigationItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              const isActive = isNavActive(item.path, location.pathname);
               return (
                 <UnstyledButton
                   key={item.label}
                   className={`nav-item ${isActive ? "nav-item-active" : ""}`}
                   onClick={() => handleNavClick(item.path)}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   <Group gap="sm">
                     {item.icon}
                     <Text size="sm" fw={500}>
                       {item.label}
                     </Text>
-                    {item.path === "/messages" && unreadMessages > 0 && (
+                    {item.badge ? (
                       <Badge size="sm" color="indigo" circle>
-                        {unreadMessages}
+                        {item.badge}
                       </Badge>
-                    )}
+                    ) : null}
                   </Group>
                 </UnstyledButton>
               );
@@ -531,35 +593,29 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <AppShell.Main>{children}</AppShell.Main>
 
-      {/* Footer: bottom nav on mobile (when signed in), copyright on desktop */}
-      <AppShell.Footer p="xs" className="appshell-footer">
-        {isAuthenticated && user ? (
-          <>
-            <Box hiddenFrom="sm" h="100%">
-              <MobileBottomNav
-                items={navigationItems}
-                currentPath={location.pathname}
-                onNavigate={handleNavClick}
-                colorScheme={colorScheme}
-                onToggleColorScheme={toggleColorScheme}
-                language={i18n.language === "he" ? "he" : "en"}
-                onChangeLanguage={(lng) => i18n.changeLanguage(lng)}
-                onLogout={handleLogout}
-              />
-            </Box>
-            <Group justify="center" h="100%" visibleFrom="sm">
-              <Text size="xs" c="dimmed">
-                ֲ{t("layout.allRightsReserved")}
-              </Text>
-            </Group>
-          </>
-        ) : (
-          <Group justify="center" h="100%">
-            <Text size="xs" c="dimmed">
-              ֲ{t("layout.allRightsReserved")}
-            </Text>
-          </Group>
+      {/* Footer: bottom nav on phones (when signed in), copyright from `md` */}
+      <AppShell.Footer className="appshell-footer">
+        {signedIn && (
+          <Box hiddenFrom="md" h="100%">
+            <MobileBottomNav
+              items={navigationItems}
+              currentPath={location.pathname}
+              isActive={(path) => isNavActive(path, location.pathname)}
+              onNavigate={handleNavClick}
+              quickActions={quickActions}
+              colorScheme={colorScheme}
+              onToggleColorScheme={toggleColorScheme}
+              language={i18n.language === "he" ? "he" : "en"}
+              onChangeLanguage={(lng) => i18n.changeLanguage(lng)}
+              onLogout={handleLogout}
+            />
+          </Box>
         )}
+        <Group justify="center" h="100%" visibleFrom="md">
+          <Text size="xs" c="dimmed">
+            {t("layout.allRightsReserved")}
+          </Text>
+        </Group>
       </AppShell.Footer>
     </AppShell>
   );

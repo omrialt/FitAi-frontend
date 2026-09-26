@@ -16,7 +16,7 @@ export function NutritionsHeader({ onCreateNew }: NutritionsHeaderProps) {
 
   return (
     <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-      <h1 className="text-4xl font-black tracking-tight text-on-surface">
+      <h1 className="font-bold text-on-surface">
         {isAdmin ? t('nutrition.titleAdmin') : t('nutrition.title')}
       </h1>
 

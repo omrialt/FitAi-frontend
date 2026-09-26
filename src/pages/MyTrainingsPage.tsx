@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Container, Box, Center, Loader } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import { GeneratePlanModal } from "../components/trainings/GeneratePlanModal";
@@ -43,7 +43,7 @@ export default function MyTrainingsPage() {
     }, []);
   const { user } = useAuthStore();
   const { t } = useTranslation();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   // Filters state

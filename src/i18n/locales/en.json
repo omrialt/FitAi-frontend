@@ -13,6 +13,20 @@
     "myClients": "My Clients",
     "workoutHistory": "Workout history",
     "more": "More",
+    "quickAdd": "Quick add",
+    "startWorkout": "Start workout",
+    "logMeal": "Log meal",
+    "logMeasurement": "Log measurement",
+    "primaryNav": "Main navigation",
+    "short": {
+      "myClients": "Clients",
+      "myTrainings": "Training",
+      "trainingPlans": "Training",
+      "nutritionPlans": "Nutrition",
+      "physicalData": "Body",
+      "dashboard": "Home",
+      "users": "Users"
+    },
     "clientOverview": "Client overview",
     "messages": "Messages",
     "planLibrary": "Plan library"
@@ -162,7 +176,8 @@
     "revoke": "Revoke",
     "close": "Close",
     "durationLabel": "Duration",
-    "caloriesLabel": "Est. calories"
+    "caloriesLabel": "Est. calories",
+    "filters": "Filters"
   },
   "trainings": {
     "title": "My Training Plans",

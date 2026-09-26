@@ -88,12 +88,13 @@ export function PlanHeader({
 
   return (
     <Box mb="xl">
-      <Group justify="space-between" align="flex-start" mb="md">
-        <Stack gap="xs" style={{ flex: 1 }}>
-          <Group gap="md" wrap="wrap">
-            <Text size="xl" fw={700}>
-              {plan.title}
-            </Text>
+      {/* Phones: title, badges and description take the full width, actions
+          sit below as a two-up row. Side by side, the actions squeezed the
+          title into a one-word-per-line column. */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
+        <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
+          <h1 className="m-0 text-on-surface">{plan.title}</h1>
+          <Group gap="xs" wrap="wrap">
             {plan?.target && (
               <Badge
                 color={targetColors[plan.target]}
@@ -124,13 +125,14 @@ export function PlanHeader({
           </Text>
         </Stack>
 
-        <Group gap="xs">
+        <div className="grid grid-cols-2 gap-2 md:flex md:shrink-0">
           <Menu shadow="md" width={200}>
             <Menu.Target>
               <Button
                 leftSection={<IconDownload size={16} />}
                 variant="light"
                 color="gray"
+                fullWidth
               >
                 {t("common.export")}
               </Button>
@@ -157,12 +159,13 @@ export function PlanHeader({
               leftSection={<IconEdit size={16} />}
               variant="light"
               onClick={onEdit}
+              fullWidth
             >
               {t("common.editPlan")}
             </Button>
           )}
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       <Group gap="xl" mt="md" wrap="wrap">
         {/* Nutrition-specific stats */}
@@ -257,7 +260,7 @@ export function PlanHeader({
                 <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-on-surface-variant">
                   {fact.k}
                 </span>
-                <span className="text-sm font-bold tabular-nums text-on-surface">
+                <span className="text-sm font-bold text-on-surface">
                   {fact.v}
                 </span>
               </div>

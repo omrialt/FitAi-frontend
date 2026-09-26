@@ -231,7 +231,11 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
           350px, and left to wrap they broke into a ragged pile. The toggles
           ride with the clocks because that is what they govern — grouped with
           the presets they read as a sixth duration. */}
-      <div className="mx-auto flex max-w-4xl flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
+      <div
+        className="mx-auto flex max-w-4xl flex-col gap-2 px-4 pt-2.5 sm:flex-row sm:items-center sm:gap-4 sm:py-2.5"
+        // Clears the home indicator on phones; the bar is pinned to the bottom.
+        style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <div className="flex items-center gap-3">
           <span
             className={`flex items-center gap-2 font-black tabular-nums ${
@@ -240,7 +244,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
             aria-live="polite"
           >
             <StitchIcon name="timer" size={20} />
-            <span className="text-xl" dir="ltr">
+            <span className="stat-number text-2xl" dir="ltr">
               {running ? format(remaining) : '–:––'}
             </span>
           </span>
@@ -275,7 +279,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
                 aria-pressed={showTotal}
                 aria-label={t('workout.toggleTotalTimer')}
                 title={t('workout.toggleTotalTimer')}
-                className={`rounded-lg px-2 py-1.5 transition-colors ${
+                className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${
                   showTotal
                     ? 'bg-surface-container-high text-on-surface'
                     : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
@@ -298,7 +302,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
               aria-pressed={sound}
               aria-label={sound ? t('workout.muteTimer') : t('workout.unmuteTimer')}
               title={sound ? t('workout.muteTimer') : t('workout.unmuteTimer')}
-              className={`rounded-lg px-2 py-1.5 transition-colors ${
+              className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors ${
                 sound
                   ? 'bg-surface-container-high text-on-surface'
                   : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
@@ -315,7 +319,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
               key={seconds}
               type="button"
               onClick={() => start(seconds)}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-bold tabular-nums transition-colors sm:flex-initial sm:px-2.5 ${
+              className={`min-h-11 flex-1 rounded-lg px-2 text-sm font-bold tabular-nums transition-colors sm:flex-initial sm:px-2.5 ${
                 running && duration === seconds
                   ? 'bg-primary text-white'
                   : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high'
@@ -330,7 +334,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
               type="button"
               onClick={stop}
               aria-label={t('workout.stopTimer')}
-              className="rounded-lg bg-surface-container-low px-2 py-1.5 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-surface-container-low px-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container-high"
             >
               <StitchIcon name="close" size={14} />
             </button>

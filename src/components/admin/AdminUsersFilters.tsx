@@ -34,7 +34,7 @@ export function AdminUsersFilters({
   const active = roleFilter || "";
 
   return (
-    <section className="bg-surface-container-lowest rounded-xl p-6 mb-8 border border-outline-variant/10">
+    <section className="bg-surface-container-lowest rounded-xl p-3 md:p-6 mb-5 md:mb-8 border border-outline-variant/30">
       <div className="flex flex-col gap-4">
         {/* Name search */}
         <div className="relative">

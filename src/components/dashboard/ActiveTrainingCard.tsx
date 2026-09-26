@@ -107,7 +107,7 @@ export function ActiveTrainingCard({
         <button
           type="button"
           onClick={() => setModalOpened(true)}
-          className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:underline shrink-0"
+          className="tap flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-primary hover:underline shrink-0"
         >
           {t('dashboard.viewPlan')}
           <StitchIcon name="chevron_right" size={14} />

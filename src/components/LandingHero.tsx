@@ -1,455 +1,209 @@
-import { Container, Title, Text, Button, Stack, Group, Box, Grid, ThemeIcon } from '@mantine/core';
+import { Button, ThemeIcon } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconBarbell, IconApple, IconChartLine, IconBrain, IconTarget, IconTrendingUp, IconBolt, IconShieldCheck } from '@tabler/icons-react';
+import '../styles/Landing.css';
 
+/**
+ * Guest landing page, mobile-first (design-system/fitai/pages/dashboard.md,
+ * "Guest"). Phones get a full-bleed hero, a swipeable feature rail and a
+ * sticky "Get started" bar; the two-column hero and 3-up grid arrive at `md`.
+ * Styling lives in Landing.css — this used to be ~120 inline style objects,
+ * none of which could respond to width.
+ */
 export function LandingHero() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const features = [
-    {
-      icon: <IconBarbell size={26} stroke={1.5} />,
-      title: t('landing.featTrainingTitle'),
-      description: t('landing.featTrainingDesc'),
-      color: 'indigo',
-    },
-    {
-      icon: <IconApple size={26} stroke={1.5} />,
-      title: t('landing.featNutritionTitle'),
-      description: t('landing.featNutritionDesc'),
-      color: 'green',
-    },
-    {
-      icon: <IconChartLine size={26} stroke={1.5} />,
-      title: t('landing.featProgressTitle'),
-      description: t('landing.featProgressDesc'),
-      color: 'blue',
-    },
-    {
-      icon: <IconBrain size={26} stroke={1.5} />,
-      title: t('landing.featAiTitle'),
-      description: t('landing.featAiDesc'),
-      color: 'violet',
-    },
-    {
-      icon: <IconTarget size={26} stroke={1.5} />,
-      title: t('landing.featGoalsTitle'),
-      description: t('landing.featGoalsDesc'),
-      color: 'orange',
-    },
-    {
-      icon: <IconTrendingUp size={26} stroke={1.5} />,
-      title: t('landing.featAnalyticsTitle'),
-      description: t('landing.featAnalyticsDesc'),
-      color: 'cyan',
-    },
+    { icon: <IconBarbell size={24} stroke={1.5} />, title: t('landing.featTrainingTitle'), description: t('landing.featTrainingDesc'), color: 'indigo' },
+    { icon: <IconApple size={24} stroke={1.5} />, title: t('landing.featNutritionTitle'), description: t('landing.featNutritionDesc'), color: 'green' },
+    { icon: <IconChartLine size={24} stroke={1.5} />, title: t('landing.featProgressTitle'), description: t('landing.featProgressDesc'), color: 'blue' },
+    { icon: <IconBrain size={24} stroke={1.5} />, title: t('landing.featAiTitle'), description: t('landing.featAiDesc'), color: 'violet' },
+    { icon: <IconTarget size={24} stroke={1.5} />, title: t('landing.featGoalsTitle'), description: t('landing.featGoalsDesc'), color: 'orange' },
+    { icon: <IconTrendingUp size={24} stroke={1.5} />, title: t('landing.featAnalyticsTitle'), description: t('landing.featAnalyticsDesc'), color: 'cyan' },
+  ];
+
+  const stats = [
+    { value: '50K+', label: t('landing.statAthletes') },
+    { value: '98%', label: t('landing.statSatisfaction') },
+    { value: '+14.2%', label: t('landing.statGain') },
+  ];
+
+  const mockRows = [
+    { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), tone: 'primary' },
+    { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), tone: 'success' },
+    { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), tone: 'warning' },
+    { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), tone: 'tertiary' },
+  ];
+
+  const metrics = [
+    { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} /> },
+    { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} /> },
+    { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} /> },
+  ];
+
+  const footerCols = [
+    { title: t('landing.footerProduct'), links: [t('landing.footerWorkouts'), t('landing.footerNutrition'), t('landing.footerAiEngine')] },
+    { title: t('landing.footerCompany'), links: [t('landing.footerAbout'), t('landing.footerScience'), t('landing.footerCareers')] },
+    { title: t('landing.footerSupport'), links: [t('landing.footerPrivacy'), t('landing.footerTerms'), t('landing.footerContact')] },
   ];
 
   return (
-    <Box>
-      {/* Hero — Performance Lab indigo/violet gradient */}
-      <Box
-        style={{
-          background:
-            'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 45%, var(--color-tertiary) 100%)',
-          color: 'white',
-          paddingTop: '88px',
-          paddingBottom: '96px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Ambient light, kept decorative */}
-        <Box style={{ position: 'absolute', top: '-80px', insetInlineEnd: '-60px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <Box style={{ position: 'absolute', bottom: '-120px', insetInlineStart: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
+    <div className="landing">
+      {/* Hero */}
+      <section className="landing-hero">
+        <div className="landing-hero__glow landing-hero__glow--a" aria-hidden="true" />
+        <div className="landing-hero__glow landing-hero__glow--b" aria-hidden="true" />
 
-        <Container size="xl" style={{ position: 'relative', zIndex: 1 }}>
-          <Grid gutter={60} align="center">
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              <Stack gap="xl">
-                <Box
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: 'rgba(255,255,255,0.15)',
-                    border: '1px solid rgba(255,255,255,0.25)',
-                    borderRadius: '100px',
-                    padding: '6px 16px',
-                    width: 'fit-content',
-                  }}
-                >
-                  <IconBolt size={14} color="var(--color-on-primary-container)" />
-                  <Text size="xs" fw={700} style={{ color: 'var(--color-on-primary-container)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                    {t('landing.badge')}
-                  </Text>
-                </Box>
+        <div className="landing-wrap landing-hero__grid">
+          <div className="landing-hero__copy">
+            <span className="landing-badge">
+              <IconBolt size={14} aria-hidden="true" />
+              {t('landing.badge')}
+            </span>
 
-                <Title
-                  order={1}
-                  style={{
-                    fontSize: 'clamp(2.4rem, 5vw, 3.8rem)',
-                    fontWeight: 900,
-                    lineHeight: 1.1,
-                    letterSpacing: '-0.04em',
-                    color: 'white',
-                  }}
-                >
-                  {t('landing.heroTitle1')}{' '}
-                  <span style={{ color: 'var(--color-secondary)' }}>
-                    {t('landing.heroTitle2')}
-                  </span>
-                </Title>
+            <h1 className="landing-hero__title">
+              {t('landing.heroTitle1')}{' '}
+              <span className="landing-hero__accent">{t('landing.heroTitle2')}</span>
+            </h1>
 
-                <Text
-                  size="lg"
-                  style={{
-                    color: 'rgba(255,255,255,0.7)',
-                    lineHeight: 1.75,
-                    maxWidth: '520px',
-                  }}
-                >
-                  {t('landing.heroSubtitle')}
-                </Text>
+            <p className="landing-hero__subtitle">{t('landing.heroSubtitle')}</p>
 
-                <Group gap="md">
-                  <Button
-                    size="lg"
-                    variant="filled"
-                    color="indigo"
-                    onClick={() => navigate('/register')}
-                    style={{ minWidth: '160px', fontWeight: 700, borderRadius: '10px' }}
-                  >
-                    {t('auth.registerTitle')}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    style={{
-                      minWidth: '130px',
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      color: 'white',
-                      borderRadius: '10px',
-                      fontWeight: 600,
-                    }}
-                    onClick={() => navigate('/login')}
-                  >
-                    {t('auth.signIn')}
-                  </Button>
-                </Group>
-
-                <Group gap="xl" mt="xs">
-                  <Stack gap={2}>
-                    <Text fw={800} size="xl" style={{ color: 'white' }}>50K+</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statAthletes')}</Text>
-                  </Stack>
-                  <Stack gap={2}>
-                    <Text fw={800} size="xl" style={{ color: 'white' }}>98%</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statSatisfaction')}</Text>
-                  </Stack>
-                  <Stack gap={2}>
-                    <Text fw={800} size="xl" style={{ color: 'white' }}>+14.2%</Text>
-                    <Text size="xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('landing.statGain')}</Text>
-                  </Stack>
-                </Group>
-              </Stack>
-            </Grid.Col>
-
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              {/* Dashboard preview mock */}
-              <Box
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '20px',
-                  padding: '28px',
-                  backdropFilter: 'blur(12px)',
-                }}
-              >
-                <Group justify="space-between" mb="md">
-                  <Group gap="xs">
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-danger)' }} />
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-warning)' }} />
-                    <Box style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--color-success)' }} />
-                  </Group>
-                  <Text size="xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('landing.mockTitle')}</Text>
-                </Group>
-
-                <Stack gap="sm">
-                  {[
-                    { label: t('landing.mockTrainingPlans'), value: t('landing.mockTrainingValue'), color: 'var(--color-primary)' },
-                    { label: t('landing.mockWorkouts'), value: t('landing.mockWorkoutsValue'), color: 'var(--color-success)' },
-                    { label: t('landing.mockCalories'), value: t('landing.mockCaloriesValue'), color: 'var(--color-warning)' },
-                    { label: t('landing.mockInsights'), value: t('landing.mockInsightsValue'), color: 'var(--color-tertiary)' },
-                  ].map((item) => (
-                    <Box
-                      key={item.label}
-                      style={{
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.06)',
-                        borderRadius: '10px',
-                        padding: '12px 16px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Text size="sm" style={{ color: 'rgba(255,255,255,0.65)' }}>{item.label}</Text>
-                      <Text size="sm" fw={700} style={{ color: item.color }}>{item.value}</Text>
-                    </Box>
-                  ))}
-                </Stack>
-
-                <Box
-                  style={{
-                    marginTop: 16,
-                    background: 'linear-gradient(90deg, rgba(99,102,241,0.3), rgba(139,92,246,0.3))',
-                    border: '1px solid rgba(99,102,241,0.4)',
-                    borderRadius: '10px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
-                >
-                  <IconBolt size={16} color='var(--color-primary)' />
-                  <Text size="sm" fw={600} style={{ color: 'white' }}>{t('landing.performanceGain')}</Text>
-                  <Text size="sm" fw={800} style={{ color: 'var(--color-success)', marginInlineStart: 'auto' }}>+14.2%</Text>
-                </Box>
-              </Box>
-            </Grid.Col>
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Features Section */}
-      <Box style={{ background: 'var(--color-surface)', paddingTop: 80, paddingBottom: 80 }}>
-        <Container size="xl">
-          <Stack gap="xl">
-            <Stack gap="sm" align="center" style={{ textAlign: 'center' }}>
-              <Text
-                size="xs"
-                fw={700}
-                style={{
-                  color: 'var(--color-primary)',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {t('landing.featuresKicker')}
-              </Text>
-              <Title
-                order={2}
-                style={{
-                  fontSize: 'clamp(1.8rem, 4vw, 2.6rem)',
-                  fontWeight: 800,
-                  letterSpacing: '-0.03em',
-                }}
-              >
-                {t('landing.featuresTitle')}
-              </Title>
-              <Text size="lg" c="dimmed" maw={640} style={{ lineHeight: 1.7 }}>
-                {t('landing.featuresSubtitle')}
-              </Text>
-            </Stack>
-
-            <Grid gutter="lg" mt="sm">
-              {features.map((feature, index) => (
-                <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 4 }}>
-                  <Box
-                    className="landing-feature-card"
-                    style={{
-                      background: 'var(--color-surface-container-lowest)',
-                      border: '1px solid var(--color-outline-variant)',
-                      borderRadius: '16px',
-                      padding: '28px',
-                      height: '100%',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-                      cursor: 'default',
-                    }}
-                  >
-                    <Stack gap="md">
-                      <ThemeIcon
-                        size={52}
-                        radius="md"
-                        variant="light"
-                        color={feature.color}
-                      >
-                        {feature.icon}
-                      </ThemeIcon>
-                      <Title order={3} style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
-                        {feature.title}
-                      </Title>
-                      <Text c="dimmed" size="sm" style={{ lineHeight: 1.65 }}>
-                        {feature.description}
-                      </Text>
-                    </Stack>
-                  </Box>
-                </Grid.Col>
-              ))}
-            </Grid>
-          </Stack>
-        </Container>
-      </Box>
-
-      {/* Science Section */}
-      <Box style={{ background: 'var(--color-surface-container-low)', paddingTop: 72, paddingBottom: 72 }}>
-        <Container size="lg">
-          <Grid gutter={60} align="center">
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              <Stack gap="lg">
-                <Title
-                  order={2}
-                  style={{
-                    fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-                    fontWeight: 800,
-                    letterSpacing: '-0.03em',
-                    color: 'var(--color-on-surface)',
-                  }}
-                >
-                  {t('landing.scienceTitle')}
-                </Title>
-                <Text style={{ color: 'var(--color-on-surface-variant)', lineHeight: 1.75 }}>
-                  {t('landing.scienceText')}
-                </Text>
-                <Group gap="xl">
-                  <Stack gap={2}>
-                    <Group gap={6}>
-                      <IconBolt size={16} color="var(--color-success)" />
-                      <Text fw={700} size="sm" style={{ color: 'var(--color-on-surface)' }}>{t('landing.dailyLoad')}</Text>
-                    </Group>
-                    <Text size="xs" style={{ color: 'var(--color-success)' }}>{t('landing.dailyLoadValue')}</Text>
-                  </Stack>
-                  <Stack gap={2}>
-                    <Group gap={6}>
-                      <IconShieldCheck size={16} color="var(--color-success)" />
-                      <Text fw={700} size="sm" style={{ color: 'var(--color-on-surface)' }}>{t('landing.recovery')}</Text>
-                    </Group>
-                    <Text size="xs" style={{ color: 'var(--color-success)' }}>{t('landing.recoveryValue')}</Text>
-                  </Stack>
-                </Group>
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              <Box
-                style={{
-                  background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)',
-                  border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)',
-                  borderRadius: '16px',
-                  padding: '28px',
-                }}
-              >
-                <Stack gap="sm">
-                  {[
-                    { label: t('landing.metricLabTitle'), desc: t('landing.metricLabDesc'), icon: <IconChartLine size={18} />, color: 'var(--color-primary)' },
-                    { label: t('landing.metricAiTitle'), desc: t('landing.metricAiDesc'), icon: <IconBrain size={18} />, color: 'var(--color-tertiary)' },
-                    { label: t('landing.metricOverloadTitle'), desc: t('landing.metricOverloadDesc'), icon: <IconBarbell size={18} />, color: 'var(--color-info)' },
-                  ].map((item) => (
-                    <Group key={item.label} gap="md" style={{ background: 'var(--color-surface-container)', borderRadius: 10, padding: '12px 16px' }}>
-                      <ThemeIcon variant="light" color="indigo" size="md" radius="md">
-                        {item.icon}
-                      </ThemeIcon>
-                      <Stack gap={2}>
-                        <Text size="sm" fw={600} style={{ color: 'var(--color-on-surface)' }}>{item.label}</Text>
-                        <Text size="xs" style={{ color: 'var(--color-on-surface-variant)' }}>{item.desc}</Text>
-                      </Stack>
-                    </Group>
-                  ))}
-                </Stack>
-              </Box>
-            </Grid.Col>
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* CTA Section */}
-      <Box
-        style={{
-          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%)',
-          color: 'white',
-          paddingTop: '72px',
-          paddingBottom: '72px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <Box style={{ position: 'absolute', top: '-60px', right: '-40px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }} />
-        <Container size="md" style={{ position: 'relative', zIndex: 1 }}>
-          <Stack gap="lg" align="center" style={{ textAlign: 'center' }}>
-            <Title
-              order={2}
-              style={{
-                fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-                fontWeight: 800,
-                letterSpacing: '-0.03em',
-                color: 'white',
-              }}
-            >
-              {t('landing.ctaTitle')}
-            </Title>
-            <Text size="lg" style={{ opacity: 0.88, maxWidth: '520px', lineHeight: 1.7, color: 'white' }}>
-              {t('landing.ctaText')}
-            </Text>
-            <Group gap="md">
-              <Button
-                size="lg"
-                variant="white"
-                color="violet"
-                onClick={() => navigate('/register')}
-                style={{ minWidth: '180px', fontWeight: 700, borderRadius: '10px' }}
-              >
-                {t('landing.getStarted')}
+            <div className="landing-hero__ctas">
+              <Button size="lg" color="indigo" onClick={() => navigate('/register')} className="landing-cta-primary">
+                {t('auth.registerTitle')}
               </Button>
-            </Group>
-          </Stack>
-        </Container>
-      </Box>
+              <Button size="lg" variant="outline" onClick={() => navigate('/login')} className="landing-cta-ghost">
+                {t('auth.signIn')}
+              </Button>
+            </div>
+
+            <dl className="landing-stats">
+              {stats.map((s) => (
+                <div key={s.label} className="landing-stat">
+                  <dt className="landing-stat__label">{s.label}</dt>
+                  <dd className="landing-stat__value stat-number">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {/* Dashboard preview mock — decorative, so hidden from AT */}
+          <div className="landing-mock" aria-hidden="true">
+            <div className="landing-mock__bar">
+              <span className="landing-mock__dots"><i /><i /><i /></span>
+              <span className="landing-mock__title">{t('landing.mockTitle')}</span>
+            </div>
+            <div className="landing-mock__rows">
+              {mockRows.map((row) => (
+                <div key={row.label} className="landing-mock__row">
+                  <span>{row.label}</span>
+                  <strong data-tone={row.tone}>{row.value}</strong>
+                </div>
+              ))}
+            </div>
+            <div className="landing-mock__gain">
+              <IconBolt size={16} />
+              <span>{t('landing.performanceGain')}</span>
+              <strong className="num">+14.2%</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="landing-section">
+        <div className="landing-wrap">
+          <header className="landing-section__head">
+            <p className="landing-kicker">{t('landing.featuresKicker')}</p>
+            <h2 className="landing-section__title">{t('landing.featuresTitle')}</h2>
+            <p className="landing-section__lead">{t('landing.featuresSubtitle')}</p>
+          </header>
+
+          <ul className="landing-features">
+            {features.map((f) => (
+              <li key={f.title} className="landing-feature">
+                <ThemeIcon size={48} radius="md" variant="light" color={f.color} aria-hidden="true">
+                  {f.icon}
+                </ThemeIcon>
+                <h3 className="landing-feature__title">{f.title}</h3>
+                <p className="landing-feature__desc">{f.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Science */}
+      <section className="landing-section landing-section--alt">
+        <div className="landing-wrap landing-science">
+          <div className="landing-science__copy">
+            <h2 className="landing-section__title">{t('landing.scienceTitle')}</h2>
+            <p className="landing-section__lead landing-section__lead--start">{t('landing.scienceText')}</p>
+            <div className="landing-science__facts">
+              <div>
+                <p className="landing-fact__title"><IconBolt size={16} aria-hidden="true" />{t('landing.dailyLoad')}</p>
+                <p className="landing-fact__value">{t('landing.dailyLoadValue')}</p>
+              </div>
+              <div>
+                <p className="landing-fact__title"><IconShieldCheck size={16} aria-hidden="true" />{t('landing.recovery')}</p>
+                <p className="landing-fact__value">{t('landing.recoveryValue')}</p>
+              </div>
+            </div>
+          </div>
+          <ul className="landing-metrics">
+            {metrics.map((m) => (
+              <li key={m.label} className="landing-metric">
+                <ThemeIcon variant="light" color="indigo" size="lg" radius="md" aria-hidden="true">{m.icon}</ThemeIcon>
+                <div>
+                  <p className="landing-metric__title">{m.label}</p>
+                  <p className="landing-metric__desc">{m.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="landing-cta">
+        <div className="landing-wrap landing-cta__inner">
+          <h2 className="landing-cta__title">{t('landing.ctaTitle')}</h2>
+          <p className="landing-cta__text">{t('landing.ctaText')}</p>
+          <Button size="lg" variant="white" color="violet" onClick={() => navigate('/register')} className="landing-cta-primary">
+            {t('landing.getStarted')}
+          </Button>
+        </div>
+      </section>
 
       {/* Footer */}
-      <Box style={{ background: 'var(--color-inverse-surface)', paddingTop: 48, paddingBottom: 48 }}>
-        <Container size="xl">
-          <Grid gutter="xl">
-            <Grid.Col span={{ base: 12, md: 4 }}>
-              <Stack gap="sm">
-                <Text fw={800} size="lg" style={{ color: 'white', letterSpacing: '-0.02em' }}>FitAi</Text>
-                <Text size="sm" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.65, maxWidth: 280 }}>
-                  {t('landing.footerTagline')}
-                </Text>
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, md: 2 }}>
-              <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerProduct')}</Text>
-                {[t('landing.footerWorkouts'), t('landing.footerNutrition'), t('landing.footerAiEngine')].map((l) => (
-                  <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
-                ))}
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, md: 2 }}>
-              <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerCompany')}</Text>
-                {[t('landing.footerAbout'), t('landing.footerScience'), t('landing.footerCareers')].map((l) => (
-                  <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
-                ))}
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, md: 2 }}>
-              <Stack gap="sm">
-                <Text size="xs" fw={700} style={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.footerSupport')}</Text>
-                {[t('landing.footerPrivacy'), t('landing.footerTerms'), t('landing.footerContact')].map((l) => (
-                  <Text key={l} size="sm" style={{ color: 'rgba(255,255,255,0.45)', cursor: 'pointer' }}>{l}</Text>
-                ))}
-              </Stack>
-            </Grid.Col>
-          </Grid>
-          <Box style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 40, paddingTop: 24 }}>
-            <Text size="xs" style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-              {t('landing.footerCopyright')}
-            </Text>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+      <footer className="landing-footer">
+        <div className="landing-wrap">
+          <div className="landing-footer__grid">
+            <div className="landing-footer__brand">
+              <p className="landing-footer__logo">FitAi</p>
+              <p className="landing-footer__tagline">{t('landing.footerTagline')}</p>
+            </div>
+            {footerCols.map((col) => (
+              <div key={col.title}>
+                <p className="landing-footer__heading">{col.title}</p>
+                <ul className="landing-footer__links">
+                  {col.links.map((l) => <li key={l}>{l}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p className="landing-footer__copy">{t('landing.footerCopyright')}</p>
+        </div>
+      </footer>
+
+      {/* Phones: the primary action stays under the thumb while scrolling. */}
+      <div className="landing-sticky-cta">
+        <Button fullWidth size="lg" color="indigo" onClick={() => navigate('/register')}>
+          {t('landing.getStarted')}
+        </Button>
+      </div>
+    </div>
   );
 }
