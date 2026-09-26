@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback, Activity } from "react";
 import { Container, Box, Center, Loader } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
 import { useApi } from "../hooks/useApi";
@@ -19,7 +19,7 @@ import {
 
 export default function AdminUsersPage() {
   const { user } = useAuthStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   // Filters state

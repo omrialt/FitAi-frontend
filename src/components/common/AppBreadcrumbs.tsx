@@ -5,11 +5,11 @@
 import { Breadcrumbs, Anchor, Button, Group } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { useMediaQuery } from '@mantine/hooks';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import type { AppBreadcrumbsProps } from '../../types/common.types';
 
 export function AppBreadcrumbs({ items, mb = 'md' }: AppBreadcrumbsProps) {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
 
   // On mobile, show only the previous item with a back button
   if (isMobile && items.length > 1) {
