@@ -172,7 +172,8 @@
     "revoke": "ביטול גישה",
     "close": "סגירה",
     "durationLabel": "משך",
-    "caloriesLabel": "קלוריות משוער"
+    "caloriesLabel": "קלוריות משוער",
+    "filters": "סינון"
   },
   "trainings": {
     "title": "תוכניות האימון שלי",

@@ -59,16 +59,16 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
     : null;
 
   return (
-    <section className="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+    <section className="bg-surface-container-low rounded-xl p-5 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-5 md:gap-6 relative overflow-hidden">
       {/* Decorative ambient glow */}
       <div
         aria-hidden="true"
         className="absolute -end-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"
       />
 
-      <div className="flex items-center gap-6 relative z-10">
+      <div className="flex items-center gap-4 md:gap-6 relative z-10 min-w-0">
         <div className="relative shrink-0">
-          <div className="w-20 h-20 rounded-full border-4 border-surface-container-low shadow-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-surface-container-low shadow-xl overflow-hidden bg-primary/10 flex items-center justify-center">
             {user.avatarUrl ? (
               <img
                 alt={user.fullName}
@@ -83,9 +83,9 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
           <div className="absolute -bottom-1 -end-1 w-6 h-6 bg-success border-4 border-surface-container-low rounded-full" />
         </div>
 
-        <div>
-          <div className="flex items-center gap-3 mb-1 flex-wrap">
-            <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">
+        <div className="min-w-0">
+          <div className="flex items-center gap-x-3 gap-y-1 mb-1 flex-wrap">
+            <h2 className="text-2xl md:text-3xl font-bold text-on-surface">
               {greeting}, {user.fullName.split(' ')[0]}
             </h2>
             <span
@@ -103,18 +103,20 @@ export function WelcomeSection({ user, currentStatus }: WelcomeSectionProps) {
         </div>
       </div>
 
-      <div className="flex gap-4 relative z-10">
+      {/* Phones: the day's primary action spans the card, meal logging sits
+          beside it at a third of the width. */}
+      <div className="grid grid-cols-[2fr_1fr] md:flex gap-3 md:gap-4 relative z-10">
         <button
           type="button"
           onClick={() => navigate('/my-trainings')}
-          className="bg-primary-gradient text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+          className="min-h-12 bg-primary-gradient text-white px-4 md:px-6 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-transform"
         >
           {t('dashboard.startTodaysSession')}
         </button>
         <button
           type="button"
           onClick={() => navigate('/log-meal')}
-          className="bg-surface-container-lowest text-on-surface px-6 py-3 rounded-lg font-bold text-sm border border-outline-variant/15 hover:bg-surface-container-low transition-colors"
+          className="min-h-12 bg-surface-container-lowest text-on-surface px-4 md:px-6 py-3 rounded-lg font-bold text-sm border border-outline-variant/40 hover:bg-surface-container-low transition-colors"
         >
           {t('dashboard.logMeal')}
         </button>

@@ -364,3 +364,10 @@
 }
 
 .nav-item { padding: 12px 14px; }
+
+/* Below md the navbar is collapsed off-canvas, but a transform alone leaves
+   its links in the tab order and the accessibility tree. */
+.mantine-AppShell-navbar { visibility: hidden; }
+@media (min-width: 48em) {
+  .mantine-AppShell-navbar { visibility: visible; }
+}

@@ -25,15 +25,6 @@ const getDifficultyPill = (difficulty: string) => {
   }
 };
 
-/** One label/value row. */
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-on-surface-variant">{label}</span>
-      {children}
-    </div>
-  );
-}
 
 export function TrainingsCard({
   training,
@@ -56,9 +47,9 @@ export function TrainingsCard({
     : training.difficulty;
 
   return (
-    <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
+    <div className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/30">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface min-w-0">
           {training.title}
         </h3>
@@ -75,66 +66,58 @@ export function TrainingsCard({
         />
       </div>
 
-      {/* Details */}
-      <div className="space-y-2.5">
-        <Row label={`${t('trainings.difficulty')}:`}>
-          <span
-            className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${getDifficultyPill(difficulty)}`}
-          >
-            {difficultyLabel}
-          </span>
-        </Row>
-
-        <Row label={`${t('trainings.days')}:`}>
-          <span className="text-sm font-bold text-primary">
-            {training.days?.length || 0}
-          </span>
-        </Row>
-
-        {training.focus && (
-          <Row label={`${t('trainings.focus')}:`}>
-            <span className="text-sm text-on-surface">{training.focus}</span>
-          </Row>
-        )}
-
+      {/* Details — a chip row instead of six label/value lines: the same facts
+          in a third of the height, so two plans fit on a phone screen. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${getDifficultyPill(difficulty)}`}
+        >
+          {difficultyLabel}
+        </span>
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-on-surface bg-surface-container-low rounded-full px-2.5 py-1">
+          <StitchIcon name="calendar_view_week" size={14} />
+          {t('common.dayCount', { count: training.days?.length || 0 })}
+        </span>
         {training.estimatedDuration && (
-          <Row label={`${t('trainings.duration')}:`}>
-            <span className="text-sm text-on-surface">
-              {t('trainings.durationMin', { count: training.estimatedDuration })}
-            </span>
-          </Row>
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-on-surface bg-surface-container-low rounded-full px-2.5 py-1">
+            <StitchIcon name="timer" size={14} />
+            {t('trainings.durationMin', { count: training.estimatedDuration })}
+          </span>
         )}
-
-        <Row label={`${t('trainings.status')}:`}>
-          <span className="flex items-center gap-1.5">
-            <span
-              className={`w-2 h-2 rounded-full ${training.isActive ? 'bg-success' : 'bg-outline'}`}
-            />
-            <span
-              className={`text-sm font-medium ${training.isActive ? 'text-success' : 'text-on-surface-variant'}`}
-            >
-              {training.isActive ? t('trainings.active') : t('trainings.inactive')}
-            </span>
+        {training.focus && (
+          <span className="text-xs font-semibold text-on-surface bg-surface-container-low rounded-full px-2.5 py-1">
+            {training.focus}
           </span>
-        </Row>
-
-        <Row label={`${t('trainings.created')}:`}>
-          <span className="text-sm text-on-surface-variant">
-            {training.createdAt
-              ? new Date(training.createdAt).toLocaleDateString(
-                  i18n.language === 'he' ? 'he-IL' : 'en-GB',
-                )
-              : t('common.none')}
-          </span>
-        </Row>
+        )}
       </div>
 
+      <p className="mt-3 flex items-center gap-2 text-xs text-on-surface-variant">
+        <span className="flex items-center gap-1.5">
+          <span
+            className={`w-2 h-2 rounded-full ${training.isActive ? 'bg-success' : 'bg-outline'}`}
+            aria-hidden="true"
+          />
+          <span className={training.isActive ? 'text-success font-semibold' : ''}>
+            {training.isActive ? t('trainings.active') : t('trainings.inactive')}
+          </span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>
+          {t('trainings.created')}{' '}
+          {training.createdAt
+            ? new Date(training.createdAt).toLocaleDateString(
+                i18n.language === 'he' ? 'he-IL' : 'en-GB',
+              )
+            : t('common.none')}
+        </span>
+      </p>
+
       {/* Quick actions */}
-      <div className="flex gap-2 mt-5">
+      <div className="flex gap-2 mt-4">
         <button
           type="button"
           onClick={() => onView(training._id)}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-primary/10 text-primary py-2.5 rounded-lg font-bold text-xs hover:bg-primary/20 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 min-h-11 bg-primary/10 text-primary py-2.5 rounded-lg font-bold text-sm hover:bg-primary/20 transition-colors"
         >
           <StitchIcon name="visibility" size={16} />
           {t('common.view')}
@@ -142,7 +125,7 @@ export function TrainingsCard({
         <button
           type="button"
           onClick={() => onEdit(training._id)}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-surface-container-high text-on-surface py-2.5 rounded-lg font-bold text-xs hover:bg-surface-container-highest transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 min-h-11 bg-surface-container-high text-on-surface py-2.5 rounded-lg font-bold text-sm hover:bg-surface-container-highest transition-colors"
         >
           <StitchIcon name="edit" size={16} />
           {t('common.edit')}

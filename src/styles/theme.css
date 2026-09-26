@@ -316,6 +316,14 @@
  * harm. Utilities set tracking on the element itself, so the root rule above
  * cannot reach them; this can.
  */
+/* Mantine table headers are set in the mono label face (section 4); same
+   problem, same cure. */
+[dir="rtl"] .mantine-Table-thead th {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+  font-size: 12px;
+}
+
 [dir="rtl"] .font-mono {
   letter-spacing: normal;
   /* The system monospace fallback that ends up rendering the Hebrew is
@@ -537,6 +545,19 @@ h1, h2, .font-display, .mantine-Title-root { letter-spacing: 0; }
   }
 }
 
+/* `.tap` grows a small control's hit area to 44×44 without changing its
+   layout — for text links and icon buttons that sit inline in cards. */
+.tap { position: relative; }
+.tap::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, var(--tap-min));
+  height: max(100%, var(--tap-min));
+  transform: translate(-50%, -50%);
+}
+
 /* iOS zooms any focused field under 16px. */
 .mantine-Input-input,
 input, select, textarea {
@@ -670,6 +691,30 @@ input, select, textarea {
 @media (min-width: 48em) {
   .only-mobile { display: none; }
   .only-desktop { display: block; }
+}
+
+/* AppShell.Main already carries the page gutter; a Mantine Container inside
+   it added a second 16px on each side, leaving phones ~300px of content. */
+.mantine-AppShell-main .mantine-Container-root {
+  padding-inline: 0;
+}
+
+/* Tracked uppercase is a Latin device (see the .font-mono note in §5): in
+   Hebrew, uppercase is a no-op and the tracking only pulls letters apart.
+   Covers the Tailwind tracking utilities used across the Stitch markup. */
+[dir="rtl"] :is(.tracking-widest, .tracking-wider, .tracking-wide, [class*="tracking-[0."]) {
+  letter-spacing: normal;
+}
+
+/* Type floor. The Stitch markup sets 8–10px labels in ~60 places; below
+   11px Latin and 12px Hebrew they stop being legible on a phone held at arm's
+   length (MASTER.md §3). Raised here rather than per call site. SVG chart
+   ticks are not affected. */
+:is([class*="text-[8px]"], [class*="text-[9px]"], [class*="text-[10px]"], [class*="text-[10.5px]"]) {
+  font-size: 11px;
+}
+[dir="rtl"] :is([class*="text-[8px]"], [class*="text-[9px]"], [class*="text-[10px]"], [class*="text-[10.5px]"], [class*="text-[11px]"], [class*="text-[11.5px]"]) {
+  font-size: 12px;
 }
 
 /* Never let a page scroll sideways; wide content scrolls inside itself. */

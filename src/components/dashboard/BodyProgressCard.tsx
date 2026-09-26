@@ -168,7 +168,7 @@ export function BodyProgressCard({
           <button
             type="button"
             onClick={() => setModalOpened(true)}
-            className="text-xs font-bold text-primary hover:underline shrink-0"
+            className="tap text-xs font-bold text-primary hover:underline shrink-0"
           >
             {hasData ? t('dashboard.updateRecord') : t('dashboard.addRecord')}
           </button>

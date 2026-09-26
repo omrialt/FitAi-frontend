@@ -195,14 +195,14 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
               type="button"
               onClick={handlePreviousWeek}
               aria-label={t('calendar.previous')}
-              className="w-9 h-9 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
+              className="w-11 h-11 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
             >
               <StitchIcon name="chevron_left" size={18} />
             </button>
             <button
               type="button"
               onClick={handleToday}
-              className="px-4 h-9 rounded-md bg-surface-container-lowest text-sm font-bold text-on-surface"
+              className="px-4 h-11 rounded-md bg-surface-container-lowest text-sm font-bold text-on-surface"
             >
               {t('calendar.today')}
             </button>
@@ -210,7 +210,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
               type="button"
               onClick={handleNextWeek}
               aria-label={t('calendar.next')}
-              className="w-9 h-9 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
+              className="w-11 h-11 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest flex items-center justify-center transition-colors"
             >
               <StitchIcon name="chevron_right" size={18} />
             </button>
@@ -301,7 +301,9 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ activeTrainingPlanId, a
                     today ? 'text-primary' : 'text-on-surface-variant'
                   }`}
                 >
-                  {dayName.slice(0, 3)}
+                  {/* Locale short form: slicing a Hebrew day name to 3 letters
+                      produced "ראש", "חמי", "שיש". */}
+                  {format(date, 'EEEEEE', { locale: dateLocale })}
                 </span>
                 <span
                   className={`text-[15px] font-extrabold tabular-nums ${

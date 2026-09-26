@@ -149,7 +149,7 @@ const FIELD_CAPTION =
  * row to its baseline.
  */
 const FIELD_CONTROL =
-  'h-12 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-center text-base tabular-nums text-on-surface outline-none focus:border-primary';
+  'h-14 sm:h-12 w-full rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-2 text-center text-lg sm:text-base font-semibold tabular-nums text-on-surface outline-none focus:border-primary';
 
 export default function WorkoutSessionPage() {
   const { planId, dayIndex } = useParams<{ planId: string; dayIndex: string }>();
@@ -633,7 +633,7 @@ export default function WorkoutSessionPage() {
   return (
     <AppLayout>
       {/* Bottom padding clears the fixed rest timer sitting above the app footer */}
-      <Container size="md" py="md" pb={120}>
+      <Container size="md" py="md" pb={150}>
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
@@ -669,7 +669,7 @@ export default function WorkoutSessionPage() {
                   value={dayIdx}
                   aria-label={t('workout.planDay')}
                   onChange={(e) => switchDay(Number(e.target.value))}
-                  className="h-9 min-w-0 flex-1 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm font-bold normal-case tracking-normal text-on-surface outline-none focus:border-primary sm:w-44 sm:flex-none"
+                  className="h-11 min-w-0 flex-1 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm font-bold normal-case tracking-normal text-on-surface outline-none focus:border-primary sm:w-44 sm:flex-none"
                 >
                   {plan.days.map((option, index) => (
                     <option key={`${option.dayName}-${index}`} value={index}>
@@ -687,7 +687,7 @@ export default function WorkoutSessionPage() {
               <select
                 value={barKg}
                 onChange={(e) => setBarKg(Number(e.target.value))}
-                className="h-9 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm tabular-nums text-on-surface outline-none focus:border-primary"
+                className="h-11 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm tabular-nums text-on-surface outline-none focus:border-primary"
               >
                 {BAR_OPTIONS_KG.map((option) => (
                   <option key={option} value={option}>
@@ -772,7 +772,7 @@ export default function WorkoutSessionPage() {
                     {/* `h-12` so that aligning the row to the bottom of the
                         inputs centres the number against them, rather than
                         dropping it to the floor of a taller cell. */}
-                    <span className="flex h-12 w-7 shrink-0 items-center justify-center text-xs font-black tabular-nums text-on-surface-variant">
+                    <span className="flex h-14 sm:h-12 w-7 shrink-0 items-center justify-center text-sm font-black tabular-nums text-on-surface-variant">
                       {si + 1}
                     </span>
 
@@ -838,7 +838,7 @@ export default function WorkoutSessionPage() {
                       onClick={() => toggleDone(ei, si)}
                       aria-pressed={set.done}
                       aria-label={t('workout.markSetDone', { number: si + 1 })}
-                      className={`col-start-4 row-start-1 ms-auto flex h-12 w-14 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
+                      className={`col-start-4 row-start-1 ms-auto flex h-14 w-14 sm:h-12 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
                         set.done
                           ? 'bg-success text-on-success shadow-[0_0_8px_0_var(--color-success)]'
                           : 'bg-surface-container-high text-on-surface-variant hover:bg-primary hover:text-on-primary'

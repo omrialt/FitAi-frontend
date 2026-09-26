@@ -164,7 +164,8 @@
     "revoke": "Revoke",
     "close": "Close",
     "durationLabel": "Duration",
-    "caloriesLabel": "Est. calories"
+    "caloriesLabel": "Est. calories",
+    "filters": "Filters"
   },
   "trainings": {
     "title": "My Training Plans",

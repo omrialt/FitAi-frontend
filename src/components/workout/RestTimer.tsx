@@ -80,28 +80,47 @@ export function RestTimer() {
         />
       </div>
 
-      <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-3 px-4 py-3">
-        <span
-          className={`flex items-center gap-2 font-black tabular-nums ${
-            done ? 'text-success' : 'text-on-surface'
-          }`}
-          aria-live="polite"
-        >
-          <StitchIcon name="timer" size={20} />
-          <span className="text-xl">{running ? format(remaining) : '–:––'}</span>
-        </span>
+      {/* Phones: readout on one row, presets as an even 44px grid beneath it
+          (they used to wrap raggedly at 28px tall). From sm, one row. */}
+      <div
+        className="mx-auto flex max-w-4xl flex-col gap-2 px-4 pt-2 sm:flex-row sm:items-center sm:gap-3 sm:py-3"
+        style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
+        <div className="flex items-center gap-3">
+          <span
+            className={`flex items-center gap-2 font-black tabular-nums ${
+              done ? 'text-success' : 'text-on-surface'
+            }`}
+            aria-live="polite"
+          >
+            <StitchIcon name="timer" size={20} />
+            <span className="stat-number text-2xl">{running ? format(remaining) : '–:––'}</span>
+          </span>
 
-        <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-          {done ? t('workout.restOver') : t('workout.rest')}
-        </span>
+          <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+            {done ? t('workout.restOver') : t('workout.rest')}
+          </span>
 
-        <div className="ms-auto flex flex-wrap items-center gap-2">
+          {running && (
+            <button
+              type="button"
+              onClick={stop}
+              aria-label={t('workout.stopTimer')}
+              className="ms-auto flex h-11 w-11 items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high sm:hidden"
+            >
+              <StitchIcon name="close" size={18} />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 sm:ms-auto sm:flex sm:items-center">
           {PRESETS.map((seconds) => (
             <button
               key={seconds}
               type="button"
               onClick={() => start(seconds)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
+              aria-pressed={running && duration === seconds}
+              className={`min-h-11 rounded-lg px-3 text-sm font-bold tabular-nums transition-colors ${
                 running && duration === seconds
                   ? 'bg-primary text-white'
                   : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high'
@@ -115,9 +134,9 @@ export function RestTimer() {
               type="button"
               onClick={stop}
               aria-label={t('workout.stopTimer')}
-              className="rounded-lg bg-surface-container-low px-3 py-1.5 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
+              className="hidden min-h-11 rounded-lg bg-surface-container-low px-3 text-on-surface-variant hover:bg-surface-container-high sm:block"
             >
-              <StitchIcon name="close" size={14} />
+              <StitchIcon name="close" size={16} />
             </button>
           )}
         </div>

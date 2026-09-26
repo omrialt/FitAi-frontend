@@ -2,33 +2,18 @@
  * AppBreadcrumbs - Reusable breadcrumb navigation component
  */
 
-import { Breadcrumbs, Anchor, Button, Group } from '@mantine/core';
+import { Breadcrumbs, Anchor } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { IconArrowLeft } from '@tabler/icons-react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { AppBreadcrumbsProps } from '../../types/common.types';
 
 export function AppBreadcrumbs({ items, mb = 'md' }: AppBreadcrumbsProps) {
   const isMobile = useIsMobile();
 
-  // On mobile, show only the previous item with a back button
-  if (isMobile && items.length > 1) {
-    const previousItem = items[items.length - 2];
-    
-    return (
-      <Group mb={mb}>
-        <Button
-          component={Link}
-          to={previousItem.href || '/'}
-          variant="subtle"
-          leftSection={<IconArrowLeft size={16} />}
-          size="compact-sm"
-        >
-          {previousItem.label}
-        </Button>
-      </Group>
-    );
-  }
+  // Phones: the app bar's back button (AppLayout, detail routes) and the
+  // bottom nav already say where you are and how to go up; a second back row
+  // here only pushed the page title down.
+  if (isMobile) return null;
 
   // Desktop: show full breadcrumb trail
   return (

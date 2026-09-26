@@ -5,9 +5,11 @@
 
 'use client';
 
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
+import { FilterToggle } from '../common/FilterToggle';
 import type { TrainingFilters } from '../../types/training.types';
 import type { TrainingsFiltersProps } from '../../types/trainings-components.types';
 
@@ -30,6 +32,9 @@ export function TrainingsFilters({
   onSearchChange,
 }: TrainingsFiltersProps) {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const activeCount = [filters.difficulty, filters.target].filter(Boolean).length;
 
   const handleFilterChange = (
     key: keyof TrainingFilters,
@@ -56,14 +61,16 @@ export function TrainingsFilters({
   ];
 
   return (
-    <section className="bg-surface-container-lowest rounded-xl p-6 mb-8 border border-outline-variant/10">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-        {/* Search */}
+    <section className="bg-surface-container-lowest rounded-xl p-3 md:p-6 mb-5 md:mb-8 border border-outline-variant/30">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 items-end">
+        {/* Search (+ the phone-only filter toggle beside it) */}
         <div>
-          <FieldLabel>{t('trainings.planName')}</FieldLabel>
-          <div className="relative">
+          <span className="hidden md:block"><FieldLabel>{t('trainings.planName')}</FieldLabel></span>
+          <div className="flex gap-2">
+          <div className="relative flex-1">
             <input
               type="search"
+              aria-label={t('trainings.planName')}
               className={`${CONTROL} ps-4 pe-11`}
               placeholder={t('trainings.searchPlaceholder')}
               value={search}
@@ -73,8 +80,17 @@ export function TrainingsFilters({
               <StitchIcon name="search" size={18} />
             </span>
           </div>
+          <FilterToggle
+            open={open}
+            onToggle={() => setOpen((o) => !o)}
+            activeCount={activeCount}
+            controlsId={panelId}
+          />
+          </div>
         </div>
 
+        {/* Secondary filters: collapsed on phones, inline grid cells from md */}
+        <div id={panelId} className={`${open ? 'grid' : 'hidden'} gap-3 md:contents`}>
         {/* Difficulty */}
         <div>
           <FieldLabel>{t('trainings.difficulty')}</FieldLabel>
@@ -121,6 +137,8 @@ export function TrainingsFilters({
           </div>
         </div>
 
+        </div>
+
         {/* Active / Archived */}
         <div
           role="tablist"
@@ -134,7 +152,7 @@ export function TrainingsFilters({
               role="tab"
               aria-selected={status === value}
               onClick={() => onFiltersChange({ ...filters, status: value })}
-              className={`flex-1 py-2.5 rounded-md text-sm font-bold transition-colors ${
+              className={`flex-1 min-h-10 py-2.5 rounded-md text-sm font-bold transition-colors ${
                 status === value
                   ? 'bg-surface-container-lowest text-primary shadow-sm'
                   : 'text-on-surface-variant hover:text-on-surface'
