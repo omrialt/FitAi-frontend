@@ -32,7 +32,7 @@ export function TrainingsCardList({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
       {trainings.map((training) => (
         <TrainingsCard
           key={training._id}

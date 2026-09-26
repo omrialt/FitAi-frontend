@@ -460,8 +460,13 @@
 /**
  * ── 7. mobile-first layout layer ──────────────────────────────────────────
  * design-system/fitai/MASTER.md §4. Everything below is authored for a
- * 360–390px screen first and widened with min-width queries only; Mantine's
- * breakpoints are sm 36em / md 48em / lg 62em, and these match them.
+ * 360–390px screen first and widened with min-width queries only.
+ *
+ * Two boundaries, deliberately:
+ *   - 62em (Mantine `md`, 992px): the *compact* layout — bottom nav, header
+ *     back button, card lists instead of tables. Shell and list rules use it.
+ *   - 48em (Tailwind `md`, 768px): content grids go multi-column and
+ *     gutters widen. Mantine's own `sm` is also 48em; its `xs` is 36em.
  */
 :root {
   --space-1: 4px;
@@ -485,14 +490,16 @@
   --text-h2: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
 }
 
+/* Gutter steps match AppShell's `padding` prop (Mantine sm 48em / lg 75em). */
 @media (min-width: 48em) {
-  :root {
-    --page-gutter: 24px;
-    --header-h: 64px;
-  }
+  :root { --page-gutter: 24px; }
 }
 
 @media (min-width: 62em) {
+  :root { --header-h: 64px; }
+}
+
+@media (min-width: 75em) {
   :root { --page-gutter: 32px; }
 }
 
@@ -607,92 +614,11 @@ input, select, textarea {
   }
 }
 
-/* Modal footers: stack full-width buttons on phones, row from `sm`. */
-.modal-actions {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: var(--space-2);
-}
-.modal-actions > * { width: 100%; }
-@media (min-width: 36em) {
-  .modal-actions { flex-direction: row; justify-content: flex-end; }
-  .modal-actions > * { width: auto; }
-}
-
-/* ── Page scaffolding ── */
-.page {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  min-width: 0;
-}
-
-/* A grid that is one column on phones and N from `md`. */
-.grid-auto {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-4);
-}
-@media (min-width: 48em) {
-  .grid-auto { grid-template-columns: repeat(var(--grid-md, 2), minmax(0, 1fr)); }
-}
-@media (min-width: 62em) {
-  .grid-auto { grid-template-columns: repeat(var(--grid-lg, var(--grid-md, 2)), minmax(0, 1fr)); }
-}
-
-/* Horizontally scrolling chip row that bleeds to the screen edge on phones. */
-.scroll-row {
-  display: flex;
-  gap: var(--space-2);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  margin-inline: calc(var(--page-gutter) * -1);
-  padding-inline: var(--page-gutter);
-  padding-block: 2px;
-}
-.scroll-row::-webkit-scrollbar { display: none; }
-.scroll-row > * { flex: 0 0 auto; scroll-snap-align: start; }
-@media (min-width: 48em) {
-  .scroll-row { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; }
-}
-
-/* Sticky action bar that sits above the bottom nav on phones and becomes an
-   inline row from `md`. */
-.sticky-actions {
-  position: sticky;
-  bottom: calc(var(--app-shell-footer-offset, 0px) + var(--space-2));
-  z-index: 5;
-  display: flex;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  border-radius: var(--radius-card);
-  background: color-mix(in srgb, var(--color-surface-container) 92%, transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--color-outline-variant);
-}
-.sticky-actions > * { flex: 1; }
-@media (min-width: 48em) {
-  .sticky-actions {
-    position: static;
-    padding: 0;
-    background: none;
-    backdrop-filter: none;
-    border: 0;
-    justify-content: flex-end;
-  }
-  .sticky-actions > * { flex: 0 0 auto; }
-}
-
-/* Visibility helpers matching Mantine's md breakpoint, for CSS-only swaps
-   (cards on phones, table on tablets+) that do not re-render on resize. */
+/* Compact-layout visibility helpers (62em, see top of section), for CSS-only
+   swaps — cards below, table above — that do not re-render on resize. */
 .only-mobile { display: block; }
 .only-desktop { display: none; }
-@media (min-width: 48em) {
+@media (min-width: 62em) {
   .only-mobile { display: none; }
   .only-desktop { display: block; }
 }

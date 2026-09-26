@@ -8,8 +8,8 @@
 /* Full-bleed: escape AppShell.Main's gutter and top padding. */
 .landing {
   margin-inline: calc(var(--page-gutter) * -1);
-  margin-top: calc(var(--mantine-spacing-md) * -1);
-  margin-bottom: calc(var(--mantine-spacing-md) * -1);
+  margin-top: calc(var(--page-gutter) * -1);
+  margin-bottom: calc(var(--page-gutter) * -1);
 }
 
 .landing-wrap {

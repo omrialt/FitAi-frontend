@@ -45,6 +45,7 @@ import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
 import { usePendingInvitesStore } from "../store/pendingInvitesStore";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { isNavActive } from "../utils/navMatch";
 import type { UserRole } from "../types/auth.types";
 import type { NavItem, AppLayoutProps } from '../types/layout.types';
 import "../styles/AppLayout.css";
@@ -209,30 +210,6 @@ const getNavigationItems = (
 };
 
 /**
- * Detail routes live under a different prefix than the list they belong to, so
- * an exact path match left the nav with nothing highlighted on every detail
- * screen. This maps a pathname to the nav destination that owns it.
- */
-const OWNER_PREFIXES: Array<[string, string]> = [
-  ["/training-plans", "/my-trainings"],
-  ["/workout/", "/my-trainings"],
-  ["/log-meal", "/nutrition-plans"],
-];
-
-export const navOwnerFor = (pathname: string): string => {
-  for (const [prefix, owner] of OWNER_PREFIXES) {
-    if (pathname.startsWith(prefix)) return owner;
-  }
-  return pathname;
-};
-
-export const isNavActive = (itemPath: string, pathname: string): boolean => {
-  const owner = navOwnerFor(pathname);
-  if (itemPath === "/") return owner === "/";
-  return owner === itemPath || owner.startsWith(`${itemPath}/`);
-};
-
-/**
  * Screens a user drills into from a list. On phones these get a back button in
  * place of the logo, and a short title, because the bottom nav alone cannot
  * say "you are one level down".
@@ -338,7 +315,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         },
         collapsed: isFocusRoute,
       }}
-      padding="md"
+      // Responsive gutter, kept equal to --page-gutter in theme.css. Set here
+      // rather than in CSS: Mantine folds the navbar offset into the same
+      // padding, and overriding it in CSS slid the content under the sidebar.
+      padding={{ base: 16, sm: 24, lg: 32 }}
     >
       {/* Header */}
       <AppShell.Header className="appshell-header">

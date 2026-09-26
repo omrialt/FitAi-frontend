@@ -10,8 +10,11 @@
 
 ## 1. Principles
 
-1. **Mobile-first.** Author for 360–390px, enhance at `sm` (576) / `md` (768) / `lg` (992).
-   No `max-width` media queries in new code; no `useMediaQuery` for layout that CSS can do.
+1. **Mobile-first.** Author for 360–390px and enhance with min-width queries only.
+   Two boundaries: **62em / 992px (Mantine `md`) is the compact layout** — bottom nav,
+   header back button, card lists instead of tables (`useIsMobile`, `.only-mobile`).
+   **48em / 768px (Tailwind `md`)** widens gutters and makes content grids multi-column.
+   Note Mantine's `sm` is 48em and `xs` 36em — not Tailwind's values.
 2. **One thumb.** Primary actions live in the bottom third: bottom nav, sticky action bar, FAB.
 3. **RTL is first-class.** Logical properties only (`ms-`, `pe-`, `start-`, `inset-inline-*`).
    Numerals are LTR-isolated via `.tabular-nums` / `.num`.
@@ -62,11 +65,12 @@ Content max width 1200px; single column on mobile, 2 columns from `md`, dashboar
 
 - **Buttons:** min-height 44px (48px for primary CTAs on mobile), full-width in forms/sheets on mobile.
 - **Cards:** `SectionCard` — surface-container-low, 1px outline-variant, radius-card, padding 16 → 24 `md`. No hover-lift on touch.
-- **Lists vs tables:** `ResponsiveDataList` — cards below `md`, table at `md`+. Never a fixed `min-width` table on mobile.
-- **Modals:** full-screen below `sm` (`useMobileModal`), bottom sheet style for pickers.
-- **Filters:** `FilterBar` — horizontally scrolling chips, advanced filters in a sheet.
-- **Headers:** `PageHeader` — title + subtitle, primary action becomes sticky bottom bar on mobile.
-- **Navigation:** bottom nav ≤ 5 slots (4 destinations + More), label + icon, active via color **and** weight. Sidebar from `md`.
+- **Lists vs tables:** cards below 62em (`useIsMobile` or `.only-mobile`/`.only-desktop`), 2-up from 48em; table from 62em. Never a fixed `min-width` table on a phone.
+- **Modals:** every Mantine Modal docks as a full-width bottom sheet below 36em (global CSS in theme.css §7); `fullScreen` opts out.
+- **Filters:** search stays visible; secondary selects collapse behind `FilterToggle` (with active-count badge) below 48em.
+- **Headers:** title block full width, actions below as a two-up row on phones (`PlanHeader`). Page `h1` uses the fluid `--text-h1` scale — no fixed `text-4xl`.
+- **Navigation:** bottom nav ≤ 5 slots — 4 destinations + More, or for athletes 3 + quick-add FAB + More. Active = colour + weight + pill. Sidebar from 62em. Detail routes get a back button + title in the app bar; in-page back links and breadcrumbs hide below 62em.
+- **Small inline controls:** add `.tap` to grow the hit area to 44px without moving layout.
 - **Empty / loading:** `EmptyState` with icon + one CTA; `.skeleton` shimmer, reserving final size.
 
 ## 6. Motion

@@ -1,7 +1,12 @@
 import { useMediaQuery } from '@mantine/hooks';
 
-/** Mantine's `md` breakpoint (48em): below it, list screens render cards. */
-export const MOBILE_QUERY = '(max-width: 47.99em)';
+/**
+ * The "compact" layout boundary: Mantine's `md` (62em / 992px). Below it the
+ * shell uses the bottom nav and list screens render cards — the 860–900px
+ * tables do not fit a portrait tablet either. Multi-column content grids use
+ * Tailwind's `md` (48em) independently.
+ */
+export const MOBILE_QUERY = '(max-width: 61.99em)';
 
 const matchesNow = (query: string) =>
   typeof window !== 'undefined' && typeof window.matchMedia === 'function'

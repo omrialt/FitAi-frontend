@@ -244,7 +244,7 @@
 
 .header-back { color: var(--color-on-surface); }
 
-@media (min-width: 48em) {
+@media (min-width: 62em) {
   .header-brand--detail { display: flex; }
 }
 
@@ -356,18 +356,11 @@
   color: var(--color-on-surface);
 }
 
-/* ── Main content ──
-   Phones use the tighter page gutter; the bottom bar's height is already
-   reserved by AppShell's own footer offset. */
-.mantine-AppShell-main {
-  padding-inline: var(--page-gutter);
-}
-
 .nav-item { padding: 12px 14px; }
 
-/* Below md the navbar is collapsed off-canvas, but a transform alone leaves
-   its links in the tab order and the accessibility tree. */
+/* Below md (62em) the navbar is collapsed off-canvas, but a transform alone
+   leaves its links in the tab order and the accessibility tree. */
 .mantine-AppShell-navbar { visibility: hidden; }
-@media (min-width: 48em) {
+@media (min-width: 62em) {
   .mantine-AppShell-navbar { visibility: visible; }
 }
