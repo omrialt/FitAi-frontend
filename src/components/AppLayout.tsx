@@ -255,11 +255,15 @@ export function AppLayout({ children }: AppLayoutProps) {
   // Get dynamic navigation items based on auth state (labels are i18n keys)
   const navigationItems = useMemo(
     () =>
-      getNavigationItems(isAuthenticated, user?.role || null).map((item) => ({
-        ...item,
-        label: t(item.label),
-      })),
-    [isAuthenticated, user?.role, t]
+      getNavigationItems(isAuthenticated, user?.role || null).map((item) => {
+        const shortKey = item.label.replace(/^nav\./, "nav.short.");
+        return {
+          ...item,
+          label: t(item.label),
+          shortLabel: i18n.exists(shortKey) ? t(shortKey) : undefined,
+        };
+      }),
+    [isAuthenticated, user?.role, t, i18n]
   );
 
   // Handle logout

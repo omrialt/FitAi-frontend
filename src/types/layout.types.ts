@@ -17,6 +17,12 @@ export interface NavItem {
    * which is what used to happen to Schedule.
    */
   primary?: boolean;
+  /**
+   * Bottom-bar label. A tab is ~75px wide, so "המתאמנים שלי" / "Nutrition
+   * Plans" were truncated to "המתאמנים ..."; the sidebar and More sheet keep
+   * the full `label`.
+   */
+  shortLabel?: string;
 }
 
 export interface AppLayoutProps {

@@ -514,6 +514,12 @@ h1, h2, h3,
 h1 { font-size: var(--text-h1); line-height: 1.15; }
 h2 { font-size: var(--text-h2); line-height: 1.2; }
 
+/* Mantine's Title sets its own fixed sizes (h1 34px); keep page titles on the
+   same fluid scale as the hand-written ones. Mantine passes --title-fz inline,
+   so font-size is overridden directly. */
+.mantine-Title-root[data-order="1"] { font-size: var(--text-h1); line-height: 1.15; }
+.mantine-Title-root[data-order="2"] { font-size: var(--text-h2); line-height: 1.2; }
+
 /* Condensed Latin needs no negative tracking; the global -0.03em cramps it. */
 h1, h2, .font-display, .mantine-Title-root { letter-spacing: 0; }
 

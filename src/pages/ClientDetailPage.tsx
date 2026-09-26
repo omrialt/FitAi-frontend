@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { WeightReps } from '../components/common/WeightReps';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Center, Loader } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -377,12 +378,12 @@ export default function ClientDetailPage() {
                     <span className="truncate text-sm font-semibold text-on-surface">
                       {best.exercise}
                     </span>
-                    <span className="shrink-0 text-sm font-black tabular-nums text-on-surface">
-                      {best.weight}
-                      <span className="text-on-surface-variant">
-                        {t('common.kg')} × {best.reps}
-                      </span>
-                    </span>
+                    <WeightReps
+                      weight={best.weight}
+                      reps={best.reps}
+                      className="shrink-0 text-sm font-black text-on-surface"
+                      unitClassName="text-on-surface-variant"
+                    />
                   </li>
                 ))}
               </ul>

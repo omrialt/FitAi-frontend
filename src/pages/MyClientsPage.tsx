@@ -183,22 +183,23 @@ export default function MyClientsPage() {
   return (
     <AppLayout>
       <Container size="lg" py="xl">
-        <Group
-          justify="space-between"
-          align="flex-start"
-          mb="lg"
-          wrap="nowrap"
-        >
-          <Box>
+        {/* Phones: title block, then a full-width invite button. Side by side
+            the button clipped its own label and broke the title in two. */}
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <Box style={{ minWidth: 0 }}>
             <Title order={1}>{t("clients.pageTitle")}</Title>
             <Text c="dimmed" mt={4}>
               {t("clients.pageSubtitle")}
             </Text>
           </Box>
-          <Button leftSection={<IconUserPlus size={18} />} onClick={openInvite}>
+          <Button
+            leftSection={<IconUserPlus size={18} />}
+            onClick={openInvite}
+            className="w-full shrink-0 sm:w-auto"
+          >
             {t("clients.inviteClient")}
           </Button>
-        </Group>
+        </div>
 
         {loading ? (
           <Center py="xl">

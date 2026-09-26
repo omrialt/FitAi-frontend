@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { WeightReps } from '../components/common/WeightReps';
 import { useSearchParams } from 'react-router-dom';
 import { Container, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -110,10 +111,9 @@ function SessionCard({
                 {exercise.sets.map((set, setIndex) => (
                   <span
                     key={setIndex}
-                    className="rounded-md bg-surface-container-high px-2 py-0.5 text-xs font-bold tabular-nums text-on-surface"
+                    className="rounded-md bg-surface-container-high px-2 py-0.5 text-xs font-bold text-on-surface"
                   >
-                    {set.weight}
-                    {t('common.kg')} × {set.reps}
+                    <WeightReps weight={set.weight} reps={set.reps} />
                     {/* Subdued rather than a separate chip: RPE qualifies the
                         set, it is not another number of the same kind. */}
                     {set.rpe != null && (

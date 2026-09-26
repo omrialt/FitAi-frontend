@@ -131,7 +131,7 @@ export function MobileBottomNav({
     <Tab
       key={item.path}
       icon={item.icon}
-      label={item.label}
+      label={item.shortLabel ?? item.label}
       active={active(item.path)}
       onClick={() => go(item.path)}
     />

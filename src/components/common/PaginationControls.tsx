@@ -17,12 +17,18 @@ export function PaginationControls({
   const start = (currentPage - 1) * pageSize + 1;
   const end = Math.min(currentPage * pageSize, total);
 
+  // An empty list already shows its empty state; "showing 1 to 0 of 0"
+  // under it only contradicted it.
+  if (total === 0) return null;
+
   return (
-    <Group justify="space-between" mt="xl">
+    <Group justify="space-between" mt="xl" gap="sm">
       <Text size="sm" c="dimmed">
         {t('common.showingResults', { start, end, total })}
       </Text>
-      <Pagination value={currentPage} onChange={onPageChange} total={totalPages} />
+      {totalPages > 1 && (
+        <Pagination value={currentPage} onChange={onPageChange} total={totalPages} />
+      )}
     </Group>
   );
 }

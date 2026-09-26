@@ -17,7 +17,16 @@
     "startWorkout": "התחלת אימון",
     "logMeal": "תיעוד ארוחה",
     "logMeasurement": "תיעוד מדידה",
-    "primaryNav": "ניווט ראשי"
+    "primaryNav": "ניווט ראשי",
+    "short": {
+      "myClients": "מתאמנים",
+      "myTrainings": "אימונים",
+      "trainingPlans": "אימונים",
+      "nutritionPlans": "תזונה",
+      "physicalData": "גוף",
+      "dashboard": "בית",
+      "users": "משתמשים"
+    }
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",
@@ -1063,8 +1072,8 @@
     "overloadAction_add_weight": "להוסיף משקל",
     "overloadAction_add_reps": "להוסיף חזרה",
     "overloadAction_hold": "לשמור",
-    "overloadTarget": "{{sets}}×{{reps}} · {{weight}} ק\"ג",
-    "overloadTargetReps": "{{sets}}×{{reps}} חזרות",
+    "overloadTarget": "⁦{{sets}}×{{reps}}⁩ · {{weight}} ק\"ג",
+    "overloadTargetReps": "⁦{{sets}}×{{reps}}⁩ חזרות",
     "overloadReason_range_topped": "בפעם האחרונה הגעת ל‑{{reps}} חזרות בכל הסטים ב‑{{weight}} ק\"ג — ראש הטווח שלך.",
     "overloadReason_range_not_topped": "בפעם האחרונה {{reps}} חזרות ב‑{{weight}} ק\"ג. יש עוד מקום עד {{max}}.",
     "overloadReason_effort_high": "הגעת לחזרות, אבל דיווחת מאמץ {{rpe}} — המשקל כבר בתקרה שלו, אז שווה לחזור עליו.",
@@ -1072,7 +1081,7 @@
     "deloadTitle": "שבוע הורדת עומס",
     "deloadRecommended": "מומלץ: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים.",
     "deloadOptional": "אפשרות: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים. לא חובה.",
-    "deloadSetLine": "{{sets}}×{{reps}} · {{weight}} ק\"ג",
+    "deloadSetLine": "⁦{{sets}}×{{reps}}⁩ · {{weight}} ק\"ג",
     "deloadFootnote": "המשקלים מעוגלים כלפי מטה ל‑2.5 ק\"ג, כדי שיהיו מספרים שמוט באמת עושה.",
     "addDrop": "הוספת דרופ",
     "dropShort": "דרופ",

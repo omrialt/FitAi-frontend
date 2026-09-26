@@ -17,7 +17,16 @@
     "startWorkout": "Start workout",
     "logMeal": "Log meal",
     "logMeasurement": "Log measurement",
-    "primaryNav": "Main navigation"
+    "primaryNav": "Main navigation",
+    "short": {
+      "myClients": "Clients",
+      "myTrainings": "Training",
+      "trainingPlans": "Training",
+      "nutritionPlans": "Nutrition",
+      "physicalData": "Body",
+      "dashboard": "Home",
+      "users": "Users"
+    }
   },
   "clients": {
     "pageTitle": "My Clients",

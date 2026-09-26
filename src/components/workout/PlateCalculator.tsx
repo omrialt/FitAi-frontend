@@ -57,7 +57,7 @@ export function PlateCalculator({
             key={weight}
             className="rounded bg-surface-container-high px-1.5 py-0.5 font-bold tabular-nums text-on-surface"
           >
-            {count > 1 ? `${count}×${weight}` : weight}
+            {count > 1 ? <bdi dir="ltr">{`${count}×${weight}`}</bdi> : weight}
           </span>
         ))
       )}
