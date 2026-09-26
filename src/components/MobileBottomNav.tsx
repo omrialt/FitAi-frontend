@@ -164,7 +164,8 @@ export function MobileBottomNav({
           <Tab
             icon={<IconDots size={22} stroke={1.5} />}
             label={t('nav.more')}
-            active={overflow.some((i) => active(i.path))}
+            // Profile is reached from the More sheet too, so it lights More up.
+            active={overflow.some((i) => active(i.path)) || currentPath.startsWith('/profile')}
             onClick={() => setMoreOpen(true)}
           />
         )}

@@ -75,7 +75,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
               type="button"
               onClick={() => setRevealed((v) => !v)}
               aria-label={t(revealed ? 'auth.hidePassword' : 'auth.showPassword')}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
+              className="tap absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <StitchIcon name="visibility" size={20} />
             </button>

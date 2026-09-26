@@ -263,7 +263,7 @@ export default function NutritionPlanDetailsPage() {
               ]}
             />
 
-            <div className="mb-6">
+            <div className="hidden md:block mb-6">
               <button
                 type="button"
                 onClick={() => navigate("/nutrition-plans")}

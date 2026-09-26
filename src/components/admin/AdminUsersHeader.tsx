@@ -10,7 +10,7 @@ export function AdminUsersHeader() {
 
   return (
     <header className="mb-8">
-      <h1 className="text-4xl font-black tracking-tight text-on-surface">
+      <h1 className="font-bold text-on-surface">
         {t('admin.usersManagement')}
       </h1>
     </header>

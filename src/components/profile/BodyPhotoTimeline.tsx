@@ -206,7 +206,7 @@ export function BodyPhotoTimeline() {
             type="button"
             aria-pressed={pose === option}
             onClick={() => setPose(option)}
-            className={`min-h-9 rounded-lg border px-3 text-xs font-bold ${
+            className={`min-h-11 rounded-lg border px-4 text-sm font-bold ${
               pose === option
                 ? 'border-primary bg-primary/10 text-primary'
                 : 'border-outline-variant/40 text-on-surface-variant'

@@ -639,7 +639,7 @@ export default function WorkoutSessionPage() {
             <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
               {plan.title}
             </p>
-            <h1 className="text-2xl font-black tracking-tight text-on-surface">
+            <h1 className="font-bold text-on-surface">
               {day.dayName}
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-on-surface-variant">

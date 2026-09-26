@@ -87,9 +87,9 @@ const CalendarPage: React.FC = () => {
 
   return (
     <AppLayout>
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="py-4 md:py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-black tracking-tight text-on-surface mb-2">
+          <h1 className="font-bold text-on-surface mb-2">
             {t('calendar.pageTitle')}
           </h1>
           <p className="text-on-surface-variant">{t('calendar.pageSubtitle')}</p>

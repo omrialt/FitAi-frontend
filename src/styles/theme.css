@@ -547,7 +547,11 @@ h1, h2, .font-display, .mantine-Title-root { letter-spacing: 0; }
 
 /* `.tap` grows a small control's hit area to 44×44 without changing its
    layout — for text links and icon buttons that sit inline in cards. */
-.tap { position: relative; }
+/* Zero-specificity and in the utilities layer, so an element that is already
+   `absolute`/`fixed` keeps its positioning (unlayered CSS would win). */
+@layer utilities {
+  :where(.tap) { position: relative; }
+}
 .tap::before {
   content: '';
   position: absolute;
