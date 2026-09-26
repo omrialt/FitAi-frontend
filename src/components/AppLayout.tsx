@@ -16,6 +16,7 @@ import {
   Image,
   Indicator,
   Badge,
+  Button,
 } from "@mantine/core";
 import {
   IconDashboard,
@@ -330,7 +331,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       // usable strip instead of clearing the home indicator.
       footer={{
         height: {
-          base: signedIn ? "calc(64px + env(safe-area-inset-bottom, 0px))" : 40,
+          // Guests have no bottom nav, and a copyright strip is not worth 40px
+          // of a phone screen.
+          base: signedIn ? "calc(64px + env(safe-area-inset-bottom, 0px))" : 0,
           md: 40,
         },
         collapsed: isFocusRoute,
@@ -489,15 +492,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                     {t("nav.login")}
                   </Text>
                 </UnstyledButton>
-                <ActionIcon
-                  variant="filled"
+                <Button
+                  size="compact-md"
                   color="indigo"
-                  size="lg"
                   onClick={() => navigate("/register")}
-                  aria-label={t("nav.register")}
+                  leftSection={<IconUserPlus size={16} />}
                 >
-                  <IconUserPlus size={18} />
-                </ActionIcon>
+                  {t("nav.register")}
+                </Button>
               </Group>
             </Activity>
           </Group>
@@ -565,11 +567,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             />
           </Box>
         )}
-        <Group
-          justify="center"
-          h="100%"
-          visibleFrom={signedIn ? "md" : undefined}
-        >
+        <Group justify="center" h="100%" visibleFrom="md">
           <Text size="xs" c="dimmed">
             {t("layout.allRightsReserved")}
           </Text>

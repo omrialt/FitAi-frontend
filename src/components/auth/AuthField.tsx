@@ -214,7 +214,7 @@ export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="relative flex items-center py-2">
       <div className="grow border-t border-outline-variant/30" />
-      <span className="shrink mx-4 font-mono text-[10.5px] uppercase tracking-[0.12em] text-on-surface-variant whitespace-nowrap">
+      <span className="shrink mx-4 font-mono text-xs uppercase tracking-[0.12em] text-on-surface-variant whitespace-nowrap">
         {label}
       </span>
       <div className="grow border-t border-outline-variant/30" />

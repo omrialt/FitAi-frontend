@@ -318,6 +318,10 @@
  */
 [dir="rtl"] .font-mono {
   letter-spacing: normal;
+  /* The system monospace fallback that ends up rendering the Hebrew is
+     fixed-width, which spaces the letters out just as badly as the tracking
+     did. Hebrew labels use the UI face. */
+  font-family: var(--font-sans);
 }
 
 /**
