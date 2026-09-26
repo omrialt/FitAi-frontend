@@ -1,7 +1,10 @@
 /**
  * MobileBottomNav - Fixed bottom navigation bar for mobile viewports
  *
- * Four destinations plus More, per the athlete screens deliverable. The bar
+ * At most five slots (ui-ux-pro-max `bottom-nav-limit`): four destinations
+ * plus More, or — for athletes — three destinations, a centre quick-add FAB and
+ * More. The FAB opens a sheet of the logging actions an athlete reaches for
+ * mid-day (start a workout, log a meal, log a measurement). The bar
  * used to render `items.slice(0, 5)`, which silently truncated the nav: a
  * signed-in user's sixth item is Schedule, so Schedule had no mobile entry
  * point at all. Overflow now lands in the More sheet instead of falling off
@@ -9,15 +12,25 @@
  */
 
 import { useState } from 'react';
-import { Box, Divider, Drawer, Group, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
-import { IconDots, IconLogout, IconMoon, IconSun, IconUser } from '@tabler/icons-react';
+import { Box, Divider, Drawer, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
+import { IconDots, IconLogout, IconMoon, IconPlus, IconSun, IconUser } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from '../types/layout.types';
+
+export interface QuickAction {
+  icon: React.ReactNode;
+  label: string;
+  path: string;
+}
 
 interface MobileBottomNavProps {
   items: NavItem[];
   currentPath: string;
+  /** Prefix-aware match, so a detail screen still lights up its list's tab. */
+  isActive?: (path: string) => boolean;
   onNavigate: (path: string) => void;
+  /** When present, a centre FAB opens these as a sheet. */
+  quickActions?: QuickAction[];
   /**
    * Account actions the sheet owns on mobile. The design puts the theme and
    * language toggles here rather than in the top app bar, which is capped at
@@ -30,7 +43,11 @@ interface MobileBottomNavProps {
   onLogout: () => void;
 }
 
-/** One tab. The nav's own floor is 50px, above the app-wide 44px minimum. */
+/**
+ * One tab. The nav's own floor is 56px, above the app-wide 44px minimum.
+ * Active is carried by colour, weight *and* a pill behind the icon, so it
+ * does not depend on colour alone.
+ */
 function Tab({
   icon,
   label,
@@ -45,22 +62,12 @@ function Tab({
   return (
     <UnstyledButton
       onClick={onClick}
-      aria-label={label}
       aria-current={active ? 'page' : undefined}
-      style={{ flex: 1, minHeight: 50 }}
+      className="bottom-tab"
+      data-active={active || undefined}
     >
-      <Stack gap={2} align="center">
-        <Box c={active ? 'var(--color-primary)' : 'var(--color-on-surface-variant)'} lh={1}>
-          {icon}
-        </Box>
-        <Text
-          size="10px"
-          fw={active ? 700 : 500}
-          c={active ? 'var(--color-primary)' : 'var(--color-on-surface-variant)'}
-        >
-          {label}
-        </Text>
-      </Stack>
+      <span className="bottom-tab__icon" aria-hidden="true">{icon}</span>
+      <span className="bottom-tab__label">{label}</span>
     </UnstyledButton>
   );
 }
@@ -93,7 +100,9 @@ const rowStyle = (active: boolean): React.CSSProperties => ({
 export function MobileBottomNav({
   items,
   currentPath,
+  isActive,
   onNavigate,
+  quickActions,
   colorScheme,
   onToggleColorScheme,
   language,
@@ -102,46 +111,92 @@ export function MobileBottomNav({
 }: MobileBottomNavProps) {
   const { t } = useTranslation();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
+  const active = (path: string) => (isActive ? isActive(path) : currentPath === path);
 
-  const primary = items.filter((i) => i.primary).slice(0, 4);
+  // The FAB takes one of the five slots, so athletes get three destinations.
+  const slots = quickActions?.length ? 3 : 4;
+  const primary = items.filter((i) => i.primary).slice(0, slots);
   // Anything not on the bar — plus any primary item that did not fit — stays
   // reachable rather than disappearing.
   const overflow = items.filter((i) => !primary.includes(i));
 
   const go = (path: string) => {
     setMoreOpen(false);
+    setQuickOpen(false);
     onNavigate(path);
   };
 
+  const tabs = primary.map((item) => (
+    <Tab
+      key={item.path}
+      icon={item.icon}
+      label={item.label}
+      active={active(item.path)}
+      onClick={() => go(item.path)}
+    />
+  ));
+
+  if (quickActions?.length) {
+    tabs.splice(
+      2,
+      0,
+      <div key="__fab" className="bottom-fab-slot">
+        <UnstyledButton
+          className="bottom-fab"
+          onClick={() => setQuickOpen(true)}
+          aria-label={t('nav.quickAdd')}
+          aria-haspopup="dialog"
+          aria-expanded={quickOpen}
+        >
+          <IconPlus size={26} stroke={2.25} />
+        </UnstyledButton>
+      </div>,
+    );
+  }
+
   return (
     <>
-      <Group
-        justify="space-around"
-        gap={0}
-        h="100%"
-        w="100%"
-        wrap="nowrap"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      >
-        {primary.map((item) => (
-          <Tab
-            key={item.path}
-            icon={item.icon}
-            label={item.label}
-            active={currentPath === item.path}
-            onClick={() => go(item.path)}
-          />
-        ))}
+      <nav className="bottom-nav" aria-label={t('nav.primaryNav')}>
+        {tabs}
 
         {overflow.length > 0 && (
           <Tab
-            icon={<IconDots size={20} stroke={1.5} />}
+            icon={<IconDots size={22} stroke={1.5} />}
             label={t('nav.more')}
-            active={overflow.some((i) => i.path === currentPath)}
+            active={overflow.some((i) => active(i.path))}
             onClick={() => setMoreOpen(true)}
           />
         )}
-      </Group>
+      </nav>
+
+      {quickActions?.length ? (
+        <Drawer
+          opened={quickOpen}
+          onClose={() => setQuickOpen(false)}
+          position="bottom"
+          title={t('nav.quickAdd')}
+          closeButtonProps={{ 'aria-label': t('common.close'), size: 'lg' }}
+          styles={{
+            content: {
+              height: 'auto',
+              maxHeight: '85vh',
+              borderStartStartRadius: 'var(--radius-sheet)',
+              borderStartEndRadius: 'var(--radius-sheet)',
+            },
+            body: { paddingBottom: 'calc(var(--mantine-spacing-md) + env(safe-area-inset-bottom, 0px))' },
+          }}
+        >
+          <div className="quick-grid">
+            {quickActions.map((a) => (
+              <UnstyledButton key={a.label} className="quick-tile" onClick={() => go(a.path)}>
+                <span className="quick-tile__icon" aria-hidden="true">{a.icon}</span>
+                <span className="quick-tile__label">{a.label}</span>
+              </UnstyledButton>
+            ))}
+          </div>
+        </Drawer>
+      ) : null}
 
       {/*
        * `size="auto"` is not a Mantine size token. It compiled to
@@ -178,16 +233,16 @@ export function MobileBottomNav({
       >
         <Stack gap={4} pb="md" style={{ marginInline: 'calc(var(--mantine-spacing-md) * -1)' }}>
           {overflow.map((item) => {
-            const active = currentPath === item.path;
+            const on = active(item.path);
             return (
               <UnstyledButton
                 key={item.path}
                 onClick={() => go(item.path)}
-                aria-current={active ? 'page' : undefined}
-                style={rowStyle(active)}
+                aria-current={on ? 'page' : undefined}
+                style={rowStyle(on)}
               >
                 <Box lh={1} style={{ flex: '0 0 auto' }}>{item.icon}</Box>
-                <Text size="sm" fw={active ? 700 : 500} style={{ flex: 1, textAlign: 'start' }}>
+                <Text size="sm" fw={on ? 700 : 500} style={{ flex: 1, textAlign: 'start' }}>
                   {item.label}
                 </Text>
               </UnstyledButton>

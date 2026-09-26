@@ -32,6 +32,7 @@
   /* typography */
   --font-sans: "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-display: "Barlow Condensed", "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
 
   /* brand */
   --color-primary: #4648d4;
@@ -443,3 +444,229 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/**
+ * ── 7. mobile-first layout layer ──────────────────────────────────────────
+ * design-system/fitai/MASTER.md §4. Everything below is authored for a
+ * 360–390px screen first and widened with min-width queries only; Mantine's
+ * breakpoints are sm 36em / md 48em / lg 62em, and these match them.
+ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --page-gutter: 16px;
+  --tap-min: 44px;
+  --header-h: 56px;
+  --bottom-nav-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  --text-display: clamp(1.75rem, 1.2rem + 2.4vw, 2.5rem);
+  --text-h1: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  --text-h2: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+}
+
+@media (min-width: 48em) {
+  :root {
+    --page-gutter: 24px;
+    --header-h: 64px;
+  }
+}
+
+@media (min-width: 62em) {
+  :root { --page-gutter: 32px; }
+}
+
+/* Display face: headings and big figures. Weight 700 on the condensed cut
+   reads as bold as Heebo 800 at the same size, without the width. */
+h1, h2, h3,
+.font-display,
+.mantine-Title-root {
+  font-family: var(--font-display);
+}
+
+h1 { font-size: var(--text-h1); line-height: 1.15; }
+h2 { font-size: var(--text-h2); line-height: 1.2; }
+
+/* Condensed Latin needs no negative tracking; the global -0.03em cramps it. */
+h1, h2, .font-display, .mantine-Title-root { letter-spacing: 0; }
+
+.stat-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+[dir="rtl"] .stat-number {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ── Touch targets ──
+   On a coarse pointer every control clears 44px. Mantine's xs/sm buttons and
+   action icons are 30–36px, which is fine under a mouse and too small under a
+   thumb; this lifts them without touching the ~110 call sites. */
+@media (pointer: coarse) {
+  .mantine-Button-root,
+  .mantine-ActionIcon-root,
+  .mantine-CloseButton-root,
+  .mantine-Burger-root,
+  .mantine-SegmentedControl-control,
+  .mantine-Pagination-control {
+    min-height: var(--tap-min);
+    min-width: var(--tap-min);
+  }
+  .mantine-Checkbox-body,
+  .mantine-Radio-body,
+  .mantine-Switch-body {
+    min-height: var(--tap-min);
+    align-items: center;
+  }
+}
+
+/* iOS zooms any focused field under 16px. */
+.mantine-Input-input,
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
+
+/* ── Modals as bottom sheets on phones ──
+   51 Modal call sites; a centred 90%-wide dialog on a phone leaves a sliver of
+   scrim and puts the actions out of thumb reach. Below `sm` the dialog docks
+   to the bottom edge, spans the width and scrolls internally. Modals that ask
+   for `fullScreen` keep Mantine's own behaviour. */
+.mantine-Modal-root:not([data-full-screen]) .mantine-Modal-inner {
+  --modal-inner-y-offset: 0;
+  --modal-inner-x-offset: 0;
+  --modal-inner-align: flex-end;
+}
+
+.mantine-Modal-root:not([data-full-screen]) .mantine-Modal-content {
+  --modal-content-flex: 0 0 100%;
+  --modal-content-max-height: 92dvh;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  border-bottom: 0;
+  padding-bottom: var(--safe-bottom);
+}
+
+@media (min-width: 36em) {
+  /* `initial` makes each var() fall back to Mantine's own default again. */
+  .mantine-Modal-root:not([data-full-screen]) .mantine-Modal-inner {
+    --modal-inner-y-offset: initial;
+    --modal-inner-x-offset: initial;
+    --modal-inner-align: initial;
+  }
+  .mantine-Modal-root[data-centered]:not([data-full-screen]) .mantine-Modal-inner {
+    --modal-inner-align: center;
+  }
+  .mantine-Modal-root:not([data-full-screen]) .mantine-Modal-content {
+    --modal-content-flex: initial;
+    --modal-content-max-height: initial;
+    border-radius: var(--radius-sheet);
+    border-bottom: 1px solid var(--color-outline-variant);
+    padding-bottom: 0;
+  }
+}
+
+/* Modal footers: stack full-width buttons on phones, row from `sm`. */
+.modal-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+}
+.modal-actions > * { width: 100%; }
+@media (min-width: 36em) {
+  .modal-actions { flex-direction: row; justify-content: flex-end; }
+  .modal-actions > * { width: auto; }
+}
+
+/* ── Page scaffolding ── */
+.page {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* A grid that is one column on phones and N from `md`. */
+.grid-auto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+@media (min-width: 48em) {
+  .grid-auto { grid-template-columns: repeat(var(--grid-md, 2), minmax(0, 1fr)); }
+}
+@media (min-width: 62em) {
+  .grid-auto { grid-template-columns: repeat(var(--grid-lg, var(--grid-md, 2)), minmax(0, 1fr)); }
+}
+
+/* Horizontally scrolling chip row that bleeds to the screen edge on phones. */
+.scroll-row {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  margin-inline: calc(var(--page-gutter) * -1);
+  padding-inline: var(--page-gutter);
+  padding-block: 2px;
+}
+.scroll-row::-webkit-scrollbar { display: none; }
+.scroll-row > * { flex: 0 0 auto; scroll-snap-align: start; }
+@media (min-width: 48em) {
+  .scroll-row { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; }
+}
+
+/* Sticky action bar that sits above the bottom nav on phones and becomes an
+   inline row from `md`. */
+.sticky-actions {
+  position: sticky;
+  bottom: calc(var(--app-shell-footer-offset, 0px) + var(--space-2));
+  z-index: 5;
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-surface-container) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-outline-variant);
+}
+.sticky-actions > * { flex: 1; }
+@media (min-width: 48em) {
+  .sticky-actions {
+    position: static;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
+    border: 0;
+    justify-content: flex-end;
+  }
+  .sticky-actions > * { flex: 0 0 auto; }
+}
+
+/* Visibility helpers matching Mantine's md breakpoint, for CSS-only swaps
+   (cards on phones, table on tablets+) that do not re-render on resize. */
+.only-mobile { display: block; }
+.only-desktop { display: none; }
+@media (min-width: 48em) {
+  .only-mobile { display: none; }
+  .only-desktop { display: block; }
+}
+
+/* Never let a page scroll sideways; wide content scrolls inside itself. */
+.mantine-AppShell-main { overflow-x: clip; }

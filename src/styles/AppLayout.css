@@ -223,10 +223,144 @@
   }
 }
 
-/* ── Mobile Adjustments ── */
-@media (max-width: 768px) {
-  .nav-item {
-    padding: 12px 14px;
-    font-size: 15px;
-  }
+/* ── Header brand / back / title (mobile detail routes) ── */
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex: 0 0 auto;
 }
+
+/* One level down on a phone, the back button and title carry the context;
+   the logo steps aside so the row does not wrap. */
+.header-brand--detail { display: none; }
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  min-width: 0;
+}
+
+.header-back { color: var(--color-on-surface); }
+
+@media (min-width: 48em) {
+  .header-brand--detail { display: flex; }
+}
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: 100%;
+  padding-bottom: var(--safe-bottom);
+  padding-inline: 4px;
+}
+
+.bottom-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--color-on-surface-variant);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-tab__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  transition: background-color var(--duration-base) var(--ease-standard),
+              color var(--duration-base) var(--ease-standard);
+}
+
+.bottom-tab__label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-tab[data-active] { color: var(--color-primary); }
+.bottom-tab[data-active] .bottom-tab__icon {
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+.bottom-tab[data-active] .bottom-tab__label { font-weight: 700; }
+
+.bottom-fab-slot {
+  flex: 1 1 0;
+  display: grid;
+  place-items: center;
+}
+
+.bottom-fab {
+  width: 52px;
+  height: 52px;
+  margin-top: -18px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: var(--color-on-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  border: 3px solid var(--color-background);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+[data-mantine-color-scheme='dark'] .bottom-fab { color: var(--color-on-primary-container); }
+
+/* ── Quick-add sheet ── */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.quick-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-2);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
+  text-align: center;
+  min-height: 96px;
+}
+
+.quick-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.quick-tile__label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-on-surface);
+}
+
+/* ── Main content ──
+   Phones use the tighter page gutter; the bottom bar's height is already
+   reserved by AppShell's own footer offset. */
+.mantine-AppShell-main {
+  padding-inline: var(--page-gutter);
+}
+
+.nav-item { padding: 12px 14px; }

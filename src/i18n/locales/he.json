@@ -12,7 +12,12 @@
     "users": "משתמשים",
     "myClients": "המתאמנים שלי",
     "workoutHistory": "יומן אימונים",
-    "more": "עוד"
+    "more": "עוד",
+    "quickAdd": "הוספה מהירה",
+    "startWorkout": "התחלת אימון",
+    "logMeal": "תיעוד ארוחה",
+    "logMeasurement": "תיעוד מדידה",
+    "primaryNav": "ניווט ראשי"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",

@@ -6,8 +6,10 @@
 
    Heebo carries the UI (it has a real Hebrew cut, which Inter did not — the
    Hebrew side of the app was being rendered by a fallback face), Rubik backs
-   it up, and IBM Plex Mono is the tabular/label face the tokens call for. */
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+   it up, and IBM Plex Mono is the tabular/label face the tokens call for.
+   Barlow Condensed is the display face for headings and big numbers; it has
+   no Hebrew cut, so Hebrew headings fall through to Heebo glyph by glyph. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 @import './styles/theme.css';
 

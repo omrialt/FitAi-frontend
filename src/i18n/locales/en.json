@@ -12,7 +12,12 @@
     "users": "Users",
     "myClients": "My Clients",
     "workoutHistory": "Workout history",
-    "more": "More"
+    "more": "More",
+    "quickAdd": "Quick add",
+    "startWorkout": "Start workout",
+    "logMeal": "Log meal",
+    "logMeasurement": "Log measurement",
+    "primaryNav": "Main navigation"
   },
   "clients": {
     "pageTitle": "My Clients",
