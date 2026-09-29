@@ -1121,7 +1121,9 @@
       "exCompareSubtitle": "Every exercise in one muscle group on one chart, by estimated 1RM.",
       "exCompareEmpty": "No exercises logged for this muscle group in this period.",
       "exCompareFailed": "Couldn't load the exercise comparison.",
-      "estimatedMax": "e1RM"
+      "estimatedMax": "e1RM",
+      "planFilter": "Plan",
+      "allPlans": "All plans"
     }
   },
   "account": {

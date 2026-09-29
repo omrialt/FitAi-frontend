@@ -80,8 +80,10 @@ export interface ListWorkoutSessionsQuery {
    * workout.
    */
   dayName?: string;
-  /** Free text over the workout's name, plan, notes, exercises and muscles. */
+  /** Free text over the workout's name, notes, exercises and muscles — not the plan. */
   search?: string;
+  /** Only sessions logged under this plan title (exact, any case). */
+  planTitle?: string;
   /** Only sessions containing this exercise (exact name, any case). */
   exercise?: string;
   /** Only sessions that trained this muscle group. */

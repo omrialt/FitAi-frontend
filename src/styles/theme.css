@@ -91,9 +91,13 @@
   --color-neutral-chip: #e6e8ed;
   --color-on-neutral-chip: #4a4d5c;
 
-  /* chart theme */
+  /* chart theme
+     Categorical, in fixed order. Validated as a set against this surface
+     (lightness band, chroma floor >= 0.10, colour-blind and normal-vision
+     separation, >= 3:1 contrast) — change one and re-run the check on all
+     four. chart-2 was #0c7f99, chroma 0.098: it read as grey (N-51). */
   --color-chart-1: #4648d4;
-  --color-chart-2: #0c7f99;
+  --color-chart-2: #007fa1;
   --color-chart-3: #7a3fc4;
   --color-chart-4: #a4630a;
   --color-chart-grid: #d8dbe4;
@@ -172,10 +176,13 @@
   --color-neutral-chip: #1f2129;
   --color-on-neutral-chip: #a2a5b4;
 
-  --color-chart-1: #8385ff;
-  --color-chart-2: #5fd8f0;
-  --color-chart-3: #c08cff;
-  --color-chart-4: #f5b544;
+  /* Stepped for the dark surface, not flipped: OKLCH L 0.58–0.66 keeps every
+     line inside the dark band, where the old pastels (L up to 0.82) glared
+     and cyan/violet sat too close for deuteranopes (N-51). */
+  --color-chart-1: #7f81fb;
+  --color-chart-2: #11a4bb;
+  --color-chart-3: #905bca;
+  --color-chart-4: #c08600;
   --color-chart-grid: #22242e;   /* grid = surface shift, not a line color */
   --color-chart-axis: #6a6e80;
 
