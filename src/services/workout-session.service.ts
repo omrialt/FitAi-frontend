@@ -8,11 +8,13 @@
 import api from './api';
 import type {
   CreateWorkoutSessionDto,
+  ExerciseComparison,
   ExerciseHistory,
   FatigueSignal,
   ListWorkoutSessionsQuery,
   WorkoutSession,
   WorkoutStats,
+  WorkoutTypesSummary,
   OverloadPlan,
   DeloadPrescription,
 } from '../types/workout-session.types';
@@ -101,6 +103,32 @@ export const workoutSessionService = {
    */
   getDeload: async (userId: string): Promise<DeloadPrescription> => {
     const response = await api.get(`/workout-sessions/user/${userId}/deload`);
+    return response.data.data;
+  },
+
+  /**
+   * Every workout type the user has logged (a session's `dayName`), with
+   * frequency, volume trend and which lifts in it are moving or stuck.
+   */
+  getWorkoutTypes: async (userId: string): Promise<WorkoutTypesSummary> => {
+    const response = await api.get(
+      `/workout-sessions/user/${userId}/workout-types`,
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Every exercise in one muscle group side by side. Omitting `muscleGroup`
+   * asks for the group with the most exercises in it.
+   */
+  getExerciseComparison: async (
+    userId: string,
+    params: { muscleGroup?: string; days?: number } = {},
+  ): Promise<ExerciseComparison> => {
+    const response = await api.get(
+      `/workout-sessions/user/${userId}/exercise-comparison`,
+      { params },
+    );
     return response.data.data;
   },
 
