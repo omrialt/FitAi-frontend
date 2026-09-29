@@ -6,7 +6,7 @@
  * Also computes and syncs lastWorkoutDate / nextWorkoutDate based on active plan schedule.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { currentStatusService } from '../services/current-status.service';
 import { trainingPlanService } from '../services/training-plan.service';
@@ -20,192 +20,227 @@ import type { TrainingPlan } from '../types/training-plan.types';
 import type { NutritionPlan } from '../types/nutrition.types';
 import type { PhysicalData, WeightProgressData } from '../types/physical-data.types';
 import type { ProgressStats, AiRecommendation, DashboardData } from '../types/dashboard.types';
-import type { WorkoutStats } from '../types/workout-session.types';
 export type { ProgressStats, AiRecommendation, DashboardData };
 
+/** Which parts of `DashboardData` have arrived, so a card can tell "loading" from "empty". */
+export type DashboardReady = Record<keyof DashboardData, boolean>;
+
+const EMPTY: DashboardData = {
+  currentStatus: null,
+  activeTrainingPlan: null,
+  activeNutritionPlan: null,
+  trainingPlans: [],
+  nutritionPlans: [],
+  latestPhysicalData: null,
+  weightProgress: null,
+  bmi: null,
+  progressStats: null,
+  workoutStats: null,
+  aiRecommendations: [],
+};
+
+const NOTHING_READY = Object.fromEntries(
+  Object.keys(EMPTY).map((key) => [key, false]),
+) as DashboardReady;
+
+/** Unwrap the TransformInterceptor envelope `{ data, timestamp, path }` when present. */
+function unwrapResponse<T>(val: unknown): T | null {
+  if (
+    val &&
+    typeof val === 'object' &&
+    'timestamp' in (val as Record<string, unknown>) &&
+    'data' in (val as Record<string, unknown>)
+  ) {
+    return (val as Record<string, unknown>).data as T;
+  }
+  return (val as T) ?? null;
+}
+
+/** The id of a ref the backend may or may not have populated. */
+function refId(ref: unknown): string | null {
+  if (typeof ref === 'string') return ref;
+  if (ref && typeof ref === 'object' && '_id' in (ref as Record<string, unknown>)) {
+    return String((ref as { _id: unknown })._id);
+  }
+  return null;
+}
+
+function isPopulated<T>(ref: unknown): ref is T {
+  return !!ref && typeof ref === 'object' && '_id' in (ref as Record<string, unknown>);
+}
+
+/**
+ * Everything the dashboard shows, delivered progressively.
+ *
+ * This used to be one `Promise.allSettled` over nine requests, followed by a
+ * sequential status PATCH, with a full-page spinner in front of all of it — so
+ * the screen took as long as the slowest request plus a write, and only then
+ * did the self-loading cards (fatigue, overload, deload, today's meals) mount
+ * and start a second round of requests behind it.
+ *
+ * Now each request writes its slice the moment it lands and flips its flag in
+ * `ready`. The page waits only for the current status — it carries the
+ * populated active plan, which is what the screen is opened for — and every
+ * other card shows its own skeleton until its slice arrives. The date sync is
+ * a background write that never holds the screen.
+ *
+ * `refetch` refreshes in place: the data on screen stays until the new data
+ * replaces it, instead of the page blanking to a spinner after every edit.
+ */
 export function useDashboard() {
   const { user } = useAuthStore();
-  const [data, setData] = useState<DashboardData>({
-    currentStatus: null,
-    activeTrainingPlan: null,
-    activeNutritionPlan: null,
-    trainingPlans: [],
-    nutritionPlans: [],
-    latestPhysicalData: null,
-    weightProgress: null,
-    bmi: null,
-    progressStats: null,
-    workoutStats: null,
-    aiRecommendations: [],
-  });
+  const [data, setData] = useState<DashboardData>(EMPTY);
+  const [ready, setReady] = useState<DashboardReady>(NOTHING_READY);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // A refetch, or a user switch, supersedes whatever is still in flight; late
+  // answers from the old run must not overwrite the new one.
+  const runRef = useRef(0);
+  // Whose data is on screen. A refetch keeps it; a different user must not
+  // see the previous one's cards while their own are still loading.
+  const shownUserRef = useRef<string | null>(null);
+
   const fetchDashboardData = useCallback(async () => {
-    if (!user?._id) return;
+    const userId = user?._id;
+    if (!userId) return;
 
-    setLoading(true);
+    const run = ++runRef.current;
+    const current = () => run === runRef.current;
     setError(null);
+    if (shownUserRef.current !== userId) {
+      shownUserRef.current = userId;
+      setData(EMPTY);
+      setReady(NOTHING_READY);
+      setLoading(true);
+    }
 
-    try {
-      // Fetch all data in parallel
-      const results = await Promise.allSettled([
-        currentStatusService.getByUserId(user._id),           // [0] wrapped: { data: CurrentStatus }
-        trainingPlanService.getByUserWithShared(user._id),     // [1] wrapped: { data: TrainingPlan[] }
-        nutritionPlanService.getByUserWithShared(user._id),    // [2] wrapped: { data: NutritionPlan[] }
-        physicalDataService.getLatestByUserId(user._id),       // [3] already unwrapped
-        physicalDataService.getWeightProgress(user._id),       // [4] already unwrapped
-        physicalDataService.calculateBMI(user._id),            // [5] already unwrapped
-        api.get(`/ai-recommendations/user/${user._id}`).then((r) => r.data?.data || r.data), // [6] manually unwrapped
-        progressStatsService.getByUserId(user._id),            // [7] already unwrapped
-        workoutSessionService.getStats(user._id),              // [8] already unwrapped
-      ]);
+    /** Store one slice when (and only if) this run is still the live one. */
+    const put = <K extends keyof DashboardData>(key: K, value: DashboardData[K]) => {
+      if (!current()) return;
+      setData((prev) => ({ ...prev, [key]: value }));
+      setReady((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+    };
 
-      // Helper: extract fulfilled value or null
-      const fulfilled = <T>(result: PromiseSettledResult<T>): T | null =>
-        result.status === 'fulfilled' ? result.value : null;
+    /** A request that can fail without taking anything else with it. */
+    const settle = <T>(promise: Promise<T>): Promise<T | null> =>
+      promise.catch(() => null);
 
-      // Helper: unwrap TransformInterceptor wrapper { data, timestamp, path }
-      const unwrapResponse = <T>(val: unknown): T | null => {
-        if (val && typeof val === 'object' && 'timestamp' in (val as Record<string, unknown>) && 'data' in (val as Record<string, unknown>)) {
-          return (val as Record<string, unknown>).data as T;
-        }
-        return val as T;
-      };
+    const statusP = settle(currentStatusService.getByUserId(userId)).then(
+      (raw) => unwrapResponse<CurrentStatus>(raw),
+    );
+    const trainingPlansP = settle(trainingPlanService.getByUserWithShared(userId)).then(
+      (raw) => unwrapResponse<TrainingPlan[]>(raw) || [],
+    );
+    const nutritionPlansP = settle(nutritionPlanService.getByUserWithShared(userId)).then(
+      (raw) => unwrapResponse<NutritionPlan[]>(raw) || [],
+    );
+    // The workout-count tiles and the weight/fat trend arrows read
+    // progressStats; streak and bests read workoutStats. Each is independent.
+    const workoutStatsP = settle(workoutSessionService.getStats(userId));
 
-      // Services that return response.data (still wrapped by TransformInterceptor)
-      const currentStatus = unwrapResponse<CurrentStatus>(fulfilled(results[0]));
-      const trainingPlans = unwrapResponse<TrainingPlan[]>(fulfilled(results[1])) || [];
-      const nutritionPlans = unwrapResponse<NutritionPlan[]>(fulfilled(results[2])) || [];
+    trainingPlansP.then((plans) => put('trainingPlans', plans));
+    nutritionPlansP.then((plans) => put('nutritionPlans', plans));
+    workoutStatsP.then((stats) => put('workoutStats', stats));
 
-      // Services that already unwrap response.data.data
-      const latestPhysicalData = fulfilled(results[3]) as PhysicalData | null;
-      const weightProgress = fulfilled(results[4]) as WeightProgressData | null;
-      const bmi = fulfilled(results[5]) as { bmi: number; category: string } | null;
+    settle(physicalDataService.getLatestByUserId(userId)).then((v) =>
+      put('latestPhysicalData', v as PhysicalData | null),
+    );
+    settle(physicalDataService.getWeightProgress(userId)).then((v) =>
+      put('weightProgress', v as WeightProgressData | null),
+    );
+    settle(physicalDataService.calculateBMI(userId)).then((v) =>
+      put('bmi', v as { bmi: number; category: string } | null),
+    );
+    settle(progressStatsService.getByUserId(userId)).then((v) =>
+      put('progressStats', v as ProgressStats | null),
+    );
+    settle(
+      api.get(`/ai-recommendations/user/${userId}`).then((r) => r.data?.data || r.data),
+    ).then((v) => put('aiRecommendations', Array.isArray(v) ? (v as AiRecommendation[]) : []));
 
-      // Direct API calls that manually unwrap
-      const aiRecommendations = (fulfilled(results[6]) as AiRecommendation[]) || [];
+    // ── the one thing the page waits for ────────────────────────
+    const currentStatus = await statusP;
+    if (!current()) return;
+    put('currentStatus', currentStatus);
+    setLoading(false);
 
-      // The workout-count tiles and the weight/fat trend arrows read this.
-      // It used to be hardcoded to null, which is why every count rendered 0
-      // and no arrow ever appeared — the tiles were fine, nothing fed them.
-      // `allSettled` keeps a failure here from blanking the rest of the page.
-      const progressStats = fulfilled(results[7]) as ProgressStats | null;
-      const workoutStats = fulfilled(results[8]) as WorkoutStats | null;
+    // ── active plans: from the populated status when possible ───
+    const activePlanRef = currentStatus?.activeTrainingPlanId;
+    const activeMenuRef = currentStatus?.activeMenuId;
 
-      // Resolve active plans from current status.
-      // Backend populates activeTrainingPlanId & activeMenuId,
-      // so they may be full objects (with _id) instead of string IDs.
-      let activeTrainingPlan: TrainingPlan | null = null;
-      let activeNutritionPlan: NutritionPlan | null = null;
+    const activeTrainingPlanP: Promise<TrainingPlan | null> = (async () => {
+      const id = refId(activePlanRef);
+      if (!id) return null;
+      if (isPopulated<TrainingPlan>(activePlanRef)) return activePlanRef;
+      const plans = await trainingPlansP;
+      return (
+        plans.find((p) => p._id === id) ??
+        (await settle(trainingPlanService.getById(id))) // may have been deleted
+      );
+    })();
 
-      const activePlanRef = currentStatus?.activeTrainingPlanId;
-      const activeMenuRef = currentStatus?.activeMenuId;
+    const activeNutritionPlanP: Promise<NutritionPlan | null> = (async () => {
+      const id = refId(activeMenuRef);
+      if (!id) return null;
+      if (isPopulated<NutritionPlan>(activeMenuRef)) return activeMenuRef;
+      const plans = await nutritionPlansP;
+      return (
+        plans.find((p) => p._id === id) ??
+        (await settle(nutritionPlanService.getById(id)))
+      );
+    })();
 
-      // Extract the ID whether it's a string or a populated object
-      const activePlanId = typeof activePlanRef === 'string'
-        ? activePlanRef
-        : (activePlanRef as TrainingPlan | null)?._id ?? null;
+    activeTrainingPlanP.then((plan) => put('activeTrainingPlan', plan));
+    activeNutritionPlanP.then((plan) => put('activeNutritionPlan', plan));
 
-      const activeMenuId = typeof activeMenuRef === 'string'
-        ? activeMenuRef
-        : (activeMenuRef as NutritionPlan | null)?._id ?? null;
+    // ── background: keep last/next workout dates in step ────────
+    // "Last workout" means the last one actually performed, so it comes from
+    // the training log — not from the plan's weekly schedule, which can only
+    // say when a workout was *due*. The schedule stays the fallback for users
+    // with no sessions yet. Nothing waits on this write.
+    const [activeTrainingPlan, workoutStats] = await Promise.all([
+      activeTrainingPlanP,
+      workoutStatsP,
+    ]);
+    if (!activeTrainingPlan || !current()) return;
 
-      if (activePlanId) {
-        // If backend populated the full object, use it directly
-        if (typeof activePlanRef === 'object' && activePlanRef !== null && '_id' in (activePlanRef as Record<string, unknown>)) {
-          activeTrainingPlan = activePlanRef as unknown as TrainingPlan;
-        } else {
-          activeTrainingPlan =
-            trainingPlans.find((p) => p._id === activePlanId) || null;
-          if (!activeTrainingPlan) {
-            try {
-              activeTrainingPlan = await trainingPlanService.getById(activePlanId);
-            } catch {
-              // Plan may have been deleted
-            }
-          }
-        }
+    const workoutDates = calcWorkoutDates(activeTrainingPlan);
+    const lastWorkoutDate = workoutStats?.streak.lastWorkoutAt
+      ? new Date(workoutStats.streak.lastWorkoutAt)
+      : workoutDates.lastWorkoutDate;
+
+    const needsUpdate =
+      !datesEqual(currentStatus?.lastWorkoutDate, lastWorkoutDate) ||
+      !datesEqual(currentStatus?.nextWorkoutDate, workoutDates.nextWorkoutDate);
+
+    if (needsUpdate && currentStatus) {
+      try {
+        await currentStatusService.update(userId, {
+          lastWorkoutDate,
+          nextWorkoutDate: workoutDates.nextWorkoutDate,
+        });
+        put('currentStatus', {
+          ...currentStatus,
+          lastWorkoutDate,
+          nextWorkoutDate: workoutDates.nextWorkoutDate,
+        });
+      } catch {
+        // Non-critical — the banner keeps the stored dates.
       }
-
-      if (activeMenuId) {
-        if (typeof activeMenuRef === 'object' && activeMenuRef !== null && '_id' in (activeMenuRef as Record<string, unknown>)) {
-          activeNutritionPlan = activeMenuRef as unknown as NutritionPlan;
-        } else {
-          activeNutritionPlan =
-            nutritionPlans.find((p) => p._id === activeMenuId) || null;
-          if (!activeNutritionPlan) {
-            try {
-              activeNutritionPlan = await nutritionPlanService.getById(activeMenuId);
-            } catch {
-              // Plan may have been deleted
-            }
-          }
-        }
-      }
-
-      // Calculate and sync lastWorkoutDate / nextWorkoutDate from active plan schedule
-      if (activeTrainingPlan && user._id) {
-        const workoutDates = calcWorkoutDates(activeTrainingPlan);
-
-        // "Last workout" means the last one actually performed, so it comes
-        // from the training log — not from the plan's weekly schedule. The
-        // schedule can only say when a workout was *due*, which is why logging
-        // a session used to leave the banner showing the previous plan day.
-        // The schedule stays the fallback for users with no sessions yet.
-        const lastWorkoutDate = workoutStats?.streak.lastWorkoutAt
-          ? new Date(workoutStats.streak.lastWorkoutAt)
-          : workoutDates.lastWorkoutDate;
-
-        const needsUpdate =
-          !datesEqual(currentStatus?.lastWorkoutDate, lastWorkoutDate) ||
-          !datesEqual(currentStatus?.nextWorkoutDate, workoutDates.nextWorkoutDate);
-
-        if (needsUpdate) {
-          try {
-            await currentStatusService.update(user._id, {
-              lastWorkoutDate,
-              nextWorkoutDate: workoutDates.nextWorkoutDate,
-            });
-            // Update local currentStatus with the new dates
-            if (currentStatus) {
-              currentStatus.lastWorkoutDate = lastWorkoutDate;
-              currentStatus.nextWorkoutDate = workoutDates.nextWorkoutDate;
-            }
-          } catch {
-            // Non-critical — keep going
-          }
-        }
-      }
-
-      setData({
-        currentStatus,
-        activeTrainingPlan,
-        activeNutritionPlan,
-        trainingPlans,
-        nutritionPlans,
-        latestPhysicalData,
-        weightProgress,
-        bmi,
-        progressStats,
-        workoutStats,
-        aiRecommendations: Array.isArray(aiRecommendations)
-          ? aiRecommendations
-          : [],
-      });
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-    } finally {
-      setLoading(false);
     }
   }, [user?._id]);
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData().catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      setLoading(false);
+    });
   }, [fetchDashboardData]);
 
   return {
     ...data,
+    ready,
     loading,
     error,
     refetch: fetchDashboardData,

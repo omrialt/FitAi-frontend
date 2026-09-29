@@ -80,6 +80,13 @@ export interface ListWorkoutSessionsQuery {
    * workout.
    */
   dayName?: string;
+  /** Free text over the workout's name, plan, notes, exercises and muscles. */
+  search?: string;
+  /** Only sessions containing this exercise (exact name, any case). */
+  exercise?: string;
+  /** Only sessions that trained this muscle group. */
+  muscleGroup?: string;
+  /** Up to 500. */
   limit?: number;
 }
 
@@ -218,4 +225,74 @@ export interface DeloadPrescription {
   volumePercent: number;
   durationDays: number;
   exercises: DeloadExercise[];
+}
+
+// ─── insights by workout type / exercise type ────────────────
+
+export type ExerciseTrend = 'new' | 'improving' | 'stalled' | 'declining';
+
+/** How one exercise has moved across the sessions it appears in. */
+export interface ExerciseProgress {
+  name: string;
+  muscleGroup: string | null;
+  sessions: number;
+  firstE1rm: number;
+  bestE1rm: number;
+  lastE1rm: number;
+  /** Last against first, in percent. `null` with a single session. */
+  changePercent: number | null;
+  /**
+   * Judged on the recent run, not first-vs-last: a lift that climbed for two
+   * months and then sat still for three sessions is `stalled` now.
+   */
+  trend: ExerciseTrend;
+  /** ISO day. */
+  lastPerformedAt: string;
+  bestSet: { weight: number; reps: number };
+}
+
+/**
+ * One workout type — a session's `dayName` — summarised across every time
+ * it was performed.
+ */
+export interface WorkoutTypeInsight {
+  /** `null` groups the sessions logged without a day name. */
+  dayName: string | null;
+  planTitles: string[];
+  sessions: number;
+  firstPerformedAt: string;
+  lastPerformedAt: string;
+  perWeek: number;
+  avgDurationMinutes: number | null;
+  avgVolume: number;
+  lastVolume: number;
+  /** Recent half against the earlier half; `null` with one session. */
+  volumeTrendPercent: number | null;
+  avgRpe: number | null;
+  exercises: ExerciseProgress[];
+  mostImproved: string | null;
+  stalled: string[];
+}
+
+export interface WorkoutTypesSummary {
+  types: WorkoutTypeInsight[];
+}
+
+export interface ExerciseComparisonPoint {
+  /** ISO day. */
+  date: string;
+  estimatedOneRepMax: number;
+  weight: number;
+  reps: number;
+  volume: number;
+}
+
+export interface ComparedExercise extends ExerciseProgress {
+  points: ExerciseComparisonPoint[];
+}
+
+export interface ExerciseComparison {
+  muscleGroup: string | null;
+  availableMuscleGroups: string[];
+  exercises: ComparedExercise[];
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Container, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -7,12 +7,27 @@ import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/AppLayout';
 import { StitchIcon } from '../components/common/StitchIcon';
 import { StrengthCurve } from '../components/workout/StrengthCurve';
+import { HistoryFilters } from '../components/workout/history/HistoryFilters';
+import {
+  RANGE_OPTIONS,
+  type HistoryFilterValues,
+} from '../components/workout/history/filters';
+import {
+  TypeInsights,
+  TypeOverview,
+} from '../components/workout/history/WorkoutTypeInsights';
+import { SessionComparison } from '../components/workout/history/SessionComparison';
+import { ExerciseComparison } from '../components/workout/history/ExerciseComparison';
+import { sessionVolume } from '../components/workout/history/compareSessions';
+import { typeLabel } from '../components/workout/history/labels';
+import { useDebounce } from '../hooks/useDebounce';
 import { useMetadata } from '../hooks/useMetadata';
 import { workoutSessionService } from '../services/workout-session.service';
 import { useAuthStore } from '../store/authStore';
 import type {
   PerformedSet,
   WorkoutSession,
+  WorkoutTypeInsight,
 } from '../types/workout-session.types';
 
 /**
@@ -125,21 +140,9 @@ function SessionCard({
   );
   // Volume is the one number that compares two sessions of the same workout
   // honestly — more weight at fewer reps and less weight at more reps both
-  // move it in the right direction.
-  // Drops count, the way the server counts them: they are work performed, and
-  // leaving them out made a drop-set session look lighter than a plain one.
-  const volume = session.exercises.reduce(
-    (sum, exercise) =>
-      sum +
-      exercise.sets.reduce(
-        (s, set) =>
-          s +
-          set.weight * set.reps +
-          (set.drops?.reduce((d, drop) => d + drop.weight * drop.reps, 0) ?? 0),
-        0,
-      ),
-    0,
-  );
+  // move it in the right direction. Drops count, the way the server counts
+  // them: they are work performed.
+  const volume = sessionVolume(session);
 
   const time = new Date(session.performedAt).toLocaleTimeString(locale, {
     hour: '2-digit',
@@ -223,6 +226,12 @@ function SessionCard({
   );
 }
 
+type Tab = 'log' | 'types' | 'exercises';
+const TABS: Tab[] = ['log', 'types', 'exercises'];
+
+/** Enough for a few years of training; the server caps it here too. */
+const LOG_LIMIT = 500;
+
 export default function WorkoutHistoryPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
@@ -231,33 +240,149 @@ export default function WorkoutHistoryPage() {
     title: `${t('workout.historyTitle')} - FitAI`,
   });
 
-  // Set by the dashboard's personal-bests card, so tapping a best opens the
-  // curve for that lift rather than for whatever the server picks.
-  const [searchParams] = useSearchParams();
+  // Filters live in the URL, so a filtered view survives a reload and can be
+  // shared with a trainer, and the back button undoes a filter.
+  // `exercise` is set by the dashboard's personal-bests card, so tapping a
+  // best opens the curve for that lift rather than for whatever the server
+  // picks — which is why it also opens the exercises tab.
+  const [searchParams, setSearchParams] = useSearchParams();
   const focusExercise = searchParams.get('exercise') ?? undefined;
+  const tabParam = searchParams.get('tab') as Tab | null;
+  const tab: Tab =
+    tabParam && TABS.includes(tabParam)
+      ? tabParam
+      : focusExercise
+        ? 'exercises'
+        : 'log';
+  const daysParam = Number(searchParams.get('days') ?? 0);
+  const filters: HistoryFilterValues = {
+    search: searchParams.get('q') ?? '',
+    type: searchParams.get('type') ?? '',
+    muscle: searchParams.get('muscle') ?? '',
+    days: (RANGE_OPTIONS as readonly number[]).includes(daysParam)
+      ? daysParam
+      : 0,
+  };
+
+  const setParams = (next: Record<string, string | number | undefined>) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        for (const [key, value] of Object.entries(next)) {
+          if (value === undefined || value === '' || value === 0) {
+            params.delete(key);
+          } else {
+            params.set(key, String(value));
+          }
+        }
+        return params;
+      },
+      // Typing in the search box must not push a history entry per keystroke.
+      { replace: 'q' in next },
+    );
+  };
+
+  const onFilterChange = (next: Partial<HistoryFilterValues>) => {
+    const mapped: Record<string, string | number | undefined> = {};
+    if ('search' in next) mapped.q = next.search;
+    if ('type' in next) mapped.type = next.type;
+    if ('muscle' in next) mapped.muscle = next.muscle;
+    if ('days' in next) mapped.days = next.days;
+    setParams(mapped);
+  };
+
+  const search = useDebounce(filters.search.trim(), 300);
 
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [types, setTypes] = useState<WorkoutTypeInsight[]>([]);
+  const [typesState, setTypesState] = useState<'loading' | 'ready' | 'failed'>(
+    'loading',
+  );
 
-  const load = useCallback(async () => {
+  // The log, filtered on the server so the filters cover the whole history
+  // and not just whatever page happened to be loaded.
+  useEffect(() => {
     if (!user?._id) return;
+    let cancelled = false;
     setLoading(true);
     setError(false);
-    try {
-      setSessions(await workoutSessionService.getByUserId(user._id));
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+
+    workoutSessionService
+      .getByUserId(user._id, {
+        dayName: filters.type || undefined,
+        muscleGroup: filters.muscle || undefined,
+        search: search || undefined,
+        from: filters.days
+          ? new Date(Date.now() - filters.days * 86_400_000).toISOString()
+          : undefined,
+        limit: LOG_LIMIT,
+      })
+      .then((result) => {
+        if (!cancelled) setSessions(result);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?._id, filters.type, filters.muscle, filters.days, search]);
+
+  // Workout types are all-time and do not depend on the filters: they are
+  // the filter's options, and each type's insights describe the whole of it.
+  useEffect(() => {
+    if (!user?._id) return;
+    let cancelled = false;
+    workoutSessionService
+      .getWorkoutTypes(user._id)
+      .then((result) => {
+        if (cancelled) return;
+        setTypes(result.types);
+        setTypesState('ready');
+      })
+      .catch(() => {
+        if (!cancelled) setTypesState('failed');
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [user?._id]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  const typeNames = useMemo(
+    () =>
+      types
+        .map((type) => type.dayName)
+        .filter((name): name is string => !!name),
+    [types],
+  );
+  const muscles = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const type of types) {
+      for (const exercise of type.exercises) {
+        const group = exercise.muscleGroup?.trim();
+        if (group && !seen.has(group.toLowerCase())) {
+          seen.set(group.toLowerCase(), group);
+        }
+      }
+    }
+    return [...seen.values()].sort((a, b) => a.localeCompare(b));
+  }, [types]);
+
+  const selectedType = filters.type
+    ? types.find(
+        (type) => type.dayName?.toLowerCase() === filters.type.toLowerCase(),
+      )
+    : undefined;
 
   const days = groupByDay(sessions);
+  const hasAnyLog = types.length > 0 || sessions.length > 0;
+  const firstLoad = loading && sessions.length === 0 && typesState === 'loading';
 
   return (
     <AppLayout>
@@ -272,16 +397,43 @@ export default function WorkoutHistoryPage() {
           </p>
         </header>
 
-        {/* Above the log on purpose: the trend is the reason to open this page,
-            and the session list is the evidence behind it. Only shown once
-            there is a log to draw from. */}
-        {user?._id && !loading && !error && sessions.length > 0 && (
-          <div className="mb-6">
-            <StrengthCurve userId={user._id} initialExercise={focusExercise} />
-          </div>
+        {hasAnyLog && (
+          <>
+            <HistoryFilters
+              value={filters}
+              onChange={onFilterChange}
+              types={typeNames}
+              muscles={muscles}
+            />
+
+            <div
+              role="tablist"
+              aria-label={t('workout.historyTitle')}
+              className="mb-6 grid grid-cols-3 gap-1 rounded-xl bg-surface-container-low p-1"
+            >
+              {TABS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === key}
+                  onClick={() => setParams({ tab: key === 'log' ? '' : key })}
+                  className={`min-h-10 rounded-lg px-2 text-xs font-bold transition-colors sm:text-sm ${
+                    tab === key
+                      ? 'bg-surface-container-lowest text-on-surface shadow-sm'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  {t(
+                    `workout.history.tab${key[0].toUpperCase()}${key.slice(1)}`,
+                  )}
+                </button>
+              ))}
+            </div>
+          </>
         )}
 
-        {loading ? (
+        {firstLoad ? (
           /* Skeleton rather than a spinner: the handoff calls for shimmer on
              lists and charts, and a spinner tells you nothing about what is
              arriving. These blocks match the session-card rhythm below. */
@@ -312,33 +464,79 @@ export default function WorkoutHistoryPage() {
           >
             {t('workout.historyLoadFailed')}
           </Alert>
-        ) : sessions.length === 0 ? (
+        ) : !hasAnyLog ? (
           <p className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 text-sm text-on-surface-variant">
             {t('workout.noSessions')}
           </p>
+        ) : tab === 'exercises' ? (
+          user?._id && (
+            <div className="flex flex-col gap-6">
+              <ExerciseComparison
+                userId={user._id}
+                initialMuscleGroup={filters.muscle || undefined}
+              />
+              {/* The single-lift curve stays: the comparison shows the group,
+                  this shows one lift's whole story with its record days. */}
+              <StrengthCurve userId={user._id} initialExercise={focusExercise} />
+            </div>
+          )
+        ) : tab === 'types' ? (
+          typesState === 'failed' ? (
+            <Alert color="red" variant="light" icon={<IconAlertCircle size={16} />}>
+              {t('workout.history.typesFailed')}
+            </Alert>
+          ) : selectedType ? (
+            <div className="flex flex-col gap-6">
+              <TypeInsights insight={selectedType} />
+              <SessionComparison
+                key={selectedType.dayName}
+                sessions={sessions}
+                name={typeLabel(t, selectedType.dayName)}
+              />
+            </div>
+          ) : (
+            <TypeOverview
+              types={types}
+              onPick={(dayName) => onFilterChange({ type: dayName })}
+            />
+          )
         ) : (
-          <div className="flex flex-col gap-8">
-            {days.map(([day, daySessions]) => (
-              <section key={day}>
-                <h2 className="mb-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
-                  {new Date(day).toLocaleDateString(i18n.language, {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </h2>
-                <div className="flex flex-col gap-3">
-                  {daySessions.map((session) => (
-                    <SessionCard
-                      key={session._id}
-                      session={session}
-                      locale={i18n.language}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
+          <div className={loading ? 'opacity-60 transition-opacity' : undefined}>
+            <p
+              className="mb-3 text-xs font-bold text-on-surface-variant"
+              aria-live="polite"
+            >
+              {t('workout.history.resultCount', { count: sessions.length })}
+            </p>
+            {sessions.length === 0 ? (
+              <p className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 text-sm text-on-surface-variant">
+                {t('workout.history.noResults')}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-8">
+                {days.map(([day, daySessions]) => (
+                  <section key={day}>
+                    <h2 className="mb-3 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                      {new Date(day).toLocaleDateString(i18n.language, {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </h2>
+                    <div className="flex flex-col gap-3">
+                      {daySessions.map((session) => (
+                        <SessionCard
+                          key={session._id}
+                          session={session}
+                          locale={i18n.language}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </Container>

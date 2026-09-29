@@ -29,8 +29,45 @@ import { OverloadCard } from '../components/workout/OverloadCard';
 import { DeloadCard } from '../components/workout/DeloadCard';
 import { coachService } from '../services/coach.service';
 import { RemainingToday } from '../components/nutrition/RemainingToday';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import '../styles/Dashboard.css';
+
+/**
+ * A card-shaped placeholder for a slice that has not arrived yet.
+ *
+ * Only for the moment before the first answer: rendering the real card with
+ * empty props would show "no active plan" or "no measurements" for half a
+ * second on an account that has both, which reads as a bug.
+ */
+function CardSkeleton({ lines = 3, tall = false }: { lines?: number; tall?: boolean }) {
+  return (
+    <div
+      className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-5"
+      aria-hidden="true"
+    >
+      <div className="skeleton mb-4 h-4 w-40" />
+      <div className="flex flex-col gap-2">
+        {Array.from({ length: lines }, (_, i) => (
+          <div key={i} className={`skeleton w-full ${tall ? 'h-12' : 'h-8'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WhenReady({
+  ready,
+  children,
+  lines,
+  tall,
+}: {
+  ready: boolean;
+  children: ReactNode;
+  lines?: number;
+  tall?: boolean;
+}) {
+  return ready ? <>{children}</> : <CardSkeleton lines={lines} tall={tall} />;
+}
 
 function DashboardPage() {
   const metadata = usePresetMetadata('dashboard');
@@ -84,6 +121,7 @@ function DashboardContent() {
     progressStats,
     workoutStats,
     aiRecommendations,
+    ready,
     refetch,
   } = useDashboard();
 
@@ -127,12 +165,26 @@ function DashboardContent() {
         <WelcomeSection user={user} currentStatus={currentStatus} />
 
         {/* Quick Stats */}
-        <QuickStatsCards
-          trainingPlans={trainingPlans}
-          nutritionPlans={nutritionPlans}
-          progressStats={progressStats}
-          bmi={bmi}
-        />
+        {ready.trainingPlans &&
+        ready.nutritionPlans &&
+        ready.progressStats &&
+        ready.bmi ? (
+          <QuickStatsCards
+            trainingPlans={trainingPlans}
+            nutritionPlans={nutritionPlans}
+            progressStats={progressStats}
+            bmi={bmi}
+          />
+        ) : (
+          <div
+            className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-6"
+            aria-hidden="true"
+          >
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="skeleton h-24 w-full rounded-xl" />
+            ))}
+          </div>
+        )}
 
         {/* Bento.
             One column on phones, two from lg, and three from xl with the first
@@ -143,11 +195,15 @@ function DashboardContent() {
             its own vertical rhythm as the tracks change. */}
         <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1.25fr_1fr_1fr] gap-8 items-start">
           <div className="flex flex-col gap-8">
-            <ActiveTrainingCard
-              plan={activeTrainingPlan}
-              currentStatus={currentStatus}
-            />
-            <TrainingRecordCard stats={workoutStats} />
+            <WhenReady ready={ready.activeTrainingPlan} lines={4} tall>
+              <ActiveTrainingCard
+                plan={activeTrainingPlan}
+                currentStatus={currentStatus}
+              />
+            </WhenReady>
+            <WhenReady ready={ready.workoutStats}>
+              <TrainingRecordCard stats={workoutStats} />
+            </WhenReady>
             {/* Renders nothing until there is enough log to judge, so it stays
                 absent rather than apologetic on a new account. */}
             {user?._id && <FatigueCard userId={user._id} />}
@@ -164,20 +220,33 @@ function DashboardContent() {
             {/* Renders nothing until something is logged or a plan is active,
                 so it stays absent rather than empty on a new account. */}
             <RemainingToday />
-            <ActiveNutritionCard plan={activeNutritionPlan} />
-            <BodyProgressCard
-              latestPhysicalData={latestPhysicalData}
-              weightProgress={weightProgress}
-              progressStats={progressStats}
-              onDataUpdate={refetch}
-            />
+            <WhenReady ready={ready.activeNutritionPlan}>
+              <ActiveNutritionCard plan={activeNutritionPlan} />
+            </WhenReady>
+            <WhenReady
+              ready={
+                ready.latestPhysicalData &&
+                ready.weightProgress &&
+                ready.progressStats
+              }
+              lines={4}
+            >
+              <BodyProgressCard
+                latestPhysicalData={latestPhysicalData}
+                weightProgress={weightProgress}
+                progressStats={progressStats}
+                onDataUpdate={refetch}
+              />
+            </WhenReady>
           </div>
 
           <div className="flex flex-col gap-8">
-            <RecentRecommendations
-              recommendations={aiRecommendations}
-              action={<WeeklyReviewButton onCreated={refetch} />}
-            />
+            <WhenReady ready={ready.aiRecommendations}>
+              <RecentRecommendations
+                recommendations={aiRecommendations}
+                action={<WeeklyReviewButton onCreated={refetch} />}
+              />
+            </WhenReady>
             {/* Hidden entirely when the server has no key, rather than offered
                 and failing. */}
             <CoachChat enabled={coachEnabled} />
