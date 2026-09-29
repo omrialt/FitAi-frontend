@@ -1161,7 +1161,9 @@
       "exCompareSubtitle": "כל התרגילים של קבוצת שריר אחת בגרף אחד, לפי 1RM משוער.",
       "exCompareEmpty": "לא תועדו תרגילים לקבוצת השריר הזו בתקופה הזו.",
       "exCompareFailed": "לא הצלחנו לטעון את השוואת התרגילים.",
-      "estimatedMax": "1RM משוער"
+      "estimatedMax": "1RM משוער",
+      "planFilter": "תוכנית",
+      "allPlans": "כל התוכניות"
     }
   },
   "account": {

@@ -259,6 +259,7 @@ export default function WorkoutHistoryPage() {
     search: searchParams.get('q') ?? '',
     type: searchParams.get('type') ?? '',
     muscle: searchParams.get('muscle') ?? '',
+    plan: searchParams.get('plan') ?? '',
     days: (RANGE_OPTIONS as readonly number[]).includes(daysParam)
       ? daysParam
       : 0,
@@ -287,6 +288,7 @@ export default function WorkoutHistoryPage() {
     if ('search' in next) mapped.q = next.search;
     if ('type' in next) mapped.type = next.type;
     if ('muscle' in next) mapped.muscle = next.muscle;
+    if ('plan' in next) mapped.plan = next.plan;
     if ('days' in next) mapped.days = next.days;
     setParams(mapped);
   };
@@ -313,6 +315,7 @@ export default function WorkoutHistoryPage() {
       .getByUserId(user._id, {
         dayName: filters.type || undefined,
         muscleGroup: filters.muscle || undefined,
+        planTitle: filters.plan || undefined,
         search: search || undefined,
         from: filters.days
           ? new Date(Date.now() - filters.days * 86_400_000).toISOString()
@@ -332,7 +335,14 @@ export default function WorkoutHistoryPage() {
     return () => {
       cancelled = true;
     };
-  }, [user?._id, filters.type, filters.muscle, filters.days, search]);
+  }, [
+    user?._id,
+    filters.type,
+    filters.muscle,
+    filters.plan,
+    filters.days,
+    search,
+  ]);
 
   // Workout types are all-time and do not depend on the filters: they are
   // the filter's options, and each type's insights describe the whole of it.
@@ -374,6 +384,16 @@ export default function WorkoutHistoryPage() {
     return [...seen.values()].sort((a, b) => a.localeCompare(b));
   }, [types]);
 
+  const plans = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const type of types) {
+      for (const title of type.planTitles) {
+        if (!seen.has(title.toLowerCase())) seen.set(title.toLowerCase(), title);
+      }
+    }
+    return [...seen.values()].sort((a, b) => a.localeCompare(b));
+  }, [types]);
+
   const selectedType = filters.type
     ? types.find(
         (type) => type.dayName?.toLowerCase() === filters.type.toLowerCase(),
@@ -404,6 +424,7 @@ export default function WorkoutHistoryPage() {
               onChange={onFilterChange}
               types={typeNames}
               muscles={muscles}
+              plans={plans}
             />
 
             <div

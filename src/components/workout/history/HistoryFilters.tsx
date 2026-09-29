@@ -16,6 +16,8 @@ interface HistoryFiltersProps {
   onChange: (next: Partial<HistoryFilterValues>) => void;
   types: string[];
   muscles: string[];
+  /** Plan titles in the log. The picker only appears when there are two or more. */
+  plans: string[];
 }
 
 export function HistoryFilters({
@@ -23,10 +25,15 @@ export function HistoryFilters({
   onChange,
   types,
   muscles,
+  plans,
 }: HistoryFiltersProps) {
   const { t } = useTranslation();
   const active =
-    !!value.search || !!value.type || !!value.muscle || value.days !== 0;
+    !!value.search ||
+    !!value.type ||
+    !!value.muscle ||
+    !!value.plan ||
+    value.days !== 0;
 
   const chip = (selected: boolean) =>
     `min-h-9 shrink-0 rounded-full border px-3 text-xs font-bold transition-colors ${
@@ -88,6 +95,24 @@ export function HistoryFilters({
       )}
 
       <div className="flex flex-wrap items-center gap-2">
+        {/* One plan is no choice at all, so the picker stays out of the way
+            until the log spans more than one. */}
+        {plans.length > 1 && (
+          <select
+            value={value.plan}
+            aria-label={t('workout.history.planFilter')}
+            onChange={(e) => onChange({ plan: e.target.value })}
+            className="h-10 min-w-0 flex-1 rounded-lg border border-outline-variant/30 bg-surface-container-lowest px-2 text-sm text-on-surface outline-none focus:border-primary sm:flex-none"
+          >
+            <option value="">{t('workout.history.allPlans')}</option>
+            {plans.map((plan) => (
+              <option key={plan} value={plan}>
+                {plan}
+              </option>
+            ))}
+          </select>
+        )}
+
         <select
           value={value.muscle}
           aria-label={t('workout.history.muscleFilter')}
@@ -132,7 +157,7 @@ export function HistoryFilters({
           <button
             type="button"
             onClick={() =>
-              onChange({ search: '', type: '', muscle: '', days: 0 })
+              onChange({ search: '', type: '', muscle: '', plan: '', days: 0 })
             }
             className="min-h-10 px-2 text-xs font-bold text-primary hover:underline"
           >
