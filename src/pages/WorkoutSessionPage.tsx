@@ -24,6 +24,7 @@ import { useAuthStore } from '../store/authStore';
 import { todaysPlanDayIndex } from '../utils/planDay';
 import type { TrainingDay, TrainingPlan } from '../types/training-plan.types';
 import type {
+  PerformedSet,
   SessionExercise,
   WorkoutSession,
 } from '../types/workout-session.types';
@@ -79,6 +80,15 @@ interface SetDraft {
    * set and the screen does not get busier for the 90% case.
    */
   drops?: DropDraft[];
+  /**
+   * Whether the drops above came across from the last session untouched.
+   *
+   * Drops are otherwise only ever there because the user asked for one, so
+   * "this set has drops" doubles as evidence of a workout in progress. A
+   * carried drop is not that evidence, and this is how `hasUserInput` tells
+   * the two apart. Any edit to the drops clears it.
+   */
+  dropsCarried?: boolean;
   done: boolean;
 }
 
@@ -149,7 +159,7 @@ function claimTypedSets(exercises: ExerciseDraft[]): ExerciseDraft[] {
  * from memory or from the history screen in another tab. The log already
  * knows them.
  *
- * What comes across is reps and weight, and only that:
+ * What comes across is reps, weight and drops, and only that:
  *
  *   - nothing is marked done. The sheet says what you *did* last time, not
  *     what you have done today, and one is not evidence of the other;
@@ -158,9 +168,12 @@ function claimTypedSets(exercises: ExerciseDraft[]): ExerciseDraft[] {
  *     same way a fresh entry does;
  *   - no RPE. It is a rating of how a particular set felt on a particular
  *     day, and copying one forward would be inventing it;
- *   - no drops. A reduction is a decision made at the rack, with the bar
- *     already loaded — pre-drawing the rows would be the screen deciding for
- *     the user that the set ends in a drop;
+ *   - drops, with their reps and weight, on the set they followed. A drop
+ *     set is usually a fixture of the programme rather than a whim, and
+ *     retyping the reductions every week was the same chore as retyping the
+ *     sets. They are marked `dropsCarried`, so they do not count as a
+ *     workout in progress, and they are sent only if the set is marked done
+ *     — one tap on ✕ removes a drop not taken today;
  *   - no notes. "Right shoulder twinged" belongs to the day it happened.
  *
  * Exercises are matched by name, so an exercise swapped out last session
@@ -184,7 +197,12 @@ function withLastPerformance(
       // three sets in leaves the rest of the sheet on its placeholders.
       const done = last.sets[i];
       if (!done) return set;
-      return { ...set, reps: String(done.reps), weight: String(done.weight) };
+      return {
+        ...set,
+        reps: String(done.reps),
+        weight: String(done.weight),
+        ...carriedDrops(done),
+      };
     });
 
     for (let i = exercise.sets.length; i < last.sets.length; i += 1) {
@@ -200,12 +218,30 @@ function withLastPerformance(
         repsTyped: false,
         weightTyped: false,
         rpe: '',
+        ...carriedDrops(last.sets[i]),
         done: false,
       });
     }
 
     return { ...exercise, sets };
   });
+}
+
+/**
+ * A performed set's drops as draft rows, or nothing for an ordinary set — so
+ * a set without drops keeps no `drops` key, as everywhere else on this page.
+ */
+function carriedDrops(
+  set: PerformedSet,
+): Pick<SetDraft, 'drops' | 'dropsCarried'> {
+  if (!set.drops || set.drops.length === 0) return {};
+  return {
+    drops: set.drops.map((drop) => ({
+      reps: String(drop.reps),
+      weight: String(drop.weight),
+    })),
+    dropsCarried: true,
+  };
 }
 
 /**
@@ -233,7 +269,7 @@ function hasUserInput(draft: ExerciseDraft[], notes: string): boolean {
         set.rpe ||
         set.repsTyped ||
         set.weightTyped ||
-        (set.drops?.length ?? 0) > 0,
+        (!set.dropsCarried && (set.drops?.length ?? 0) > 0),
     ),
   );
 }
@@ -646,7 +682,11 @@ export default function WorkoutSessionPage() {
                 ? drops[drops.length - 1].weight
                 : set.weight || String(set.targetWeight);
 
-            return { ...set, drops: [...drops, { reps: '', weight: previous }] };
+            return {
+              ...set,
+              drops: [...drops, { reps: '', weight: previous }],
+              dropsCarried: false,
+            };
           }),
         };
       }),
@@ -669,6 +709,7 @@ export default function WorkoutSessionPage() {
                         drops: (set.drops ?? []).map((drop, dropIndex) =>
                           dropIndex === di ? { ...drop, ...patch } : drop,
                         ),
+                        dropsCarried: false,
                       },
                 ),
               },
@@ -691,7 +732,11 @@ export default function WorkoutSessionPage() {
                 const drops = (set.drops ?? []).filter((_, i) => i !== di);
                 // Back to undefined rather than [], so the set stops being a
                 // drop set entirely once the last reduction is removed.
-                return { ...set, drops: drops.length > 0 ? drops : undefined };
+                return {
+                  ...set,
+                  drops: drops.length > 0 ? drops : undefined,
+                  dropsCarried: false,
+                };
               }),
             },
       ),
