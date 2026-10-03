@@ -473,7 +473,11 @@ describe('WorkoutSessionPage', () => {
     const repsInputs = () =>
       screen.getAllByPlaceholderText('8') as HTMLInputElement[];
     const lastSession = (
-      sets: { reps: number; weight: number }[],
+      sets: {
+        reps: number;
+        weight: number;
+        drops?: { reps: number; weight: number }[];
+      }[],
       name = 'Bench Press',
     ) =>
       vi.mocked(workoutSessionService.getByUserId).mockResolvedValue([
@@ -592,6 +596,102 @@ describe('WorkoutSessionPage', () => {
       expect(payload.exercises[0].sets).toEqual([
         expect.objectContaining({ reps: 9, weight: 65 }),
       ]);
+    });
+
+    describe('drops', () => {
+      const dropReps = (set: number, drop: number) =>
+        screen.getByLabelText(
+          new RegExp(`workout.dropRepsFor.*"set":${set},"drop":${drop}`),
+        ) as HTMLInputElement;
+      const dropWeight = (set: number, drop: number) =>
+        screen.getByLabelText(
+          new RegExp(`workout.dropWeightFor.*"set":${set},"drop":${drop}`),
+        ) as HTMLInputElement;
+
+      const withDrops = () =>
+        lastSession([
+          { reps: 9, weight: 65 },
+          {
+            reps: 7,
+            weight: 65,
+            drops: [
+              { reps: 6, weight: 45 },
+              { reps: 5, weight: 30 },
+            ],
+          },
+        ]);
+
+      it('brings the drops back on the set they followed', async () => {
+        withDrops();
+        renderPage();
+        await screen.findByText('Bench Press');
+
+        await waitFor(() => expect(dropReps(2, 1).value).toBe('6'));
+        expect(dropWeight(2, 1).value).toBe('45');
+        expect(dropReps(2, 2).value).toBe('5');
+        expect(dropWeight(2, 2).value).toBe('30');
+        // Set 1 had none last time, and gets none now.
+        expect(
+          screen.queryByLabelText(/workout.dropRepsFor.*"set":1,/),
+        ).not.toBeInTheDocument();
+        expect(screen.getByText(/0\/2/)).toBeInTheDocument();
+      });
+
+      it('does not persist a sheet whose only drops were carried in', async () => {
+        withDrops();
+        renderPage();
+        await screen.findByText('Bench Press');
+        await waitFor(() => expect(dropReps(2, 1).value).toBe('6'));
+
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
+      });
+
+      it('counts an edit to a carried drop as a workout in progress', async () => {
+        withDrops();
+        renderPage();
+        await screen.findByText('Bench Press');
+        await waitFor(() => expect(dropReps(2, 1).value).toBe('6'));
+
+        fireEvent.change(dropReps(2, 1), { target: { value: '7' } });
+
+        await waitFor(
+          () => expect(localStorage.getItem(DRAFT_KEY)).not.toBeNull(),
+          { timeout: 1500 },
+        );
+      });
+
+      it('sends the carried drops once their set is marked done', async () => {
+        vi.mocked(workoutSessionService.create).mockResolvedValue(
+          {} as unknown as Awaited<
+            ReturnType<typeof workoutSessionService.create>
+          >,
+        );
+        withDrops();
+        renderPage();
+        await screen.findByText('Bench Press');
+        await waitFor(() => expect(dropReps(2, 1).value).toBe('6'));
+
+        fireEvent.click(
+          screen.getByLabelText(/workout.markSetDone.*"number":2/),
+        );
+        fireEvent.click(screen.getByText('workout.finish'));
+
+        await waitFor(() => {
+          expect(workoutSessionService.create).toHaveBeenCalled();
+        });
+        const [payload] = vi.mocked(workoutSessionService.create).mock.calls[0];
+        expect(payload.exercises[0].sets).toEqual([
+          expect.objectContaining({
+            reps: 7,
+            weight: 65,
+            drops: [
+              { reps: 6, weight: 45 },
+              { reps: 5, weight: 30 },
+            ],
+          }),
+        ]);
+      });
     });
 
     it('yields to a draft the user resumed', async () => {
