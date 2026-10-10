@@ -5,6 +5,11 @@ import type { CalendarEvent, GoogleCalendarStatus, SyncResult } from '../types/c
 /**
  * Hook for managing Google Calendar connection
  */
+/** An error's message, or the fallback when it has none worth showing. */
+function messageOf(err: unknown, fallback: string): string {
+  return (err instanceof Error && err.message) || fallback;
+}
+
 export function useGoogleCalendar() {
   const [status, setStatus] = useState<GoogleCalendarStatus | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,8 +21,8 @@ export function useGoogleCalendar() {
       const statusData = await calendarSyncService.getConnectionStatus();
       setStatus(statusData);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Failed to check connection status');
+    } catch (err) {
+      setError(messageOf(err, 'Failed to check connection status'));
     } finally {
       setLoading(false);
     }
@@ -29,8 +34,8 @@ export function useGoogleCalendar() {
       const authUrl = await calendarSyncService.getGoogleAuthUrl();
       // Redirect to Google OAuth - backend handles the callback
       window.location.href = authUrl;
-    } catch (err: any) {
-      setError(err.message || 'Failed to initiate Google Calendar connection');
+    } catch (err) {
+      setError(messageOf(err, 'Failed to initiate Google Calendar connection'));
       setLoading(false);
     }
   }, []);
@@ -41,8 +46,8 @@ export function useGoogleCalendar() {
       await calendarSyncService.disconnectGoogle();
       setStatus({ connected: false, hasRefreshToken: false });
       setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Failed to disconnect Google Calendar');
+    } catch (err) {
+      setError(messageOf(err, 'Failed to disconnect Google Calendar'));
     } finally {
       setLoading(false);
     }
@@ -90,9 +95,9 @@ export function useWeeklyCalendar(weekStart?: Date) {
       if (isStale()) return;
       setEvents(calendarEvents);
       setError(null);
-    } catch (err: any) {
+    } catch (err) {
       if (isStale()) return;
-      setError(err.message || 'Failed to fetch calendar events');
+      setError(messageOf(err, 'Failed to fetch calendar events'));
       setEvents([]);
     } finally {
       // A superseded request must not clear the spinner the newer one is using
@@ -131,8 +136,8 @@ export function useTrainingPlanSync() {
         setResult(syncResult);
         setError(null);
         return syncResult;
-      } catch (err: any) {
-        setError(err.message || 'Failed to sync training plan');
+      } catch (err) {
+        setError(messageOf(err, 'Failed to sync training plan'));
         throw err;
       } finally {
         setSyncing(false);

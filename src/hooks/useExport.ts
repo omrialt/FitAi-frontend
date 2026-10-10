@@ -105,7 +105,7 @@ export function useExport(options: UseExportOptions = {}): UseExportReturn {
               }
             });
 
-            yPos = (doc as any).lastAutoTable.finalY + 8;
+            yPos = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
           });
         } else {
           doc.setFontSize(10);

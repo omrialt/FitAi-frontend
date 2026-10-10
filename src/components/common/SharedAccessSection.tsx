@@ -39,10 +39,12 @@ export function SharedAccessSection({
   objectType,
 }: SharedAccessSectionProps) {
   const { t } = useTranslation();
-  const sharedWithUsers = sharedAccess.map((sa: { userId: string | any }) => {
-    // Handle both string IDs and populated User objects
-    return typeof sa.userId === 'string' ? sa.userId : sa.userId?._id || sa.userId;
-  });
+  const sharedWithUsers = sharedAccess.map(
+    (sa: { userId: string | { _id?: string } | null }) => {
+      // Handle both string IDs and populated User objects
+      return typeof sa.userId === 'string' ? sa.userId : (sa.userId?._id ?? '');
+    },
+  );
   const allUsersData = useMemo(
     () => allUsers.map((user) => ({ value: user._id, label: user.fullName })),
     [allUsers]
