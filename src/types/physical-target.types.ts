@@ -24,6 +24,10 @@ export interface PhysicalTarget {
   startValues?: TargetValues;
   startDate: string;
   status: PhysicalTargetStatus;
+  /** When it was marked achieved or abandoned; absent while active. */
+  closedAt?: string;
+  /** Who set it — the owner, or their trainer. Absent on older targets (the owner). */
+  createdBy?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

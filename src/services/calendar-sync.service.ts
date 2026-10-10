@@ -39,7 +39,12 @@ class CalendarSyncService {
    */
   async getWeeklyCalendar(weekStart?: Date): Promise<CalendarEvent[]> {
     const params = weekStart ? { weekStart: weekStart.toISOString() } : {};
-    const response = await api.get<{ data: { events: any[] } }>(
+    // Dates arrive as strings, and may be missing — see the filter below.
+    type RawEvent = Omit<CalendarEvent, 'start' | 'end'> & {
+      start?: string | null;
+      end?: string | null;
+    };
+    const response = await api.get<{ data: { events: RawEvent[] } }>(
       '/calendar-sync/weekly',
       { params },
     );

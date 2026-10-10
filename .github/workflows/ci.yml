@@ -28,12 +28,11 @@ jobs:
       - name: Install
         run: npm ci
 
-      # Non-blocking: the repo carries a standing baseline of 12 errors and 2
-      # warnings in files nobody is touching. A check that is red from day one
-      # is a check nobody reads. Flip to blocking once the baseline is clear.
+      # Blocking since the baseline was cleared (gap analysis rev. 17). It was
+      # non-blocking while a standing baseline would have made every PR red on
+      # day one; with zero, a new problem is a new problem.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Test
         run: npm test

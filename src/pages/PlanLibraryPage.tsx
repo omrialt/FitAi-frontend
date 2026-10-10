@@ -16,7 +16,7 @@ import {
   Center,
   Box,
 } from '@mantine/core';
-import { IconTemplate, IconUsersPlus } from '@tabler/icons-react';
+import { IconPlus, IconTemplate, IconUsersPlus } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { AppLayout } from '../components/AppLayout';
@@ -33,6 +33,11 @@ import type { TrainingPlan } from '../types/training-plan.types';
  * because their coach decided it was a good pattern. So this page's two verbs
  * are "copy a plan in here" and "copy it out to these clients".
  */
+/** A plan's owner id, whether or not the server populated it. */
+function ownerIdOf(plan: TrainingPlan): string {
+  return typeof plan.userId === 'string' ? plan.userId : plan.userId?._id;
+}
+
 export default function PlanLibraryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -44,7 +49,9 @@ export default function PlanLibraryPage() {
   const [assignTarget, setAssignTarget] = useState<TrainingPlan | null>(null);
 
   const [saveOpen, setSaveOpen] = useState(false);
-  const [plans, setPlans] = useState<TrainingPlan[]>([]);
+  // `null` while loading, so an empty list means "you have none" and never
+  // "not fetched yet" — the difference N-33 was about.
+  const [plans, setPlans] = useState<TrainingPlan[] | null>(null);
   const [sourcePlanId, setSourcePlanId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [saving, setSaving] = useState(false);
@@ -68,16 +75,19 @@ export default function PlanLibraryPage() {
     setSourcePlanId(null);
     setNewTitle('');
     setSaveOpen(true);
+    setPlans(null);
     try {
-      // Their own plans (and anything shared with them). Templates are
-      // excluded by the server, so the picker never offers a template as the
-      // source for another template.
-      setPlans(
-        user?._id
-          ? await trainingPlanService.getByUserWithShared(user._id)
-          : [],
-      );
+      // Templates are excluded by the server, so the picker never offers a
+      // template as the source for another template. Plans shared *with* the
+      // trainer are filtered out here: save-as-template accepts only the
+      // caller's own plans, and offering one that is refused on save is worse
+      // than not offering it.
+      const available = user?._id
+        ? await trainingPlanService.getByUserWithShared(user._id)
+        : [];
+      setPlans(available.filter((plan) => ownerIdOf(plan) === user?._id));
     } catch {
+      setPlans([]);
       toast.error(t('planLibrary.loadPlansFailed'));
     }
   }, [t, user?._id]);
@@ -190,23 +200,48 @@ export default function PlanLibraryPage() {
         title={t('planLibrary.saveAsTemplate')}
       >
         <Stack gap="md">
-          <Select
-            label={t('planLibrary.pickPlan')}
-            placeholder={t('planLibrary.pickPlanPlaceholder')}
-            data={plans.map((plan) => ({
-              value: plan._id,
-              label: plan.title,
-            }))}
-            value={sourcePlanId}
-            onChange={setSourcePlanId}
-            searchable
-          />
-          <TextInput
-            label={t('planLibrary.templateTitle')}
-            description={t('planLibrary.templateTitleHint')}
-            value={newTitle}
-            onChange={(event) => setNewTitle(event.currentTarget.value)}
-          />
+          {plans === null ? (
+            <Group justify="center" py="md">
+              <Loader size="sm" />
+            </Group>
+          ) : plans.length === 0 ? (
+            /* A new trainer's first visit lands exactly here. The server is
+               right to have nothing to offer — a template is copied from one
+               of your own plans — so the screen says that, and where to go. */
+            <Stack gap="xs" align="flex-start">
+              <Text fw={700}>{t('planLibrary.noOwnPlans')}</Text>
+              <Text size="sm" c="dimmed">
+                {t('planLibrary.noOwnPlansHint')}
+              </Text>
+              <Button
+                variant="light"
+                leftSection={<IconPlus size={16} />}
+                onClick={() => navigate('/my-trainings')}
+              >
+                {t('planLibrary.createPlan')}
+              </Button>
+            </Stack>
+          ) : (
+            <>
+              <Select
+                label={t('planLibrary.pickPlan')}
+                placeholder={t('planLibrary.pickPlanPlaceholder')}
+                data={plans.map((plan) => ({
+                  value: plan._id,
+                  label: plan.title,
+                }))}
+                value={sourcePlanId}
+                onChange={setSourcePlanId}
+                searchable
+              />
+              <TextInput
+                label={t('planLibrary.templateTitle')}
+                description={t('planLibrary.templateTitleHint')}
+                value={newTitle}
+                onChange={(event) => setNewTitle(event.currentTarget.value)}
+              />
+            </>
+          )}
           <Group justify="flex-end">
             <Button variant="subtle" onClick={() => setSaveOpen(false)}>
               {t('common.cancel')}

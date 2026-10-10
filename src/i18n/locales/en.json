@@ -796,7 +796,26 @@
     "deleteTitle": "Delete Target",
     "deleteConfirm": "Are you sure you want to delete this target?",
     "deleteWarning": "This action cannot be undone. The target will be permanently deleted.",
-    "atLeastOneMetric": "Select at least one metric"
+    "atLeastOneMetric": "Select at least one metric",
+    "reactivate": "Reopen",
+    "abandonConfirm": "Abandon this target?",
+    "abandonConfirmYes": "Yes, abandon",
+    "keep": "Keep it",
+    "allReached": "Every metric has reached its target",
+    "achievedOn": "Achieved on {{date}}",
+    "abandonedOn": "Abandoned on {{date}}",
+    "statusChanged": {
+      "active": "Target reopened",
+      "achieved": "Target marked as achieved",
+      "abandoned": "Target abandoned"
+    },
+    "setByTrainer": "Set by your trainer",
+    "setByYou": "Set by you",
+    "setByClient": "Set by the client",
+    "setGoal": "Set a goal",
+    "clientGoals": "Goals",
+    "clientNoTargets": "No goals yet",
+    "clientNoTargetsText": "Set a goal for this client — they'll see it on their Physical Data page and can track it from there."
   },
   "calendar": {
     "previous": "← Previous",
@@ -1124,7 +1143,10 @@
       "estimatedMax": "e1RM",
       "planFilter": "Plan",
       "allPlans": "All plans"
-    }
+    },
+    "previous": "Previous",
+    "prefillMatchedAs": "Last time logged as “{{name}}”",
+    "prefillOffDaySkipped": "Filled from an earlier session — {{date}} looked like an off day"
   },
   "account": {
     "sectionTitle": "Your data",
@@ -1306,6 +1328,23 @@
       "no_measurements": "No measurements",
       "deload_suggested": "Deload suggested",
       "no_active_plan": "No active plan"
+    },
+    "settings": {
+      "title": "Alert settings",
+      "intro": "When a client gets an alert on this screen. The defaults suit someone training 3–4 times a week.",
+      "idleInfoDays": "Mention a client after (days without a workout)",
+      "idleInfoDaysHint": "Shown as information",
+      "idleWarnDays": "Flag a client after (days without a workout)",
+      "idleWarnDaysHint": "Shown as needing attention",
+      "stallMinSpanDays": "Weight plateau: at least this many days between weigh-ins",
+      "stallMinSpanDaysHint": "Shorter spans are ordinary day-to-day noise",
+      "stallMaxChangeKg": "Weight plateau: moved less than (kg)",
+      "stallMaxChangeKgHint": "Change smaller than this over that span counts as stalled",
+      "warnAfterInfo": "Must be more days than the first threshold",
+      "reset": "Restore defaults",
+      "saved": "Alert settings saved",
+      "saveFailed": "Could not save the alert settings",
+      "loadFailed": "Could not load your alert settings — showing the defaults"
     }
   },
   "messages": {
@@ -1319,7 +1358,8 @@
     "send": "Send",
     "sendFailed": "The message was not sent. Your text is still in the box.",
     "loadFailed": "Could not load messages",
-    "messageClient": "Send a message"
+    "messageClient": "Send a message",
+    "rateLimited": "You're sending messages too fast. Wait a minute — your text is still in the box."
   },
   "trainerNote": {
     "title": "Private notes",
@@ -1328,7 +1368,14 @@
     "placeholder": "Injuries, preferences, what worked and what did not…",
     "saved": "Note saved",
     "saveFailed": "The note was not saved. Your text is still in the box.",
-    "loadFailed": "Could not load the note"
+    "loadFailed": "Could not load the note",
+    "retry": "Retry",
+    "status": {
+      "saving": "Saving…",
+      "unsaved": "Unsaved changes",
+      "failed": "Not saved",
+      "savedAt": "Saved · {{time}}"
+    }
   },
   "planLibrary": {
     "pageTitle": "Plan library",
@@ -1360,6 +1407,9 @@
       "not_your_client": "Not your client",
       "already_assigned": "Already assigned",
       "write_failed": "Save failed"
-    }
+    },
+    "noOwnPlans": "You don't have a plan of your own yet",
+    "noOwnPlansHint": "A template is copied from one of your own training plans. Create a plan first, then come back to save it here.",
+    "createPlan": "Create a plan"
   }
 }

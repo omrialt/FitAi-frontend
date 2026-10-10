@@ -56,3 +56,27 @@ export interface TrainerDashboardRow {
 export function hasWarning(row: TrainerDashboardRow): boolean {
   return row.alerts.some((alert) => alert.severity === 'warn');
 }
+
+/**
+ * The trainer's own thresholds for the alerts above — the server falls back
+ * to the defaults below until they are changed. Bounds match the server DTO.
+ */
+export interface TrainerAlertSettings {
+  idleInfoDays: number;
+  idleWarnDays: number;
+  stallMinSpanDays: number;
+  stallMaxChangeKg: number;
+}
+
+export const DEFAULT_ALERT_SETTINGS: TrainerAlertSettings = {
+  idleInfoDays: 7,
+  idleWarnDays: 10,
+  stallMinSpanDays: 21,
+  stallMaxChangeKg: 0.5,
+};
+
+export const ALERT_SETTING_BOUNDS = {
+  idleDays: { min: 1, max: 60 },
+  stallMinSpanDays: { min: 7, max: 56 },
+  stallMaxChangeKg: { min: 0.1, max: 5 },
+} as const;

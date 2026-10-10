@@ -10,6 +10,9 @@ import { StitchIcon } from '../components/common/StitchIcon';
 import { PlateCalculator } from '../components/workout/PlateCalculator';
 import { RestTimer } from '../components/workout/RestTimer';
 import { SwapExercise } from '../components/workout/SwapExercise';
+import { WeightReps } from '../components/common/WeightReps';
+import { pickBaseline, type SlugMap } from '../components/workout/lastPerformance';
+import { exerciseService } from '../services/exercise.service';
 import {
   BAR_OPTIONS_KG,
   readStoredBar,
@@ -89,6 +92,14 @@ interface SetDraft {
    * the two apart. Any edit to the drops clears it.
    */
   dropsCarried?: boolean;
+  /**
+   * What this set was the last time — shown beside the inputs, never sent.
+   *
+   * The prefill puts last week's numbers *in* the boxes, which made them the
+   * one thing on screen that typing destroys: overwrite 100 with 102.5 and
+   * nothing says it was 100. This keeps it in view for the whole set.
+   */
+  previous?: { reps: number; weight: number };
   done: boolean;
 }
 
@@ -97,6 +108,14 @@ interface ExerciseDraft {
   muscleGroup?: string;
   notes?: string;
   sets: SetDraft[];
+  /**
+   * Where the prefill came from, when that is not simply "this name, last
+   * time": a session that filed the exercise under another name the catalogue
+   * knows is the same one, or an earlier session because the last was an off
+   * day. Said on screen, because a number from somewhere unexpected that does
+   * not say so is indistinguishable from a wrong number.
+   */
+  prefill?: { matchedAs?: string; offDaySkipped?: string };
 }
 
 function minutesSince(start: number): number {
@@ -152,7 +171,7 @@ function claimTypedSets(exercises: ExerciseDraft[]): ExerciseDraft[] {
 }
 
 /**
- * The last time this day was trained, laid over the blank sheet.
+ * The last times this day was trained, laid over the blank sheet.
  *
  * Starting a session used to mean retyping the numbers from the session
  * before it — the same eight sets, usually the same weights, entered again
@@ -176,26 +195,31 @@ function claimTypedSets(exercises: ExerciseDraft[]): ExerciseDraft[] {
  *     — one tap on ✕ removes a drop not taken today;
  *   - no notes. "Right shoulder twinged" belongs to the day it happened.
  *
- * Exercises are matched by name, so an exercise swapped out last session
- * leaves today's prescribed one blank rather than inheriting the substitute's
- * numbers. Sets are matched by position, and a session that ran past the
- * plan — an extra set or two, which the logger allows — brings those extra
- * sets with it rather than dropping them on the floor.
+ * Which session it comes from is `pickBaseline`'s call (see
+ * lastPerformance.ts): normally the last one, an earlier one when the last
+ * was an off day, matched by name or — for a renamed exercise — by catalogue
+ * identity. An exercise swapped out last session still leaves today's
+ * prescribed one blank rather than inheriting the substitute's numbers. Sets
+ * are matched by position, and a session that ran past the plan — an extra
+ * set or two, which the logger allows — brings those extra sets with it.
+ *
+ * Every set also gets `previous`, from the actual last session, whichever
+ * one the values came from.
  */
 function withLastPerformance(
   sheet: ExerciseDraft[],
-  session: WorkoutSession,
+  sessions: WorkoutSession[],
+  slugs: SlugMap,
 ): ExerciseDraft[] {
-  const performed = new Map(session.exercises.map((e) => [e.name, e]));
-
   return sheet.map((exercise) => {
-    const last = performed.get(exercise.name);
-    if (!last || last.sets.length === 0) return exercise;
+    const { last, baseline, skippedOffDay } = pickBaseline(exercise.name, sessions, slugs);
+    if (!baseline) return exercise;
 
+    const performed = baseline.exercise.sets;
     const sets = exercise.sets.map((set, i) => {
       // Only the sets actually completed are filed, so a day that stopped
       // three sets in leaves the rest of the sheet on its placeholders.
-      const done = last.sets[i];
+      const done = performed[i];
       if (!done) return set;
       return {
         ...set,
@@ -205,26 +229,62 @@ function withLastPerformance(
       };
     });
 
-    for (let i = exercise.sets.length; i < last.sets.length; i += 1) {
+    for (let i = exercise.sets.length; i < performed.length; i += 1) {
       const previous = sets[sets.length - 1];
       sets.push({
         // The plan has no target for a set it does not prescribe, so the row
         // inherits the last prescribed one's — the same thing "add a set"
         // does, and for the same reason.
-        targetReps: previous?.targetReps ?? last.sets[i].reps,
-        targetWeight: previous?.targetWeight ?? last.sets[i].weight,
-        reps: String(last.sets[i].reps),
-        weight: String(last.sets[i].weight),
+        targetReps: previous?.targetReps ?? performed[i].reps,
+        targetWeight: previous?.targetWeight ?? performed[i].weight,
+        reps: String(performed[i].reps),
+        weight: String(performed[i].weight),
         repsTyped: false,
         weightTyped: false,
         rpe: '',
-        ...carriedDrops(last.sets[i]),
+        ...carriedDrops(performed[i]),
         done: false,
       });
     }
 
-    return { ...exercise, sets };
+    const prefill = {
+      ...(baseline.matchedAs ? { matchedAs: baseline.matchedAs } : {}),
+      ...(skippedOffDay && last ? { offDaySkipped: last.performedAt } : {}),
+    };
+
+    return {
+      ...exercise,
+      sets: withPreviousSets(sets, last?.exercise.sets ?? []),
+      ...(Object.keys(prefill).length > 0 ? { prefill } : {}),
+    };
   });
+}
+
+/**
+ * Only the "previous" line, for a sheet that already holds the user's own
+ * numbers (a resumed draft, sets logged before the request returned). The
+ * values are theirs and stay; what last time looked like is still worth
+ * seeing.
+ */
+function withPrevious(
+  sheet: ExerciseDraft[],
+  sessions: WorkoutSession[],
+  slugs: SlugMap,
+): ExerciseDraft[] {
+  return sheet.map((exercise) => {
+    const { last } = pickBaseline(exercise.name, sessions, slugs);
+    return last
+      ? { ...exercise, sets: withPreviousSets(exercise.sets, last.exercise.sets) }
+      : exercise;
+  });
+}
+
+function withPreviousSets(sets: SetDraft[], performed: PerformedSet[]): SetDraft[] {
+  return sets.map((set, i) =>
+    performed[i]
+      ? { ...set, previous: { reps: performed[i].reps, weight: performed[i].weight } }
+      : set,
+  );
 }
 
 /**
@@ -348,7 +408,9 @@ export default function WorkoutSessionPage() {
    */
   const [lastSession, setLastSession] = useState<{
     dayName: string;
-    session: WorkoutSession | null;
+    /** Newest first; empty when the day has never been trained. */
+    sessions: WorkoutSession[];
+    slugs: SlugMap;
   } | null>(null);
 
   const startedAt = useRef(Date.now());
@@ -401,36 +463,59 @@ export default function WorkoutSessionPage() {
   }, [planId]);
 
   /**
-   * The last time this day was trained, fetched alongside the plan.
+   * The last three times this day was trained, fetched alongside the plan.
    *
-   * One document: the newest session filed against this plan under this day's
-   * name. Failing to get it is not an error the user needs to hear about —
-   * the sheet simply opens on its placeholders, which is how this screen
-   * worked before.
+   * Three rather than one so an off day can be recognised as one (see
+   * `pickBaseline`). Failing to get them is not an error the user needs to
+   * hear about — the sheet simply opens on its placeholders, which is how this
+   * screen worked before.
+   *
+   * Names are resolved against the catalogue only when some exercise of the
+   * day is missing by name from those sessions — the one case where a rename
+   * could be hiding its history — so an unchanged plan costs no extra request.
    */
   useEffect(() => {
     const dayName = day?.dayName;
     const userId = user?._id;
     if (!planId || !dayName || !userId) return;
+    const planNames = day.exercises.map((exercise) => exercise.name);
 
     let cancelled = false;
 
     (async () => {
+      let sessions: WorkoutSession[] = [];
       try {
-        const [session] = await workoutSessionService.getByUserId(userId, {
+        sessions = await workoutSessionService.getByUserId(userId, {
           planId,
           dayName,
-          limit: 1,
+          limit: 3,
         });
-        if (!cancelled) setLastSession({ dayName, session: session ?? null });
       } catch {
-        if (!cancelled) setLastSession({ dayName, session: null });
+        sessions = [];
       }
+
+      let slugs: SlugMap = {};
+      const performedNames = new Set(
+        sessions.flatMap((session) => session.exercises.map((e) => e.name)),
+      );
+      if (planNames.some((name) => !performedNames.has(name))) {
+        try {
+          slugs = await exerciseService.resolve(
+            [...new Set([...planNames, ...performedNames])].slice(0, 40),
+          );
+        } catch {
+          slugs = {};
+        }
+      }
+
+      if (!cancelled) setLastSession({ dayName, sessions, slugs });
     })();
 
     return () => {
       cancelled = true;
     };
+    // `day.exercises` is read with the day; the day's name is what changes it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planId, day?.dayName, user?._id]);
 
   /**
@@ -443,12 +528,14 @@ export default function WorkoutSessionPage() {
    * nothing to say.
    */
   useEffect(() => {
-    if (!day || !lastSession?.session) return;
+    if (!day || !lastSession || lastSession.sessions.length === 0) return;
     if (lastSession.dayName !== day.dayName) return;
 
-    const { session } = lastSession;
+    const { sessions, slugs } = lastSession;
     setDraft((current) =>
-      hasUserInput(current, notes) ? current : withLastPerformance(current, session),
+      hasUserInput(current, notes)
+        ? withPrevious(current, sessions, slugs)
+        : withLastPerformance(current, sessions, slugs),
     );
     // `notes` is read, not tracked: typing a note should not re-run the
     // prefill, and once there is one the guard above has already closed.
@@ -789,6 +876,9 @@ export default function WorkoutSessionPage() {
                 ...exercise,
                 name: next.name,
                 muscleGroup: next.muscleGroup ?? exercise.muscleGroup,
+                // Last time's numbers were for the exercise swapped out.
+                prefill: undefined,
+                sets: exercise.sets.map((set) => ({ ...set, previous: undefined })),
               },
         ),
       );
@@ -807,9 +897,10 @@ export default function WorkoutSessionPage() {
    */
   const filledFrom = useMemo(() => {
     if (!day || lastSession?.dayName !== day.dayName) return null;
-    if (!lastSession.session || hasUserInput(draft, notes)) return null;
+    const [session] = lastSession.sessions;
+    if (!session || hasUserInput(draft, notes)) return null;
 
-    return new Date(lastSession.session.performedAt).toLocaleDateString(
+    return new Date(session.performedAt).toLocaleDateString(
       i18n.language,
       { day: 'numeric', month: 'short' },
     );
@@ -1091,6 +1182,24 @@ export default function WorkoutSessionPage() {
                 )}
               </div>
 
+              {exercise.prefill && !hasUserInput([exercise], '') && (
+                <p className="-mt-2 mb-3 flex items-start gap-1.5 text-xs text-on-surface-variant">
+                  <StitchIcon name="history" size={14} />
+                  <span>
+                    {exercise.prefill.matchedAs &&
+                      t('workout.prefillMatchedAs', { name: exercise.prefill.matchedAs })}
+                    {exercise.prefill.matchedAs && exercise.prefill.offDaySkipped && ' · '}
+                    {exercise.prefill.offDaySkipped &&
+                      t('workout.prefillOffDaySkipped', {
+                        date: new Date(exercise.prefill.offDaySkipped).toLocaleDateString(
+                          i18n.language,
+                          { day: 'numeric', month: 'short' },
+                        ),
+                      })}
+                  </span>
+                </p>
+              )}
+
               <div className="flex flex-col gap-2">
                 {exercise.sets.map((set, si) => (
                   <div
@@ -1187,6 +1296,22 @@ export default function WorkoutSessionPage() {
                         its own line under the whole row; already in its own
                         column on a phone, so the indent would only push it
                         into a wrap. */}
+                    {/* Last time, beside today. A third line on a phone,
+                        under the inputs it describes; on its own indented
+                        line from sm, like the plate calculator below it. */}
+                    {set.previous && (
+                      <p className="col-start-2 col-span-3 row-start-3 flex items-center gap-1.5 text-xs text-on-surface-variant sm:w-full sm:ps-9">
+                        <span className="font-bold uppercase tracking-wider text-[10px]">
+                          {t('workout.previous')}
+                        </span>
+                        <WeightReps
+                          weight={set.previous.weight}
+                          reps={set.previous.reps}
+                          className="font-semibold text-on-surface"
+                        />
+                      </p>
+                    )}
+
                     <PlateCalculator
                       weightKg={Number(set.weight) || set.targetWeight}
                       barKg={barKg}

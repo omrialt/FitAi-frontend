@@ -826,7 +826,26 @@
     "deleteTitle": "מחיקת יעד",
     "deleteConfirm": "האם אתם בטוחים שברצונכם למחוק יעד זה?",
     "deleteWarning": "לא ניתן לבטל פעולה זו. היעד יימחק לצמיתות.",
-    "atLeastOneMetric": "בחרו לפחות מדד אחד"
+    "atLeastOneMetric": "בחרו לפחות מדד אחד",
+    "reactivate": "פתיחה מחדש",
+    "abandonConfirm": "לבטל את היעד?",
+    "abandonConfirmYes": "כן, לבטל",
+    "keep": "להשאיר",
+    "allReached": "כל המדדים הגיעו ליעד",
+    "achievedOn": "הושג ב־{{date}}",
+    "abandonedOn": "בוטל ב־{{date}}",
+    "statusChanged": {
+      "active": "היעד נפתח מחדש",
+      "achieved": "היעד סומן כהושג",
+      "abandoned": "היעד בוטל"
+    },
+    "setByTrainer": "נקבע על ידי המאמן שלך",
+    "setByYou": "נקבע על ידך",
+    "setByClient": "נקבע על ידי המתאמן",
+    "setGoal": "קביעת יעד",
+    "clientGoals": "יעדים",
+    "clientNoTargets": "עדיין אין יעדים",
+    "clientNoTargetsText": "קבעו יעד למתאמן — הוא יראה אותו בעמוד הנתונים הגופניים שלו ויוכל לעקוב משם."
   },
   "calendar": {
     "previous": "→ הקודם",
@@ -1164,7 +1183,10 @@
       "estimatedMax": "1RM משוער",
       "planFilter": "תוכנית",
       "allPlans": "כל התוכניות"
-    }
+    },
+    "previous": "קודם",
+    "prefillMatchedAs": "בפעם הקודמת נרשם כ„{{name}}”",
+    "prefillOffDaySkipped": "מולא מאימון מוקדם יותר — {{date}} נראה כמו יום חריג"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
@@ -1350,6 +1372,23 @@
       "no_measurements": "אין מדידות",
       "deload_suggested": "מומלץ דילוד",
       "no_active_plan": "אין תוכנית פעילה"
+    },
+    "settings": {
+      "title": "הגדרות התראות",
+      "intro": "מתי מתאמן מקבל התראה במסך הזה. ברירות המחדל מתאימות למי שמתאמן 3–4 פעמים בשבוע.",
+      "idleInfoDays": "לציין מתאמן אחרי (ימים בלי אימון)",
+      "idleInfoDaysHint": "מוצג כמידע",
+      "idleWarnDays": "לסמן מתאמן אחרי (ימים בלי אימון)",
+      "idleWarnDaysHint": "מוצג כדורש תשומת לב",
+      "stallMinSpanDays": "משקל תקוע: לפחות כמה ימים בין שקילות",
+      "stallMinSpanDaysHint": "טווח קצר יותר הוא תנודה יומיומית רגילה",
+      "stallMaxChangeKg": "משקל תקוע: זז פחות מ־(ק\"ג)",
+      "stallMaxChangeKgHint": "שינוי קטן מזה לאורך הטווח נחשב תקוע",
+      "warnAfterInfo": "צריך להיות יותר ימים מהסף הראשון",
+      "reset": "החזרת ברירות מחדל",
+      "saved": "הגדרות ההתראות נשמרו",
+      "saveFailed": "לא ניתן היה לשמור את הגדרות ההתראות",
+      "loadFailed": "לא ניתן היה לטעון את ההגדרות — מוצגות ברירות המחדל"
     }
   },
   "messages": {
@@ -1363,7 +1402,8 @@
     "send": "שליחה",
     "sendFailed": "ההודעה לא נשלחה. הטקסט נשאר בתיבה.",
     "loadFailed": "לא ניתן לטעון את ההודעות",
-    "messageClient": "שליחת הודעה"
+    "messageClient": "שליחת הודעה",
+    "rateLimited": "נשלחו יותר מדי הודעות ברצף. חכו דקה — הטקסט עדיין בתיבה."
   },
   "trainerNote": {
     "title": "הערות פרטיות",
@@ -1372,7 +1412,14 @@
     "placeholder": "פציעות, העדפות, מה עבד ומה לא…",
     "saved": "ההערה נשמרה",
     "saveFailed": "ההערה לא נשמרה. הטקסט נשאר בתיבה.",
-    "loadFailed": "לא ניתן לטעון את ההערה"
+    "loadFailed": "לא ניתן לטעון את ההערה",
+    "retry": "לנסות שוב",
+    "status": {
+      "saving": "שומר…",
+      "unsaved": "יש שינויים שלא נשמרו",
+      "failed": "לא נשמר",
+      "savedAt": "נשמר · {{time}}"
+    }
   },
   "planLibrary": {
     "pageTitle": "ספריית תוכניות",
@@ -1404,6 +1451,9 @@
       "not_your_client": "לא מתאמן שלך",
       "already_assigned": "כבר הוקצתה",
       "write_failed": "השמירה נכשלה"
-    }
+    },
+    "noOwnPlans": "עדיין אין לך תוכנית משלך",
+    "noOwnPlansHint": "תבנית נוצרת כהעתק של אחת מתוכניות האימון שלך. צרו קודם תוכנית, ואז חזרו לשמור אותה כאן.",
+    "createPlan": "יצירת תוכנית"
   }
 }

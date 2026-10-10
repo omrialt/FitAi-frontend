@@ -25,6 +25,7 @@ import physicalTargetService from '../services/physical-target.service';
 import type { PhysicalData, CreatePhysicalDataDto, UpdatePhysicalDataDto } from '../types/physical-data.types';
 import type {
   PhysicalTarget,
+  PhysicalTargetStatus,
   CreatePhysicalTargetDto,
   UpdatePhysicalTargetDto,
   TargetProgress,
@@ -159,6 +160,22 @@ export default function PhysicalDataPage() {
     }
   };
 
+  /**
+   * Finish a target, or reopen one. Its own handler rather than going through
+   * the edit modal: closing a goal is one tap on the card, and the toast says
+   * which of the three things just happened.
+   */
+  const handleTargetStatus = async (target: PhysicalTarget, status: PhysicalTargetStatus) => {
+    try {
+      await physicalTargetService.update(target._id, { status });
+      await loadPhysicalData();
+      toast.success(t(`physicalTargets.statusChanged.${status}`));
+    } catch (error) {
+      console.error('Error changing target status:', error);
+      toast.error(t('physicalTargets.updateFailed'));
+    }
+  };
+
   const handleDeleteTarget = async () => {
     if (!selectedTarget) return;
 
@@ -244,6 +261,12 @@ export default function PhysicalDataPage() {
               progress={targetProgress}
               onEdit={openEditTargetModal}
               onDelete={openDeleteTargetModal}
+              onStatusChange={handleTargetStatus}
+              attributionFor={(target) =>
+                target.createdBy && target.createdBy !== user?._id
+                  ? t('physicalTargets.setByTrainer')
+                  : null
+              }
             />
 
             {/* Table */}
