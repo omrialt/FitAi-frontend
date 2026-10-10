@@ -1340,7 +1340,14 @@
     "placeholder": "Injuries, preferences, what worked and what did not…",
     "saved": "Note saved",
     "saveFailed": "The note was not saved. Your text is still in the box.",
-    "loadFailed": "Could not load the note"
+    "loadFailed": "Could not load the note",
+    "retry": "Retry",
+    "status": {
+      "saving": "Saving…",
+      "unsaved": "Unsaved changes",
+      "failed": "Not saved",
+      "savedAt": "Saved · {{time}}"
+    }
   },
   "planLibrary": {
     "pageTitle": "Plan library",
