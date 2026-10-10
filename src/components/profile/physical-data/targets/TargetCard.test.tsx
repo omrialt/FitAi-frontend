@@ -122,6 +122,25 @@ describe('TargetCard', () => {
   });
 });
 
+describe('TargetCard — read-only', () => {
+  it('hides every action and says who set it', () => {
+    render(
+      <TargetCard
+        target={target({ createdBy: 'client-1' })}
+        progress={progress([50, 50])}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onStatusChange={vi.fn()}
+        readOnly
+        attribution="Set by the client"
+      />,
+    );
+
+    expect(screen.getByText('Set by the client')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+});
+
 describe('orderTargets', () => {
   it('puts active targets first by deadline, then closed ones newest first', () => {
     const ordered = orderTargets([

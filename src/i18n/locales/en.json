@@ -808,7 +808,14 @@
       "active": "Target reopened",
       "achieved": "Target marked as achieved",
       "abandoned": "Target abandoned"
-    }
+    },
+    "setByTrainer": "Set by your trainer",
+    "setByYou": "Set by you",
+    "setByClient": "Set by the client",
+    "setGoal": "Set a goal",
+    "clientGoals": "Goals",
+    "clientNoTargets": "No goals yet",
+    "clientNoTargetsText": "Set a goal for this client — they'll see it on their Physical Data page and can track it from there."
   },
   "calendar": {
     "previous": "← Previous",

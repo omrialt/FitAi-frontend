@@ -262,6 +262,11 @@ export default function PhysicalDataPage() {
               onEdit={openEditTargetModal}
               onDelete={openDeleteTargetModal}
               onStatusChange={handleTargetStatus}
+              attributionFor={(target) =>
+                target.createdBy && target.createdBy !== user?._id
+                  ? t('physicalTargets.setByTrainer')
+                  : null
+              }
             />
 
             {/* Table */}

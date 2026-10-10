@@ -16,6 +16,10 @@ export function TargetsList({
   onEdit,
   onDelete,
   onStatusChange,
+  canManage,
+  attributionFor,
+  emptyTitle,
+  emptyText,
 }: TargetsListProps) {
   const { t } = useTranslation();
 
@@ -25,8 +29,10 @@ export function TargetsList({
         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 text-primary flex items-center justify-center">
           <StitchIcon name="track_changes" size={22} />
         </div>
-        <p className="font-bold text-on-surface">{t('physicalTargets.noTargets')}</p>
-        <p className="text-sm text-on-surface-variant mt-1">{t('physicalTargets.noTargetsText')}</p>
+        <p className="font-bold text-on-surface">{emptyTitle ?? t('physicalTargets.noTargets')}</p>
+        <p className="text-sm text-on-surface-variant mt-1">
+          {emptyText ?? t('physicalTargets.noTargetsText')}
+        </p>
       </div>
     );
   }
@@ -41,6 +47,8 @@ export function TargetsList({
           onEdit={() => onEdit(target)}
           onDelete={() => onDelete(target)}
           onStatusChange={(status) => onStatusChange(target, status)}
+          readOnly={canManage ? !canManage(target) : false}
+          attribution={attributionFor?.(target) ?? null}
         />
       ))}
     </SimpleGrid>

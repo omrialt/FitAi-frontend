@@ -838,7 +838,14 @@
       "active": "היעד נפתח מחדש",
       "achieved": "היעד סומן כהושג",
       "abandoned": "היעד בוטל"
-    }
+    },
+    "setByTrainer": "נקבע על ידי המאמן שלך",
+    "setByYou": "נקבע על ידך",
+    "setByClient": "נקבע על ידי המתאמן",
+    "setGoal": "קביעת יעד",
+    "clientGoals": "יעדים",
+    "clientNoTargets": "עדיין אין יעדים",
+    "clientNoTargetsText": "קבעו יעד למתאמן — הוא יראה אותו בעמוד הנתונים הגופניים שלו ויוכל לעקוב משם."
   },
   "calendar": {
     "previous": "→ הקודם",

@@ -14,6 +14,7 @@ import { trainingPlanService } from '../services/training-plan.service';
 import { workoutSessionService } from '../services/workout-session.service';
 import userService from '../services/user.service';
 import { TrainerNotePanel } from '../components/trainer/TrainerNotePanel';
+import { ClientTargetsPanel } from '../components/trainer/ClientTargetsPanel';
 import type { User } from '../types/auth.types';
 import type { PhysicalData } from '../types/physical-data.types';
 import type { ProgressStats } from '../types/dashboard.types';
@@ -74,7 +75,7 @@ function Panel({
   title,
   children,
 }: {
-  icon: 'fitness_center' | 'scale' | 'history' | 'trending_up' | 'edit';
+  icon: 'fitness_center' | 'scale' | 'history' | 'trending_up' | 'edit' | 'track_changes';
   title: string;
   children: React.ReactNode;
 }) {
@@ -401,6 +402,15 @@ export default function ClientDetailPage() {
             )}
           </Panel>
         </div>
+
+        {/* Goals the trainer sets land on the client's own Physical Data page. */}
+        {!forbidden && clientId && (
+          <div className="mt-6">
+            <Panel icon="track_changes" title={t('physicalTargets.clientGoals')}>
+              <ClientTargetsPanel clientId={clientId} />
+            </Panel>
+          </div>
+        )}
 
         {/* Private, and said so on screen: the first place in the app where one
             user writes *about* another rather than to them. */}

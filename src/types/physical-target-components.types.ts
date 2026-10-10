@@ -24,6 +24,13 @@ export interface TargetsListProps {
   onEdit: (target: PhysicalTarget) => void;
   onDelete: (target: PhysicalTarget) => void;
   onStatusChange: (target: PhysicalTarget, status: PhysicalTargetStatus) => void;
+  /** Whether the viewer may edit, close or delete this target. Default: yes. */
+  canManage?: (target: PhysicalTarget) => boolean;
+  /** A line saying who set the target, when that is worth saying. */
+  attributionFor?: (target: PhysicalTarget) => string | null;
+  /** Overrides the empty state's text (e.g. on a trainer's view of a client). */
+  emptyTitle?: string;
+  emptyText?: string;
 }
 
 export interface TargetCardProps {
@@ -32,6 +39,9 @@ export interface TargetCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (status: PhysicalTargetStatus) => void;
+  /** Hides edit, delete and the finish/reopen actions. */
+  readOnly?: boolean;
+  attribution?: string | null;
 }
 
 export interface DeleteTargetModalProps {
