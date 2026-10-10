@@ -4,6 +4,7 @@
 
 import type {
   PhysicalTarget,
+  PhysicalTargetStatus,
   CreatePhysicalTargetDto,
   UpdatePhysicalTargetDto,
   TargetProgress,
@@ -22,6 +23,7 @@ export interface TargetsListProps {
   progress: TargetProgress[];
   onEdit: (target: PhysicalTarget) => void;
   onDelete: (target: PhysicalTarget) => void;
+  onStatusChange: (target: PhysicalTarget, status: PhysicalTargetStatus) => void;
 }
 
 export interface TargetCardProps {
@@ -29,6 +31,7 @@ export interface TargetCardProps {
   progress?: TargetProgress;
   onEdit: () => void;
   onDelete: () => void;
+  onStatusChange: (status: PhysicalTargetStatus) => void;
 }
 
 export interface DeleteTargetModalProps {

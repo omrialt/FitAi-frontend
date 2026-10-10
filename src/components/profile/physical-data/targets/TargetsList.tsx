@@ -8,8 +8,15 @@ import { SimpleGrid } from '@mantine/core';
 import { TargetCard } from './TargetCard';
 import { StitchIcon } from '../../../common/StitchIcon';
 import type { TargetsListProps } from '../../../../types/physical-target-components.types';
+import { orderTargets } from '../helpers/orderTargets';
 
-export function TargetsList({ targets, progress, onEdit, onDelete }: TargetsListProps) {
+export function TargetsList({
+  targets,
+  progress,
+  onEdit,
+  onDelete,
+  onStatusChange,
+}: TargetsListProps) {
   const { t } = useTranslation();
 
   if (targets.length === 0) {
@@ -26,13 +33,14 @@ export function TargetsList({ targets, progress, onEdit, onDelete }: TargetsList
 
   return (
     <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="xl">
-      {targets.map((target) => (
+      {orderTargets(targets).map((target) => (
         <TargetCard
           key={target._id}
           target={target}
           progress={progress.find((p) => p.targetId === target._id)}
           onEdit={() => onEdit(target)}
           onDelete={() => onDelete(target)}
+          onStatusChange={(status) => onStatusChange(target, status)}
         />
       ))}
     </SimpleGrid>

@@ -24,6 +24,8 @@ export interface PhysicalTarget {
   startValues?: TargetValues;
   startDate: string;
   status: PhysicalTargetStatus;
+  /** When it was marked achieved or abandoned; absent while active. */
+  closedAt?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

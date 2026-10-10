@@ -796,7 +796,19 @@
     "deleteTitle": "Delete Target",
     "deleteConfirm": "Are you sure you want to delete this target?",
     "deleteWarning": "This action cannot be undone. The target will be permanently deleted.",
-    "atLeastOneMetric": "Select at least one metric"
+    "atLeastOneMetric": "Select at least one metric",
+    "reactivate": "Reopen",
+    "abandonConfirm": "Abandon this target?",
+    "abandonConfirmYes": "Yes, abandon",
+    "keep": "Keep it",
+    "allReached": "Every metric has reached its target",
+    "achievedOn": "Achieved on {{date}}",
+    "abandonedOn": "Abandoned on {{date}}",
+    "statusChanged": {
+      "active": "Target reopened",
+      "achieved": "Target marked as achieved",
+      "abandoned": "Target abandoned"
+    }
   },
   "calendar": {
     "previous": "← Previous",

@@ -2,6 +2,7 @@
  * TargetCard - one physical target, with a progress bar per metric it covers.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../../../common/StitchIcon';
@@ -36,8 +37,11 @@ function statusPill(status: string): string {
   return 'bg-primary/10 text-primary';
 }
 
-export function TargetCard({ target, progress, onEdit, onDelete }: TargetCardProps) {
+export function TargetCard({ target, progress, onEdit, onDelete, onStatusChange }: TargetCardProps) {
   const { t } = useTranslation();
+  // Abandoning asks once, inline: it is reversible, so a modal would be
+  // ceremony, but it is also the one action here a stray tap should not take.
+  const [confirmingAbandon, setConfirmingAbandon] = useState(false);
 
   const daysRemaining = progress?.daysRemaining;
   let dueLabel: string | null = null;
@@ -52,6 +56,22 @@ export function TargetCard({ target, progress, onEdit, onDelete }: TargetCardPro
   const metrics = (Object.keys(METRIC_UNIT) as TargetMetric[]).filter(
     (metric) => target.targetValues[metric] !== undefined,
   );
+
+  // Reaching 100% does not close a goal by itself — one good weigh-in is not
+  // the goal — but it is the moment to offer it, so the button leads.
+  const allReached =
+    target.status === 'active' &&
+    metrics.length > 0 &&
+    metrics.every(
+      (metric) => (progress?.metrics.find((m) => m.metric === metric)?.percentComplete ?? 0) >= 100,
+    );
+
+  const closedLabel =
+    target.status !== 'active' && target.closedAt
+      ? t(target.status === 'achieved' ? 'physicalTargets.achievedOn' : 'physicalTargets.abandonedOn', {
+          date: formatDate(target.closedAt),
+        })
+      : null;
 
   return (
     <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
@@ -127,6 +147,76 @@ export function TargetCard({ target, progress, onEdit, onDelete }: TargetCardPro
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-outline-variant/10 flex flex-wrap items-center gap-2">
+        {target.status === 'active' ? (
+          confirmingAbandon ? (
+            <>
+              <span className="text-xs font-bold text-on-surface me-auto">
+                {t('physicalTargets.abandonConfirm')}
+              </span>
+              <button
+                type="button"
+                onClick={() => setConfirmingAbandon(false)}
+                className="min-h-10 px-3 rounded-lg text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
+              >
+                {t('physicalTargets.keep')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmingAbandon(false);
+                  onStatusChange('abandoned');
+                }}
+                className="min-h-10 px-3 rounded-lg text-xs font-bold text-error hover:bg-error-container"
+              >
+                {t('physicalTargets.abandonConfirmYes')}
+              </button>
+            </>
+          ) : (
+            <>
+              {allReached && (
+                <span className="w-full text-xs font-bold text-success">
+                  {t('physicalTargets.allReached')}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => onStatusChange('achieved')}
+                className={
+                  allReached
+                    ? 'min-h-10 px-4 rounded-lg text-xs font-bold bg-primary text-on-primary inline-flex items-center gap-1'
+                    : 'min-h-10 px-4 rounded-lg text-xs font-bold border border-outline-variant/40 text-primary hover:bg-primary/10 inline-flex items-center gap-1'
+                }
+              >
+                <StitchIcon name="check_circle" size={16} />
+                {t('physicalTargets.markAchieved')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingAbandon(true)}
+                className="min-h-10 px-3 rounded-lg text-xs font-bold text-on-surface-variant hover:bg-surface-container-high"
+              >
+                {t('physicalTargets.abandon')}
+              </button>
+            </>
+          )
+        ) : (
+          <>
+            {closedLabel && (
+              <span className="text-xs text-on-surface-variant me-auto">{closedLabel}</span>
+            )}
+            <button
+              type="button"
+              onClick={() => onStatusChange('active')}
+              className="min-h-10 px-3 rounded-lg text-xs font-bold text-primary hover:bg-primary/10 inline-flex items-center gap-1 ms-auto"
+            >
+              <StitchIcon name="history" size={16} />
+              {t('physicalTargets.reactivate')}
+            </button>
+          </>
+        )}
       </div>
 
       {target.notes && (

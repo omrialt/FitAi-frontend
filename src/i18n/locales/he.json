@@ -826,7 +826,19 @@
     "deleteTitle": "מחיקת יעד",
     "deleteConfirm": "האם אתם בטוחים שברצונכם למחוק יעד זה?",
     "deleteWarning": "לא ניתן לבטל פעולה זו. היעד יימחק לצמיתות.",
-    "atLeastOneMetric": "בחרו לפחות מדד אחד"
+    "atLeastOneMetric": "בחרו לפחות מדד אחד",
+    "reactivate": "פתיחה מחדש",
+    "abandonConfirm": "לבטל את היעד?",
+    "abandonConfirmYes": "כן, לבטל",
+    "keep": "להשאיר",
+    "allReached": "כל המדדים הגיעו ליעד",
+    "achievedOn": "הושג ב־{{date}}",
+    "abandonedOn": "בוטל ב־{{date}}",
+    "statusChanged": {
+      "active": "היעד נפתח מחדש",
+      "achieved": "היעד סומן כהושג",
+      "abandoned": "היעד בוטל"
+    }
   },
   "calendar": {
     "previous": "→ הקודם",
