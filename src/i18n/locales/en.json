@@ -1372,6 +1372,9 @@
       "not_your_client": "Not your client",
       "already_assigned": "Already assigned",
       "write_failed": "Save failed"
-    }
+    },
+    "noOwnPlans": "You don't have a plan of your own yet",
+    "noOwnPlansHint": "A template is copied from one of your own training plans. Create a plan first, then come back to save it here.",
+    "createPlan": "Create a plan"
   }
 }
