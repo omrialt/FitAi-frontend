@@ -143,8 +143,12 @@ export default function MessagesPage() {
         newestRef.current = sent.createdAt;
         await loadThreads();
         return true;
-      } catch {
-        toast.error(t('messages.sendFailed'));
+      } catch (error) {
+        // The server's own send limit (20 a minute, 200 an hour) gets its own
+        // words: "not sent" alone reads like a fault to retry immediately,
+        // which is exactly what would keep it refused.
+        const status = (error as { response?: { status?: number } }).response?.status;
+        toast.error(t(status === 429 ? 'messages.rateLimited' : 'messages.sendFailed'));
         return false;
       }
     },

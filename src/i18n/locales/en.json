@@ -1348,7 +1348,8 @@
     "send": "Send",
     "sendFailed": "The message was not sent. Your text is still in the box.",
     "loadFailed": "Could not load messages",
-    "messageClient": "Send a message"
+    "messageClient": "Send a message",
+    "rateLimited": "You're sending messages too fast. Wait a minute — your text is still in the box."
   },
   "trainerNote": {
     "title": "Private notes",
