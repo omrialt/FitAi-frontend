@@ -1,5 +1,8 @@
 import api from './api';
-import type { TrainerDashboardRow } from '../types/trainer-dashboard.types';
+import type {
+  TrainerAlertSettings,
+  TrainerDashboardRow,
+} from '../types/trainer-dashboard.types';
 
 // Backend wraps every response as { data, timestamp, path } (TransformInterceptor)
 class TrainerDashboardService {
@@ -11,6 +14,24 @@ class TrainerDashboardService {
   async getOverview(): Promise<TrainerDashboardRow[]> {
     const res = await api.get<{ data: TrainerDashboardRow[] }>(
       '/trainer-dashboard',
+    );
+    return res.data.data;
+  }
+
+  /** The thresholds the roster is judged by — the defaults until changed. */
+  async getSettings(): Promise<TrainerAlertSettings> {
+    const res = await api.get<{ data: TrainerAlertSettings }>(
+      '/trainer-dashboard/settings',
+    );
+    return res.data.data;
+  }
+
+  async saveSettings(
+    settings: TrainerAlertSettings,
+  ): Promise<TrainerAlertSettings> {
+    const res = await api.put<{ data: TrainerAlertSettings }>(
+      '/trainer-dashboard/settings',
+      settings,
     );
     return res.data.data;
   }

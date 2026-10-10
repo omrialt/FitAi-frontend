@@ -1318,6 +1318,23 @@
       "no_measurements": "No measurements",
       "deload_suggested": "Deload suggested",
       "no_active_plan": "No active plan"
+    },
+    "settings": {
+      "title": "Alert settings",
+      "intro": "When a client gets an alert on this screen. The defaults suit someone training 3–4 times a week.",
+      "idleInfoDays": "Mention a client after (days without a workout)",
+      "idleInfoDaysHint": "Shown as information",
+      "idleWarnDays": "Flag a client after (days without a workout)",
+      "idleWarnDaysHint": "Shown as needing attention",
+      "stallMinSpanDays": "Weight plateau: at least this many days between weigh-ins",
+      "stallMinSpanDaysHint": "Shorter spans are ordinary day-to-day noise",
+      "stallMaxChangeKg": "Weight plateau: moved less than (kg)",
+      "stallMaxChangeKgHint": "Change smaller than this over that span counts as stalled",
+      "warnAfterInfo": "Must be more days than the first threshold",
+      "reset": "Restore defaults",
+      "saved": "Alert settings saved",
+      "saveFailed": "Could not save the alert settings",
+      "loadFailed": "Could not load your alert settings — showing the defaults"
     }
   },
   "messages": {

@@ -15,11 +15,12 @@ import {
   Collapse,
   Badge,
 } from '@mantine/core';
-import { IconRefresh, IconChevronDown } from '@tabler/icons-react';
+import { IconRefresh, IconChevronDown, IconAdjustments } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { AppLayout } from '../components/AppLayout';
 import { ClientAlertCard } from '../components/trainer/ClientAlertCard';
+import { AlertSettingsModal } from '../components/trainer/AlertSettingsModal';
 import { splitByAttention } from '../components/trainer/alerts';
 import trainerDashboardService from '../services/trainer-dashboard.service';
 import type { TrainerDashboardRow } from '../types/trainer-dashboard.types';
@@ -42,6 +43,7 @@ export default function TrainerDashboardPage() {
   const [rows, setRows] = useState<TrainerDashboardRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [quietOpen, setQuietOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -71,8 +73,9 @@ export default function TrainerDashboardPage() {
   return (
     <AppLayout>
       <Container size="lg" py="xl">
-        {/* Refresh is secondary: an icon beside the title on phones (the
-            labelled button clipped to "רע" there), the full button from sm. */}
+        {/* Refresh and settings are secondary: icons beside the title on
+            phones (the labelled button clipped to "רע" there), full buttons
+            from sm. */}
         <Group justify="space-between" align="flex-start" mb="lg" wrap="nowrap">
           <Box style={{ minWidth: 0 }}>
             <Title order={1}>{t('trainerDashboard.pageTitle')}</Title>
@@ -80,26 +83,51 @@ export default function TrainerDashboardPage() {
               {t('trainerDashboard.pageSubtitle')}
             </Text>
           </Box>
-          <ActionIcon
-            hiddenFrom="sm"
-            variant="light"
-            size="xl"
-            onClick={load}
-            loading={loading}
-            aria-label={t('trainerDashboard.refresh')}
-          >
-            <IconRefresh size={20} />
-          </ActionIcon>
-          <Button
-            visibleFrom="sm"
-            variant="light"
-            leftSection={<IconRefresh size={18} />}
-            onClick={load}
-            loading={loading}
-          >
-            {t('trainerDashboard.refresh')}
-          </Button>
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+            <ActionIcon
+              hiddenFrom="sm"
+              variant="light"
+              size="xl"
+              onClick={() => setSettingsOpen(true)}
+              aria-label={t('trainerDashboard.settings.title')}
+            >
+              <IconAdjustments size={20} />
+            </ActionIcon>
+            <Button
+              visibleFrom="sm"
+              variant="subtle"
+              leftSection={<IconAdjustments size={18} />}
+              onClick={() => setSettingsOpen(true)}
+            >
+              {t('trainerDashboard.settings.title')}
+            </Button>
+            <ActionIcon
+              hiddenFrom="sm"
+              variant="light"
+              size="xl"
+              onClick={load}
+              loading={loading}
+              aria-label={t('trainerDashboard.refresh')}
+            >
+              <IconRefresh size={20} />
+            </ActionIcon>
+            <Button
+              visibleFrom="sm"
+              variant="light"
+              leftSection={<IconRefresh size={18} />}
+              onClick={load}
+              loading={loading}
+            >
+              {t('trainerDashboard.refresh')}
+            </Button>
+          </Group>
         </Group>
+
+        <AlertSettingsModal
+          opened={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          onSaved={load}
+        />
 
         {loading ? (
           <Center py="xl">
