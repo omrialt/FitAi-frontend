@@ -7,6 +7,7 @@ import { MantineProvider } from '@mantine/core';
 import WorkoutSessionPage from './WorkoutSessionPage';
 import { trainingPlanService } from '../services/training-plan.service';
 import { workoutSessionService } from '../services/workout-session.service';
+import { exerciseService } from '../services/exercise.service';
 
 /**
  * The screen the Tier 2 round was built around, tested through what it
@@ -57,6 +58,7 @@ vi.mock('../services/progress-stats.service', () => ({
 vi.mock('../services/exercise.service', () => ({
   exerciseService: {
     substitutes: vi.fn().mockResolvedValue({ matched: null, alternatives: [] }),
+    resolve: vi.fn().mockResolvedValue({}),
   },
 }));
 
@@ -491,16 +493,103 @@ describe('WorkoutSessionPage', () => {
         ReturnType<typeof workoutSessionService.getByUserId>
       >);
 
-    it('asks for one session of exactly this plan day', async () => {
+    // Three, so an off day can be told from an ordinary one.
+    it('asks for the last three sessions of exactly this plan day', async () => {
       renderPage();
       await screen.findByText('Bench Press');
 
       await waitFor(() => {
         expect(workoutSessionService.getByUserId).toHaveBeenCalledWith(
           'user-1',
-          { planId: 'plan-1', dayName: 'Upper A', limit: 1 },
+          { planId: 'plan-1', dayName: 'Upper A', limit: 3 },
         );
       });
+    });
+
+    const sessions = (
+      list: { performedAt: string; name?: string; weights: number[] }[],
+    ) =>
+      vi.mocked(workoutSessionService.getByUserId).mockResolvedValue(
+        list.map(({ performedAt, name = 'Bench Press', weights }, i) => ({
+          _id: `s-${i}`,
+          performedAt,
+          dayName: 'Upper A',
+          exercises: [{ name, sets: weights.map((weight) => ({ reps: 8, weight })) }],
+        })) as unknown as Awaited<ReturnType<typeof workoutSessionService.getByUserId>>,
+      );
+    const weightInputs = () => [
+      screen.getByPlaceholderText('60') as HTMLInputElement,
+      screen.getByPlaceholderText('62.5') as HTMLInputElement,
+    ];
+
+    /**
+     * The number the prefill puts in the box is the one typing destroys, so
+     * it is also shown beside the box, where typing cannot reach it.
+     */
+    it('keeps last time in view after the box is typed over', async () => {
+      lastSession([
+        { reps: 9, weight: 65 },
+        { reps: 7, weight: 67.5 },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[0].value).toBe('9'));
+
+      fireEvent.change(weightInputs()[0], { target: { value: '70' } });
+
+      expect(weightInputs()[0].value).toBe('70');
+      expect(screen.getAllByText('workout.previous')).toHaveLength(2);
+      expect(screen.getByText('65')).toBeInTheDocument();
+      expect(screen.getByText('67.5')).toBeInTheDocument();
+    });
+
+    it('shows last time beside a resumed draft without touching its numbers', async () => {
+      lastSession([{ reps: 9, weight: 65 }]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      // The user logs a set before the history arrives…
+      fireEvent.change(repsInputs()[0], { target: { value: '5' } });
+
+      await waitFor(() => expect(screen.getByText('workout.previous')).toBeInTheDocument());
+      expect(repsInputs()[0].value).toBe('5');
+    });
+
+    it('finds a renamed exercise through the catalogue, and says so', async () => {
+      sessions([{ performedAt: '2026-09-12T18:00:00.000Z', name: 'לחיצת חזה', weights: [65, 65] }]);
+      vi.mocked(exerciseService.resolve).mockResolvedValue({
+        'Bench Press': 'bench-press',
+        'לחיצת חזה': 'bench-press',
+      });
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await waitFor(() => expect(weightInputs()[0].value).toBe('65'));
+      expect(screen.getByText(/workout\.prefillMatchedAs/)).toHaveTextContent('לחיצת חזה');
+    });
+
+    it('does not ask the catalogue when every name matched as it is', async () => {
+      lastSession([{ reps: 9, weight: 65 }]);
+      renderPage();
+      await screen.findByText('Bench Press');
+      await waitFor(() => expect(repsInputs()[0].value).toBe('9'));
+
+      expect(exerciseService.resolve).not.toHaveBeenCalled();
+    });
+
+    it('starts from the typical session when the last one was an off day', async () => {
+      sessions([
+        { performedAt: '2026-09-26T18:00:00.000Z', weights: [40, 40] },
+        { performedAt: '2026-09-19T18:00:00.000Z', weights: [65, 67.5] },
+        { performedAt: '2026-09-12T18:00:00.000Z', weights: [62.5, 65] },
+      ]);
+      renderPage();
+      await screen.findByText('Bench Press');
+
+      await waitFor(() => expect(weightInputs()[0].value).toBe('65'));
+      expect(weightInputs()[1].value).toBe('67.5');
+      // …while "previous" still says what actually happened last time.
+      expect(screen.getAllByText('40')).toHaveLength(2);
+      expect(screen.getByText(/workout\.prefillOffDaySkipped/)).toBeInTheDocument();
     });
 
     it('fills the sets in, without marking any of them done', async () => {

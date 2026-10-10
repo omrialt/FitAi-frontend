@@ -41,6 +41,21 @@ export const exerciseService = {
   },
 
   /**
+   * Catalogue slugs for several free-text names, `null` where unrecognised.
+   * Exact names and aliases only, like `substitutes` — two names are the same
+   * exercise only if the catalogue says so.
+   */
+  resolve: async (names: string[]): Promise<Record<string, string | null>> => {
+    const response = await api.get('/exercises/resolve', {
+      params: { names },
+      // `names=a&names=b`, which is what the server's DTO reads — not axios's
+      // default `names[]=a`.
+      paramsSerializer: { indexes: null },
+    });
+    return response.data.data;
+  },
+
+  /**
    * Other exercises for the same primary muscle — the query the catalogue was
    * built to make possible.
    */

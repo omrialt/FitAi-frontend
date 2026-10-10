@@ -1176,7 +1176,10 @@
       "estimatedMax": "1RM משוער",
       "planFilter": "תוכנית",
       "allPlans": "כל התוכניות"
-    }
+    },
+    "previous": "קודם",
+    "prefillMatchedAs": "בפעם הקודמת נרשם כ„{{name}}”",
+    "prefillOffDaySkipped": "מולא מאימון מוקדם יותר — {{date}} נראה כמו יום חריג"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",

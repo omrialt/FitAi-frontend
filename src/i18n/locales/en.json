@@ -1136,7 +1136,10 @@
       "estimatedMax": "e1RM",
       "planFilter": "Plan",
       "allPlans": "All plans"
-    }
+    },
+    "previous": "Previous",
+    "prefillMatchedAs": "Last time logged as “{{name}}”",
+    "prefillOffDaySkipped": "Filled from an earlier session — {{date}} looked like an off day"
   },
   "account": {
     "sectionTitle": "Your data",
