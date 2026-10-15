@@ -116,7 +116,7 @@ export function NutritionsTable({
                         {plan.title[0]?.toUpperCase()}
                       </span>
                       <span className="font-bold text-on-surface">
-                        {plan.title}
+                        <bdi>{plan.title}</bdi>
                       </span>
                     </div>
                   </td>

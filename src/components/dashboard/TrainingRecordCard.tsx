@@ -24,7 +24,7 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
   const hasHistory = (streak?.totalWorkoutDays ?? 0) > 0;
 
   return (
-    <section className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
+    <section className="@container bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
           <StitchIcon name="insights" size={18} />
@@ -46,7 +46,9 @@ export function TrainingRecordCard({ stats }: { stats: WorkoutStats | null }) {
           {t('workout.noHistoryYet')}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        // Sized by the card, not the viewport: on desktop the card sits in a
+        // third-width column, where two columns crushed the labels letter by letter.
+        <div className="grid grid-cols-1 gap-6 @xl:grid-cols-2">
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-surface-container-low p-4">

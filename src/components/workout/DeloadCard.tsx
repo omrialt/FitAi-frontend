@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useMobileLimit } from '../../hooks/useMobileLimit';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
@@ -40,6 +41,8 @@ export function DeloadCard({ userId }: { userId: string }) {
     };
   }, [userId]);
 
+  const rows = useMobileLimit(prescription?.exercises ?? []);
+
   // Covers `ok` and `insufficient` alike: both come back with no exercises,
   // and neither is worth a card.
   if (!prescription || prescription.exercises.length === 0) return null;
@@ -72,7 +75,7 @@ export function DeloadCard({ userId }: { userId: string }) {
       </p>
 
       <ul className="flex flex-col gap-2">
-        {prescription.exercises.map((exercise) => (
+        {rows.visible.map((exercise) => (
           <li
             key={exercise.exercise}
             className="flex items-center gap-3 rounded-lg border border-outline-variant/20 p-3"
@@ -102,6 +105,15 @@ export function DeloadCard({ userId }: { userId: string }) {
           </li>
         ))}
       </ul>
+      {rows.hidden > 0 && (
+        <button
+          type="button"
+          onClick={rows.expand}
+          className="tap mt-2 w-full rounded-lg py-2 text-sm font-bold text-primary hover:bg-primary/5"
+        >
+          {t('common.showAll', { count: rows.hidden + rows.visible.length })}
+        </button>
+      )}
 
       <p className="mt-3 text-xs text-on-surface-variant">
         {t('workout.deloadFootnote')}

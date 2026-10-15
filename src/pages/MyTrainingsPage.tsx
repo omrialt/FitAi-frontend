@@ -428,7 +428,7 @@ export default function MyTrainingsPage() {
           onPageChange={setCurrentPage}
         />
 
-        {/* AI Insights + Volume */}
+        {/* Build a plan + Volume */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           {/* Build a plan.
               Two buttons, and the order is the argument: the templates come

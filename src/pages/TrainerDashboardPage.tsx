@@ -42,6 +42,10 @@ export default function TrainerDashboardPage() {
 
   const [rows, setRows] = useState<TrainerDashboardRow[]>([]);
   const [loading, setLoading] = useState(true);
+  // A failed load is not an empty roster: without this the page said "No
+  // connected clients yet" under the error toast, and a coach with ten
+  // clients was told they had none.
+  const [failed, setFailed] = useState(false);
   const [quietOpen, setQuietOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -49,7 +53,9 @@ export default function TrainerDashboardPage() {
     setLoading(true);
     try {
       setRows(await trainerDashboardService.getOverview());
+      setFailed(false);
     } catch {
+      setFailed(true);
       toast.error(t('trainerDashboard.loadFailed'));
     } finally {
       setLoading(false);
@@ -133,6 +139,13 @@ export default function TrainerDashboardPage() {
           <Center py="xl">
             <Loader />
           </Center>
+        ) : failed && rows.length === 0 ? (
+          <Card withBorder radius="md" padding="lg">
+            <Text c="dimmed">{t('trainerDashboard.loadFailed')}</Text>
+            <Button mt="md" variant="light" onClick={load}>
+              {t('trainerDashboard.retry')}
+            </Button>
+          </Card>
         ) : rows.length === 0 ? (
           <Card withBorder radius="md" padding="lg">
             <Text c="dimmed">{t('trainerDashboard.noClients')}</Text>

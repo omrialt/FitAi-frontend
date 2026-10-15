@@ -7,9 +7,8 @@ import type { QuickStatsCardsProps } from '../../types/dashboard-components.type
  * Quick stats bento grid — "Performance Lab" design.
  *
  * Each tile is a "Signature Data Block" per DESIGN.md section 3: a large value
- * paired with a small uppercase caption. Values are zero-padded to two digits,
- * matching the design's editorial treatment ("04", not "4"). Counts of 100+ are
- * left as-is so nothing is truncated.
+ * paired with a small uppercase caption. Counts are shown as plain numbers:
+ * the zero-padded "04" of the original export read as a clock, not a count.
  */
 
 interface StatTile {
@@ -21,11 +20,6 @@ interface StatTile {
   chip: string;
   /** Border colour on hover, likewise from the export. */
   hover: string;
-}
-
-/** The design renders small counts zero-padded; larger ones untouched. */
-function pad(value: number): string {
-  return value < 10 ? `0${value}` : String(value);
 }
 
 export function QuickStatsCards({
@@ -45,7 +39,7 @@ export function QuickStatsCards({
     {
       id: 'trainingPlans',
       label: t('dashboard.trainingPlans'),
-      value: pad(trainingPlans.length),
+      value: String(trainingPlans.length),
       icon: 'fitness_center',
       chip: 'bg-primary/10 text-primary',
       hover: 'hover:border-primary/30',
@@ -53,7 +47,7 @@ export function QuickStatsCards({
     {
       id: 'nutritionPlans',
       label: t('dashboard.nutritionPlans'),
-      value: pad(nutritionPlans.length),
+      value: String(nutritionPlans.length),
       icon: 'restaurant',
       chip: 'bg-success-container text-on-success-container',
       hover: 'hover:border-success/30',
@@ -61,7 +55,7 @@ export function QuickStatsCards({
     {
       id: 'workouts7d',
       label: t('dashboard.workouts7d'),
-      value: pad(progressStats?.last7Days?.workoutsCompleted ?? 0),
+      value: String(progressStats?.last7Days?.workoutsCompleted ?? 0),
       icon: 'calendar_view_week',
       chip: 'bg-info-container text-on-info-container',
       hover: 'hover:border-info/30',
@@ -69,7 +63,7 @@ export function QuickStatsCards({
     {
       id: 'workouts30d',
       label: t('dashboard.workouts30d'),
-      value: pad(progressStats?.last30Days?.workoutsCompleted ?? 0),
+      value: String(progressStats?.last30Days?.workoutsCompleted ?? 0),
       icon: 'history',
       chip: 'bg-secondary-container text-on-secondary-container',
       hover: 'hover:border-secondary-container/30',
@@ -77,7 +71,7 @@ export function QuickStatsCards({
     {
       id: 'totalExercises',
       label: t('dashboard.totalExercises'),
-      value: pad(totalExercises),
+      value: String(totalExercises),
       icon: 'exercise',
       chip: 'bg-secondary-container text-on-secondary-container',
       hover: 'hover:border-secondary/30',
@@ -85,7 +79,6 @@ export function QuickStatsCards({
     {
       id: 'bmi',
       label: t('dashboard.currentBmi'),
-      // BMI is a ratio, not a count — never zero-padded
       value: bmi ? bmi.bmi.toFixed(1) : t('common.none'),
       icon: 'monitor_weight',
       chip: 'bg-tertiary-container text-on-tertiary-container',

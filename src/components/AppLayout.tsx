@@ -579,8 +579,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <Box className="navbar-footer">
             <Activity mode={isAuthenticated && !!user ? "visible" : "hidden"}>
               <Text size="xs" c="dimmed" ta="center" mb="xs">
-                {t("layout.role")}: {user?.role.charAt(0).toUpperCase()}
-                {user?.role.slice(1)}
+                {t("layout.role")}: {t(`layout.roles.${user?.role}`)}
               </Text>
             </Activity>
             <Text size="xs" c="dimmed" ta="center">
