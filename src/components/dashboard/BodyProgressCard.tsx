@@ -31,15 +31,14 @@ function Trend({ value, unit, t }: { value: number | null | undefined; unit: str
     );
   }
 
+  // Neutral, not green/red: whether down is good depends on the goal, and on
+  // a cut it was painting real progress as a warning. The unit comes from the
+  // caller — the old key also said "kg", so fat read "-1.4% kg".
   const up = value > 0;
   return (
-    <p
-      className={`text-[10px] font-bold flex items-center gap-0.5 mt-1 ${
-        up ? 'text-success' : 'text-danger'
-      }`}
-    >
+    <p className="text-[10px] font-bold text-on-surface-variant flex items-center gap-0.5 mt-1">
       <StitchIcon name={up ? 'trending_up' : 'trending_down'} size={11} />
-      {t('dashboard.kgThisMonth', {
+      {t('dashboard.changeThisMonth', {
         value: `${up ? '+' : ''}${value.toFixed(1)}${unit}`,
       })}
     </p>
@@ -187,7 +186,7 @@ export function BodyProgressCard({
               >
                 <Trend
                   value={progressStats?.last30Days?.weightDiff}
-                  unit={t('common.kg')}
+                  unit={` ${t('common.kg')}`}
                   t={t}
                 />
               </Tile>

@@ -85,6 +85,7 @@
     "switchToLight": "מעבר למצב בהיר",
     "switchToDark": "מעבר למצב כהה",
     "role": "תפקיד",
+    "roles": { "user": "מתאמן", "trainer": "מאמן", "admin": "מנהל" },
     "allRightsReserved": "© 2025 FitAI. כל הזכויות שמורות.",
     "logoAlt": "לוגו FitAI",
     "language": "שפה",
@@ -95,6 +96,7 @@
     "pendingInvites_other": "{{count}} הזמנות ממתינות ממאמן"
   },
   "common": {
+    "showAll": "הצגת כל ה־{{count}}",
     "showingResults": "מציג {{start}} עד {{end}} מתוך {{total}} תוצאות",
     "loading": "טוען...",
     "error": "שגיאה",
@@ -190,7 +192,7 @@
   "trainings": {
     "title": "תוכניות האימון שלי",
     "titleAdmin": "תוכניות אימון",
-    "subtitle": "נהלו את תוכניות האימון שלכם. התאימו עצימויות, עקבו אחר נפחי אימון וייצאו נתונים לסקירת ביצועים.",
+    "subtitle": "תוכניות האימון שלכם, כולל אלה שהמאמן כתב עבורכם. סננו, ערכו או ייצאו.",
     "export": "ייצוא",
     "newPlan": "תוכנית חדשה",
     "planName": "שם התוכנית",
@@ -224,8 +226,8 @@
     "modifiedWeeksAgo_many": "עודכן: לפני {{count}} שבועות",
     "modifiedWeeksAgo_other": "עודכן: לפני {{count}} שבועות",
     "modifiedOn": "עודכן: {{date}}",
-    "aiCardTitle": "עומס אימון מותאם AI",
-    "aiCardText": "תוכניות האימון הנוכחיות שלך עומדות בממוצע על <strong>84% עמידה ביעדי התאוששות</strong>. FitAi ממליץ להוסיף יום התאוששות פעילה לבלוק האימון שלך.",
+    "aiCardTitle": "צריכים תוכנית חדשה?",
+    "aiCardText": "התחילו מ<strong>תוכנית מוכנה</strong> והתאימו אותה לשבוע שלכם. זה בחינם, ונותן את אותה תוכנית בכל פעם.",
     "applySuggestion": "החל המלצה",
     "trainingVolume": "נפח אימון",
     "monSun": "ב׳—א׳",
@@ -499,7 +501,7 @@
     "noDataYet": "אין נתונים עדיין",
     "noData": "אין נתונים",
     "kgThisWeek": "{{value}} ק\"ג השבוע",
-    "kgThisMonth": "{{value}} ק\"ג החודש",
+    "changeThisMonth": "{{value}} החודש",
     "bmiCategory": {
       "noData": "אין נתונים",
       "noHeight": "גובה לא זמין",
@@ -1354,6 +1356,7 @@
     "quietCount_many": "{{count}} מתאמנים ללא התראות",
     "noClients": "אין לך עדיין מתאמנים מחוברים. הזמן מתאמן כדי לראות את הסקירה.",
     "loadFailed": "לא ניתן לטעון את סקירת המתאמנים",
+    "retry": "נסו שוב",
     "lastWorkout": "אימון אחרון",
     "sessions30": "אימונים ב-30 יום",
     "adherence": "דבקות",

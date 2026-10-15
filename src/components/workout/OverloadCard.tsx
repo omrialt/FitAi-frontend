@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useMobileLimit } from '../../hooks/useMobileLimit';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon, type StitchIconName } from '../common/StitchIcon';
@@ -125,6 +126,8 @@ export function OverloadCard({
     };
   }, [userId, exercise, limit]);
 
+  const rows = useMobileLimit(plan?.suggestions ?? []);
+
   if (failed || !plan) return null;
 
   // Nothing to say until an exercise has been logged twice. An empty card
@@ -155,10 +158,19 @@ export function OverloadCard({
       )}
 
       <ul className="flex flex-col gap-2">
-        {plan.suggestions.map((suggestion) => (
+        {rows.visible.map((suggestion) => (
           <Suggestion key={suggestion.exercise} suggestion={suggestion} />
         ))}
       </ul>
+      {rows.hidden > 0 && (
+        <button
+          type="button"
+          onClick={rows.expand}
+          className="tap mt-2 w-full rounded-lg py-2 text-sm font-bold text-primary hover:bg-primary/5"
+        >
+          {t('common.showAll', { count: rows.hidden + rows.visible.length })}
+        </button>
+      )}
     </section>
   );
 }

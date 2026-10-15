@@ -88,7 +88,7 @@ export function ActiveTrainingCard({
           </div>
           <div className="min-w-0">
             <h3 className="text-lg font-extrabold tracking-tight text-on-surface truncate">
-              {plan.title}
+              <bdi>{plan.title}</bdi>
             </h3>
             <p className="text-xs text-on-surface-variant">
               {activeCycleWeek
@@ -186,7 +186,7 @@ export function ActiveTrainingCard({
       title={
         <Group gap="xs">
           <IconBarbell size={18} color="var(--mantine-color-indigo-5)" />
-          <Text fw={600} size="lg">{plan?.title}</Text>
+          <Text fw={600} size="lg"><bdi>{plan?.title}</bdi></Text>
           {plan && (
             <Badge color={difficultyColor[plan.difficulty] || 'gray'} size="sm">
               {t(`trainings.${plan.difficulty}`, { defaultValue: plan.difficulty })}

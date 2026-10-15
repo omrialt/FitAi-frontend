@@ -83,6 +83,7 @@
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode",
     "role": "Role",
+    "roles": { "user": "Athlete", "trainer": "Trainer", "admin": "Admin" },
     "allRightsReserved": "© 2025 FitAI. All rights reserved.",
     "logoAlt": "FitAI Logo",
     "language": "Language",
@@ -91,6 +92,7 @@
     "pendingInvites_other": "{{count}} pending trainer invitations"
   },
   "common": {
+    "showAll": "Show all {{count}}",
     "showingResults": "Showing {{start}} to {{end}} of {{total}} results",
     "loading": "Loading...",
     "error": "Error",
@@ -182,7 +184,7 @@
   "trainings": {
     "title": "My Training Plans",
     "titleAdmin": "Training Plans",
-    "subtitle": "Manage your elite performance programs. Customize intensities, track volume metrics, and export data for your performance review.",
+    "subtitle": "Your training plans, including the ones your trainer wrote for you. Filter, edit, or export them.",
     "export": "Export",
     "newPlan": "New Plan",
     "planName": "Plan Name",
@@ -214,8 +216,8 @@
     "modifiedWeeksAgo_one": "Modified: {{count}} week ago",
     "modifiedWeeksAgo_other": "Modified: {{count}} weeks ago",
     "modifiedOn": "Modified: {{date}}",
-    "aiCardTitle": "AI Optimized Training Load",
-    "aiCardText": "Your current training plans average a <strong>84% recovery compliance rate</strong>. FitAi recommends adding a Restorative Flow day to your Peak Power block.",
+    "aiCardTitle": "Need a new plan?",
+    "aiCardText": "Start from a <strong>ready-made programme</strong> and adjust it to your week. It is free and gives the same plan every time.",
     "applySuggestion": "Apply Suggestion",
     "trainingVolume": "Training Volume",
     "monSun": "Mon—Sun",
@@ -475,7 +477,7 @@
     "noDataYet": "No data yet",
     "noData": "No data",
     "kgThisWeek": "{{value}} kg this week",
-    "kgThisMonth": "{{value}} kg this month",
+    "changeThisMonth": "{{value}} this month",
     "bmiCategory": {
       "noData": "No data",
       "noHeight": "Height not available",
@@ -1312,6 +1314,7 @@
     "quietCount_other": "{{count}} clients with no alerts",
     "noClients": "No connected clients yet. Invite one to see the overview.",
     "loadFailed": "Could not load the client overview",
+    "retry": "Try again",
     "lastWorkout": "Last workout",
     "sessions30": "Sessions in 30 days",
     "adherence": "Adherence",

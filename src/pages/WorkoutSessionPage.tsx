@@ -1055,7 +1055,7 @@ export default function WorkoutSessionPage() {
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
-              {plan.title}
+              <bdi>{plan.title}</bdi>
             </p>
             <h1 className="font-bold text-on-surface">
               {day.dayName}

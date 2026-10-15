@@ -51,7 +51,7 @@ export function TrainingsCard({
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface min-w-0">
-          {training.title}
+          <bdi>{training.title}</bdi>
         </h3>
         <TrainingsActionsMenu
           training={training}

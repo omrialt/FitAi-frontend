@@ -93,7 +93,7 @@ export function PlanHeader({
           title into a one-word-per-line column. */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
         <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
-          <h1 className="m-0 text-on-surface">{plan.title}</h1>
+          <h1 className="m-0 text-on-surface"><bdi>{plan.title}</bdi></h1>
           <Group gap="xs" wrap="wrap">
             {plan?.target && (
               <Badge

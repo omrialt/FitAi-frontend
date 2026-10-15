@@ -194,6 +194,12 @@
   --glass-blur: saturate(140%) blur(20px);
 }
 
+/* Headings balance their lines and body copy avoids a lone last word — card
+   titles such as "Cut — 2,100 kcal High Protein" otherwise broke one word
+   short of fitting. Zero specificity, so any component rule still wins. */
+:where(h1, h2, h3, h4) { text-wrap: balance; }
+:where(p) { text-wrap: pretty; }
+
 /* ── 3. focus ring — brand, not a stray indigo ─────────────────────────── */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-primary);
