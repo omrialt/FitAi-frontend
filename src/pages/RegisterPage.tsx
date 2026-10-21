@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
+import { isNativeApp } from '../config/platform';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { registerSchema, type RegisterFormData } from '../schemas/auth.schemas';
 import { AuthLayout } from '../components/auth/AuthLayout';
@@ -69,12 +70,18 @@ function RegisterPage() {
         subtitle={t('auth.registerSubtitle')}
       >
         <div className="space-y-4">
-          <GoogleButton
-            label={t('auth.signUpWithGoogle')}
-            onClick={() => authService.loginWithGoogle()}
-          />
+          {/* Not in the Android app yet: the Google redirect lands on the
+              website, not back in the app, and strands the user there. */}
+          {!isNativeApp && (
+            <>
+              <GoogleButton
+                label={t('auth.signUpWithGoogle')}
+                onClick={() => authService.loginWithGoogle()}
+              />
 
-          <AuthDivider label={t('auth.orSignUpWithEmail')} />
+              <AuthDivider label={t('auth.orSignUpWithEmail')} />
+            </>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <AuthField
