@@ -16,6 +16,7 @@ import { dirFor } from './i18n'
 import { OfflineSyncWatcher } from './components/common/OfflineSyncWatcher'
 import App from './App.tsx'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { isNativeApp } from './config/platform'
 
 /**
  * Mantine theme, aligned to the FitAI design tokens.
@@ -167,8 +168,11 @@ function Root() {
  * that against the app's own first paint makes the page slower for every user
  * to benefit the offline case. Failure is silent — a browser that refuses
  * service workers still gets a working app, just not an installable one.
+ *
+ * Never inside the Android app: its files already ship on the device, and a
+ * worker there would only keep serving the previous version after an update.
  */
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+if ('serviceWorker' in navigator && import.meta.env.PROD && !isNativeApp) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
       // Unsupported, blocked by policy, or a non-secure origin.

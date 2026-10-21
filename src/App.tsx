@@ -6,6 +6,7 @@ import { Loader } from "@mantine/core";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
+import { useAndroidBackButton } from "./hooks/useAndroidBackButton";
 
 /**
  * Every page but the two a visit can open on is its own chunk.
@@ -94,6 +95,8 @@ function PageFallback() {
 }
 
 function App() {
+  useAndroidBackButton();
+
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>

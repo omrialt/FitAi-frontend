@@ -6,6 +6,7 @@ import { useAuth, errorCode, EMAIL_NOT_VERIFIED } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
 import { useFormHandler } from '../hooks/useFormHandler';
 import { authService } from '../services/auth.service';
+import { isNativeApp } from '../config/platform';
 import { usePresetMetadata } from '../hooks/useMetadata';
 import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
 import { AuthLayout } from '../components/auth/AuthLayout';
@@ -121,12 +122,18 @@ function LoginPage() {
           </form>
         ) : (
           <div className="space-y-4">
-            <GoogleButton
-              label={t('auth.continueWithGoogle')}
-              onClick={() => authService.loginWithGoogle()}
-            />
+            {/* Not in the Android app yet: the Google redirect lands on the
+                website, not back in the app, and strands the user there. */}
+            {!isNativeApp && (
+              <>
+                <GoogleButton
+                  label={t('auth.continueWithGoogle')}
+                  onClick={() => authService.loginWithGoogle()}
+                />
 
-            <AuthDivider label={t('auth.orContinueWithEmail')} />
+                <AuthDivider label={t('auth.orContinueWithEmail')} />
+              </>
+            )}
 
             {unverifiedEmail && (
               <div
