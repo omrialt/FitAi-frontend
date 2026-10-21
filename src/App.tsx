@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { useAndroidBackButton } from "./hooks/useAndroidBackButton";
+import { useNativeDeepLinks } from "./hooks/useNativeDeepLinks";
 
 /**
  * Every page but the two a visit can open on is its own chunk.
@@ -96,6 +97,7 @@ function PageFallback() {
 
 function App() {
   useAndroidBackButton();
+  useNativeDeepLinks();
 
   return (
     <Suspense fallback={<PageFallback />}>

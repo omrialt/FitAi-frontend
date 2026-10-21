@@ -1,4 +1,6 @@
 import { API_URL } from '../config/env';
+import { isNativeApp } from '../config/platform';
+import { startNativeGoogleSignIn, takeVerifier } from './native-google-auth';
 import api from './api';
 import type { User, AuthTokens, LoginCredentials, RegisterData, AuthResponse } from '../types/auth.types';
 
@@ -39,6 +41,13 @@ class AuthService {
    * Initiate Google OAuth login
    */
   loginWithGoogle(): void {
+    // The app cannot finish a sign-in that lands on the website; it runs the
+    // flow in the system browser and comes back through its own URL scheme.
+    if (isNativeApp) {
+      void startNativeGoogleSignIn();
+      return;
+    }
+
     // Get the API base URL from environment or default
     const apiUrl = API_URL;
     
@@ -70,7 +79,11 @@ class AuthService {
       user?: User;
       tokens?: AuthTokens;
       needsProfile?: boolean;
-    }>('/auth/google/exchange', { code });
+    }>('/auth/google/exchange', {
+      code,
+      // Only the app has one; it binds the code to this install (PKCE).
+      ...(isNativeApp ? { codeVerifier: takeVerifier() } : {}),
+    });
 
     // Responses are wrapped in `data` by the transform interceptor on most
     // routes but not all; accept either shape rather than guessing.

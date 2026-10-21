@@ -22,6 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Return leg of Google sign-in: the backend redirects the system
+                 browser to com.fitai.app://oauth, which reopens this activity.
+                 Must match ANDROID_REDIRECT_BASE in the backend's oauth-state.ts. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.fitai.app" android:host="oauth" />
+            </intent-filter>
+
         </activity>
 
         <provider
