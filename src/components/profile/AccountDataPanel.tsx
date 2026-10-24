@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { StitchIcon } from '../common/StitchIcon';
 import accountService from '../../services/account.service';
 import { useAuthStore } from '../../store/authStore';
+import { isNativeApp } from '../../config/platform';
+import { blobToBase64, shareFile } from '../../services/share-file';
 
 /**
  * Data export and account deletion.
@@ -36,6 +38,14 @@ export function AccountDataPanel() {
     setExporting(true);
     try {
       const blob = await accountService.exportData();
+      const filename = `fitai-export-${new Date().toISOString().slice(0, 10)}.json`;
+
+      // The app's WebView has no downloads; it goes to the share sheet.
+      if (isNativeApp) {
+        await shareFile(filename, await blobToBase64(blob), filename);
+        toast.success(t('account.exportReady'));
+        return;
+      }
 
       // Object URL rather than a plain link to the endpoint: the request needs
       // the Authorization header, so it has to go through the API client and
@@ -43,7 +53,7 @@ export function AccountDataPanel() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitai-export-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       link.remove();
