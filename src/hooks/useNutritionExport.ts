@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { isNativeApp } from '../config/platform';
+import { shareFile, stripDataUri } from '../services/share-file';
+import { sheetName } from '../utils/sheetName';
 import type { NutritionPlan, Meal } from '../types/nutrition.types';
 import type { UseNutritionExportOptions, UseNutritionExportReturn } from '../types/export.types';
 
@@ -36,7 +39,7 @@ export function useNutritionExport(options: UseNutritionExportOptions = {}): Use
     );
   };
 
-  const exportToPDF = (data: NutritionPlan[]) => {
+  const exportToPDF = async (data: NutritionPlan[]) => {
     try {
       setIsExporting(true);
       setError(null);
@@ -156,7 +159,13 @@ export function useNutritionExport(options: UseNutritionExportOptions = {}): Use
         }
       });
 
-      doc.save(`${filename}_${Date.now()}.pdf`);
+      const pdfName = `${filename}_${Date.now()}.pdf`;
+      // The app's WebView has no downloads; it goes to the share sheet.
+      if (isNativeApp) {
+        await shareFile(pdfName, stripDataUri(doc.output('datauristring')), pdfName);
+      } else {
+        doc.save(pdfName);
+      }
       onSuccess?.();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('PDF export failed');
@@ -167,7 +176,7 @@ export function useNutritionExport(options: UseNutritionExportOptions = {}): Use
     }
   };
 
-  const exportToExcel = (data: NutritionPlan[]) => {
+  const exportToExcel = async (data: NutritionPlan[]) => {
     try {
       setIsExporting(true);
       setError(null);
@@ -255,8 +264,11 @@ export function useNutritionExport(options: UseNutritionExportOptions = {}): Use
         ];
 
         // Add worksheet with nutrition plan title as sheet name
-        const sheetName = plan.title.substring(0, 31); // Excel sheet name limit
-        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          sheetName(plan.title, new Set([...workbook.SheetNames, 'Summary'])),
+        );
       });
 
       // Summary sheet
@@ -298,7 +310,16 @@ export function useNutritionExport(options: UseNutritionExportOptions = {}): Use
       // Insert summary sheet at the beginning
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
 
-      XLSX.writeFile(workbook, `${filename}_${Date.now()}.xlsx`);
+      const xlsxName = `${filename}_${Date.now()}.xlsx`;
+      if (isNativeApp) {
+        await shareFile(
+          xlsxName,
+          XLSX.write(workbook, { type: 'base64', bookType: 'xlsx' }) as string,
+          xlsxName,
+        );
+      } else {
+        XLSX.writeFile(workbook, xlsxName);
+      }
       onSuccess?.();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Excel export failed');

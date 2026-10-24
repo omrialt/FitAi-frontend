@@ -19,6 +19,7 @@ import {
   storeBar,
 } from '../components/workout/plateMath';
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
+import { useWakeLock } from '../hooks/useWakeLock';
 import { enqueue, mintClientId } from '../services/offline-queue';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
@@ -391,6 +392,9 @@ export default function WorkoutSessionPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
+
+  // The phone lies on a bench between sets; keep it awake while logging.
+  useWakeLock();
 
   const [plan, setPlan] = useState<TrainingPlan | null>(null);
   const [draft, setDraft] = useState<ExerciseDraft[]>([]);

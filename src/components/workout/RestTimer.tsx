@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Haptics } from '@capacitor/haptics';
+import { toast } from 'sonner';
 
 import { StitchIcon } from '../common/StitchIcon';
+import { isNativeApp } from '../../config/platform';
+import { useRestAlarm } from '../../hooks/useRestAlarm';
+import {
+  hasExactAlarms,
+  openExactAlarmSetting,
+  requestRestAlarmPermission,
+} from '../../services/rest-alarm';
 
 /**
  * Rest timer for the workout logger, with the session clock beside it.
@@ -24,6 +33,8 @@ const PRESETS = [45, 60, 90, 120, 180];
 
 const SOUND_KEY = 'fitai.restTimer.sound';
 const TOTAL_KEY = 'fitai.restTimer.showTotal';
+/** The exact-alarm hint is shown once per device, then left alone. */
+const EXACT_HINT_KEY = 'fitai.restTimer.exactHintShown';
 
 function readFlag(key: string, fallback: boolean): boolean {
   try {
@@ -141,6 +152,14 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
   const deadline = useRef(0);
   const { unlock, play } = useChime(sound);
 
+  // In the app: the countdown in the status bar while a timer runs, and an
+  // alarm at the deadline whenever the screen is off.
+  useRestAlarm(running, deadline.current, {
+    title: t('workout.restOver'),
+    body: t('workout.restAlarmBody'),
+    countdown: t('workout.rest'),
+  });
+
   useEffect(() => {
     if (!running) return;
 
@@ -174,15 +193,35 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
     storeFlag(TOTAL_KEY, showTotal);
   }, [showTotal]);
 
+  /**
+   * First countdown in the app: ask for notifications, and if Android will
+   * only deliver them late (no exact alarms since Android 14), say so once
+   * with a way to fix it. The tap is the reason the user sees for the prompt.
+   */
+  const prepareAlarm = useCallback(async () => {
+    if (!isNativeApp) return;
+    if (!(await requestRestAlarmPermission())) return;
+    if (readFlag(EXACT_HINT_KEY, false) || (await hasExactAlarms())) return;
+
+    storeFlag(EXACT_HINT_KEY, true);
+    toast(t('workout.exactAlarmHint'), {
+      action: {
+        label: t('workout.exactAlarmEnable'),
+        onClick: () => void openExactAlarmSetting(),
+      },
+    });
+  }, [t]);
+
   const start = useCallback(
     (seconds: number) => {
       unlock();
+      void prepareAlarm();
       setDuration(seconds);
       deadline.current = Date.now() + seconds * 1000;
       setRemaining(seconds);
       setRunning(true);
     },
-    [unlock],
+    [unlock, prepareAlarm],
   );
 
   const stop = useCallback(() => {
@@ -199,7 +238,12 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
     if (!done) return;
 
     play();
-    // Belt and braces for a muted phone, where the beeps go nowhere.
+    // Belt and braces for a muted phone, where the beeps go nowhere. The
+    // WebView ignores navigator.vibrate, so the app vibrates natively.
+    if (isNativeApp) {
+      void Haptics.vibrate({ duration: 500 }).catch(() => {});
+      return;
+    }
     try {
       navigator.vibrate?.([200, 100, 200]);
     } catch {
