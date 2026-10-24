@@ -92,6 +92,9 @@ export async function armRestAlarm(
           title: text.title,
           body: text.body,
           channelId: CHANNEL_ID,
+          // White-on-transparent stopwatch (res/drawable); the app icon
+          // would render as a white square in the status bar.
+          smallIcon: 'ic_stat_timer',
           schedule: { at: new Date(deadline), allowWhileIdle: true },
         },
       ],

@@ -152,10 +152,12 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
   const deadline = useRef(0);
   const { unlock, play } = useChime(sound);
 
-  // In the app: a notification at the deadline whenever the screen is off.
+  // In the app: the countdown in the status bar while a timer runs, and an
+  // alarm at the deadline whenever the screen is off.
   useRestAlarm(running, deadline.current, {
     title: t('workout.restOver'),
     body: t('workout.restAlarmBody'),
+    countdown: t('workout.rest'),
   });
 
   useEffect(() => {

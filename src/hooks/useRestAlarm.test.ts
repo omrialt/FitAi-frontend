@@ -25,15 +25,29 @@ vi.mock('../services/rest-alarm', () => ({
   disarmRestAlarm: () => disarm(),
 }));
 
+const show = vi.fn();
+const hide = vi.fn();
+vi.mock('../services/rest-timer-live', () => ({
+  showRestCountdown: (...args: unknown[]) => show(...args),
+  hideRestCountdown: () => hide(),
+}));
+
 import { useRestAlarm } from './useRestAlarm';
 
-const text = { title: 'workout.restOver', body: 'workout.restAlarmBody' };
+const text = {
+  title: 'workout.restOver',
+  body: 'workout.restAlarmBody',
+  countdown: 'workout.rest',
+};
+const alarmText = { title: text.title, body: text.body };
 
 describe('useRestAlarm', () => {
   beforeEach(() => {
     native = true;
     arm.mockClear();
     disarm.mockClear();
+    show.mockClear();
+    hide.mockClear();
     for (const key of Object.keys(listeners)) delete listeners[key];
   });
 
@@ -42,7 +56,7 @@ describe('useRestAlarm', () => {
 
     listeners.pause();
 
-    expect(arm).toHaveBeenCalledWith(123_000, text);
+    expect(arm).toHaveBeenCalledWith(123_000, alarmText);
   });
 
   it('does not arm when no countdown is running', () => {
@@ -77,11 +91,42 @@ describe('useRestAlarm', () => {
     expect(disarm).toHaveBeenCalledTimes(2);
   });
 
+  describe('status-bar countdown', () => {
+    it('shows while a timer runs, app open or not', () => {
+      renderHook(() => useRestAlarm(true, 123_000, text));
+
+      expect(show).toHaveBeenCalledWith(123_000, 'workout.rest');
+    });
+
+    it('is replaced by a new timer and removed when stopped', () => {
+      const { rerender } = renderHook(
+        ({ running, deadline }) => useRestAlarm(running, deadline, text),
+        { initialProps: { running: true, deadline: 1000 } },
+      );
+
+      rerender({ running: true, deadline: 5000 });
+      expect(show).toHaveBeenLastCalledWith(5000, 'workout.rest');
+
+      rerender({ running: false, deadline: 5000 });
+      expect(hide).toHaveBeenCalled();
+    });
+
+    it('leaves with the workout screen', () => {
+      const { unmount } = renderHook(() => useRestAlarm(true, 123_000, text));
+      hide.mockClear();
+
+      unmount();
+
+      expect(hide).toHaveBeenCalled();
+    });
+  });
+
   it('does nothing on the web', () => {
     native = false;
     renderHook(() => useRestAlarm(true, 123_000, text));
 
     expect(listeners.pause).toBeUndefined();
     expect(disarm).not.toHaveBeenCalled();
+    expect(show).not.toHaveBeenCalled();
   });
 });
