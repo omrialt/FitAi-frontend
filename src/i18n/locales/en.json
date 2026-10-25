@@ -1444,5 +1444,24 @@
     "notificationBody": "{{exercises}} exercises waiting. Tap to open the workout.",
     "offer": "Want a reminder on workout days?",
     "offerAction": "Remind me at {{time}}"
+  },
+  "shareCard": {
+    "title": "Share workout",
+    "shareWorkout": "Share workout",
+    "share": "Share",
+    "feed": "Feed",
+    "story": "Story",
+    "showName": "Show my name",
+    "previewAlt": "Workout card preview",
+    "loadFailed": "Could not load the workout. Try again.",
+    "failed": "Sharing failed. Try again.",
+    "duration": "Duration",
+    "volume": "Volume",
+    "sets": "Sets",
+    "minutes": "min",
+    "kg": "kg",
+    "topSet": "Heaviest set",
+    "records": "Personal bests this workout",
+    "record": "PB"
   }
 }

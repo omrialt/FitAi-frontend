@@ -298,3 +298,24 @@ export interface ExerciseComparison {
   availableMuscleGroups: string[];
   exercises: ComparedExercise[];
 }
+
+/** GET /workout-sessions/:id/summary — what one session amounts to. */
+export interface WorkoutSessionSummary {
+  performedAt: string;
+  dayName?: string;
+  planTitle?: string;
+  durationMinutes?: number;
+  totalSets: number;
+  totalReps: number;
+  /** Drops included. */
+  volumeKg: number;
+  topSet: { exercise: string; weight: number; reps: number } | null;
+  /** Personal bests this session broke, best first. */
+  records: {
+    exercise: string;
+    weight: number;
+    reps: number;
+    estimatedOneRepMax: number;
+    previousBest: number;
+  }[];
+}
