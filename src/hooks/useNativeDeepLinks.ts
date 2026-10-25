@@ -38,10 +38,44 @@ export function routeForOAuthReturn(url: string): string | null {
   return search ? `${next}?${search}` : next;
 }
 
+/** App links from shortcuts, reminders, notifications and the widget. */
+const OPEN = 'com.fitai.app://open';
+
+/** Screens an app link may open; nothing else is reachable this way. */
+const OPEN_TARGETS = new Set([
+  '/',
+  '/workout/today',
+  '/log-meal',
+  '/physical-data',
+  '/messages',
+  '/workout-history',
+]);
+
+/** A specific plan day: a Mongo id and a day index, nothing more. */
+const WORKOUT_DAY = /^\/workout\/[a-f0-9]{24}\/\d{1,2}$/;
+
 /**
- * The return leg of Google sign-in in the Android app: close the system
- * browser and continue on the page the backend named, which redeems the code
- * exactly as it does on the web.
+ * Turn a com.fitai.app://open?to=… link into an in-app route, or `null`.
+ *
+ * Same stance as the OAuth return: any app or page can open such a link, so
+ * only a known screen (or one plan day by id) is accepted, and no other
+ * parameter is passed on.
+ */
+export function routeForDeepLink(url: string): string | null {
+  const [base, query = ''] = url.split('?', 2);
+  if (base !== OPEN) return null;
+
+  const to = new URLSearchParams(query).get('to');
+  if (!to) return null;
+
+  return OPEN_TARGETS.has(to) || WORKOUT_DAY.test(to) ? to : null;
+}
+
+/**
+ * Links that open the app: the return leg of Google sign-in (close the system
+ * browser and continue on the page the backend named) and app links from
+ * shortcuts and notifications. A link that started the app from cold never
+ * arrives as `appUrlOpen`, so the launch URL is read once as well.
  */
 export function useNativeDeepLinks() {
   const navigate = useNavigate();
@@ -49,14 +83,26 @@ export function useNativeDeepLinks() {
   useEffect(() => {
     if (!isNativeApp) return;
 
-    const listener = CapacitorApp.addListener('appUrlOpen', ({ url }) => {
-      const route = routeForOAuthReturn(url);
-      if (!route) return;
+    const follow = (url: string) => {
+      const oauth = routeForOAuthReturn(url);
+      if (oauth) {
+        // Already gone when Android brought the app forward on its own.
+        void Browser.close().catch(() => {});
+        navigate(oauth, { replace: true });
+        return;
+      }
 
-      // Already gone when Android brought the app forward on its own.
-      void Browser.close().catch(() => {});
-      navigate(route, { replace: true });
-    });
+      const route = routeForDeepLink(url);
+      if (route) navigate(route);
+    };
+
+    void CapacitorApp.getLaunchUrl()
+      .then((launch) => {
+        if (launch?.url) follow(launch.url);
+      })
+      .catch(() => {});
+
+    const listener = CapacitorApp.addListener('appUrlOpen', ({ url }) => follow(url));
 
     return () => {
       void listener.then((handle) => handle.remove());

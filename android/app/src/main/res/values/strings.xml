@@ -4,4 +4,13 @@
     <string name="title_activity_main">FitAi</string>
     <string name="package_name">com.fitai.app</string>
     <string name="custom_url_scheme">com.fitai.app</string>
+    <!-- App shortcuts (res/xml/shortcuts.xml) -->
+    <string name="shortcut_today_short">Today\'s workout</string>
+    <string name="shortcut_today_long">Start today\'s workout</string>
+    <string name="shortcut_meal_short">Log meal</string>
+    <string name="shortcut_meal_long">Log a meal</string>
+    <string name="shortcut_weigh_short">Weigh-in</string>
+    <string name="shortcut_weigh_long">Log your weight</string>
+    <string name="shortcut_messages_short">Messages</string>
+    <string name="shortcut_messages_long">Messages with your trainer</string>
 </resources>

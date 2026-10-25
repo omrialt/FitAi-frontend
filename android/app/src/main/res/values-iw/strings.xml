@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hebrew. Android resolves Hebrew to the legacy "iw" qualifier. -->
+<resources>
+    <string name="shortcut_today_short">אימון היום</string>
+    <string name="shortcut_today_long">התחלת האימון של היום</string>
+    <string name="shortcut_meal_short">תיעוד ארוחה</string>
+    <string name="shortcut_meal_long">תיעוד ארוחה</string>
+    <string name="shortcut_weigh_short">שקילה</string>
+    <string name="shortcut_weigh_long">רישום משקל</string>
+    <string name="shortcut_messages_short">הודעות</string>
+    <string name="shortcut_messages_long">הודעות עם המאמן</string>
+</resources>

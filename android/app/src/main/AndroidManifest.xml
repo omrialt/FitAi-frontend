@@ -32,6 +32,19 @@
                 <data android:scheme="com.fitai.app" android:host="oauth" />
             </intent-filter>
 
+            <!-- App links from shortcuts, reminders, notifications and the
+                 widget: com.fitai.app://open?to=<allowed screen>. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.fitai.app" android:host="open" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
         </activity>
 
         <!-- Buttons and end-of-rest redraw of the live workout notification. -->
