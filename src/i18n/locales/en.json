@@ -1463,5 +1463,22 @@
     "topSet": "Heaviest set",
     "records": "Personal bests this workout",
     "record": "PB"
+  },
+  "push": {
+    "title": "Notifications from your trainer",
+    "subtitle": "They arrive even with the app closed. Saved on your account.",
+    "notConfigured": "Push notifications are not switched on in this app yet.",
+    "open": "Open",
+    "saveFailed": "Could not save. Try again.",
+    "kind": {
+      "messages": "Messages",
+      "plans": "New plans",
+      "connections": "Connection requests"
+    },
+    "kindHint": {
+      "messages": "A new chat message",
+      "plans": "Your trainer assigned you a plan",
+      "connections": "A trainer asked to connect, or a connection was accepted"
+    }
   }
 }

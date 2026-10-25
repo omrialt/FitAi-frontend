@@ -4,3 +4,4 @@ export { TrainerConnectionPanel } from './TrainerConnectionPanel';
 export { AccountDataPanel } from './AccountDataPanel';
 export { NotificationHealth } from './NotificationHealth';
 export { ReminderSettings } from './ReminderSettings';
+export { PushSettings } from './PushSettings';

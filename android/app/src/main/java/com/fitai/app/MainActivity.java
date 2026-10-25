@@ -9,6 +9,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         // App-local plugins must be registered before the bridge starts.
         registerPlugin(WorkoutLivePlugin.class);
+        registerPlugin(PushSupportPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
