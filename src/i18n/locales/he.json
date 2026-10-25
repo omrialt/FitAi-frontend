@@ -1524,5 +1524,29 @@
       "plans": "המאמן הקצה לך תוכנית אימון",
       "connections": "מאמן ביקש להתחבר, או שהחיבור אושר"
     }
+  },
+  "widget": {
+    "todayTitle": "היום: {day}",
+    "todaySubtitle": "{exercises} תרגילים",
+    "doneTitle": "האימון של היום הושלם",
+    "doneSubtitle": "{day} · כל הכבוד",
+    "restTitle": "יום מנוחה",
+    "nextTomorrow": "האימון הבא: מחר, {day}",
+    "nextLater": "האימון הבא: יום {weekday}, {day}",
+    "noPlanTitle": "אין תוכנית פעילה",
+    "noPlanSubtitle": "בחירת תוכנית ב־FitAi",
+    "signedOutTitle": "התחברות ל־FitAi",
+    "signedOutSubtitle": "האימון של היום יופיע כאן",
+    "streak": "רצף של {weeks} שבועות",
+    "start": "התחל",
+    "weekdays": [
+      "ראשון",
+      "שני",
+      "שלישי",
+      "רביעי",
+      "חמישי",
+      "שישי",
+      "שבת"
+    ]
   }
 }

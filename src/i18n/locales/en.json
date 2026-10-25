@@ -1480,5 +1480,29 @@
       "plans": "Your trainer assigned you a plan",
       "connections": "A trainer asked to connect, or a connection was accepted"
     }
+  },
+  "widget": {
+    "todayTitle": "Today: {day}",
+    "todaySubtitle": "{exercises} exercises",
+    "doneTitle": "Today's workout is done",
+    "doneSubtitle": "{day} · well done",
+    "restTitle": "Rest day",
+    "nextTomorrow": "Next: tomorrow, {day}",
+    "nextLater": "Next: {weekday}, {day}",
+    "noPlanTitle": "No active plan",
+    "noPlanSubtitle": "Pick a plan in FitAi",
+    "signedOutTitle": "Sign in to FitAi",
+    "signedOutSubtitle": "Today's workout will show here",
+    "streak": "{weeks}-week streak",
+    "start": "Start",
+    "weekdays": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
   }
 }

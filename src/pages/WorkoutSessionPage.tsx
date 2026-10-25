@@ -21,7 +21,7 @@ import {
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useWorkoutLive } from '../hooks/useWorkoutLive';
-import { useSyncReminders } from '../hooks/useReminderSync';
+import { useSyncReminders, useSyncWidget } from '../hooks/useReminderSync';
 import { isNativeApp } from '../config/platform';
 import {
   getReminderSettings,
@@ -933,6 +933,7 @@ export default function WorkoutSessionPage() {
   // and re-renders through `setElapsed`, which is when this picks it up.
   useWorkoutLive(startedAt.current, day?.dayName, draft);
   const syncReminders = useSyncReminders();
+  const syncWidget = useSyncWidget();
 
   const finish = useCallback(async () => {
     if (completedSets === 0) {
@@ -1032,8 +1033,10 @@ export default function WorkoutSessionPage() {
           : {}),
       });
 
-      // Today is trained: its reminder, if any, should not fire.
+      // Today is trained: its reminder, if any, should not fire, and the
+      // widget turns to "done".
       void syncReminders();
+      void syncWidget();
       // First workout in the app with reminders off: offer them once.
       if (isNativeApp && !getReminderSettings().enabled && takeReminderOffer()) {
         toast(t('reminders.offer'), {
@@ -1068,6 +1071,7 @@ export default function WorkoutSessionPage() {
     user?._id,
     clearDraft,
     syncReminders,
+    syncWidget,
   ]);
 
   if (loading) {

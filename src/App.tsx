@@ -8,7 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { useAndroidBackButton } from "./hooks/useAndroidBackButton";
 import { useNativeDeepLinks } from "./hooks/useNativeDeepLinks";
-import { useReminderSync } from "./hooks/useReminderSync";
+import { useBackgroundSync } from "./hooks/useReminderSync";
 import { usePushRegistration } from "./hooks/usePushRegistration";
 
 /**
@@ -101,7 +101,7 @@ function PageFallback() {
 function App() {
   useAndroidBackButton();
   useNativeDeepLinks();
-  useReminderSync();
+  useBackgroundSync();
   usePushRegistration();
 
   return (

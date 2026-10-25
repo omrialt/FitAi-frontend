@@ -30,6 +30,9 @@ export const useAuthStore = create<AuthStore>()(
           // after logout the request would be refused.
           const { unregisterPush } = await import('../services/push');
           await unregisterPush();
+          // Nor should the home widget keep showing this user's plan.
+          const { clearWidget } = await import('../services/home-widget');
+          await clearWidget();
           // Send logout request to backend to blacklist the token
           await api.post('/auth/logout');
         } catch (error) {
