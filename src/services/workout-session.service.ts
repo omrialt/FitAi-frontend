@@ -13,6 +13,7 @@ import type {
   FatigueSignal,
   ListWorkoutSessionsQuery,
   WorkoutSession,
+  WorkoutSessionSummary,
   WorkoutStats,
   WorkoutTypesSummary,
   OverloadPlan,
@@ -24,6 +25,12 @@ export const workoutSessionService = {
   create: async (data: CreateWorkoutSessionDto): Promise<WorkoutSession> => {
     const response = await api.post('/workout-sessions', data);
     return response.data.data;
+  },
+
+  /** Totals and personal bests broken by one session (share card). */
+  getSummary: async (id: string): Promise<WorkoutSessionSummary> => {
+    const response = await api.get(`/workout-sessions/${id}/summary`);
+    return response.data.data ?? response.data;
   },
 
   /**

@@ -986,8 +986,9 @@ export default function WorkoutSessionPage() {
 
     setSaving(true);
     try {
+      let savedId: string | undefined;
       try {
-        await workoutSessionService.create(payload);
+        savedId = (await workoutSessionService.create(payload))?._id;
       } catch (error) {
         // Only a request that never landed is queueable. A rejection from the
         // server will never become valid by being sent again, and pretending
@@ -1019,7 +1020,17 @@ export default function WorkoutSessionPage() {
       // crash net exactly when the request is most likely to fail.
       clearDraft();
 
-      toast.success(t('workout.saved'));
+      toast.success(t('workout.saved'), {
+        // The card needs the saved session; an offline save has none yet.
+        ...(savedId
+          ? {
+              action: {
+                label: t('shareCard.share'),
+                onClick: () => navigate(`/workout-history?share=${savedId}`),
+              },
+            }
+          : {}),
+      });
 
       // Today is trained: its reminder, if any, should not fire.
       void syncReminders();

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { ShareWorkoutCard } from '../components/workout/ShareWorkoutCard';
 import { Container, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
@@ -128,9 +129,11 @@ function SetChip({
 function SessionCard({
   session,
   locale,
+  onShare,
 }: {
   session: WorkoutSession;
   locale: string;
+  onShare: (id: string) => void;
 }) {
   const { t } = useTranslation();
 
@@ -164,6 +167,15 @@ function SessionCard({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-3 text-xs text-on-surface-variant">
+          <button
+            type="button"
+            onClick={() => onShare(session._id)}
+            aria-label={t('shareCard.shareWorkout')}
+            title={t('shareCard.shareWorkout')}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant transition hover:bg-surface-container"
+          >
+            <StitchIcon name="share" size={16} />
+          </button>
           <span className="tabular-nums">{time}</span>
           {session.durationMinutes ? (
             <span className="flex items-center gap-1">
@@ -404,8 +416,13 @@ export default function WorkoutHistoryPage() {
   const hasAnyLog = types.length > 0 || sessions.length > 0;
   const firstLoad = loading && sessions.length === 0 && typesState === 'loading';
 
+  // `?share=<id>`: the share card for one session — from a card's button, or
+  // straight after saving a workout.
+  const shareId = searchParams.get('share');
+
   return (
     <AppLayout>
+      <ShareWorkoutCard sessionId={shareId} onClose={() => setParams({ share: undefined })} />
       {metadata}
       <Container size="md" py="md">
         <header className="mb-6">
@@ -551,6 +568,7 @@ export default function WorkoutHistoryPage() {
                           key={session._id}
                           session={session}
                           locale={i18n.language}
+                          onShare={(id) => setParams({ share: id })}
                         />
                       ))}
                     </div>
