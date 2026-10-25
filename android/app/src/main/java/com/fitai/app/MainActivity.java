@@ -8,7 +8,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // App-local plugins must be registered before the bridge starts.
-        registerPlugin(RestTimerPlugin.class);
+        registerPlugin(WorkoutLivePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

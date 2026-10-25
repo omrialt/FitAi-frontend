@@ -984,6 +984,12 @@
     "sessionNotesPlaceholder": "How did it feel? Anything to remember for next time?",
     "rest": "Rest",
     "restOver": "Rest over",
+    "liveTitle": "Workout",
+    "liveNext": "{{exercise}} · set {{set}} of {{of}}",
+    "liveAllDone": "All sets done · ready to finish",
+    "liveStarted": "Workout in progress · started {{time}}",
+    "livePlus30": "+30s",
+    "liveSkipRest": "Skip rest",
     "restAlarmBody": "Time for your next set",
     "exactAlarmHint": "To make the timer ring on time with the screen off, allow exact alarms",
     "exactAlarmEnable": "Allow exact alarms",
@@ -1414,5 +1420,17 @@
     "noOwnPlans": "You don't have a plan of your own yet",
     "noOwnPlansHint": "A template is copied from one of your own training plans. Create a plan first, then come back to save it here.",
     "createPlan": "Create a plan"
+  },
+  "notificationHealth": {
+    "title": "Notifications",
+    "subtitle": "What Android lets FitAi show. If the workout clock is missing from the status bar, the reason is almost always here.",
+    "notifications": "Notifications",
+    "notificationsHint": "Off. Without them there is no workout clock in the status bar and no chime at the end of a rest.",
+    "live": "Live notifications in the status bar",
+    "liveHint": "Off. The notification shows only in the shade, without the clock chip.",
+    "exact": "On-time chime at the end of a rest",
+    "exactHint": "Off. The chime may be late while the screen is off.",
+    "on": "On",
+    "fix": "Fix"
   }
 }

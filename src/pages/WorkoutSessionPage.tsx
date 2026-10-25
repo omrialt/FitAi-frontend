@@ -20,6 +20,7 @@ import {
 } from '../components/workout/plateMath';
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { useWorkoutLive } from '../hooks/useWorkoutLive';
 import { enqueue, mintClientId } from '../services/offline-queue';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
@@ -918,6 +919,11 @@ export default function WorkoutSessionPage() {
     () => draft.reduce((n, e) => n + e.sets.length, 0),
     [draft],
   );
+
+  // The workout clock, the next set and the rest countdown in the status bar
+  // (Live Update on Android 16). `startedAt` is a ref: a resumed draft moves it
+  // and re-renders through `setElapsed`, which is when this picks it up.
+  useWorkoutLive(startedAt.current, day?.dayName, draft);
 
   const finish = useCallback(async () => {
     if (completedSets === 0) {

@@ -34,6 +34,11 @@
 
         </activity>
 
+        <!-- Buttons and end-of-rest redraw of the live workout notification. -->
+        <receiver
+            android:name=".WorkoutLiveActionReceiver"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

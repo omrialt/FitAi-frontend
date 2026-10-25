@@ -9,8 +9,9 @@ import { useRestAlarm } from '../../hooks/useRestAlarm';
 import {
   hasExactAlarms,
   openExactAlarmSetting,
-  requestRestAlarmPermission,
+  requestNotificationPermission,
 } from '../../services/rest-alarm';
+import { onLiveAction } from '../../services/workout-live';
 
 /**
  * Rest timer for the workout logger, with the session clock beside it.
@@ -152,12 +153,11 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
   const deadline = useRef(0);
   const { unlock, play } = useChime(sound);
 
-  // In the app: the countdown in the status bar while a timer runs, and an
+  // In the app: the rest countdown in the live workout notification, and an
   // alarm at the deadline whenever the screen is off.
   useRestAlarm(running, deadline.current, {
     title: t('workout.restOver'),
     body: t('workout.restAlarmBody'),
-    countdown: t('workout.rest'),
   });
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
    */
   const prepareAlarm = useCallback(async () => {
     if (!isNativeApp) return;
-    if (!(await requestRestAlarmPermission())) return;
+    if (!(await requestNotificationPermission())) return;
     if (readFlag(EXACT_HINT_KEY, false) || (await hasExactAlarms())) return;
 
     storeFlag(EXACT_HINT_KEY, true);
@@ -228,6 +228,24 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
     setRunning(false);
     setRemaining(0);
   }, []);
+
+  // The notification's buttons, tapped on the lock screen. The notification
+  // has already redrawn itself; the page follows so the two agree.
+  useEffect(
+    () =>
+      onLiveAction((action) => {
+        if (action.type === 'skipRest') {
+          stop();
+          return;
+        }
+        if (action.restDeadline > Date.now()) {
+          deadline.current = action.restDeadline;
+          setRemaining(Math.round((action.restDeadline - Date.now()) / 1000));
+          setRunning(true);
+        }
+      }),
+    [stop],
+  );
 
   const done = running && remaining === 0;
   const progress = running ? 1 - remaining / duration : 0;

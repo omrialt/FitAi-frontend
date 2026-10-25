@@ -17,6 +17,7 @@ import { OfflineSyncWatcher } from './components/common/OfflineSyncWatcher'
 import App from './App.tsx'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { isNativeApp } from './config/platform'
+import { endSession } from './services/workout-live'
 
 /**
  * Mantine theme, aligned to the FitAI design tokens.
@@ -179,6 +180,13 @@ if ('serviceWorker' in navigator && import.meta.env.PROD && !isNativeApp) {
     });
   });
 }
+
+/**
+ * A cold start means the previous process is gone, and with it any workout it
+ * was showing. Its notification would otherwise keep a clock running for a
+ * workout nobody is logging; the workout screen redraws it if one is resumed.
+ */
+if (isNativeApp) endSession()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
