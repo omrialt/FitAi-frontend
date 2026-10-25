@@ -21,6 +21,14 @@ import {
 import { useWorkoutDraft } from '../hooks/useWorkoutDraft';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useWorkoutLive } from '../hooks/useWorkoutLive';
+import { useSyncReminders } from '../hooks/useReminderSync';
+import { isNativeApp } from '../config/platform';
+import {
+  getReminderSettings,
+  setReminderSettings,
+  takeReminderOffer,
+} from '../services/workout-reminders';
+import { requestNotificationPermission } from '../services/rest-alarm';
 import { enqueue, mintClientId } from '../services/offline-queue';
 import { progressStatsService } from '../services/progress-stats.service';
 import { trainingPlanService } from '../services/training-plan.service';
@@ -924,6 +932,7 @@ export default function WorkoutSessionPage() {
   // (Live Update on Android 16). `startedAt` is a ref: a resumed draft moves it
   // and re-renders through `setElapsed`, which is when this picks it up.
   useWorkoutLive(startedAt.current, day?.dayName, draft);
+  const syncReminders = useSyncReminders();
 
   const finish = useCallback(async () => {
     if (completedSets === 0) {
@@ -1011,6 +1020,26 @@ export default function WorkoutSessionPage() {
       clearDraft();
 
       toast.success(t('workout.saved'));
+
+      // Today is trained: its reminder, if any, should not fire.
+      void syncReminders();
+      // First workout in the app with reminders off: offer them once.
+      if (isNativeApp && !getReminderSettings().enabled && takeReminderOffer()) {
+        toast(t('reminders.offer'), {
+          duration: 10_000,
+          action: {
+            label: t('reminders.offerAction', { time: getReminderSettings().time }),
+            onClick: () => {
+              void requestNotificationPermission().then((granted) => {
+                if (!granted) return;
+                setReminderSettings({ ...getReminderSettings(), enabled: true });
+                void syncReminders();
+              });
+            },
+          },
+        });
+      }
+
       navigate('/');
     } catch {
       toast.error(t('workout.saveFailed'));
@@ -1027,6 +1056,7 @@ export default function WorkoutSessionPage() {
     t,
     user?._id,
     clearDraft,
+    syncReminders,
   ]);
 
   if (loading) {
