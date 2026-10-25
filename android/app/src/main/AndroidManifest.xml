@@ -47,6 +47,20 @@
 
         </activity>
 
+        <!-- Home widget. Exported because the launcher must reach it; it only
+             answers APPWIDGET_UPDATE and reads nothing from the intent. -->
+        <receiver
+            android:name=".TodayWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_today_info" />
+        </receiver>
+
         <!-- Buttons and end-of-rest redraw of the live workout notification. -->
         <receiver
             android:name=".WorkoutLiveActionReceiver"

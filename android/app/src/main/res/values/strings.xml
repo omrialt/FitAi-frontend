@@ -13,4 +13,8 @@
     <string name="shortcut_weigh_long">Log your weight</string>
     <string name="shortcut_messages_short">Messages</string>
     <string name="shortcut_messages_long">Messages with your trainer</string>
+    <!-- Home widget -->
+    <string name="widget_label">Today\'s workout</string>
+    <string name="widget_description">Today\'s workout from your plan, with a Start button</string>
+    <string name="widget_start">Start</string>
 </resources>
