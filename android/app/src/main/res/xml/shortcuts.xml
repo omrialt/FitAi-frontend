@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press shortcuts on the launcher icon. Each opens a com.fitai.app://open
+     link, which useNativeDeepLinks routes against its allow-list. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="today"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_today"
+        android:shortcutShortLabel="@string/shortcut_today_short"
+        android:shortcutLongLabel="@string/shortcut_today_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.fitai.app"
+            android:targetClass="com.fitai.app.MainActivity"
+            android:data="com.fitai.app://open?to=/workout/today" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="meal"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_meal"
+        android:shortcutShortLabel="@string/shortcut_meal_short"
+        android:shortcutLongLabel="@string/shortcut_meal_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.fitai.app"
+            android:targetClass="com.fitai.app.MainActivity"
+            android:data="com.fitai.app://open?to=/log-meal" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="weigh"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_weigh"
+        android:shortcutShortLabel="@string/shortcut_weigh_short"
+        android:shortcutLongLabel="@string/shortcut_weigh_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.fitai.app"
+            android:targetClass="com.fitai.app.MainActivity"
+            android:data="com.fitai.app://open?to=/physical-data" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="messages"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_messages"
+        android:shortcutShortLabel="@string/shortcut_messages_short"
+        android:shortcutLongLabel="@string/shortcut_messages_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.fitai.app"
+            android:targetClass="com.fitai.app.MainActivity"
+            android:data="com.fitai.app://open?to=/messages" />
+    </shortcut>
+</shortcuts>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { routeForOAuthReturn } from './useNativeDeepLinks';
+import { routeForDeepLink, routeForOAuthReturn } from './useNativeDeepLinks';
 
 const code = 'a'.repeat(64);
 
@@ -39,5 +39,35 @@ describe('routeForOAuthReturn', () => {
         `com.fitai.app://oauth?code=${code}&next=/auth/google/callback&redirect=/admin`,
       ),
     ).toBe(`/auth/google/callback?code=${code}`);
+  });
+});
+
+describe('routeForDeepLink', () => {
+  it.each(['/', '/workout/today', '/log-meal', '/physical-data', '/messages', '/workout-history'])(
+    'opens %s',
+    (to) => {
+      expect(routeForDeepLink(`com.fitai.app://open?to=${encodeURIComponent(to)}`)).toBe(to);
+    },
+  );
+
+  it('opens one plan day by id', () => {
+    const to = `/workout/${'ab12'.repeat(6)}/2`;
+    expect(routeForDeepLink(`com.fitai.app://open?to=${to}`)).toBe(to);
+  });
+
+  // Any app or page can open a com.fitai.app:// link.
+  it.each([
+    ['a screen outside the list', 'com.fitai.app://open?to=/users'],
+    ['a malformed plan id', 'com.fitai.app://open?to=/workout/not-an-id/2'],
+    ['an absolute URL', 'com.fitai.app://open?to=https://evil.example'],
+    ['another host', 'com.fitai.app://elsewhere?to=/messages'],
+    ['another scheme', 'https://fitai.example/open?to=/messages'],
+    ['no target', 'com.fitai.app://open'],
+  ])('ignores %s', (_label, url) => {
+    expect(routeForDeepLink(url)).toBeNull();
+  });
+
+  it('passes nothing but the target on', () => {
+    expect(routeForDeepLink('com.fitai.app://open?to=/messages&redirect=/admin')).toBe('/messages');
   });
 });

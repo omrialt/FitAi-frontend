@@ -74,6 +74,7 @@ const TrainingPlanDetailsPage = lazyPage(
 const PhysicalDataPage = lazyPage(() => import("./pages/PhysicalDataPage"));
 const VerifyEmailPage = lazyPage(() => import("./pages/VerifyEmailPage"));
 const WorkoutSessionPage = lazyPage(() => import("./pages/WorkoutSessionPage"));
+const TodayWorkoutPage = lazyPage(() => import("./pages/TodayWorkoutPage"));
 const WorkoutHistoryPage = lazyPage(() => import("./pages/WorkoutHistoryPage"));
 const ClientDetailPage = lazyPage(() => import("./pages/ClientDetailPage"));
 const TrainerDashboardPage = lazyPage(
@@ -206,6 +207,15 @@ function App() {
         />
 
         {/* Live workout logger — one plan day at a time */}
+        {/* "Today's workout" from app shortcuts, reminders and the widget */}
+        <Route
+          path="/workout/today"
+          element={
+            <ProtectedRoute>
+              <TodayWorkoutPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/workout/:planId/:dayIndex"
           element={

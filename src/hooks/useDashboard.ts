@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { currentStatusService } from '../services/current-status.service';
+import { isPopulated, refId, unwrapResponse } from '../utils/refs';
 import { trainingPlanService } from '../services/training-plan.service';
 import { nutritionPlanService } from '../services/nutrition-plan.service';
 import { physicalDataService } from '../services/physical-data.service';
@@ -42,32 +43,6 @@ const EMPTY: DashboardData = {
 const NOTHING_READY = Object.fromEntries(
   Object.keys(EMPTY).map((key) => [key, false]),
 ) as DashboardReady;
-
-/** Unwrap the TransformInterceptor envelope `{ data, timestamp, path }` when present. */
-function unwrapResponse<T>(val: unknown): T | null {
-  if (
-    val &&
-    typeof val === 'object' &&
-    'timestamp' in (val as Record<string, unknown>) &&
-    'data' in (val as Record<string, unknown>)
-  ) {
-    return (val as Record<string, unknown>).data as T;
-  }
-  return (val as T) ?? null;
-}
-
-/** The id of a ref the backend may or may not have populated. */
-function refId(ref: unknown): string | null {
-  if (typeof ref === 'string') return ref;
-  if (ref && typeof ref === 'object' && '_id' in (ref as Record<string, unknown>)) {
-    return String((ref as { _id: unknown })._id);
-  }
-  return null;
-}
-
-function isPopulated<T>(ref: unknown): ref is T {
-  return !!ref && typeof ref === 'object' && '_id' in (ref as Record<string, unknown>);
-}
 
 /**
  * Everything the dashboard shows, delivered progressively.
