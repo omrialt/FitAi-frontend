@@ -9,6 +9,7 @@ import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { useAndroidBackButton } from "./hooks/useAndroidBackButton";
 import { useNativeDeepLinks } from "./hooks/useNativeDeepLinks";
 import { useReminderSync } from "./hooks/useReminderSync";
+import { usePushRegistration } from "./hooks/usePushRegistration";
 
 /**
  * Every page but the two a visit can open on is its own chunk.
@@ -101,6 +102,7 @@ function App() {
   useAndroidBackButton();
   useNativeDeepLinks();
   useReminderSync();
+  usePushRegistration();
 
   return (
     <Suspense fallback={<PageFallback />}>

@@ -50,6 +50,10 @@ const OPEN_TARGETS = new Set([
   '/physical-data',
   '/messages',
   '/workout-history',
+  // Push targets: a new plan, a connection request, an accepted connection.
+  '/my-trainings',
+  '/profile',
+  '/clients',
 ]);
 
 /** A specific plan day: a Mongo id and a day index, nothing more. */

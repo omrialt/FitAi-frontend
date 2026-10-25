@@ -26,6 +26,10 @@ export const useAuthStore = create<AuthStore>()(
       
       logout: async () => {
         try {
+          // Take this phone off the account while the session is still valid;
+          // after logout the request would be refused.
+          const { unregisterPush } = await import('../services/push');
+          await unregisterPush();
           // Send logout request to backend to blacklist the token
           await api.post('/auth/logout');
         } catch (error) {
