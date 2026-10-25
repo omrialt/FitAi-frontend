@@ -37,10 +37,11 @@ function ensureRestChannel(): Promise<void> {
 }
 
 /**
- * Ask for notification permission (Android 13+). Called from the tap that
- * starts a timer, so the prompt has a reason the user can see.
+ * Ask for notification permission (Android 13+). Called when the workout
+ * screen opens: the live workout notification and the rest alarm both need it,
+ * and starting a workout is the reason the user can see for the prompt.
  */
-export async function requestRestAlarmPermission(): Promise<boolean> {
+export async function requestNotificationPermission(): Promise<boolean> {
   if (!isNativeApp) return false;
   try {
     const current = await LocalNotifications.checkPermissions();

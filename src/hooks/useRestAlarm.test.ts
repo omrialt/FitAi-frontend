@@ -25,29 +25,22 @@ vi.mock('../services/rest-alarm', () => ({
   disarmRestAlarm: () => disarm(),
 }));
 
-const show = vi.fn();
-const hide = vi.fn();
-vi.mock('../services/rest-timer-live', () => ({
-  showRestCountdown: (...args: unknown[]) => show(...args),
-  hideRestCountdown: () => hide(),
+const setRest = vi.fn();
+vi.mock('../services/workout-live', () => ({
+  setRest: (...args: unknown[]) => setRest(...args),
 }));
 
 import { useRestAlarm } from './useRestAlarm';
 
-const text = {
-  title: 'workout.restOver',
-  body: 'workout.restAlarmBody',
-  countdown: 'workout.rest',
-};
-const alarmText = { title: text.title, body: text.body };
+const text = { title: 'workout.restOver', body: 'workout.restAlarmBody' };
+const alarmText = text;
 
 describe('useRestAlarm', () => {
   beforeEach(() => {
     native = true;
     arm.mockClear();
     disarm.mockClear();
-    show.mockClear();
-    hide.mockClear();
+    setRest.mockClear();
     for (const key of Object.keys(listeners)) delete listeners[key];
   });
 
@@ -91,34 +84,39 @@ describe('useRestAlarm', () => {
     expect(disarm).toHaveBeenCalledTimes(2);
   });
 
-  describe('status-bar countdown', () => {
-    it('shows while a timer runs, app open or not', () => {
+  describe('live workout notification', () => {
+    it('switches to the rest countdown while a timer runs', () => {
       renderHook(() => useRestAlarm(true, 123_000, text));
 
-      expect(show).toHaveBeenCalledWith(123_000, 'workout.rest');
+      expect(setRest).toHaveBeenCalledWith(123_000);
     });
 
-    it('is replaced by a new timer and removed when stopped', () => {
+    it('follows a restart and goes back to the workout clock on stop', () => {
       const { rerender } = renderHook(
         ({ running, deadline }) => useRestAlarm(running, deadline, text),
         { initialProps: { running: true, deadline: 1000 } },
       );
 
       rerender({ running: true, deadline: 5000 });
-      expect(show).toHaveBeenLastCalledWith(5000, 'workout.rest');
+      expect(setRest).toHaveBeenLastCalledWith(5000);
 
       rerender({ running: false, deadline: 5000 });
-      expect(hide).toHaveBeenCalled();
+      expect(setRest).toHaveBeenLastCalledWith(null);
     });
+  });
 
-    it('leaves with the workout screen', () => {
-      const { unmount } = renderHook(() => useRestAlarm(true, 123_000, text));
-      hide.mockClear();
+  // "+30" from the lock screen moves the deadline while the app is hidden.
+  it('re-arms the alarm when the deadline moves in the background', () => {
+    const { rerender } = renderHook(
+      ({ deadline }) => useRestAlarm(true, deadline, text),
+      { initialProps: { deadline: 1000 } },
+    );
+    listeners.pause();
+    arm.mockClear();
 
-      unmount();
+    rerender({ deadline: 31_000 });
 
-      expect(hide).toHaveBeenCalled();
-    });
+    expect(arm).toHaveBeenCalledWith(31_000, alarmText);
   });
 
   it('does nothing on the web', () => {
@@ -127,6 +125,6 @@ describe('useRestAlarm', () => {
 
     expect(listeners.pause).toBeUndefined();
     expect(disarm).not.toHaveBeenCalled();
-    expect(show).not.toHaveBeenCalled();
+    expect(setRest).not.toHaveBeenCalled();
   });
 });

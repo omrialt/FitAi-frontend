@@ -2,17 +2,16 @@ import { useEffect, useRef } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
 import { isNativeApp } from '../config/platform';
 import { armRestAlarm, disarmRestAlarm } from '../services/rest-alarm';
-import { hideRestCountdown, showRestCountdown } from '../services/rest-timer-live';
+import { setRest } from '../services/workout-live';
 
 /**
- * Keeps the status-bar countdown and the background alarm in step with the
- * rest timer.
+ * Keeps the live workout notification and the background alarm in step with
+ * the rest timer.
  *
- * The countdown shows in the status bar for as long as a timer runs, app open
- * or not; Android counts it down and removes it at zero on its own.
+ * While a rest runs, the workout notification shows its countdown instead of
+ * the session clock; Android switches it back at zero on its own.
  *
- * The alarm is
- * Armed when the app is paused (screen off or app switched) while a countdown
+ * The alarm is armed when the app is paused (screen off or app switched) while a countdown
  * runs; disarmed when it resumes, when the countdown stops, and when another
  * starts. While the app is visible the in-page chime does the job, so the two
  * never both sound.
@@ -20,20 +19,24 @@ import { hideRestCountdown, showRestCountdown } from '../services/rest-timer-liv
 export function useRestAlarm(
   running: boolean,
   deadline: number,
-  text: { title: string; body: string; countdown: string },
+  text: { title: string; body: string },
 ) {
   // Read inside the listeners, which are registered once.
   const state = useRef({ running, deadline, text });
   state.current = { running, deadline, text };
+  // Whether the app is in the background right now.
+  const paused = useRef(false);
 
   useEffect(() => {
     if (!isNativeApp) return;
 
     const pause = CapacitorApp.addListener('pause', () => {
+      paused.current = true;
       const { running: on, deadline: at, text: copy } = state.current;
-      if (on) void armRestAlarm(at, { title: copy.title, body: copy.body });
+      if (on) void armRestAlarm(at, copy);
     });
     const resume = CapacitorApp.addListener('resume', () => {
+      paused.current = false;
       void disarmRestAlarm();
     });
 
@@ -45,20 +48,13 @@ export function useRestAlarm(
   }, []);
 
   // A stopped or restarted countdown invalidates whatever was scheduled, and
-  // replaces the countdown in the status bar.
+  // moves the workout notification into or out of its rest view.
   useEffect(() => {
     if (!isNativeApp) return;
     void disarmRestAlarm();
-    if (running) {
-      void showRestCountdown(deadline, state.current.text.countdown);
-    } else {
-      void hideRestCountdown();
-    }
+    setRest(running ? deadline : null);
+    // "+30" from the lock screen moves the deadline while the app is in the
+    // background; the alarm has to move with it.
+    if (running && paused.current) void armRestAlarm(deadline, state.current.text);
   }, [running, deadline]);
-
-  // Leaving the workout screen takes the countdown with it.
-  useEffect(() => {
-    if (!isNativeApp) return;
-    return () => void hideRestCountdown();
-  }, []);
 }
