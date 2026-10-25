@@ -1432,5 +1432,17 @@
     "exactHint": "Off. The chime may be late while the screen is off.",
     "on": "On",
     "fix": "Fix"
+  },
+  "reminders": {
+    "title": "Workout reminder",
+    "subtitle": "A notification on days your active plan has a workout, only if you have not trained yet that day.",
+    "time": "Time",
+    "upcoming": "Upcoming reminders",
+    "noneUpcoming": "No reminders in the next two weeks. Maybe there is no active training plan, or it has no fixed days.",
+    "denied": "Notifications are off for FitAi. You can turn them on in \"Notifications\" above.",
+    "notificationTitle": "Today: {{day}}",
+    "notificationBody": "{{exercises}} exercises waiting. Tap to open the workout.",
+    "offer": "Want a reminder on workout days?",
+    "offerAction": "Remind me at {{time}}"
   }
 }

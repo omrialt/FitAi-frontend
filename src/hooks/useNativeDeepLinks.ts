@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { isNativeApp } from '../config/platform';
 
 /** Must match ANDROID_REDIRECT_BASE in the backend and the manifest's intent-filter. */
@@ -75,7 +76,8 @@ export function routeForDeepLink(url: string): string | null {
  * Links that open the app: the return leg of Google sign-in (close the system
  * browser and continue on the page the backend named) and app links from
  * shortcuts and notifications. A link that started the app from cold never
- * arrives as `appUrlOpen`, so the launch URL is read once as well.
+ * arrives as `appUrlOpen`, so the launch URL is read once as well. A tapped
+ * local notification (a workout reminder) carries its link in `extra.url`.
  */
 export function useNativeDeepLinks() {
   const navigate = useNavigate();
@@ -103,9 +105,17 @@ export function useNativeDeepLinks() {
       .catch(() => {});
 
     const listener = CapacitorApp.addListener('appUrlOpen', ({ url }) => follow(url));
+    const tapped = LocalNotifications.addListener(
+      'localNotificationActionPerformed',
+      ({ notification }) => {
+        const url = (notification.extra as { url?: unknown } | undefined)?.url;
+        if (typeof url === 'string') follow(url);
+      },
+    );
 
     return () => {
       void listener.then((handle) => handle.remove());
+      void tapped.then((handle) => handle.remove());
     };
   }, [navigate]);
 }
