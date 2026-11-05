@@ -62,7 +62,9 @@ captures/
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+# Kept out of git: the repo is public and the file carries a Firebase API key.
+# Download it from Firebase (project fitai-5250d) — see README "Android build".
+google-services.json
 
 # Freeline
 freeline.py
