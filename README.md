@@ -166,3 +166,21 @@ Two things to remember when deploying:
   `@import "tailwindcss"`. Tailwind's Vite plugin inlines its import in place,
   so anything below it ends up after thousands of rules and browsers discard a
   late `@import`.
+
+## Android build
+
+The Android app is a Capacitor shell around this same build (`com.fitai.app`).
+
+```bash
+npm run apk:debug   # → android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Needs JDK 21 (`JAVA_HOME`) and the Android SDK (`ANDROID_HOME`, platform 36).
+`npm run build:android` bakes the production API URL in; there is no `.env` for it.
+
+**`android/app/google-services.json` is not in git** — this repo is public and
+the file carries a Firebase API key. Download it from the Firebase console:
+project `fitai-5250d` → Project settings → Your apps → *FitAi Android*, and put
+it in `android/app/`. Without it the APK still builds and runs; push
+notifications are simply off (`PushSupportPlugin` reports no Firebase, so the
+app never registers — registering without Firebase would crash).
