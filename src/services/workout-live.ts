@@ -77,8 +77,11 @@ function scheduleFlush() {
       sessionText: labels.sessionText,
       plus30Label: labels.plus30,
       skipLabel: labels.skip,
-    }).catch(() => {
-      // No permission or plugin: the page is still the workout.
+    }).catch((error: unknown) => {
+      // The page is still the workout, but never fail silently here: a
+      // rejection is the only trace of a notification that never appears,
+      // and it reaches logcat this way.
+      console.warn('[WorkoutLive] show failed', error);
     });
   });
 }
@@ -103,7 +106,9 @@ export function endSession(): void {
   if (!isNativeApp) return;
   session = null;
   restDeadline = 0;
-  void WorkoutLive.stop().catch(() => {});
+  void WorkoutLive.stop().catch((error: unknown) => {
+    console.warn('[WorkoutLive] stop failed', error);
+  });
 }
 
 export function onLiveAction(listener: (action: LiveAction) => void): () => void {

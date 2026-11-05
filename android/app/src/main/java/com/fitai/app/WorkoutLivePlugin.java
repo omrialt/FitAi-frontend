@@ -47,18 +47,18 @@ public class WorkoutLivePlugin extends Plugin {
     @PluginMethod
     public void show(PluginCall call) {
         WorkoutLiveNotifier.State state = new WorkoutLiveNotifier.State();
-        Double startedAt = call.getDouble("startedAt");
-        if (startedAt == null) {
+        // Not call.getDouble: an epoch time in ms arrives as a Long, for which
+        // getDouble returns null (see JsNumbers).
+        state.startedAt = JsNumbers.toMillis(call.getData().opt("startedAt"));
+        if (state.startedAt <= 0) {
             call.reject("startedAt is required");
             return;
         }
-        state.startedAt = startedAt.longValue();
         state.title = call.getString("title", "");
         state.text = call.getString("text", "");
         state.done = call.getInt("done", 0);
         state.total = call.getInt("total", 0);
-        Double restDeadline = call.getDouble("restDeadline");
-        state.restDeadline = restDeadline == null ? 0 : restDeadline.longValue();
+        state.restDeadline = JsNumbers.toMillis(call.getData().opt("restDeadline"));
         state.restTitle = call.getString("restTitle", "");
         state.sessionText = call.getString("sessionText", "");
         state.plus30Label = call.getString("plus30Label", "+30");
