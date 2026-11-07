@@ -186,7 +186,8 @@
     "close": "סגירה",
     "durationLabel": "משך",
     "caloriesLabel": "קלוריות משוער",
-    "filters": "סינון"
+    "filters": "סינון",
+    "undo": "ביטול"
   },
   "trainings": {
     "title": "תוכניות האימון שלי",
@@ -1196,7 +1197,14 @@
     },
     "previous": "קודם",
     "prefillMatchedAs": "בפעם הקודמת נרשם כ„{{name}}”",
-    "prefillOffDaySkipped": "מולא מאימון מוקדם יותר — {{date}} נראה כמו יום חריג"
+    "prefillOffDaySkipped": "מולא מאימון מוקדם יותר — {{date}} נראה כמו יום חריג",
+    "completeSet": "סיימתי את סט {{number}} · {{exercise}}",
+    "restRemaining": "מנוחה",
+    "skip": "דילוג",
+    "weightDown": "הורדת 2.5 ק״ג",
+    "weightUp": "הוספת 2.5 ק״ג",
+    "repsDown": "חזרה אחת פחות",
+    "repsUp": "חזרה אחת יותר"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",
@@ -1350,7 +1358,11 @@
     "searchSource": "הערכים מ‑USDA FoodData Central, לפי 100 גרם. הכמות שתזין קובעת את החישוב.",
     "addWholeMeal": "כל הארוחה",
     "addItem": "להוסיף {{name}}",
-    "itemsAndCalories": "{{count}} פריטים · {{calories}} קלוריות"
+    "itemsAndCalories": "{{count}} פריטים · {{calories}} קלוריות",
+    "savedTo": "נוסף ל{{meal}}",
+    "saveTo": "הוספה ל{{meal}}",
+    "undone": "התיעוד בוטל",
+    "undoFailed": "לא הצלחנו לבטל. אפשר למחוק את הארוחה מהרשימה."
   },
   "trainerDashboard": {
     "pageTitle": "סקירת מתאמנים",
@@ -1549,5 +1561,54 @@
       "שישי",
       "שבת"
     ]
+  },
+  "today": {
+    "todaysWorkout": "האימון של היום",
+    "doneToday": "האימון של היום בוצע",
+    "restDayNext": "יום מנוחה. האימון הבא ביום {{day}}",
+    "minutes": "כ־{{count}} דק׳",
+    "exercisesSets": "{{exercises}} תרגילים, {{sets}} סטים",
+    "start": "התחלת אימון",
+    "trainAnyway": "להתאמן בכל זאת",
+    "trainAgain": "אימון נוסף",
+    "viewPlan": "לתוכנית המלאה",
+    "noPlanTitle": "עוד אין לך תוכנית אימון",
+    "noPlanBody": "אפשר לבנות תוכנית בארבע שאלות, לבחור תוכנית מוכנה, או לחכות שהמאמן ישלח לך אחת.",
+    "choosePlan": "בחירת תוכנית",
+    "nutrition": "התזונה שלך היום",
+    "left": "נשארו",
+    "over": "מעל היעד",
+    "noNutritionTarget": "אין תוכנית תזונה פעילה, אז אין יעד להשוות אליו.",
+    "chooseNutritionPlan": "בחירת תוכנית תזונה",
+    "schedule": "סדר היום",
+    "scheduleEmpty": "עוד לא קרה כלום היום. תיעוד ראשון יופיע כאן.",
+    "weighIn": "שקילה",
+    "kg": "{{value}} ק״ג",
+    "workoutDone": "האימון בוצע",
+    "workoutPlanned": "מתוכנן להיום",
+    "logMeal": "תיעוד ארוחה",
+    "allProgress": "כל הנתונים במסך ההתקדמות",
+    "summaryWorkout": "יש אימון אחד בתוכנית להיום",
+    "summaryRest": "היום יום מנוחה לפי התוכנית",
+    "summaryDone": "האימון של היום כבר מאחוריך",
+    "summaryNoPlan": "כדי להתחיל, צריך לבחור תוכנית",
+    "title": "היום"
+  },
+  "progress": {
+    "tabBody": "גוף",
+    "tabTraining": "אימונים",
+    "tabInsights": "תובנות",
+    "title": "התקדמות"
+  },
+  "offline": {
+    "offline": "אין חיבור לאינטרנט. אפשר להמשיך להתאמן, ומה שתתעדו יישמר בטלפון.",
+    "offlineWithPending_one": "אין חיבור. אימון אחד שמור בטלפון ויעלה כשהחיבור יחזור.",
+    "offlineWithPending_other": "אין חיבור. {{count}} אימונים שמורים בטלפון ויעלו כשהחיבור יחזור.",
+    "pending_one": "אימון אחד ממתין לסנכרון",
+    "pending_other": "{{count}} אימונים ממתינים לסנכרון",
+    "offlineWithPending_two": "אין חיבור. שני אימונים שמורים בטלפון ויעלו כשהחיבור יחזור.",
+    "offlineWithPending_many": "אין חיבור. {{count}} אימונים שמורים בטלפון ויעלו כשהחיבור יחזור.",
+    "pending_two": "שני אימונים ממתינים לסנכרון",
+    "pending_many": "{{count}} אימונים ממתינים לסנכרון"
   }
 }

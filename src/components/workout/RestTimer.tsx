@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Haptics } from '@capacitor/haptics';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { toast } from 'sonner';
 
 import { StitchIcon } from '../common/StitchIcon';
@@ -136,9 +136,32 @@ interface RestTimerProps {
    * when you scroll back up.
    */
   sessionStartedAt?: number;
+  /**
+   * Bumped by the page every time a set goes from not-done to done. Each bump
+   * starts a rest at the last chosen length, so the timer runs by itself after
+   * every set instead of waiting for a preset tap (redesign, direction B).
+   */
+  restSignal?: number;
+  /**
+   * The next set to log, labelled for the main button ("Finished set 2"). When
+   * given, the bar grows a full-width primary action in the thumb zone that
+   * marks that set done; `null` means every set is done.
+   */
+  nextSetLabel?: string | null;
+  onCompleteNext?: () => void;
+  /** Shown on the main button once every set is done. */
+  onFinish?: () => void;
+  finishing?: boolean;
 }
 
-export function RestTimer({ sessionStartedAt }: RestTimerProps) {
+export function RestTimer({
+  sessionStartedAt,
+  restSignal = 0,
+  nextSetLabel,
+  onCompleteNext,
+  onFinish,
+  finishing = false,
+}: RestTimerProps) {
   const { t } = useTranslation();
   const [duration, setDuration] = useState(90);
   const [remaining, setRemaining] = useState(0);
@@ -229,6 +252,31 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
     setRemaining(0);
   }, []);
 
+  // A set was just marked done: rest starts on its own, at the length last
+  // chosen. The first render (signal 0) starts nothing.
+  // Keyed on the signal value itself, not on `start`'s identity: skipping a
+  // rest re-renders, and a re-run here would restart the rest just skipped.
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
+  const handledSignal = useRef(restSignal);
+  useEffect(() => {
+    if (restSignal === handledSignal.current) return;
+    handledSignal.current = restSignal;
+    if (restSignal > 0) start(durationRef.current);
+  }, [restSignal, start]);
+
+  /** +30s on a running rest, keeping the deadline the source of truth. */
+  const extend = useCallback(() => {
+    deadline.current += 30_000;
+    setDuration((d) => d + 30);
+    setRemaining(Math.max(0, Math.round((deadline.current - Date.now()) / 1000)));
+  }, []);
+
+  const completeNext = useCallback(() => {
+    if (isNativeApp) void Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+    onCompleteNext?.();
+  }, [onCompleteNext]);
+
   // The notification's buttons, tapped on the lock screen. The notification
   // has already redrawn itself; the page follows so the two agree.
   useEffect(
@@ -294,10 +342,71 @@ export function RestTimer({ sessionStartedAt }: RestTimerProps) {
           ride with the clocks because that is what they govern — grouped with
           the presets they read as a sixth duration. */}
       <div
-        className="mx-auto flex max-w-4xl flex-col gap-2 px-4 pt-2.5 sm:flex-row sm:items-center sm:gap-4 sm:py-2.5"
+        className="mx-auto flex max-w-4xl flex-col gap-2 px-4 pt-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:py-2.5"
         // Clears the home indicator on phones; the bar is pinned to the bottom.
         style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom, 0px))' }}
       >
+        {/* The one control between sets, always in the same place at the
+            bottom of the screen (fitts-law): finish the next set, and while
+            resting the same button is the countdown — tap it to skip. */}
+        {nextSetLabel !== undefined && (
+          <div className="order-first w-full sm:order-last">
+            {running && !done ? (
+              <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+                <button
+                  type="button"
+                  onClick={stop}
+                  aria-label={t('workout.liveSkipRest')}
+                  className="relative min-h-14 overflow-hidden rounded-[var(--radius-card)] bg-surface-container-high text-base font-extrabold text-on-surface"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-y-0 start-0 bg-primary/25 transition-[width] duration-200 ease-linear"
+                    style={{ width: `${Math.max(0, 100 - progress * 100)}%` }}
+                  />
+                  <span className="relative flex items-center justify-center gap-2">
+                    <StitchIcon name="timer" size={20} />
+                    {t('workout.restRemaining')}{' '}
+                    <span className="tabular-nums" dir="ltr">{format(remaining)}</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={extend}
+                  className="min-h-14 rounded-[var(--radius-control)] border border-outline-variant/40 px-3 text-sm font-bold text-on-surface"
+                >
+                  <span dir="ltr">{t('workout.livePlus30')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={stop}
+                  className="min-h-14 rounded-[var(--radius-control)] border border-outline-variant/40 px-3 text-sm font-bold text-on-surface"
+                >
+                  {t('workout.skip')}
+                </button>
+              </div>
+            ) : nextSetLabel ? (
+              <button
+                type="button"
+                onClick={completeNext}
+                className="bg-primary-gradient flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-card)] text-base font-extrabold transition-transform active:scale-[0.98]"
+              >
+                <StitchIcon name="check" size={22} />
+                {nextSetLabel}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onFinish}
+                disabled={finishing}
+                className="bg-primary-gradient flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-card)] text-base font-extrabold transition-transform active:scale-[0.98] disabled:opacity-60"
+              >
+                <StitchIcon name="check_circle" size={22} />
+                {finishing ? t('workout.saving') : t('workout.finish')}
+              </button>
+            )}
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <span
             className={`flex items-center gap-2 font-black tabular-nums ${

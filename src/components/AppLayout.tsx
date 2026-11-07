@@ -48,6 +48,7 @@ import { SegmentedControl } from "@mantine/core";
 import { useAuthStore } from "../store/authStore";
 import { useUnreadMessagesStore } from "../store/unreadMessagesStore";
 import { usePendingInvitesStore } from "../store/pendingInvitesStore";
+import { MealLogSheet, OPEN_MEAL_SHEET_EVENT } from "./nutrition/MealLogSheet";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { isNavActive } from "../utils/navMatch";
 import type { UserRole } from "../types/auth.types";
@@ -335,6 +336,14 @@ export function AppLayout({ children }: AppLayoutProps) {
   // replaces the More tab); from `md` the avatar keeps its dropdown menu.
   const [accountOpen, setAccountOpen] = useState(false);
 
+  // Meal logging opens as a sheet over whatever screen you are on.
+  const [mealSheetOpen, setMealSheetOpen] = useState(false);
+  useEffect(() => {
+    const open = () => setMealSheetOpen(true);
+    window.addEventListener(OPEN_MEAL_SHEET_EVENT, open);
+    return () => window.removeEventListener(OPEN_MEAL_SHEET_EVENT, open);
+  }, []);
+
   const detail = DETAIL_ROUTES.find((r) => r.match.test(location.pathname));
   const isFocusRoute = FOCUS_ROUTES.some((r) => r.test(location.pathname));
   const signedIn = isAuthenticated && !!user;
@@ -353,7 +362,12 @@ export function AppLayout({ children }: AppLayoutProps) {
     user?.role === "user"
       ? [
           { icon: <IconPlayerPlay size={20} stroke={1.5} />, label: t("nav.startWorkout"), path: "/my-trainings" },
-          { icon: <IconToolsKitchen2 size={20} stroke={1.5} />, label: t("nav.logMeal"), path: "/log-meal" },
+          {
+            icon: <IconToolsKitchen2 size={20} stroke={1.5} />,
+            label: t("nav.logMeal"),
+            path: "/log-meal",
+            onSelect: () => setMealSheetOpen(true),
+          },
           { icon: <IconScale size={20} stroke={1.5} />, label: t("nav.logMeasurement"), path: "/physical-data" },
         ]
       : undefined;
@@ -419,6 +433,13 @@ export function AppLayout({ children }: AppLayoutProps) {
             {detail && (
               <Text className="header-title" hiddenFrom="md" fw={700} truncate>
                 {t(detail.title)}
+              </Text>
+            )}
+            {/* Today's large title, handed to the app bar once it scrolls
+                away (One UI). Hidden until TodayView flags the scroll. */}
+            {!detail && location.pathname === "/" && user?.role === "user" && (
+              <Text className="header-title header-title--collapsing" hiddenFrom="md" fw={800} truncate aria-hidden="true">
+                {t("today.title")}
               </Text>
             )}
           </Group>
@@ -651,6 +672,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main Content */}
       <AppShell.Main>{children}</AppShell.Main>
+
+      {signedIn && user?.role === "user" && (
+        <MealLogSheet opened={mealSheetOpen} onClose={() => setMealSheetOpen(false)} />
+      )}
 
       {/* Footer: bottom nav on phones (when signed in), copyright from `md` */}
       <AppShell.Footer className="appshell-footer">

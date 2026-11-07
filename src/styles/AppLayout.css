@@ -268,6 +268,23 @@
 
 .header-back { color: var(--color-on-surface); }
 
+/* One UI split on Today: the large title owns the top of the screen (reading
+   area), pushing the first tappable card down toward the thumb. When it
+   scrolls out, its short form fades into the app bar. */
+.today-head { min-height: 132px; }
+@media (min-width: 62em) { .today-head { min-height: 0; padding-top: var(--space-4); } }
+.header-title--collapsing {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--duration-base) var(--ease-standard),
+              transform var(--duration-base) var(--ease-standard);
+}
+:root[data-today-collapsed] .header-title--collapsing { opacity: 1; transform: none; }
+:root[data-today-collapsed] .appshell-header { box-shadow: 0 1px 0 var(--color-outline-variant); }
+@media (prefers-reduced-motion: reduce) {
+  .header-title--collapsing { transition: none; }
+}
+
 @media (min-width: 62em) {
   .header-brand--detail { display: flex; }
 }
@@ -411,4 +428,24 @@
 .mantine-AppShell-navbar { visibility: hidden; }
 @media (min-width: 62em) {
   .mantine-AppShell-navbar { visibility: visible; }
+}
+
+/* Offline / waiting-to-sync banner: a calm status pill under the app bar. */
+.offline-banner {
+  position: fixed;
+  z-index: 150;
+  top: calc(var(--header-h) + var(--safe-top) + var(--space-2));
+  inset-inline: var(--page-gutter);
+  margin-inline: auto;
+  max-width: 32rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-warning-container);
+  color: var(--color-on-warning-container);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.3);
 }

@@ -24,6 +24,8 @@ export interface QuickAction {
   icon: React.ReactNode;
   label: string;
   path: string;
+  /** When given, runs instead of navigating (e.g. opens the meal sheet). */
+  onSelect?: () => void;
 }
 
 interface MobileBottomNavProps {
@@ -222,7 +224,16 @@ export function MobileBottomNav({
         >
           <div className="quick-grid">
             {quickActions.map((a) => (
-              <UnstyledButton key={a.label} className="quick-tile" onClick={() => go(a.path)}>
+              <UnstyledButton
+                key={a.label}
+                className="quick-tile"
+                onClick={() => {
+                  if (a.onSelect) {
+                    setQuickOpen(false);
+                    a.onSelect();
+                  } else go(a.path);
+                }}
+              >
                 <span className="quick-tile__icon" aria-hidden="true">{a.icon}</span>
                 <span className="quick-tile__label">{a.label}</span>
               </UnstyledButton>

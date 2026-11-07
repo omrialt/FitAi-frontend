@@ -31,6 +31,7 @@ import { coachService } from '../services/coach.service';
 import { RemainingToday } from '../components/nutrition/RemainingToday';
 import { useEffect, useState, type ReactNode } from 'react';
 import '../styles/Dashboard.css';
+import { TodayView } from '../components/today/TodayView';
 
 /**
  * A card-shaped placeholder for a slice that has not arrived yet.
@@ -124,6 +125,39 @@ function DashboardContent() {
     ready,
     refetch,
   } = useDashboard();
+  const role = useAuthStore((s) => s.user?.role);
+
+  // Athletes get the "Today" screen. A skeleton in its shape while loading,
+  // not a centred spinner (loading-states): the layout is known in advance.
+  if (role === 'user') {
+    if (loading) {
+      return (
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-4" aria-busy="true" aria-label={t('dashboard.loading')}>
+          <div className="today-head flex flex-col justify-end gap-2 pb-2">
+            <div className="skeleton h-3 w-32" />
+            <div className="skeleton h-8 w-56" />
+          </div>
+          <div className="skeleton h-[236px] w-full rounded-[var(--radius-card)]" />
+          <div className="skeleton h-[136px] w-full rounded-[var(--radius-card)]" />
+          <div className="skeleton h-[180px] w-full rounded-[var(--radius-card)]" />
+        </div>
+      );
+    }
+    if (!error && user) {
+      const series = weightProgress?.data ?? [];
+      return (
+        <TodayView
+          userId={user._id}
+          fullName={user.fullName}
+          plan={activeTrainingPlan}
+          planReady={ready.activeTrainingPlan}
+          currentStatus={currentStatus}
+          latestPhysicalData={latestPhysicalData}
+          previousWeight={series.length > 1 ? series[series.length - 2].weight : null}
+        />
+      );
+    }
+  }
 
   if (loading) {
     return (

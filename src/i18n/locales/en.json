@@ -178,7 +178,8 @@
     "close": "Close",
     "durationLabel": "Duration",
     "caloriesLabel": "Est. calories",
-    "filters": "Filters"
+    "filters": "Filters",
+    "undo": "Undo"
   },
   "trainings": {
     "title": "My Training Plans",
@@ -1156,7 +1157,14 @@
     },
     "previous": "Previous",
     "prefillMatchedAs": "Last time logged as “{{name}}”",
-    "prefillOffDaySkipped": "Filled from an earlier session — {{date}} looked like an off day"
+    "prefillOffDaySkipped": "Filled from an earlier session — {{date}} looked like an off day",
+    "completeSet": "Finished set {{number}} · {{exercise}}",
+    "restRemaining": "Rest",
+    "skip": "Skip",
+    "weightDown": "Remove 2.5 kg",
+    "weightUp": "Add 2.5 kg",
+    "repsDown": "One rep fewer",
+    "repsUp": "One rep more"
   },
   "account": {
     "sectionTitle": "Your data",
@@ -1310,7 +1318,11 @@
     "searchSource": "Values from USDA FoodData Central, per 100g. The amount you enter scales them.",
     "addWholeMeal": "Whole meal",
     "addItem": "Add {{name}}",
-    "itemsAndCalories": "{{count}} items · {{calories}} kcal"
+    "itemsAndCalories": "{{count}} items · {{calories}} kcal",
+    "savedTo": "Added to {{meal}}",
+    "saveTo": "Add to {{meal}}",
+    "undone": "Log removed",
+    "undoFailed": "Couldn't undo. You can delete the meal from the list."
   },
   "trainerDashboard": {
     "pageTitle": "Client overview",
@@ -1505,5 +1517,50 @@
       "Friday",
       "Saturday"
     ]
+  },
+  "today": {
+    "todaysWorkout": "Today's workout",
+    "doneToday": "Today's workout is done",
+    "restDayNext": "Rest day. Next workout on {{day}}",
+    "minutes": "About {{count}} min",
+    "exercisesSets": "{{exercises}} exercises, {{sets}} sets",
+    "start": "Start workout",
+    "trainAnyway": "Train anyway",
+    "trainAgain": "Another session",
+    "viewPlan": "Full plan",
+    "noPlanTitle": "You don't have a training plan yet",
+    "noPlanBody": "Build one in four questions, pick a ready-made plan, or wait for your trainer to send one.",
+    "choosePlan": "Choose a plan",
+    "nutrition": "Your nutrition today",
+    "left": "left",
+    "over": "over",
+    "noNutritionTarget": "No active nutrition plan, so there is no target to compare against.",
+    "chooseNutritionPlan": "Choose a nutrition plan",
+    "schedule": "Today",
+    "scheduleEmpty": "Nothing yet today. Your first log will show up here.",
+    "weighIn": "Weigh-in",
+    "kg": "{{value}} kg",
+    "workoutDone": "Workout done",
+    "workoutPlanned": "Planned for today",
+    "logMeal": "Log a meal",
+    "allProgress": "All stats in Progress",
+    "summaryWorkout": "One workout on the plan today",
+    "summaryRest": "Rest day on your plan",
+    "summaryDone": "Today's workout is behind you",
+    "summaryNoPlan": "Pick a plan to get started",
+    "title": "Today"
+  },
+  "progress": {
+    "tabBody": "Body",
+    "tabTraining": "Training",
+    "tabInsights": "Insights",
+    "title": "Progress"
+  },
+  "offline": {
+    "offline": "You're offline. Keep training — what you log is saved on this phone.",
+    "offlineWithPending_one": "Offline. 1 workout is saved on this phone and will upload when you're back online.",
+    "offlineWithPending_other": "Offline. {{count}} workouts are saved on this phone and will upload when you're back online.",
+    "pending_one": "1 workout waiting to sync",
+    "pending_other": "{{count}} workouts waiting to sync"
   }
 }
