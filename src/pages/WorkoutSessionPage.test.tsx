@@ -38,7 +38,13 @@ vi.mock('../components/AppLayout', () => ({
 }));
 
 vi.mock('../components/workout/RestTimer', () => ({
-  RestTimer: () => null,
+  // Stands in for the bar: just the props the page drives.
+  RestTimer: (p: { nextSetLabel?: string | null; onCompleteNext?: () => void; restSignal?: number }) => (
+    <>
+      {p.nextSetLabel && <button onClick={p.onCompleteNext}>{p.nextSetLabel}</button>}
+      <span data-testid="rest-signal">{p.restSignal}</span>
+    </>
+  ),
 }));
 
 vi.mock('../services/training-plan.service', () => ({
@@ -157,6 +163,28 @@ describe('WorkoutSessionPage', () => {
 
   afterEach(() => {
     localStorage.clear();
+  });
+
+  it('logs the next set from the bottom button and starts the rest (direction B)', async () => {
+    renderPage();
+    await screen.findByText('Bench Press');
+
+    fireEvent.click(screen.getByRole('button', { name: /workout\.completeSet.*"number":1/ }));
+
+    expect(screen.getByLabelText(/workout.markSetDone.*"number":1/)).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText(/1\/2/)).toBeInTheDocument();
+    // The rest is told to start, and the button moves on to the next set.
+    expect(screen.getByTestId('rest-signal')).toHaveTextContent('1');
+    expect(screen.getByRole('button', { name: /workout\.completeSet.*"number":2/ })).toBeInTheDocument();
+  });
+
+  it('gives the active set thumb-sized steppers', async () => {
+    renderPage();
+    await screen.findByText('Bench Press');
+    const up = screen.getByRole('button', { name: 'workout.weightUp' });
+    fireEvent.click(up);
+    const weight = screen.getAllByRole('spinbutton').find((el) => el.getAttribute('step') === '0.5') as HTMLInputElement;
+    expect(Number(weight.value)).toBeGreaterThan(0);
   });
 
   it('renders the plan day and its sets', async () => {

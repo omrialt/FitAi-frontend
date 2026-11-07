@@ -70,18 +70,22 @@
 .dashboard-stat-card {
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   cursor: default;
-  border-radius: 12px !important;
+  border-radius: var(--radius-card) !important;
 }
 
-.dashboard-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 14%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.06);
-  border-color: color-mix(in srgb, var(--color-primary) 25%, transparent) !important;
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 14%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.06);
+    border-color: color-mix(in srgb, var(--color-primary) 25%, transparent) !important;
+  }
 }
 
-[data-mantine-color-scheme='dark'] .dashboard-stat-card:hover {
-  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 22%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.3);
-  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent) !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-mantine-color-scheme='dark'] .dashboard-stat-card:hover {
+    box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 22%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.3);
+    border-color: color-mix(in srgb, var(--color-primary) 35%, transparent) !important;
+  }
 }
 
 .dashboard-stat-value {
@@ -94,15 +98,19 @@
 .dashboard-card {
   transition: box-shadow 0.18s ease, border-color 0.18s ease;
   height: 100%;
-  border-radius: 12px !important;
+  border-radius: var(--radius-card) !important;
 }
 
-.dashboard-card:hover {
-  box-shadow: 0 4px 20px -4px color-mix(in srgb, var(--color-primary) 10%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-card:hover {
+    box-shadow: 0 4px 20px -4px color-mix(in srgb, var(--color-primary) 10%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.05);
+  }
 }
 
-[data-mantine-color-scheme='dark'] .dashboard-card:hover {
-  box-shadow: 0 4px 20px -4px color-mix(in srgb, var(--color-primary) 18%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.25);
+@media (hover: hover) and (pointer: fine) {
+  [data-mantine-color-scheme='dark'] .dashboard-card:hover {
+    box-shadow: 0 4px 20px -4px color-mix(in srgb, var(--color-primary) 18%, transparent), 0 2px 8px -2px rgb(0 0 0 / 0.25);
+  }
 }
 
 /* ── Metric Cards (Body Progress sub-cards) ── */
@@ -118,8 +126,10 @@
   border-color: var(--color-outline-variant);
 }
 
-.dashboard-metric-card:hover {
-  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-metric-card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
 }
 
 /* ── Plan Row Items ── */
@@ -129,12 +139,16 @@
   cursor: pointer;
 }
 
-.dashboard-plan-row:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-plan-row:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  }
 }
 
-[data-mantine-color-scheme='dark'] .dashboard-plan-row:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  [data-mantine-color-scheme='dark'] .dashboard-plan-row:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
 }
 
 /* ── Schedule Items ── */
@@ -143,12 +157,16 @@
   transition: background-color 0.15s ease;
 }
 
-.dashboard-schedule-item:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-schedule-item:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  }
 }
 
-[data-mantine-color-scheme='dark'] .dashboard-schedule-item:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  [data-mantine-color-scheme='dark'] .dashboard-schedule-item:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
 }
 
 /* ── Quick Action Buttons ── */
@@ -157,9 +175,11 @@
   border-radius: 8px !important;
 }
 
-.dashboard-quick-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+  }
 }
 
 /* ── Grid Layouts ── */
@@ -199,10 +219,12 @@
 }
 
 /* ── Landing Feature Cards ── */
-.landing-feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px -6px color-mix(in srgb, var(--color-primary) 18%, transparent), 0 4px 12px -3px rgb(0 0 0 / 0.08);
-  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent) !important;
+@media (hover: hover) and (pointer: fine) {
+  .landing-feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px -6px color-mix(in srgb, var(--color-primary) 18%, transparent), 0 4px 12px -3px rgb(0 0 0 / 0.08);
+    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent) !important;
+  }
 }
 
 /* ── Physical Data Page ── */
@@ -218,9 +240,11 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.pd-metric-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 15%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .pd-metric-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
 }
 
 .pd-metric-tile--accent {

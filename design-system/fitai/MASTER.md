@@ -6,7 +6,7 @@
 > Seeded from `ui-ux-pro-max` (`"fitness tracker AI coach mobile app"`, motion 4, density 5),
 > then adapted: the skill's orange/green palette was **rejected** in favour of the
 > existing indigo token set, and its Barlow/Barlow pairing was swapped for
-> Heebo (Hebrew + body) with Barlow Condensed as the Latin display face.
+> Heebo (Hebrew + body). The 2026-11 redesign ("direction B") made Heebo the only face.
 
 ## 1. Principles
 
@@ -28,7 +28,8 @@ Source of truth: `src/styles/theme.css` (light default, dark override on
 | Role | Token | Light | Dark |
 |---|---|---|---|
 | Primary (text/icon) | `--color-primary` | `#4648d4` | `#8385ff` |
-| Primary fill | `--color-primary-container` | `#6063ee` | `#2f31a6` |
+| Action fill (buttons, FAB, active item) | `--color-action` / `--color-on-action` | `#4648d4` / `#fff` | `#2f31a6` / `#dcddff` |
+| Tonal fill (highlight cards, nav indicator) | `--color-primary-container` / `on-` | `#e3e3ff` / `#14163a` | `#2f31a6` / `#dcddff` |
 | Secondary | `--color-secondary` | `#0c7f99` | `#5fd8f0` |
 | Tertiary | `--color-tertiary` | `#7a3fc4` | `#c08cff` |
 | Background | `--color-background` | `#f8f9fa` | `#0d0e12` |
@@ -41,12 +42,12 @@ Source of truth: `src/styles/theme.css` (light default, dark override on
 ## 3. Typography
 
 - **Body / UI / Hebrew:** Heebo (`--font-sans`), 16px base, line-height 1.5 (1.53 RTL).
-- **Display (headings, big numbers):** `--font-display` = `"Barlow Condensed", "Heebo"`.
-  Barlow has no Hebrew glyphs, so Hebrew headings fall through to Heebo glyph-by-glyph.
-  Use `.font-display` / `.stat-number` (tabular, LTR-isolated).
-- **Labels:** IBM Plex Mono eyebrow (`--font-mono`), neutralised in RTL.
-- Scale (fluid): `--text-display` clamp(1.75rem→2.5rem), `--text-h1` clamp(1.5rem→2rem),
-  `--text-h2` clamp(1.25rem→1.5rem), body 1rem, small 0.875rem, never < 0.75rem.
+- **One family (redesign, 2026-11).** `--font-display` and `--font-mono` both resolve to Heebo.
+  Barlow Condensed (no Hebrew cut) and IBM Plex Mono were removed.
+  Headings and `.stat-number` are Heebo 800; numbers use `tabular-nums` and are LTR-isolated.
+- Scale (~1.25): `--text-xs/sm/md/lg/xl/2xl/3xl` = 12 / 14 / 16 / 20 / 24 / 32 / 44.
+  Fluid page titles: `--text-display` clamp(2rem→2.75rem), `--text-h1` clamp(1.5rem→2rem),
+  `--text-h2` clamp(1.25rem→1.5rem). Body never < 16px; nothing < 12px.
 
 ## 4. Spacing, radius, layout
 
@@ -57,7 +58,7 @@ Source of truth: `src/styles/theme.css` (light default, dark override on
 | `--tap-min` | 44px (all interactive targets) |
 | `--header-h` | 56px mobile / 64px `md` |
 | `--bottom-nav-h` | 64px + `env(safe-area-inset-bottom)` |
-| Radius | control 8 · card 12 · sheet 20 · pill 999 |
+| Radius | control 12 · card 20 · sheet 28 · pill 999 |
 
 Content max width 1200px; single column on mobile, 2 columns from `md`, dashboards 12-col from `lg`.
 

@@ -928,6 +928,38 @@ export default function WorkoutSessionPage() {
     [draft],
   );
 
+  /** The first set not yet done, in the order the session is laid out. */
+  const nextSet = useMemo(() => {
+    for (let ei = 0; ei < draft.length; ei++) {
+      const si = draft[ei].sets.findIndex((s) => !s.done);
+      if (si >= 0) return { ei, si };
+    }
+    return null;
+  }, [draft]);
+
+  // Bumped whenever a set becomes done; the rest timer starts on each bump.
+  const [restSignal, setRestSignal] = useState(0);
+  const markSet = useCallback(
+    (ei: number, si: number) => {
+      const wasDone = draft[ei]?.sets[si]?.done;
+      toggleDone(ei, si);
+      if (!wasDone) setRestSignal((n) => n + 1);
+    },
+    [draft, toggleDone],
+  );
+
+  /** The ±2.5 kg / ±1 rep steppers on the active set: 48px, thumb-sized. */
+  const nudge = useCallback(
+    (ei: number, si: number, field: 'weight' | 'reps', delta: number) => {
+      const set = draft[ei]?.sets[si];
+      if (!set) return;
+      const base = Number(set[field] || (field === 'weight' ? set.targetWeight : set.targetReps)) || 0;
+      const next = Math.max(0, Math.round((base + delta) * 10) / 10);
+      patchSet(ei, si, { [field]: String(next) });
+    },
+    [draft, patchSet],
+  );
+
   // The workout clock, the next set and the rest countdown in the status bar
   // (Live Update on Android 16). `startedAt` is a ref: a resumed draft moves it
   // and re-renders through `setElapsed`, which is when this picks it up.
@@ -1105,12 +1137,12 @@ export default function WorkoutSessionPage() {
 
   return (
     <AppLayout>
-      {/* Bottom padding clears the fixed rest timer sitting above the app footer */}
-      <Container size="md" py="md" pb={150}>
+      {/* Bottom padding clears the fixed action bar (main button + rest timer) */}
+      <Container size="md" py="md" pb={240}>
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
-              {plan.title}
+              <bdi>{plan.title}</bdi>
             </p>
             <h1 className="font-bold text-on-surface">
               {day.dayName}
@@ -1124,6 +1156,19 @@ export default function WorkoutSessionPage() {
               </span>
               {t('workout.setsDone')}
             </p>
+            <div
+              className="mt-3 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-surface-container-high"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={totalSets}
+              aria-valuenow={completedSets}
+              aria-label={t('workout.setsDone')}
+            >
+              <div
+                className="h-full rounded-full bg-primary transition-[width] duration-300"
+                style={{ width: `${totalSets ? (completedSets / totalSets) * 100 : 0}%` }}
+              />
+            </div>
             {filledFrom && (
               <p className="mt-1 flex items-center gap-1.5 text-xs font-bold text-on-surface-variant">
                 <StitchIcon name="history" size={14} />
@@ -1259,11 +1304,14 @@ export default function WorkoutSessionPage() {
                 {exercise.sets.map((set, si) => (
                   <div
                     key={si}
-                    className={`rounded-lg border p-2 transition-colors ${
+                    className={`rounded-[var(--radius-control)] border p-2 transition-colors ${
                       set.done
                         ? 'border-success/40 bg-success/5'
-                        : 'border-transparent bg-surface-container-low'
+                        : nextSet?.ei === ei && nextSet.si === si
+                          ? 'border-primary bg-surface-container-low'
+                          : 'border-transparent bg-surface-container-low'
                     }`}
+                    aria-current={nextSet?.ei === ei && nextSet.si === si ? 'step' : undefined}
                   >
                    <div className={SET_ROW}>
                     {/* `h-12` so that aligning the row to the bottom of the
@@ -1332,7 +1380,7 @@ export default function WorkoutSessionPage() {
 
                     <button
                       type="button"
-                      onClick={() => toggleDone(ei, si)}
+                      onClick={() => markSet(ei, si)}
                       aria-pressed={set.done}
                       aria-label={t('workout.markSetDone', { number: si + 1 })}
                       className={`col-start-4 row-start-1 ms-auto flex h-14 w-14 sm:h-12 items-center justify-center rounded-lg transition-[background-color] duration-[180ms] ${set.done ? 'animate-set-pop ' : ''}${
@@ -1373,6 +1421,39 @@ export default function WorkoutSessionPage() {
                       className="col-start-3 col-span-2 row-start-2 ps-0 sm:ps-9"
                     />
                    </div>
+
+                    {/* The active set gets big steppers: adjusting by a plate
+                        or a rep is a tap, not a keyboard. */}
+                    {nextSet?.ei === ei && nextSet.si === si && (
+                      <div className="mt-2 grid grid-cols-2 gap-2">
+                        {(['weight', 'reps'] as const).map((field) => (
+                          <div
+                            key={field}
+                            className="grid grid-cols-[3rem_1fr_3rem] items-center rounded-[var(--radius-control)] bg-surface-container-lowest"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => nudge(ei, si, field, field === 'weight' ? -2.5 : -1)}
+                              aria-label={t(field === 'weight' ? 'workout.weightDown' : 'workout.repsDown')}
+                              className="h-12 rounded-[var(--radius-control)] text-xl font-bold text-primary active:bg-surface-container-high"
+                            >
+                              −
+                            </button>
+                            <span className="text-center text-xs font-bold text-on-surface-variant">
+                              {field === 'weight' ? '2.5 ' + t('workout.weight') : '1 ' + t('workout.reps')}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => nudge(ei, si, field, field === 'weight' ? 2.5 : 1)}
+                              aria-label={t(field === 'weight' ? 'workout.weightUp' : 'workout.repsUp')}
+                              className="h-12 rounded-[var(--radius-control)] text-xl font-bold text-primary active:bg-surface-container-high"
+                            >
+                              +
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Drops sit inside the set's own block, indented and
                         rule-connected, because a drop set is one set — showing
@@ -1497,7 +1578,21 @@ export default function WorkoutSessionPage() {
       {/* The bar carries the session clock too. `startedAt` is a ref, but
           every write to it is paired with a `setElapsed`, so the new value
           reaches the bar in the same render as the one that changed it. */}
-      <RestTimer sessionStartedAt={startedAt.current} />
+      <RestTimer
+        sessionStartedAt={startedAt.current}
+        restSignal={restSignal}
+        nextSetLabel={
+          nextSet
+            ? t('workout.completeSet', {
+                number: nextSet.si + 1,
+                exercise: draft[nextSet.ei].name,
+              })
+            : null
+        }
+        onCompleteNext={() => nextSet && markSet(nextSet.ei, nextSet.si)}
+        onFinish={finish}
+        finishing={saving}
+      />
     </AppLayout>
   );
 }
