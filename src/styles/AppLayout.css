@@ -298,16 +298,16 @@
 .bottom-tab__icon {
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 30px;
+  width: 64px;
+  height: 32px;
   border-radius: var(--radius-pill);
   transition: background-color var(--duration-base) var(--ease-standard),
               color var(--duration-base) var(--ease-standard);
 }
 
 .bottom-tab__label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: 600;
   line-height: 1.2;
   max-width: 100%;
   overflow: hidden;
@@ -327,32 +327,45 @@
   border: 2px solid var(--color-surface-container-lowest);
 }
 
-.bottom-tab[data-active] { color: var(--color-primary); }
+.bottom-tab[data-active] { color: var(--color-on-surface); }
 .bottom-tab[data-active] .bottom-tab__icon {
-  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
 }
 .bottom-tab[data-active] .bottom-tab__label { font-weight: 700; }
 
-.bottom-fab-slot {
-  flex: 1 1 0;
-  display: grid;
-  place-items: center;
-}
-
-.bottom-fab {
-  width: 52px;
-  height: 52px;
-  margin-top: -18px;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  color: var(--color-on-action);
-  background: var(--color-action);
-  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--color-primary) 60%, transparent);
-  border: 3px solid var(--color-background);
+/* Extended FAB (M3): end side, floating above the navigation bar. In RTL the
+   end side is the left, which is where a Hebrew-reading thumb expects it. */
+.log-fab {
+  position: fixed;
+  z-index: 150;
+  inset-inline-end: var(--page-gutter);
+  bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + var(--space-4));
+  height: 56px;
+  padding-inline: var(--space-4) var(--space-5);
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--color-on-primary-container);
+  background: var(--color-primary-container);
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.35);
   transition: transform var(--duration-fast) var(--ease-standard);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.log-fab:active { transform: scale(0.96); }
+.log-fab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+@media (min-width: 62em) {
+  .log-fab { display: none; }
 }
 
+/* Room under the last card so the FAB never sits on top of it. */
+@media (max-width: 61.99em) {
+  .has-log-fab .mantine-AppShell-main { padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 88px) !important; }
+}
 
 /* ── Quick-add sheet ── */
 .quick-grid {

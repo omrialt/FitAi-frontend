@@ -51,14 +51,29 @@ describe('MobileBottomNav', () => {
     expect(screen.queryByRole('button', { name: 'nav.quickAdd' })).toBeNull();
   });
 
-  it('gives the FAB a slot, keeping the bar at five', () => {
+  it('gives athletes four destinations and a floating quick-add instead of More', () => {
     renderNav({ quickActions });
     const nav = screen.getByRole('navigation');
-    // 3 destinations + More, plus the FAB slot
+    // All four primary destinations stay on the bar; no More tab.
     expect(nav.querySelectorAll('.bottom-tab')).toHaveLength(4);
-    expect(screen.getByRole('button', { name: 'nav.quickAdd' })).toBeInTheDocument();
-    // The fourth primary item overflowed into More instead of disappearing
-    expect(screen.queryByText('Physical')).toBeNull();
+    expect(screen.getByText('Physical')).toBeInTheDocument();
+    expect(screen.queryByText('nav.more')).toBeNull();
+    // The FAB floats outside the bar (portalled), labelled for what it does.
+    const fab = screen.getByRole('button', { name: 'nav.quickAdd' });
+    expect(nav.contains(fab)).toBe(false);
+    expect(fab).toHaveTextContent('nav.log');
+  });
+
+  it('hides the floating quick-add on focus routes', () => {
+    renderNav({ quickActions, showFab: false });
+    expect(screen.queryByRole('button', { name: 'nav.quickAdd' })).toBeNull();
+  });
+
+  it('opens the account sheet when controlled from the app bar', async () => {
+    const onMoreOpenChange = vi.fn();
+    renderNav({ quickActions, moreOpen: true, onMoreOpenChange });
+    expect(await screen.findByText('Schedule')).toBeInTheDocument();
+    expect(screen.getByText('layout.logout')).toBeInTheDocument();
   });
 
   it('marks the tab that owns a detail route as current', () => {

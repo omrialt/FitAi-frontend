@@ -23,13 +23,14 @@
       "myTrainings": "אימונים",
       "trainingPlans": "אימונים",
       "nutritionPlans": "תזונה",
-      "physicalData": "גוף",
-      "dashboard": "בית",
+      "physicalData": "התקדמות",
+      "dashboard": "היום",
       "users": "משתמשים"
     },
     "clientOverview": "סקירת מתאמנים",
     "messages": "הודעות",
-    "planLibrary": "ספריית תוכניות"
+    "planLibrary": "ספריית תוכניות",
+    "log": "תיעוד"
   },
   "clients": {
     "pageTitle": "המתאמנים שלי",

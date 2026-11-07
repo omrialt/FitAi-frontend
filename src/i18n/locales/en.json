@@ -23,13 +23,14 @@
       "myTrainings": "Training",
       "trainingPlans": "Training",
       "nutritionPlans": "Nutrition",
-      "physicalData": "Body",
-      "dashboard": "Home",
+      "physicalData": "Progress",
+      "dashboard": "Today",
       "users": "Users"
     },
     "clientOverview": "Client overview",
     "messages": "Messages",
-    "planLibrary": "Plan library"
+    "planLibrary": "Plan library",
+    "log": "Log"
   },
   "clients": {
     "pageTitle": "My Clients",

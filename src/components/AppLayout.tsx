@@ -1,5 +1,5 @@
 // React 19: No forwardRef needed - refs work directly on components
-import { useMemo, useEffect, Activity } from "react";
+import { useMemo, useEffect, useState, Activity } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
@@ -112,6 +112,8 @@ const getNavigationItems = (
       {
         icon: <IconHeartRateMonitor size={20} stroke={1.5} />,
         label: "nav.physicalData",
+        // Fourth bottom-bar destination, labelled "Progress" there.
+        primary: true,
         path: "/physical-data",
       },
       {
@@ -329,6 +331,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const handleNavClick = (path: string) => navigate(path);
 
+  // The account sheet. On phones the avatar opens it (and, for athletes, it
+  // replaces the More tab); from `md` the avatar keeps its dropdown menu.
+  const [accountOpen, setAccountOpen] = useState(false);
+
   const detail = DETAIL_ROUTES.find((r) => r.match.test(location.pathname));
   const isFocusRoute = FOCUS_ROUTES.some((r) => r.test(location.pathname));
   const signedIn = isAuthenticated && !!user;
@@ -354,6 +360,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <AppShell
+      className={quickActions && !isFocusRoute ? "has-log-fab" : undefined}
       header={{ height: { base: 56, md: 64 } }}
       // Phones navigate with the bottom bar only; the sidebar arrives at `md`,
       // where there is width to spare for it.
@@ -451,8 +458,59 @@ export function AppLayout({ children }: AppLayoutProps) {
               </ActionIcon>
             </Tooltip>
 
+            {/* Phones: messages and the account sheet live in the app bar,
+                which keeps the bottom bar to four destinations. */}
+            {signedIn && (
+              <Group gap={4} wrap="nowrap" hiddenFrom="md">
+                <Indicator
+                  color="red"
+                  size={18}
+                  offset={8}
+                  disabled={unreadMessages === 0}
+                  label={unreadMessages > 9 ? "9+" : unreadMessages}
+                >
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    size={48}
+                    radius="xl"
+                    onClick={() => navigate("/messages")}
+                    aria-label={
+                      unreadMessages > 0
+                        ? `${t("nav.messages")} (${unreadMessages})`
+                        : t("nav.messages")
+                    }
+                    aria-current={location.pathname.startsWith("/messages") ? "page" : undefined}
+                    className="header-icon"
+                  >
+                    <IconMessage size={24} stroke={1.75} />
+                  </ActionIcon>
+                </Indicator>
+                <UnstyledButton
+                  className="user-button header-avatar"
+                  onClick={() => setAccountOpen(true)}
+                  aria-label={t("layout.profile")}
+                  aria-haspopup="dialog"
+                  aria-expanded={accountOpen}
+                >
+                  <Indicator
+                    color="red"
+                    size={18}
+                    offset={4}
+                    disabled={pendingInvites === 0}
+                    label={pendingInvites > 9 ? "9+" : pendingInvites}
+                  >
+                    <Avatar color="indigo" radius="xl" size="md" src={user?.avatarUrl}>
+                      {!user?.avatarUrl && <IconUser size={18} />}
+                    </Avatar>
+                  </Indicator>
+                </UnstyledButton>
+              </Group>
+            )}
+
             {/* Conditional User Menu - only show when authenticated */}
             <Activity mode={isAuthenticated && !!user ? "visible" : "hidden"}>
+              <Box visibleFrom="md">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <UnstyledButton className="user-button">
@@ -518,6 +576,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </DropdownMenu.Content>
                 </DropdownMenu.Portal>
               </DropdownMenu.Root>
+              </Box>
             </Activity>
             <Activity mode={!isAuthenticated || !user ? "visible" : "hidden"}>
               {/* Guests have no bottom nav, so sign-in stays in the header at
@@ -608,6 +667,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               language={i18n.language === "he" ? "he" : "en"}
               onChangeLanguage={(lng) => i18n.changeLanguage(lng)}
               onLogout={handleLogout}
+              moreOpen={accountOpen}
+              onMoreOpenChange={setAccountOpen}
+              showFab={!isFocusRoute}
             />
           </Box>
         )}
