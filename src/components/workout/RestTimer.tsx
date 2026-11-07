@@ -375,7 +375,8 @@ export function RestTimer({
                   onClick={extend}
                   className="min-h-14 rounded-[var(--radius-control)] border border-outline-variant/40 px-3 text-sm font-bold text-on-surface"
                 >
-                  <span dir="ltr">{t('workout.livePlus30')}</span>
+                  {/* <bdi>, not dir="ltr": the string is Hebrew with a number in it. */}
+                  <bdi>{t('workout.livePlus30')}</bdi>
                 </button>
                 <button
                   type="button"

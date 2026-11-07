@@ -122,7 +122,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           </div>
           <div className="min-w-0">
             <h3 className="text-lg font-extrabold tracking-tight text-on-surface truncate">
-              {plan.title}
+              <bdi>{plan.title}</bdi>
             </h3>
             {plan.target && (
               <p className="text-xs text-on-surface-variant">

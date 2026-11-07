@@ -32,6 +32,7 @@ import { RemainingToday } from '../components/nutrition/RemainingToday';
 import { useEffect, useState, type ReactNode } from 'react';
 import '../styles/Dashboard.css';
 import { TodayView } from '../components/today/TodayView';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /**
  * A card-shaped placeholder for a slice that has not arrived yet.
@@ -126,10 +127,13 @@ function DashboardContent() {
     refetch,
   } = useDashboard();
   const role = useAuthStore((s) => s.user?.role);
+  const isMobile = useIsMobile();
 
-  // Athletes get the "Today" screen. A skeleton in its shape while loading,
-  // not a centred spinner (loading-states): the layout is known in advance.
-  if (role === 'user') {
+  // Athletes on a phone get the "Today" screen (direction B). Desktop keeps the
+  // full dashboard: the wide layout has room for every card side by side, and
+  // a single phone-width column there read as broken. A skeleton in Today's
+  // shape while loading, not a centred spinner (loading-states).
+  if (role === 'user' && isMobile) {
     if (loading) {
       return (
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4" aria-busy="true" aria-label={t('dashboard.loading')}>
