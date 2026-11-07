@@ -1521,7 +1521,7 @@
   "today": {
     "todaysWorkout": "Today's workout",
     "doneToday": "Today's workout is done",
-    "restDayNext": "Rest day. Next workout on {{day}}",
+    "restDayNext": "Rest day. Next workout: {{day}}",
     "minutes": "About {{count}} min",
     "exercisesSets": "{{exercises}} exercises, {{sets}} sets",
     "start": "Start workout",

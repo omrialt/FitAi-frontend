@@ -1565,7 +1565,7 @@
   "today": {
     "todaysWorkout": "האימון של היום",
     "doneToday": "האימון של היום בוצע",
-    "restDayNext": "יום מנוחה. האימון הבא ביום {{day}}",
+    "restDayNext": "יום מנוחה. האימון הבא: {{day}}",
     "minutes": "כ־{{count}} דק׳",
     "exercisesSets": "{{exercises}} תרגילים, {{sets}} סטים",
     "start": "התחלת אימון",

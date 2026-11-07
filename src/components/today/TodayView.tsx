@@ -21,7 +21,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconClock,
   IconPlayerPlayFilled,
@@ -114,7 +113,6 @@ function NextWorkoutCard({
 }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const Arrow = i18n.dir() === 'rtl' ? IconArrowNarrowLeft : IconArrowNarrowRight;
 
   if (!plan || !plan.days?.length) {
     return (
@@ -172,8 +170,10 @@ function NextWorkoutCard({
     <section className="flex flex-col gap-4 rounded-[var(--radius-card)] bg-primary-container px-4 pb-4 pt-5 text-on-primary-container">
       <div className="flex flex-col gap-1">
         <span className="text-sm opacity-85">{eyebrow}</span>
-        <h2 className="text-[length:var(--text-xl)] leading-tight">{day.dayName}</h2>
-        <p className="truncate text-sm opacity-85">{plan.title}</p>
+        {/* <bdi>: plan and day names are often Latin inside Hebrew text, and
+            without isolation "3-Day Strength" renders as "Day Strength-3". */}
+        <h2 className="text-[length:var(--text-xl)] leading-tight"><bdi>{day.dayName}</bdi></h2>
+        <p className="truncate text-sm opacity-85"><bdi>{plan.title}</bdi></p>
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm opacity-90">
         <span className="flex items-center gap-1">
@@ -199,7 +199,8 @@ function NextWorkoutCard({
         className="-mt-1 flex min-h-11 items-center justify-center gap-1 self-center text-sm font-bold underline-offset-4 hover:underline"
       >
         {t('today.viewPlan')}
-        <Arrow size={16} aria-hidden="true" />
+        {/* Directional: mirrored in RTL by the global `.flip-x` rule. */}
+        <IconArrowNarrowRight size={16} aria-hidden="true" className="flip-x" />
       </button>
     </section>
   );
@@ -353,7 +354,7 @@ function DayTimeline({ items, onLogMeal }: { items: TimelineItem[]; onLogMeal: (
                 {i < items.length - 1 && <span className="min-h-9 w-0.5 flex-1 bg-outline-variant" />}
               </span>
               <div className="min-w-0 pb-3">
-                <p className="font-semibold text-on-surface">{item.title}</p>
+                <p className="font-semibold text-on-surface"><bdi>{item.title}</bdi></p>
                 <p className="truncate text-sm text-on-surface-variant">{item.detail}</p>
               </div>
               {item.value && (
