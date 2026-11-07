@@ -28,7 +28,7 @@
   background: linear-gradient(
     135deg,
     var(--color-primary) 0%,
-    var(--color-primary-container) 45%,
+    color-mix(in srgb, var(--color-primary) 65%, var(--color-tertiary)) 45%,
     var(--color-tertiary) 100%
   );
 }
@@ -328,7 +328,7 @@
 .landing-cta {
   padding-block: var(--space-7);
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+  background: var(--color-action);
 }
 [data-mantine-color-scheme='dark'] .landing-cta {
   background: linear-gradient(135deg, #2f31a6 0%, #4648d4 100%);

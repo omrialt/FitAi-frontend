@@ -145,7 +145,7 @@ function LoginPage() {
                       data: { email: unverifiedEmail },
                     })
                   }
-                  className="text-sm font-bold text-primary hover:text-primary-container transition-colors disabled:opacity-60"
+                  className="text-sm font-bold text-primary hover:underline transition-colors disabled:opacity-60"
                 >
                   {resendLoading
                     ? t('common.loading')
@@ -178,7 +178,7 @@ function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowReset(true)}
-                    className="text-xs font-bold text-primary hover:text-primary-container transition-colors"
+                    className="text-xs font-bold text-primary hover:underline transition-colors"
                   >
                     {t('auth.forgotShort')}
                   </button>
