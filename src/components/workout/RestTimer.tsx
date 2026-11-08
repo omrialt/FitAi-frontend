@@ -148,6 +148,8 @@ interface RestTimerProps {
    * marks that set done; `null` means every set is done.
    */
   nextSetLabel?: string | null;
+  /** Second, smaller line under the label (the exercise name), truncated. */
+  nextSetDetail?: string;
   onCompleteNext?: () => void;
   /** Shown on the main button once every set is done. */
   onFinish?: () => void;
@@ -158,6 +160,7 @@ export function RestTimer({
   sessionStartedAt,
   restSignal = 0,
   nextSetLabel,
+  nextSetDetail,
   onCompleteNext,
   onFinish,
   finishing = false,
@@ -390,10 +393,17 @@ export function RestTimer({
               <button
                 type="button"
                 onClick={completeNext}
-                className="bg-primary-gradient flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-card)] text-base font-extrabold transition-transform active:scale-[0.98]"
+                className="bg-primary-gradient flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-card)] px-4 text-base font-extrabold transition-transform active:scale-[0.98]"
               >
                 <StitchIcon name="check" size={22} />
-                {nextSetLabel}
+                {/* One line each: a long exercise name truncates instead of
+                    wrapping the button to two ragged lines. */}
+                <span className="flex min-w-0 flex-col items-start leading-tight">
+                  <span>{nextSetLabel}</span>
+                  {nextSetDetail && (
+                    <span className="max-w-full truncate text-xs font-semibold opacity-85">{nextSetDetail}</span>
+                  )}
+                </span>
               </button>
             ) : (
               <button
@@ -408,9 +418,12 @@ export function RestTimer({
             )}
           </div>
         )}
-        <div className="flex items-center gap-3">
+        {/* min-w-0 + wrap: on a 360–390px phone this row was wider than the
+            screen and pushed the toggles off the edge. */}
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
           <span
-            className={`flex items-center gap-2 font-black tabular-nums ${
+            // On phones the main button already shows the rest countdown.
+            className={`${nextSetLabel !== undefined ? 'hidden sm:flex' : 'flex'} items-center gap-2 font-black tabular-nums ${
               done ? 'text-success' : 'text-on-surface'
             }`}
             aria-live="polite"
@@ -421,7 +434,9 @@ export function RestTimer({
             </span>
           </span>
 
-          <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          <span
+            className={`${nextSetLabel !== undefined ? 'hidden sm:inline' : ''} text-[10px] font-bold uppercase tracking-widest text-on-surface-variant`}
+          >
             {done ? t('workout.restOver') : t('workout.rest')}
           </span>
 
@@ -429,7 +444,9 @@ export function RestTimer({
               the two answer the same kind of question and are read in the
               same glance. */}
           {sessionStartedAt != null && showTotal && (
-            <span className="flex items-center gap-2 border-s border-outline-variant/20 ps-3">
+            <span
+              className={`flex items-center gap-2 ${nextSetLabel !== undefined ? 'sm:border-s sm:ps-3' : 'border-s ps-3'} border-outline-variant/20`}
+            >
               <span className="flex items-center gap-2 font-black tabular-nums text-on-surface-variant">
                 <StitchIcon name="timelapse" size={18} />
                 <span className="text-lg" dir="ltr">

@@ -189,6 +189,13 @@ describe('RestTimer', () => {
       fireEvent.click(screen.getByRole('button', { name: /workout\.finish/ }));
       expect(onFinish).toHaveBeenCalled();
     });
+  
+    it('keeps the label to one line and puts the exercise on a truncated second line', () => {
+      render(<RestTimer nextSetLabel="Finished set 1" nextSetDetail="Flat dumbbell bench press" onCompleteNext={() => {}} />);
+      const button = screen.getByRole('button', { name: /Finished set 1/ });
+      const detail = screen.getByText('Flat dumbbell bench press');
+      expect(button).toContainElement(detail);
+      expect(detail.className).toContain('truncate');
+    });
   });
 });
-

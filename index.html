@@ -8,7 +8,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <!-- No viewport-fit=cover: in the Android app it tells Capacitor's SystemBars
+         (WebView 140+) to stop padding the WebView and draw under the status
+         and navigation bars, which cut off the app bar and the bottom nav on
+         a real phone. Without it Capacitor keeps the app inside the bars. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 
     <title>FitAi — Training &amp; Nutrition Planning</title>
     <meta
