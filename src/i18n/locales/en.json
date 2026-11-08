@@ -1164,7 +1164,8 @@
     "weightDown": "Remove 2.5 kg",
     "weightUp": "Add 2.5 kg",
     "repsDown": "One rep fewer",
-    "repsUp": "One rep more"
+    "repsUp": "One rep more",
+    "completeSetShort": "Finished set {{number}}"
   },
   "account": {
     "sectionTitle": "Your data",

@@ -1204,7 +1204,8 @@
     "weightDown": "הורדת 2.5 ק״ג",
     "weightUp": "הוספת 2.5 ק״ג",
     "repsDown": "חזרה אחת פחות",
-    "repsUp": "חזרה אחת יותר"
+    "repsUp": "חזרה אחת יותר",
+    "completeSetShort": "סיימתי את סט {{number}}"
   },
   "account": {
     "sectionTitle": "הנתונים שלך",

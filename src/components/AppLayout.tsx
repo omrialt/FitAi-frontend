@@ -390,7 +390,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         height: {
           // Guests have no bottom nav, and a copyright strip is not worth 40px
           // of a phone screen.
-          base: signedIn ? "calc(64px + env(safe-area-inset-bottom, 0px))" : 0,
+          // Workout routes own the bottom of the screen: no bar at all,
+          // rather than a collapsed one (a transform that can leave part of
+          // it showing when the inset and the computed height disagree).
+          base: signedIn && !isFocusRoute ? "calc(64px + env(safe-area-inset-bottom, 0px))" : 0,
           md: 40,
         },
         collapsed: isFocusRoute,
@@ -679,7 +682,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Footer: bottom nav on phones (when signed in), copyright from `md` */}
       <AppShell.Footer className="appshell-footer">
-        {signedIn && (
+        {signedIn && !isFocusRoute && (
           <Box hiddenFrom="md" h="100%">
             <MobileBottomNav
               items={navigationItems}

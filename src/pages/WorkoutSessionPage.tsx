@@ -1583,12 +1583,10 @@ export default function WorkoutSessionPage() {
         restSignal={restSignal}
         nextSetLabel={
           nextSet
-            ? t('workout.completeSet', {
-                number: nextSet.si + 1,
-                exercise: draft[nextSet.ei].name,
-              })
+            ? t('workout.completeSetShort', { number: nextSet.si + 1 })
             : null
         }
+        nextSetDetail={nextSet ? draft[nextSet.ei].name : undefined}
         onCompleteNext={() => nextSet && markSet(nextSet.ei, nextSet.si)}
         onFinish={finish}
         finishing={saving}
