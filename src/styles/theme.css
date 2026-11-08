@@ -31,14 +31,17 @@
 @theme {
   /* typography */
   --font-sans: "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
-  --font-display: "Barlow Condensed", "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
+  /* One family. The display/mono names stay so existing utilities compile. */
+  --font-mono: "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Heebo", "Rubik", ui-sans-serif, system-ui, sans-serif;
 
   /* brand */
   --color-primary: #4648d4;
   --color-on-primary: #ffffff;
-  --color-primary-container: #6063ee;
-  --color-on-primary-container: #ffffff;
+  /* Tonal fill (M3): a soft surface for highlighted cards and the active
+     nav indicator. Solid actions use --color-action below, not this. */
+  --color-primary-container: #e3e3ff;
+  --color-on-primary-container: #14163a;
   --color-secondary: #0c7f99;
   --color-on-secondary: #ffffff;
   --color-secondary-container: #cdeff7;
@@ -89,6 +92,12 @@
   --color-info-container: #d6e7ff;
   --color-on-info-container: #0a2547;
   --color-neutral-chip: #e6e8ed;
+
+  /* Solid action fill — primary buttons, the FAB, the active sidebar item.
+     Light: brand indigo + white (6.7:1). Dark: the deep fill + pale text
+     (7.5:1), because dark's lifted primary cannot carry white text. */
+  --color-action: #4648d4;
+  --color-on-action: #ffffff;
   --color-on-neutral-chip: #4a4d5c;
 
   /* chart theme
@@ -104,10 +113,18 @@
   --color-chart-axis: #767a8a;
 
   /* radius */
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-sheet: 20px;
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-sheet: 28px;
   --radius-pill: 999px;
+
+  /* Tailwind's own radius scale, mapped onto the redesign's three steps so
+     the ~270 `rounded-lg` / `rounded-xl` call sites follow without edits:
+     lg = controls, xl = cards, 2xl/3xl = sheets and hero surfaces. */
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
 
   /* motion */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -174,6 +191,9 @@
   --color-info-container: #143a63;
   --color-on-info-container: #cfe5ff;
   --color-neutral-chip: #1f2129;
+
+  --color-action: #2f31a6;
+  --color-on-action: #dcddff;
   --color-on-neutral-chip: #a2a5b4;
 
   /* Stepped for the dark surface, not flipped: OKLCH L 0.58–0.66 keeps every
@@ -210,9 +230,9 @@
   --mantine-color-default-border: var(--color-outline-variant);
   --mantine-color-anchor: var(--color-primary);
   --mantine-radius-default: var(--radius-card);
-  --mantine-primary-color-filled: var(--color-primary-container);
-  --mantine-primary-color-filled-hover: var(--color-primary);
-  --mantine-primary-color-contrast: var(--color-on-primary);
+  --mantine-primary-color-filled: var(--color-action);
+  --mantine-primary-color-filled-hover: color-mix(in srgb, var(--color-action) 88%, var(--color-on-surface));
+  --mantine-primary-color-contrast: var(--color-on-action);
 }
 
 /**
@@ -236,9 +256,9 @@
   --mantine-color-default-hover: var(--color-surface-container);
   --mantine-color-default-border: var(--color-outline-variant);
   --mantine-color-anchor: var(--color-primary);
-  --mantine-primary-color-filled: var(--color-primary-container);
-  --mantine-primary-color-filled-hover: var(--color-primary);
-  --mantine-primary-color-contrast: var(--color-on-primary);
+  --mantine-primary-color-filled: var(--color-action);
+  --mantine-primary-color-filled-hover: color-mix(in srgb, var(--color-action) 88%, var(--color-on-surface));
+  --mantine-primary-color-contrast: var(--color-on-action);
 }
 
 :root[data-mantine-color-scheme="dark"] {
@@ -249,9 +269,9 @@
   --mantine-color-default-hover: var(--color-surface-container);
   --mantine-color-default-border: var(--color-outline-variant);
   --mantine-color-anchor: var(--color-primary);
-  --mantine-primary-color-filled: var(--color-primary-container);
-  --mantine-primary-color-filled-hover: var(--color-primary);
-  --mantine-primary-color-contrast: var(--color-on-primary-container);
+  --mantine-primary-color-filled: var(--color-action);
+  --mantine-primary-color-filled-hover: color-mix(in srgb, var(--color-action) 88%, var(--color-on-surface));
+  --mantine-primary-color-contrast: var(--color-on-action);
 }
 .mantine-Card-root, .mantine-Paper-root {
   background: var(--color-surface-container-low);
@@ -410,14 +430,15 @@
  * treatment that vanished on dark surfaces.
  */
 
-/* Primary CTA fill — 135° primary -> primary-container */
+/* Primary CTA fill. Kept under its old name so ~30 call sites need no edit,
+   but it is a solid action fill now — the redesign drops decorative
+   gradients. It also owns the text colour: the call sites hard-code
+   `text-white`, and this unlayered rule outranks Tailwind's layered utility,
+   so dark mode gets its pale on-action text instead of white on indigo. */
 .bg-primary-gradient,
 .auth-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-container) 100%
-  );
+  background: var(--color-action);
+  color: var(--color-on-action);
 }
 
 /* Floating menus and mobile nav */
@@ -492,7 +513,17 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 
-  --text-display: clamp(1.75rem, 1.2rem + 2.4vw, 2.5rem);
+  /* Type scale, ~1.25 ratio (typography-scale). Body never below 16px;
+     12px is the floor for labels and nav. */
+  --text-xs: 0.75rem;   /* 12 — nav labels, chips */
+  --text-sm: 0.875rem;  /* 14 — secondary text, metadata */
+  --text-md: 1rem;      /* 16 — body, inputs */
+  --text-lg: 1.25rem;   /* 20 — card titles */
+  --text-xl: 1.5rem;    /* 24 — section titles, exercise names */
+  --text-2xl: 2rem;     /* 32 — page titles */
+  --text-3xl: 2.75rem;  /* 44 — hero numbers */
+
+  --text-display: clamp(2rem, 1.4rem + 2.6vw, 2.75rem);
   --text-h1: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
   --text-h2: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
 }
@@ -510,12 +541,13 @@
   :root { --page-gutter: 32px; }
 }
 
-/* Display face: headings and big figures. Weight 700 on the condensed cut
-   reads as bold as Heebo 800 at the same size, without the width. */
+/* Headings and big figures: Heebo 800. One family, so hierarchy comes from
+   size and weight alone (visual-hierarchy: >= 1.5x steps between levels). */
 h1, h2, h3,
 .font-display,
 .mantine-Title-root {
   font-family: var(--font-display);
+  font-weight: 800;
 }
 
 h1 { font-size: var(--text-h1); line-height: 1.15; }
@@ -527,15 +559,17 @@ h2 { font-size: var(--text-h2); line-height: 1.2; }
 .mantine-Title-root[data-order="1"] { font-size: var(--text-h1); line-height: 1.15; }
 .mantine-Title-root[data-order="2"] { font-size: var(--text-h2); line-height: 1.2; }
 
-/* Condensed Latin needs no negative tracking; the global -0.03em cramps it. */
-h1, h2, .font-display, .mantine-Title-root { letter-spacing: 0; }
+/* Large Heebo wants slight negative tracking in Latin; the RTL root rule
+   already zeroes inherited tracking for Hebrew. */
+h1, h2, .font-display, .mantine-Title-root { letter-spacing: -0.02em; }
+[dir="rtl"] :is(h1, h2, .font-display, .mantine-Title-root) { letter-spacing: 0; }
 
 .stat-number {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
 }
 
 [dir="rtl"] .stat-number {

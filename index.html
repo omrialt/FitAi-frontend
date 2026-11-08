@@ -8,16 +8,17 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 
     <title>FitAi — Training &amp; Nutrition Planning</title>
     <meta
       name="description"
       content="Plan workouts and nutrition, log every set, track measurements, and share progress with your trainer."
     />
-    <!-- Matches --color-primary in theme.css, so the mobile browser chrome
-         does not clash with the app's own header. -->
-    <meta name="theme-color" content="#4648d4" />
+    <!-- One per scheme, matching the header surface (--color-background) rather
+         than the brand colour, so the browser chrome blends into the app bar. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f9fa" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d0e12" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

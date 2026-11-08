@@ -1,10 +1,13 @@
 /**
  * MobileBottomNav - Fixed bottom navigation bar for mobile viewports
  *
- * At most five slots (ui-ux-pro-max `bottom-nav-limit`): four destinations
- * plus More, or — for athletes — three destinations, a centre quick-add FAB and
- * More. The FAB opens a sheet of the logging actions an athlete reaches for
- * mid-day (start a workout, log a meal, log a measurement). The bar
+ * Material 3 navigation bar: four labelled destinations. Trainers and admins
+ * add More as a fifth slot. Athletes get no More tab: their account sheet
+ * opens from the avatar in the app bar (controlled through `moreOpen`), and
+ * their quick-add lives in an extended FAB that floats above the bar on the
+ * end side (left in Hebrew, right in English) — the platform position for a
+ * FAB — instead of stealing a slot in the middle of the bar. The FAB opens a
+ * sheet of the logging actions an athlete reaches for mid-day. The bar
  * used to render `items.slice(0, 5)`, which silently truncated the nav: a
  * signed-in user's sixth item is Schedule, so Schedule had no mobile entry
  * point at all. Overflow now lands in the More sheet instead of falling off
@@ -12,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { Box, Divider, Drawer, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Box, Divider, Drawer, Portal, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
 import { IconDots, IconLogout, IconMoon, IconPlus, IconSun, IconUser } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from '../types/layout.types';
@@ -21,6 +24,8 @@ export interface QuickAction {
   icon: React.ReactNode;
   label: string;
   path: string;
+  /** When given, runs instead of navigating (e.g. opens the meal sheet). */
+  onSelect?: () => void;
 }
 
 interface MobileBottomNavProps {
@@ -41,6 +46,14 @@ interface MobileBottomNavProps {
   language: 'en' | 'he';
   onChangeLanguage: (lng: string) => void;
   onLogout: () => void;
+  /**
+   * Controls the account/More sheet from outside, so the app bar's avatar can
+   * open it. Uncontrolled when omitted.
+   */
+  moreOpen?: boolean;
+  onMoreOpenChange?: (open: boolean) => void;
+  /** Hide the floating quick-add (the in-session workout owns the thumb zone). */
+  showFab?: boolean;
 }
 
 /**
@@ -117,15 +130,22 @@ export function MobileBottomNav({
   language,
   onChangeLanguage,
   onLogout,
+  moreOpen: moreOpenProp,
+  onMoreOpenChange,
+  showFab = true,
 }: MobileBottomNavProps) {
   const { t } = useTranslation();
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [moreOpenState, setMoreOpenState] = useState(false);
+  const moreOpen = moreOpenProp ?? moreOpenState;
+  const setMoreOpen = (open: boolean) => {
+    if (moreOpenProp === undefined) setMoreOpenState(open);
+    onMoreOpenChange?.(open);
+  };
   const [quickOpen, setQuickOpen] = useState(false);
   const active = (path: string) => (isActive ? isActive(path) : currentPath === path);
 
-  // The FAB takes one of the five slots, so athletes get three destinations.
-  const slots = quickActions?.length ? 3 : 4;
-  const primary = items.filter((i) => i.primary).slice(0, slots);
+  const hasFab = !!quickActions?.length;
+  const primary = items.filter((i) => i.primary).slice(0, 4);
   // Anything not on the bar — plus any primary item that did not fit — stays
   // reachable rather than disappearing.
   const overflow = items.filter((i) => !primary.includes(i));
@@ -148,30 +168,13 @@ export function MobileBottomNav({
     />
   ));
 
-  if (quickActions?.length) {
-    tabs.splice(
-      2,
-      0,
-      <div key="__fab" className="bottom-fab-slot">
-        <UnstyledButton
-          className="bottom-fab"
-          onClick={() => setQuickOpen(true)}
-          aria-label={t('nav.quickAdd')}
-          aria-haspopup="dialog"
-          aria-expanded={quickOpen}
-        >
-          <IconPlus size={26} stroke={2.25} />
-        </UnstyledButton>
-      </div>,
-    );
-  }
-
   return (
     <>
       <nav className="bottom-nav" aria-label={t('nav.primaryNav')}>
         {tabs}
 
-        {overflow.length > 0 && (
+        {/* Athletes reach the overflow from the avatar in the app bar. */}
+        {!hasFab && overflow.length > 0 && (
           <Tab
             icon={<IconDots size={22} stroke={1.5} />}
             label={t('nav.more')}
@@ -185,7 +188,24 @@ export function MobileBottomNav({
         )}
       </nav>
 
-      {quickActions?.length ? (
+      {hasFab && showFab && (
+        // Portalled: the AppShell footer is fixed and can be transformed when
+        // it collapses, which would re-anchor a fixed child to it.
+        <Portal>
+          <UnstyledButton
+            className="log-fab"
+            onClick={() => setQuickOpen(true)}
+            aria-label={t('nav.quickAdd')}
+            aria-haspopup="dialog"
+            aria-expanded={quickOpen}
+          >
+            <IconPlus size={22} stroke={2.25} aria-hidden="true" />
+            <span>{t('nav.log')}</span>
+          </UnstyledButton>
+        </Portal>
+      )}
+
+      {hasFab ? (
         <Drawer
           opened={quickOpen}
           onClose={() => setQuickOpen(false)}
@@ -204,7 +224,16 @@ export function MobileBottomNav({
         >
           <div className="quick-grid">
             {quickActions.map((a) => (
-              <UnstyledButton key={a.label} className="quick-tile" onClick={() => go(a.path)}>
+              <UnstyledButton
+                key={a.label}
+                className="quick-tile"
+                onClick={() => {
+                  if (a.onSelect) {
+                    setQuickOpen(false);
+                    a.onSelect();
+                  } else go(a.path);
+                }}
+              >
                 <span className="quick-tile__icon" aria-hidden="true">{a.icon}</span>
                 <span className="quick-tile__label">{a.label}</span>
               </UnstyledButton>

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { IconCloudOff, IconClockHour4 } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -21,7 +22,21 @@ export function OfflineSyncWatcher() {
   const { t } = useTranslation();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  const { justSent, acknowledge } = useOfflineSync(isAuthenticated);
+  const { justSent, acknowledge, pending } = useOfflineSync(isAuthenticated);
+
+  // The browser's own signal. It can say "online" on a captive portal, which
+  // is why the queue retries on its own; this only drives the banner.
+  const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
+  useEffect(() => {
+    const up = () => setOnline(true);
+    const down = () => setOnline(false);
+    window.addEventListener('online', up);
+    window.addEventListener('offline', down);
+    return () => {
+      window.removeEventListener('online', up);
+      window.removeEventListener('offline', down);
+    };
+  }, []);
 
   useEffect(() => {
     if (justSent <= 0) return;
@@ -30,5 +45,20 @@ export function OfflineSyncWatcher() {
     acknowledge();
   }, [justSent, acknowledge, t]);
 
-  return null;
+  if (!isAuthenticated || (online && pending === 0)) return null;
+
+  // Calm, not alarming (interfaces-that-feel): say what still works and what
+  // will happen, rather than that something failed.
+  return (
+    <div role="status" className="offline-banner">
+      {online ? <IconClockHour4 size={18} aria-hidden="true" /> : <IconCloudOff size={18} aria-hidden="true" />}
+      <span>
+        {online
+          ? t('offline.pending', { count: pending })
+          : pending > 0
+            ? t('offline.offlineWithPending', { count: pending })
+            : t('offline.offline')}
+      </span>
+    </div>
+  );
 }

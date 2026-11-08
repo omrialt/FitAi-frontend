@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 
 import { RestTimer } from './RestTimer';
 
@@ -153,4 +153,42 @@ describe('RestTimer', () => {
     render(<RestTimer sessionStartedAt={Date.now() - 3_725_000} />);
     expect(screen.getByText('1:02:05')).toBeInTheDocument();
   });
+
+  describe('main action (direction B)', () => {
+    it('starts the rest by itself when a set is marked done', () => {
+      stubAudio();
+      const { rerender } = render(<RestTimer restSignal={0} />);
+      expect(screen.getByText('–:––')).toBeInTheDocument();
+      rerender(<RestTimer restSignal={1} />);
+      expect(document.querySelector('.stat-number')?.textContent).toBe('1:30');
+    });
+
+    it('offers the next set as the one button, and becomes the countdown after it', () => {
+      stubAudio();
+      const onCompleteNext = vi.fn();
+      const { rerender } = render(
+        <RestTimer restSignal={0} nextSetLabel="Finished set 2" onCompleteNext={onCompleteNext} />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: /Finished set 2/ }));
+      expect(onCompleteNext).toHaveBeenCalledTimes(1);
+
+      rerender(<RestTimer restSignal={1} nextSetLabel="Finished set 3" onCompleteNext={onCompleteNext} />);
+      // While resting, the same spot is the countdown, with +30 and skip.
+      expect(screen.queryByRole('button', { name: /Finished set 3/ })).toBeNull();
+      expect(screen.getByRole('button', { name: 'workout.liveSkipRest' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'workout.livePlus30' }));
+      expect(screen.getAllByText('2:00').length).toBeGreaterThan(0);
+
+      fireEvent.click(screen.getByRole('button', { name: 'workout.skip' }));
+      expect(screen.getByRole('button', { name: /Finished set 3/ })).toBeInTheDocument();
+    });
+
+    it('turns into the finish button once every set is done', () => {
+      const onFinish = vi.fn();
+      render(<RestTimer nextSetLabel={null} onFinish={onFinish} />);
+      fireEvent.click(screen.getByRole('button', { name: /workout\.finish/ }));
+      expect(onFinish).toHaveBeenCalled();
+    });
+  });
 });
+

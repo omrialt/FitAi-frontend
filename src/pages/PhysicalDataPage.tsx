@@ -3,7 +3,9 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Container, Stack, Center, Loader, Alert, SimpleGrid } from '@mantine/core';
+import { Container, Stack, Alert, SimpleGrid, Tabs } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
+import { TrainingProgressTab, InsightsProgressTab } from '../components/progress/ProgressTabs';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +37,9 @@ import { BodyPhotoTimeline } from '../components/profile/BodyPhotoTimeline';
 export default function PhysicalDataPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const tab = tabParam === 'training' || tabParam === 'insights' ? tabParam : 'body';
   const [physicalData, setPhysicalData] = useState<PhysicalData[]>([]);
   const [latestRecord, setLatestRecord] = useState<PhysicalData | null>(null);
   const [bmiData, setBmiData] = useState<{ bmi: number; category: string } | null>(null);
@@ -56,7 +61,7 @@ export default function PhysicalDataPage() {
     // through to the 404 page.
     { label: t('nav.dashboard'), href: '/' },
     { label: t('layout.profile'), href: '/profile' },
-    { label: t('physicalData.title') },
+    { label: t('progress.title') },
   ];
 
   // Fetch all data for the user
@@ -219,22 +224,44 @@ export default function PhysicalDataPage() {
           }}
         />
 
-        {/* Loading State */}
-        {loadingData && (
-          <Center py="xl">
-            <Loader size="lg" />
-          </Center>
+        {/* Progress = body + training + insights, one tab at a time (direction
+            B). The tab lives in the URL so Today can link straight to one. */}
+        <Tabs
+          value={tab}
+          onChange={(v) => setSearchParams(v && v !== 'body' ? { tab: v } : {}, { replace: true })}
+          keepMounted={false}
+          className="progress-tabs mb-6"
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="body">{t('progress.tabBody')}</Tabs.Tab>
+            <Tabs.Tab value="training">{t('progress.tabTraining')}</Tabs.Tab>
+            <Tabs.Tab value="insights">{t('progress.tabInsights')}</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="training" pt="lg">
+            {user && <TrainingProgressTab userId={user._id} />}
+          </Tabs.Panel>
+          <Tabs.Panel value="insights" pt="lg">
+            <InsightsProgressTab />
+          </Tabs.Panel>
+        </Tabs>
+
+        {/* Loading State — the shape of the body tab, not a spinner. */}
+        {tab === 'body' && loadingData && (
+          <div className="flex flex-col gap-4" aria-busy="true">
+            <div className="skeleton h-48 w-full rounded-[var(--radius-card)]" />
+            <div className="skeleton h-64 w-full rounded-[var(--radius-card)]" />
+          </div>
         )}
 
         {/* Error State */}
-        {!loadingData && !user && (
+        {tab === 'body' && !loadingData && !user && (
           <Alert icon={<IconAlertCircle size={16} />} color="red" title={t('common.error')}>
             {t('physicalData.notAuthenticated')}
           </Alert>
         )}
 
         {/* Content */}
-        {!loadingData && user && (
+        {tab === 'body' && !loadingData && user && (
           <Stack gap="xl">
             {/* Top row: Latest Metrics + Chart side by side */}
             {latestRecord ? (
