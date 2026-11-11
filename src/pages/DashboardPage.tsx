@@ -230,8 +230,11 @@ function DashboardContent() {
             densest card here and is what the screen is opened for, so it gets
             the extra width rather than being squeezed to a third. Columns are
             explicit wrappers instead of loose grid children so each one keeps
-            its own vertical rhythm as the tracks change. */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[1.25fr_1fr_1fr] gap-8 items-start">
+            its own vertical rhythm as the tracks change.
+            The tracks are minmax(0, …): a bare `fr` never shrinks below its
+            content's min-content width, so one long nowrap title was enough
+            to push the third column off the screen. */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_minmax(0,1fr)] gap-8 items-start">
           <div className="flex flex-col gap-8">
             <WhenReady ready={ready.activeTrainingPlan} lines={4} tall>
               <ActiveTrainingCard

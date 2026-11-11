@@ -177,7 +177,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-black tabular-nums tracking-tight text-on-surface leading-none">
-              {calories.toLocaleString()}
+              {Math.round(calories).toLocaleString()}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mt-1">
               {t('nutrition.kcal')}
@@ -186,7 +186,7 @@ export function ActiveNutritionCard({ plan }: ActiveNutritionCardProps) {
         </div>
 
         {/* Macro breakdown */}
-        <div className="flex-1 min-w-[180px] space-y-3">
+        <div className="flex-1 min-w-[140px] space-y-3">
           {macros.map((m) => (
             <div key={m.key} className="space-y-1.5">
               <div className="flex items-center justify-between">
