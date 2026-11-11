@@ -64,6 +64,19 @@ async function refreshAccessToken(): Promise<string | null> {
 
 type RetriableRequest = InternalAxiosRequestConfig & { _retry?: boolean };
 
+// Single-flight forced logout. logout() itself calls the server (remove the
+// push token, blacklist the session), and on a dead session those calls are
+// refused with 401 too. Without this guard each refusal started another
+// logout, which sent the same calls again: nothing ever returned, the tokens
+// were never cleared, and the app sat on its skeleton flooding the server.
+let sessionEnding: Promise<void> | null = null;
+
+async function endSession(): Promise<void> {
+  const { useAuthStore } = await import('../store/authStore');
+  await useAuthStore.getState().logout();
+  window.location.href = '/login';
+}
+
 // Response interceptor: silent token refresh on 401, logout when refresh fails
 api.interceptors.response.use(
   (response) => response,
@@ -96,9 +109,14 @@ api.interceptors.response.use(
         return api(original);
       }
 
-      const { useAuthStore } = await import('../store/authStore');
-      await useAuthStore.getState().logout();
-      window.location.href = '/login';
+      // A refusal that arrives while the session is already being ended is
+      // just a failed request — its caller handles the rejection.
+      if (!sessionEnding) {
+        sessionEnding = endSession().finally(() => {
+          sessionEnding = null;
+        });
+        await sessionEnding;
+      }
     }
 
     return Promise.reject(error);
