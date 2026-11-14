@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { useAuth, errorCode, EMAIL_NOT_VERIFIED } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
@@ -29,6 +30,22 @@ function LoginPage() {
   const metadata = usePresetMetadata('login', {
     preconnect: ['https://accounts.google.com'],
   });
+
+  // A failed Google sign-in lands here as `?error=<code>`. The backend sends a
+  // fixed code, never a message, so it is mapped to a translated line here.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const oauthError = searchParams.get('error');
+    if (!oauthError) return;
+    const key =
+      oauthError === 'invalid_state'
+        ? 'auth.googleStateExpired'
+        : oauthError === 'access_denied'
+          ? 'auth.googleAccessDenied'
+          : 'auth.googleAuthFailed';
+    toast.error(t(key));
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams, t]);
 
   const {
     register,
