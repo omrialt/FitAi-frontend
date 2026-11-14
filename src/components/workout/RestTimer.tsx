@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Haptics } from '@capacitor/haptics';
 import { toast } from 'sonner';
 
 import { StitchIcon } from '../common/StitchIcon';
@@ -275,8 +275,9 @@ export function RestTimer({
     setRemaining(Math.max(0, Math.round((deadline.current - Date.now()) / 1000)));
   }, []);
 
+  // The haptic tick lives in the page's markSet, which this calls, so a set
+  // marked from the row and one marked from here feel the same — and only once.
   const completeNext = useCallback(() => {
-    if (isNativeApp) void Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
     onCompleteNext?.();
   }, [onCompleteNext]);
 

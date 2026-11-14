@@ -9,6 +9,7 @@ import { MealLogForm } from '../components/nutrition/MealLogForm';
 import { RemainingToday } from '../components/nutrition/RemainingToday';
 import { localDayString } from '../services/meal-log.service';
 import { useDashboard } from '../hooks/useDashboard';
+import { formatDate } from '../utils/formatDate';
 
 /**
  * Full-page meal logging, for deep links and desktop. On phones the quick-add
@@ -34,9 +35,11 @@ export default function LogMealPage() {
         </button>
 
         <header className="mb-6">
-          <h1 className="font-bold text-on-surface">{t('mealLog.title')}</h1>
+          {/* On a phone the app bar already says "Log meal"; a second title
+              right under it only pushed the form down. */}
+          <h1 className="hidden md:block font-bold text-on-surface">{t('mealLog.title')}</h1>
           <p className="mt-1 text-sm text-on-surface-variant">
-            {t('mealLog.subtitle', { date: new Date().toLocaleDateString(i18n.language) })}
+            {t('mealLog.subtitle', { date: formatDate(new Date(), i18n.language, 'long') })}
           </p>
         </header>
 

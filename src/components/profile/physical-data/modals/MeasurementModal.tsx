@@ -155,7 +155,10 @@ export function MeasurementModal({
             onChange={(e) => setHeightCm(e.target.value === '' ? 170 : Number(e.target.value))}
             required
           />
+          {/* data-autofocus: the weight is what almost every entry changes, so
+              the quick weigh-in lands the cursor there. */}
           <AuthField
+            data-autofocus
             id="weightKg"
             label={t('physicalData.weightKgHeader')}
             icon="scale"

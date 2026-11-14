@@ -110,9 +110,11 @@ export function RemainingToday({
 
       <ul className="flex flex-col gap-3">
         {ROWS.map(({ key, label, unit }) => {
-          const eaten = consumed[key];
-          const goal = target?.[key] ?? null;
-          const left = remaining?.[key] ?? null;
+          // Whole numbers: a target of 202.6 g is precision nobody eats to.
+          const round = (n: number | null) => (n === null ? null : Math.round(n));
+          const eaten = Math.round(consumed[key]);
+          const goal = round(target?.[key] ?? null);
+          const left = round(remaining?.[key] ?? null);
           const over = left !== null && left < 0;
 
           return (

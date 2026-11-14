@@ -322,17 +322,21 @@
 }
 
 /**
- * Numerals stay LTR inside RTL text.
+ * Numerals stay whole inside RTL text.
  *
  * Without an isolate, Hebrew's bidi algorithm reorders a measurement's parts —
  * `+1.4 ק״ג` renders with the sign, the digits and the unit in the wrong
- * sequence. Scoped to `.tabular-nums` because that class already marks exactly
- * the stat figures and measurements this applies to, so no call site changes;
- * `.num` is there for numeric spans that are not tabular.
+ * sequence.
+ *
+ * `plaintext` isolates the element and takes its direction from its own first
+ * strong character: a bare figure ("+1.4", "92.2", "08:05") has none and lays
+ * out LTR with its sign in front, while a run that starts in Hebrew ("+ מוט
+ * 20", "סה"כ 9980 ק"ג") reads RTL. This used to be `direction: ltr`, which got
+ * the figures right and turned every Hebrew run with this class backwards.
+ * `.num` is for numeric spans that are not tabular.
  */
 [dir="rtl"] :where(.tabular-nums, .num) {
-  direction: ltr;
-  unicode-bidi: isolate;
+  unicode-bidi: plaintext;
 }
 
 /**
@@ -573,8 +577,7 @@ h1, h2, .font-display, .mantine-Title-root { letter-spacing: -0.02em; }
 }
 
 [dir="rtl"] .stat-number {
-  direction: ltr;
-  unicode-bidi: isolate;
+  unicode-bidi: plaintext;
 }
 
 /* ── Touch targets ──

@@ -7,6 +7,8 @@ import { Group, Stack, Text, Badge, Button, Box, Divider, Menu, Avatar } from "@
 import { IconEdit, IconFlame, IconTarget, IconTrendingUp, IconDownload, IconFileTypePdf, IconFileTypeXls } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { StarRating } from "./StarRating";
+import { focusLabel } from "../../utils/planLabels";
+import { formatDate } from "../../utils/formatDate";
 import type { NutritionPlanData, TrainingPlanData, PlanHeaderProps } from '../../types/common.types';
 
 const targetColors: Record<string, string> = {
@@ -30,7 +32,7 @@ export function PlanHeader({
   onExportExcel,
   creatorName,
 }: PlanHeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const targetLabels: Record<string, string> = {
     maintain: t("common.maintain"),
@@ -44,14 +46,6 @@ export function PlanHeader({
     advanced: t("common.advanced"),
   };
 
-  // Format date as dd/mm/yyyy
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   // Calculate nutrition macros if applicable
   const nutritionStats =
@@ -93,7 +87,10 @@ export function PlanHeader({
           title into a one-word-per-line column. */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
         <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
-          <h1 className="m-0 text-on-surface">{plan.title}</h1>
+          {/* <bdi>: plan titles are often Latin ("A/B/C — Push / Pull / Legs"),
+              and without isolation the trailing "/" and words wrap onto the
+              wrong side of the Hebrew around them. */}
+          <h1 className="m-0 text-on-surface"><bdi>{plan.title}</bdi></h1>
           <Group gap="xs" wrap="wrap">
             {plan?.target && (
               <Badge
@@ -120,7 +117,7 @@ export function PlanHeader({
             )}
           </Group>
 
-          <Text size="sm" c="dimmed">
+          <Text size="sm" c="dimmed" dir="auto">
             {plan.description}
           </Text>
         </Stack>
@@ -130,8 +127,7 @@ export function PlanHeader({
             <Menu.Target>
               <Button
                 leftSection={<IconDownload size={16} />}
-                variant="light"
-                color="gray"
+                variant="default"
                 fullWidth
               >
                 {t("common.export")}
@@ -223,7 +219,7 @@ export function PlanHeader({
             minutes and which was weeks. Each cell now names its own value, and
             empty facts drop out rather than leaving a hole. */}
         {trainingPlan && (
-          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
             {(
               [
                 trainingPlan.programType && {
@@ -249,7 +245,7 @@ export function PlanHeader({
                 },
                 trainingPlan.focus && {
                   k: t("common.focusLabel"),
-                  v: trainingPlan.focus,
+                  v: focusLabel(t, trainingPlan.focus),
                 },
               ].filter(Boolean) as { k: string; v: string }[]
             ).map((fact) => (
@@ -282,7 +278,7 @@ export function PlanHeader({
 
         <Text size="sm" c="dimmed">
           {t("common.createdLabel")}{" "}
-          {plan.createdAt ? formatDate(plan.createdAt) : t("common.notAvailable")}
+          {plan.createdAt ? formatDate(plan.createdAt, i18n.language) : t("common.notAvailable")}
         </Text>
       </Group>
 

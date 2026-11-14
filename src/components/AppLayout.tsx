@@ -268,6 +268,9 @@ const DETAIL_ROUTES: Array<{ match: RegExp; title: string; parent: string }> = [
 
 /** In-session workout owns the thumb zone; the global bottom nav steps aside. */
 const FOCUS_ROUTES = [/^\/workout\//];
+// The meal page keeps the bar but not its Log tab, which would only lead back
+// to the page it is on.
+const NO_QUICK_ADD_ROUTES = [/^\/log-meal/];
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -368,13 +371,12 @@ export function AppLayout({ children }: AppLayoutProps) {
             path: "/log-meal",
             onSelect: () => setMealSheetOpen(true),
           },
-          { icon: <IconScale size={20} stroke={1.5} />, label: t("nav.logMeasurement"), path: "/physical-data" },
+          { icon: <IconScale size={20} stroke={1.5} />, label: t("nav.logMeasurement"), path: "/physical-data?add=weight" },
         ]
       : undefined;
 
   return (
     <AppShell
-      className={quickActions && !isFocusRoute ? "has-log-fab" : undefined}
       header={{ height: { base: 56, md: 64 } }}
       // Phones navigate with the bottom bar only; the sidebar arrives at `md`,
       // where there is width to spare for it.
@@ -411,7 +413,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <ActionIcon
                 variant="subtle"
                 color="gray"
-                size="lg"
+                size="xl"
                 hiddenFrom="md"
                 onClick={goBack}
                 aria-label={t("common.back")}
@@ -697,7 +699,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               onLogout={handleLogout}
               moreOpen={accountOpen}
               onMoreOpenChange={setAccountOpen}
-              showFab={!isFocusRoute}
+              showQuickAdd={!NO_QUICK_ADD_ROUTES.some((r) => r.test(location.pathname))}
             />
           </Box>
         )}

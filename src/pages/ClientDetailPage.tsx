@@ -331,7 +331,7 @@ export default function ClientDetailPage() {
                     className="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-3 py-2"
                   >
                     <span className="truncate text-sm font-semibold text-on-surface">
-                      {plan.title}
+                      <bdi>{plan.title}</bdi>
                     </span>
                     <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
                       {t('clients.dayCount', { count: plan.days.length })}

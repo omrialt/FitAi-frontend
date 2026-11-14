@@ -1,44 +1,42 @@
 import { useTranslation } from 'react-i18next';
 
 interface WeightRepsProps {
-  weight: number;
-  reps: number;
-  /** Classes for the wrapper. The internal order is not negotiable. */
+  weight: number | string;
+  reps: number | string;
+  /** Classes for the wrapper. */
   className?: string;
+  /** Smaller unit and gap, for chips and inline comparison rows. */
+  compact?: boolean;
 }
 
 /**
- * A personal best as `100 kg × 6`, pinned left-to-right.
+ * One set as `100 kg × 6`, in the reading direction of the page.
  *
- * `dir="ltr"` is the entire point of this component. The value is a run of
- * digits, a Hebrew unit and a neutral `×`, and inside a right-to-left
- * paragraph the bidi algorithm reorders that into one number: 100 kg × 6 came
- * out of the client card reading **`1006`**, and 87.5 × 8 read `87.58`.
+ * History: rendered as loose text inside an RTL paragraph, the run of digits,
+ * a Hebrew unit and a neutral `×` was reordered by the bidi algorithm into one
+ * number (`100 kg × 6` read **`1006`**). The first fix pinned the whole value
+ * `dir="ltr"`, which kept the digits apart but made the set read backwards to a
+ * Hebrew reader: scanning from the right they met the reps, then `×`, then the
+ * unit, and only then the weight ("12 × ק"ג 36").
  *
- * No amount of spacing or punctuation fixes it — every neutral character
- * between two digit runs behaves the same way under RTL. Isolating the value
- * in its own LTR element is what pins weight, unit and reps in that order, in
- * both languages, which is also the order anyone writes a set in.
+ * Now each part is its own flex item, so bidi can no longer merge them, and the
+ * flex row follows the page direction: weight and its unit first, then `×`,
+ * then reps, whichever way the page reads. Each number is a `<bdi>` so a
+ * decimal point or a minus sign never escapes its own run.
  *
- * `WorkoutHistoryPage`'s `SetChip` solved this for the training log on
- * 2026-09-18; the two personal-best rows were missed by that pass. This
- * exists so the third place to show a weight has something to reuse instead
- * of rediscovering the bug.
+ * Every place that shows a set uses this, so the next fix lands everywhere.
  */
-export function WeightReps({ weight, reps, className }: WeightRepsProps) {
+export function WeightReps({ weight, reps, className, compact = false }: WeightRepsProps) {
   const { t } = useTranslation();
-
   return (
     <span
-      dir="ltr"
-      className={`inline-flex items-baseline gap-x-1 tabular-nums ${className ?? ''}`}
+      data-weight-reps=""
+      className={`inline-flex items-baseline ${compact ? 'gap-x-0.5' : 'gap-x-1'} tabular-nums ${className ?? ''}`}
     >
-      <span>{weight}</span>
-      <span className="text-[10px] font-semibold text-on-surface-variant">
-        {t('common.kg')}
-      </span>
+      <bdi>{weight}</bdi>
+      <span className="text-[10px] font-semibold text-on-surface-variant">{t('common.kg')}</span>
       <span className="font-normal text-on-surface-variant">×</span>
-      <span>{reps}</span>
+      <bdi>{reps}</bdi>
     </span>
   );
 }

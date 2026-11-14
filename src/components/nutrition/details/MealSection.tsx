@@ -77,15 +77,15 @@ export function MealSection({ meals }: MealSectionProps) {
               <Group gap="md" mt="xs">
                 <Box>
                   <Text size="xs" c="dimmed">{t('nutrition.protein')}</Text>
-                  <Text size="sm" fw={700} c="blue">{totalP.toFixed(0)}g</Text>
+                  <Text size="sm" fw={700} c="blue">{t('common.grams', { value: totalP.toFixed(0) })}</Text>
                 </Box>
                 <Box>
                   <Text size="xs" c="dimmed">{t('nutrition.carbs')}</Text>
-                  <Text size="sm" fw={700} c="yellow.7">{totalC.toFixed(0)}g</Text>
+                  <Text size="sm" fw={700} c="yellow.7">{t('common.grams', { value: totalC.toFixed(0) })}</Text>
                 </Box>
                 <Box>
                   <Text size="xs" c="dimmed">{t('nutrition.fats')}</Text>
-                  <Text size="sm" fw={700} c="green">{totalF.toFixed(0)}g</Text>
+                  <Text size="sm" fw={700} c="green">{t('common.grams', { value: totalF.toFixed(0) })}</Text>
                 </Box>
               </Group>
             </Paper>

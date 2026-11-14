@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { workoutSessionService } from '../../../services/workout-session.service';
 import type { ExerciseComparison as Comparison } from '../../../types/workout-session.types';
 import { StitchIcon } from '../../common/StitchIcon';
+import { WeightReps } from '../../common/WeightReps';
 import { Delta, TrendBadge } from './shared';
 import { muscleLabel, shortDate } from './labels';
 
@@ -264,7 +265,7 @@ export function ExerciseComparison({
                         />
                       </svg>
                     )}
-                    {exercise.name}
+                    <bdi>{exercise.name}</bdi>
                   </button>
                 </li>
               );
@@ -368,7 +369,7 @@ export function ExerciseComparison({
                 {exercises.map((exercise) => (
                   <tr key={exercise.name} className="text-on-surface">
                     <td className="py-2.5 pe-2">
-                      <span className="block font-semibold">{exercise.name}</span>
+                      <span className="block font-semibold"><bdi>{exercise.name}</bdi></span>
                       <TrendBadge trend={exercise.trend} t={t} />
                     </td>
                     <td className="px-2 py-2.5">
@@ -377,9 +378,11 @@ export function ExerciseComparison({
                           <span className="block font-bold tabular-nums">
                             {exercise.bestE1rm} {kg}
                           </span>
-                          <span dir="ltr" className="text-on-surface-variant tabular-nums">
-                            {exercise.bestSet.weight} {kg} × {exercise.bestSet.reps}
-                          </span>
+                          <WeightReps
+                            weight={exercise.bestSet.weight}
+                            reps={exercise.bestSet.reps}
+                            className="text-on-surface-variant"
+                          />
                         </>
                       ) : (
                         '—'

@@ -5,6 +5,7 @@ import { he as heLocale, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
+import { muscleLabel } from '../workout/history/labels';
 import type { Exercise, ExerciseSet } from '../../types/training-plan.types';
 import type { TrainingDayModalProps } from '../../types/calendar-components.types';
 
@@ -62,11 +63,11 @@ const TrainingDayModal: React.FC<TrainingDayModalProps> = ({
         <div className="flex items-start justify-between gap-3 mb-3">
           <h4 className="font-bold text-on-surface">
             <span className="text-primary">{exerciseIndex + 1}.</span>{' '}
-            {exercise.name}
+            <bdi>{exercise.name}</bdi>
           </h4>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
-              {exercise.muscleGroup}
+              {exercise.muscleGroup && muscleLabel(t, exercise.muscleGroup)}
             </span>
             {isSupersetOrDropset && (
               <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-tertiary-container text-on-tertiary-container">

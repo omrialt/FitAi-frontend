@@ -226,8 +226,8 @@
     "modifiedWeeksAgo_many": "עודכן: לפני {{count}} שבועות",
     "modifiedWeeksAgo_other": "עודכן: לפני {{count}} שבועות",
     "modifiedOn": "עודכן: {{date}}",
-    "aiCardTitle": "עומס אימון מותאם AI",
-    "aiCardText": "תוכניות האימון הנוכחיות שלך עומדות בממוצע על <strong>84% עמידה ביעדי התאוששות</strong>. FitAi ממליץ להוסיף יום התאוששות פעילה לבלוק האימון שלך.",
+    "aiCardTitle": "תוכנית חדשה בשתי דקות",
+    "aiCardText": "תבנית מוכנה ומוכחת, או תוכנית שנבנית לפי הימים והציוד שלך.",
     "applySuggestion": "החל המלצה",
     "trainingVolume": "נפח אימון",
     "monSun": "ב׳—א׳",
@@ -322,7 +322,11 @@
       "endDate": "תאריך סיום",
       "selectEndDate": "בחרו תאריך סיום"
     },
-    "exerciseSearchPlaceholder": "חיפוש תרגיל או הקלדה חופשית"
+    "exerciseSearchPlaceholder": "חיפוש תרגיל או הקלדה חופשית",
+    "setsSummary": "{{sets}} × {{reps}}",
+    "setsSummaryWeight": "{{sets}} × {{reps}} · {{weight}} ק\"ג",
+    "showSets": "הצגת הסטים",
+    "hideSets": "הסתרת הסטים"
   },
   "nutrition": {
     "title": "תוכניות התזונה שלי",
@@ -465,7 +469,8 @@
     "meal_breakfast": "ארוחת בוקר",
     "meal_lunch": "ארוחת צהריים",
     "meal_dinner": "ארוחת ערב",
-    "meal_snack": "ארוחת ביניים"
+    "meal_snack": "ארוחת ביניים",
+    "activeForYou": "פעילה"
   },
   "dashboard": {
     "loading": "טוען את לוח הבקרה שלכם...",
@@ -556,10 +561,10 @@
     "dayCount_two": "{{count}} ימים",
     "dayCount_many": "{{count}} ימים",
     "dayCount_other": "{{count}} ימים",
-    "viewAllPlans_one": "הצגת התוכנית ←",
-    "viewAllPlans_two": "הצגת כל {{count}} התוכניות ←",
-    "viewAllPlans_many": "הצגת כל {{count}} התוכניות ←",
-    "viewAllPlans_other": "הצגת כל {{count}} התוכניות ←",
+    "viewAllPlans_one": "הצגת התוכנית",
+    "viewAllPlans_two": "הצגת כל {{count}} התוכניות",
+    "viewAllPlans_many": "הצגת כל {{count}} התוכניות",
+    "viewAllPlans_other": "הצגת כל {{count}} התוכניות",
     "upcomingSchedule": "לוח זמנים קרוב",
     "viewAll": "הצגת הכל",
     "loadingSchedule": "טוען לוח זמנים...",
@@ -792,7 +797,8 @@
       "healthyRange": "טווח בריא",
       "overweight": "עודף משקל",
       "obese": "השמנה"
-    }
+    },
+    "trendSince": "⁦{{sign}}{{diff}}⁩{{unit}} מאז {{date}}"
   },
   "physicalTargets": {
     "setTarget": "הגדרת יעד",
@@ -852,8 +858,8 @@
     "clientNoTargetsText": "קבעו יעד למתאמן — הוא יראה אותו בעמוד הנתונים הגופניים שלו ויוכל לעקוב משם."
   },
   "calendar": {
-    "previous": "→ הקודם",
-    "next": "הבא ←",
+    "previous": "השבוע הקודם",
+    "next": "השבוע הבא",
     "today": "היום",
     "weekOf": "שבוע {{start}} - {{end}}",
     "disconnectGoogle": "ניתוק מ-Google",
@@ -1069,7 +1075,7 @@
     "noBar": "בלי מוט",
     "perSide": "לכל צד",
     "barOnly": "מוט ריק",
-    "plusBar": "+ מוט {{weight}}",
+    "plusBar": "+ מוט ⁨{{weight}}⁩",
     "plateShortfall": "הכי קרוב: {{achieved}} ק\"ג",
     "resumeTitle": "יש כאן אימון שלא נסגר.",
     "resumeDetail": "התחיל לפני {{minutes}} דק'. להמשיך ממנו או להתחיל מחדש?",
@@ -1112,8 +1118,8 @@
     "overloadAction_add_weight": "להוסיף משקל",
     "overloadAction_add_reps": "להוסיף חזרה",
     "overloadAction_hold": "לשמור",
-    "overloadTarget": "⁦{{sets}}×{{reps}}⁩ · {{weight}} ק\"ג",
-    "overloadTargetReps": "⁦{{sets}}×{{reps}}⁩ חזרות",
+    "overloadTarget": "{{sets}}×{{reps}} · {{weight}} ק\"ג",
+    "overloadTargetReps": "{{sets}}×{{reps}} חזרות",
     "overloadReason_range_topped": "בפעם האחרונה הגעת ל‑{{reps}} חזרות בכל הסטים ב‑{{weight}} ק\"ג — ראש הטווח שלך.",
     "overloadReason_range_not_topped": "בפעם האחרונה {{reps}} חזרות ב‑{{weight}} ק\"ג. יש עוד מקום עד {{max}}.",
     "overloadReason_effort_high": "הגעת לחזרות, אבל דיווחת מאמץ {{rpe}} — המשקל כבר בתקרה שלו, אז שווה לחזור עליו.",
@@ -1121,7 +1127,7 @@
     "deloadTitle": "שבוע הורדת עומס",
     "deloadRecommended": "מומלץ: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים.",
     "deloadOptional": "אפשרות: {{load}}% מהמשקל ו‑{{volume}}% מהסטים, למשך {{days}} ימים. לא חובה.",
-    "deloadSetLine": "⁦{{sets}}×{{reps}}⁩ · {{weight}} ק\"ג",
+    "deloadSetLine": "{{sets}}×{{reps}} · {{weight}} ק\"ג",
     "deloadFootnote": "המשקלים מעוגלים כלפי מטה ל‑2.5 ק\"ג, כדי שיהיו מספרים שמוט באמת עושה.",
     "addDrop": "הוספת דרופ",
     "dropShort": "דרופ",
@@ -1143,8 +1149,8 @@
       "resultCount_many": "{{count}} אימונים",
       "noResults": "לא נמצאו אימונים שתואמים לסינון.",
       "tabLog": "יומן",
-      "tabTypes": "לפי סוג אימון",
-      "tabExercises": "התקדמות תרגילים",
+      "tabTypes": "לפי סוג",
+      "tabExercises": "תרגילים",
       "typesTitle": "סוגי האימון שלכם",
       "typesSubtitle": "בחרו סוג אימון כדי לראות תובנות ולהשוות בין אימונים שלו.",
       "typesFailed": "לא הצלחנו לטעון את סוגי האימון.",
@@ -1359,7 +1365,7 @@
     "u_g": "גרם",
     "loggedToday": "מה שתועד היום",
     "searchSource": "הערכים מ‑USDA FoodData Central, לפי 100 גרם. הכמות שתזין קובעת את החישוב.",
-    "addWholeMeal": "כל הארוחה",
+    "addWholeMeal": "הוספת הכל",
     "addItem": "להוסיף {{name}}",
     "itemsAndCalories": "{{count}} פריטים · {{calories}} קלוריות",
     "savedTo": "נוסף ל{{meal}}",
@@ -1595,7 +1601,10 @@
     "summaryRest": "היום יום מנוחה לפי התוכנית",
     "summaryDone": "האימון של היום כבר מאחוריך",
     "summaryNoPlan": "כדי להתחיל, צריך לבחור תוכנית",
-    "title": "היום"
+    "title": "היום",
+    "ofTotal": "{{eaten}} מתוך {{goal}}",
+    "gramsOf": "{{eaten}} מתוך {{goal}} ג'",
+    "nothingLogged": "עוד לא תיעדת היום. הארוחה הראשונה תתחיל את הספירה."
   },
   "progress": {
     "tabBody": "גוף",

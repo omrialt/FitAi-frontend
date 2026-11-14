@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { StitchIcon } from "../common/StitchIcon";
 import { NutritionsActionsMenu } from "./NutritionsActionsMenu";
 import type { NutritionsCardProps } from '../../types/nutrition-components.types';
+import { formatDate } from '../../utils/formatDate';
 
 function StarRating({
   rating,
@@ -89,12 +90,27 @@ export function NutritionsCard({
       ? nutritionPlan.userId.fullName
       : t('common.unknown');
 
+  // The plan this user follows. It used to look exactly like a draft called
+  // "test" next to it.
+  const isActive = !!currentUserId && !!nutritionPlan.activeByUsers?.some((u) =>
+    (typeof u === 'string' ? u : u._id) === currentUserId,
+  );
+
   return (
-    <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
+    <div
+      className={`bg-surface-container-lowest rounded-xl p-5 border ${
+        isActive ? 'border-primary/60 ring-1 ring-primary/30' : 'border-outline-variant/10'
+      }`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface min-w-0 flex-1">
-          {nutritionPlan.title}
+          <bdi>{nutritionPlan.title}</bdi>
+          {isActive && (
+            <span className="ms-2 inline-block align-middle rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
+              {t('nutrition.activeForYou')}
+            </span>
+          )}
         </h3>
         <NutritionsActionsMenu
           nutritionPlan={nutritionPlan}
@@ -110,7 +126,9 @@ export function NutritionsCard({
       </div>
 
       {nutritionPlan.description && (
-        <p className="text-sm text-on-surface-variant mt-2 line-clamp-2">
+        // dir="auto": a description is free text, often English; inherited RTL
+        // moved its final period to the start of the line.
+        <p dir="auto" className="text-sm text-on-surface-variant mt-2 line-clamp-2">
           {nutritionPlan.description}
         </p>
       )}
@@ -121,7 +139,7 @@ export function NutritionsCard({
           <StitchIcon name="bolt" size={16} />
         </span>
         <span className="text-sm font-bold text-on-surface">
-          {nutritionPlan.totalCalories} {t('nutrition.kcal')}
+          {Math.round(nutritionPlan.totalCalories).toLocaleString(i18n.language)} {t('nutrition.kcal')}
         </span>
       </div>
 
@@ -130,7 +148,7 @@ export function NutritionsCard({
         {macros.map((m) => (
           <span key={m.label} className="text-xs text-on-surface-variant">
             {m.label}:{' '}
-            <span className="font-bold text-on-surface">{m.value.toFixed(0)}g</span>
+            <span className="font-bold text-on-surface">{t('common.grams', { value: m.value.toFixed(0) })}</span>
           </span>
         ))}
       </div>
@@ -151,12 +169,16 @@ export function NutritionsCard({
         </div>
       )}
 
-      <div className="mt-3">
-        <StarRating
-          rating={nutritionPlan.averageRating}
-          totalRatings={nutritionPlan.totalRatings}
-        />
-      </div>
+      {/* Five grey marks and "no ratings" said the same thing twice, and the
+          marks looked like broken icons. Shown once there is something to show. */}
+      {nutritionPlan.totalRatings > 0 && (
+        <div className="mt-3">
+          <StarRating
+            rating={nutritionPlan.averageRating}
+            totalRatings={nutritionPlan.totalRatings}
+          />
+        </div>
+      )}
 
       {/* Footer */}
       <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-outline-variant/10">
@@ -167,9 +189,7 @@ export function NutritionsCard({
         <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
           <StitchIcon name="event" size={14} />
           {nutritionPlan.createdAt
-            ? new Date(nutritionPlan.createdAt).toLocaleDateString(
-                i18n.language === 'he' ? 'he-IL' : 'en-GB',
-              )
+            ? formatDate(nutritionPlan.createdAt, i18n.language)
             : t('common.none')}
         </span>
       </div>

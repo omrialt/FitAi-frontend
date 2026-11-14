@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 
 import { StitchIcon, type StitchIconName } from '../../../common/StitchIcon';
-import { formatDate } from '../helpers/calcImprovement';
+import { formatDate } from '../../../../utils/formatDate';
 import { useAuth } from '../../../../hooks/useAuth';
 import type { LatestRecordCardProps } from '../../../../types/physical-data-components.types';
 
@@ -16,13 +16,17 @@ function TrendBadge({
   previous,
   lowerIsBetter = false,
   unit = '',
+  since,
 }: {
   current?: number | null;
   previous?: number | null;
+  /** Undefined when nothing says which way is good: the change is then neutral. */
   lowerIsBetter?: boolean;
   unit?: string;
+  /** When the previous record was taken. The change is "since" then, not "this month". */
+  since?: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (current == null || previous == null) return null;
 
@@ -37,21 +41,25 @@ function TrendBadge({
     );
   }
 
-  const isGood = lowerIsBetter ? diff < 0 : diff > 0;
+  const tone =
+    lowerIsBetter === undefined
+      ? 'text-on-surface-variant'
+      : (lowerIsBetter ? diff < 0 : diff > 0)
+        ? 'text-success'
+        : 'text-error';
   const sign = diff > 0 ? '+' : '';
 
   return (
-    <p
-      className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${
-        isGood ? 'text-success' : 'text-error'
-      }`}
-    >
+    <p className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${tone}`}>
       <StitchIcon name={diff < 0 ? 'trending_down' : 'trending_up'} size={11} />
-      {t('physicalData.trendThisMonth', {
-        sign,
-        diff: diff.toFixed(1),
-        unit,
-      })}
+      {since
+        ? t('physicalData.trendSince', {
+            sign,
+            diff: diff.toFixed(1),
+            unit,
+            date: formatDate(since, i18n.language),
+          })
+        : t('physicalData.trendThisMonth', { sign, diff: diff.toFixed(1), unit })}
     </p>
   );
 }
@@ -118,8 +126,9 @@ export function LatestRecordCard({
   record,
   previousRecord,
   bmi,
+  weightLowerIsBetter,
 }: LatestRecordCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const userGender = user?.gender || 'male';
 
@@ -147,7 +156,7 @@ export function LatestRecordCard({
           {t('physicalData.latestMetrics')}
         </h3>
         <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">
-          {t('physicalData.lastUpdate', { date: formatDate(record.dateRecorded) })}
+          {t('physicalData.lastUpdate', { date: formatDate(record.dateRecorded, i18n.language) })}
         </span>
       </div>
 
@@ -168,6 +177,8 @@ export function LatestRecordCard({
             current={record.weightKg}
             previous={previousRecord?.weightKg}
             unit={` ${t('common.kg')}`}
+            lowerIsBetter={weightLowerIsBetter}
+            since={previousRecord?.dateRecorded}
           />
         </MetricTile>
 
@@ -199,12 +210,8 @@ export function LatestRecordCard({
           label={t('physicalData.bmiIndex')}
         >
           <p className="stat-number text-3xl text-on-surface">
+            {/* No unit: BMI is a ratio, and "pt" read as one. */}
             {bmi?.bmi != null ? bmi.bmi.toFixed(1) : dash}
-            {bmi?.bmi != null && (
-              <span className="text-base font-normal text-on-surface-variant ms-1">
-                {t('physicalData.pt')}
-              </span>
-            )}
           </p>
           {bmiZone && (
             <span
@@ -246,7 +253,8 @@ export function LatestRecordCard({
           <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-4">
             {t('physicalData.bodyMeasurements')}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {/* An odd last item spans the row on phones instead of sitting alone. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
             {(['chest', 'waist', 'hips', 'arms', 'legs'] as const).map((key) =>
               measurements?.[key] ? (
                 <div key={key}>

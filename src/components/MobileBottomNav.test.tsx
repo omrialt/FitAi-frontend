@@ -51,22 +51,25 @@ describe('MobileBottomNav', () => {
     expect(screen.queryByRole('button', { name: 'nav.quickAdd' })).toBeNull();
   });
 
-  it('gives athletes four destinations and a floating quick-add instead of More', () => {
+  it('gives athletes four destinations and a Log tab in the middle instead of More', () => {
     renderNav({ quickActions });
     const nav = screen.getByRole('navigation');
-    // All four primary destinations stay on the bar; no More tab.
-    expect(nav.querySelectorAll('.bottom-tab')).toHaveLength(4);
+    // Four destinations plus Log, all on the bar; no More tab.
+    const tabs = Array.from(nav.querySelectorAll('.bottom-tab'));
+    expect(tabs).toHaveLength(5);
     expect(screen.getByText('Physical')).toBeInTheDocument();
     expect(screen.queryByText('nav.more')).toBeNull();
-    // The FAB floats outside the bar (portalled), labelled for what it does.
-    const fab = screen.getByRole('button', { name: 'nav.quickAdd' });
-    expect(nav.contains(fab)).toBe(false);
-    expect(fab).toHaveTextContent('nav.log');
+    // Log sits in the bar, in the middle slot, so it never floats over content.
+    const log = screen.getByRole('button', { name: 'nav.quickAdd' });
+    expect(nav.contains(log)).toBe(true);
+    expect(tabs.indexOf(log)).toBe(2);
+    expect(log).toHaveTextContent('nav.log');
   });
 
-  it('hides the floating quick-add on focus routes', () => {
-    renderNav({ quickActions, showFab: false });
+  it('hides the Log tab where it would lead back to the same page', () => {
+    renderNav({ quickActions, showQuickAdd: false });
     expect(screen.queryByRole('button', { name: 'nav.quickAdd' })).toBeNull();
+    expect(screen.getByRole('navigation').querySelectorAll('.bottom-tab')).toHaveLength(4);
   });
 
   it('opens the account sheet when controlled from the app bar', async () => {

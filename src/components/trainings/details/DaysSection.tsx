@@ -6,10 +6,14 @@ import { Stack, Title, Text, Group, Badge, Accordion, SimpleGrid } from '@mantin
 import { Activity } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExerciseCard } from './ExerciseCard';
+import { todaysPlanDayIndex } from '../../../utils/planDay';
 import type { DaysSectionProps } from '../../../types/trainings-components.types';
 
 export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
   const { t } = useTranslation();
+  // Open on today's day when the plan has one, the first day otherwise.
+  const todayIdx = todaysPlanDayIndex(days);
+  const openDay = `day-${todayIdx >= 0 ? todayIdx : 0}`;
 
   return (
     <Stack gap="lg" mb="xl">
@@ -22,7 +26,7 @@ export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
       </Activity>
 
       <Activity mode={days.length > 0 ? "visible" : "hidden"}>
-        <Accordion variant="contained" defaultValue={`day-0`}>
+        <Accordion variant="contained" defaultValue={openDay}>
           {days.map((day, dayIndex) => {
             const dayName = day.dayOfWeek >= 0 && day.dayOfWeek <= 6
               ? t(`common.weekday${day.dayOfWeek}`)
@@ -36,7 +40,7 @@ export function DaysSection({ days, onVideoClick }: DaysSectionProps) {
                   <Group justify="space-between" wrap="wrap">
                     <Group gap="md">
                       <Text fw={600} size="lg">
-                        {day.dayName} ({dayName})
+                        <bdi>{day.dayName}</bdi> ({dayName})
                       </Text>
                       <Badge variant="light" color="blue">
                         {t('trainings.exerciseCount', { count: totalExercises })}

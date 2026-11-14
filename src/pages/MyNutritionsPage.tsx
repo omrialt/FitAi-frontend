@@ -165,8 +165,12 @@ export default function MyNutritionsPage() {
       });
     }
 
-    return filtered;
-  }, [allNutritionPlans, filters, debouncedSearch]);
+    // The plan this user follows comes first, so it is not lost among drafts.
+    const isMine = (plan: NutritionPlan) =>
+      !!user?._id &&
+      !!plan.activeByUsers?.some((u) => (typeof u === "string" ? u : u._id) === user._id);
+    return filtered.sort((a, b) => Number(isMine(b)) - Number(isMine(a)));
+  }, [allNutritionPlans, filters, debouncedSearch, user?._id]);
 
   // Pagination
   const totalPages = Math.ceil(nutritionPlans.length / pageSize);

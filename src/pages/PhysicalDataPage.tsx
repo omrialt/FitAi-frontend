@@ -55,6 +55,29 @@ export default function PhysicalDataPage() {
   const [deleteTargetModalOpened, setDeleteTargetModalOpened] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
 
+  // Quick weigh-in from the app's log sheet: /physical-data?add=weight opens
+  // the measurement form straight away, prefilled from the last record, with
+  // the cursor in the weight field. The param is dropped so a refresh or a
+  // back navigation does not reopen it.
+  useEffect(() => {
+    if (searchParams.get('add') !== 'weight') return;
+    setSelectedMeasurement(null);
+    setMeasurementModalOpened(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete('add');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  // The active target says which way the scale should move. Undefined when
+  // there is no weight target, so the change is shown without a verdict.
+  const activeWeightTarget = targets.find(
+    (target) => target.status === 'active' && target.targetValues.weightKg != null,
+  )?.targetValues.weightKg;
+  const weightLowerIsBetter =
+    activeWeightTarget != null && latestRecord
+      ? activeWeightTarget < latestRecord.weightKg
+      : undefined;
+
   // Breadcrumb items
   const breadcrumbItems = [
     // The dashboard is mounted at '/', not '/dashboard' — the old href fell
@@ -269,7 +292,8 @@ export default function PhysicalDataPage() {
                 <LatestRecordCard 
                   record={latestRecord} 
                   previousRecord={physicalData.length > 1 ? physicalData[1] : null}
-                  bmi={bmiData || undefined} 
+                  bmi={bmiData || undefined}
+                  weightLowerIsBetter={weightLowerIsBetter}
                 />
                 {physicalData.length > 0 && (
                   <MeasurementsChart data={physicalData} />

@@ -27,16 +27,31 @@ import type { NutritionPlan } from '../../types/nutrition.types';
 export function PlanFoodPicker({
   plan,
   onAddFoods,
+  currentMealType,
 }: {
   plan: NutritionPlan | null;
+  /**
+   * The meal being logged (the form guesses it from the time of day). Its plan
+   * meal moves to the top and opens; the others stay collapsed below it.
+   */
+  currentMealType?: string;
   /** Appended to whatever is already in the composer. */
   onAddFoods: (foods: LoggedFood[], label?: string, mealType?: string) => void;
 }) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState<number | null>(null);
-
   const meals = plan?.meals ?? [];
+  const matchIndex = currentMealType
+    ? meals.findIndex((meal) => meal.mealType === currentMealType)
+    : -1;
+  // Keyed by the meal's index in the plan, so moving it to the top does not
+  // change which one is open.
+  const [open, setOpen] = useState<number | null>(matchIndex >= 0 ? matchIndex : null);
+
   if (meals.length === 0) return null;
+
+  const ordered = meals
+    .map((meal, mi) => ({ meal, mi }))
+    .sort((a, b) => Number(b.mi === matchIndex) - Number(a.mi === matchIndex));
 
   /** A plan food is already the shape a logged food is — only `fdcId` differs. */
   const toLogged = (f: NutritionPlan['meals'][number]['foods'][number]): LoggedFood => ({
@@ -56,7 +71,7 @@ export function PlanFoodPicker({
       </legend>
 
       <div className="flex flex-col gap-2">
-        {meals.map((meal, mi) => {
+        {ordered.map(({ meal, mi }) => {
           const expanded = open === mi;
           const mealCalories = meal.foods.reduce((a, f) => a + f.calories, 0);
 
@@ -98,7 +113,7 @@ export function PlanFoodPicker({
                       meal.mealType,
                     )
                   }
-                  className="min-h-9 shrink-0 rounded-lg border border-primary px-3 text-[11px] font-bold text-primary"
+                  className="tap min-h-9 shrink-0 rounded-lg border border-primary px-3 text-[11px] font-bold text-primary"
                 >
                   {t('mealLog.addWholeMeal')}
                 </button>
@@ -134,7 +149,7 @@ export function PlanFoodPicker({
                         type="button"
                         onClick={() => onAddFoods([toLogged(food)])}
                         aria-label={t('mealLog.addItem', { name: food.name })}
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-outline-variant/40 text-primary hover:bg-primary/10"
+                        className="tap flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-outline-variant/40 text-primary hover:bg-primary/10"
                       >
                         <StitchIcon name="add" size={16} />
                       </button>

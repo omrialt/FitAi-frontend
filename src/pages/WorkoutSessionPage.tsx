@@ -11,6 +11,7 @@ import { PlateCalculator } from '../components/workout/PlateCalculator';
 import { RestTimer } from '../components/workout/RestTimer';
 import { SwapExercise } from '../components/workout/SwapExercise';
 import { WeightReps } from '../components/common/WeightReps';
+import { muscleLabel } from '../components/workout/history/labels';
 import { pickBaseline, type SlugMap } from '../components/workout/lastPerformance';
 import { exerciseService } from '../services/exercise.service';
 import {
@@ -23,6 +24,7 @@ import { useWakeLock } from '../hooks/useWakeLock';
 import { useWorkoutLive } from '../hooks/useWorkoutLive';
 import { useSyncReminders, useSyncWidget } from '../hooks/useReminderSync';
 import { isNativeApp } from '../config/platform';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import {
   getReminderSettings,
   setReminderSettings,
@@ -943,7 +945,12 @@ export default function WorkoutSessionPage() {
     (ei: number, si: number) => {
       const wasDone = draft[ei]?.sets[si]?.done;
       toggleDone(ei, si);
-      if (!wasDone) setRestSignal((n) => n + 1);
+      if (!wasDone) {
+        // A tick under the thumb for every set, whether it was marked here or
+        // from the bar's "done" button (which routes through this too).
+        if (isNativeApp) void Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+        setRestSignal((n) => n + 1);
+      }
     },
     [draft, toggleDone],
   );
@@ -1141,11 +1148,13 @@ export default function WorkoutSessionPage() {
       <Container size="md" py="md" pb={240}>
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+            {/* Not uppercase: the title is a user's plan name, usually mixed
+                Hebrew and Latin, and the tracked caps only spread it out. */}
+            <p className="text-xs font-bold text-on-surface-variant">
               <bdi>{plan.title}</bdi>
             </p>
             <h1 className="font-bold text-on-surface">
-              {day.dayName}
+              <bdi>{day.dayName}</bdi>
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-on-surface-variant">
               <StitchIcon name="timer" size={15} />
@@ -1273,11 +1282,11 @@ export default function WorkoutSessionPage() {
             >
               <div className="mb-4 flex items-baseline justify-between gap-3">
                 <h2 className="text-base font-extrabold text-on-surface">
-                  {exercise.name}
+                  <bdi>{exercise.name}</bdi>
                 </h2>
                 {exercise.muscleGroup && (
                   <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-                    {exercise.muscleGroup}
+                    {muscleLabel(t, exercise.muscleGroup)}
                   </span>
                 )}
               </div>
@@ -1359,7 +1368,17 @@ export default function WorkoutSessionPage() {
                         would turn a two-tap set into a three-tap one. Which is
                         also why it is the field that drops to the second line
                         on a phone. */}
-                    <label className={`${FIELD} col-start-2 row-start-2`}>
+                    {/* On a phone only the set in hand (or one that already has
+                        an RPE) shows the field; the rest would each add a row
+                        of empty selects. It stays in the DOM, and from `sm` up
+                        every set shows it as before. */}
+                    <label
+                      className={`${FIELD} col-start-2 row-start-2 ${
+                        (nextSet?.ei === ei && nextSet.si === si) || set.done || set.rpe
+                          ? ''
+                          : 'max-sm:hidden'
+                      }`}
+                    >
                       <span className={FIELD_CAPTION}>{t('workout.rpe')}</span>
                       <select
                         value={set.rpe}

@@ -145,7 +145,7 @@ export function TrainingsTable({
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-on-surface truncate">
-                          {training.title}
+                          <bdi>{training.title}</bdi>
                         </p>
                         {modifiedText && (
                           <p className="text-xs text-on-surface-variant">

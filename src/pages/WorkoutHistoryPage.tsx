@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppLayout } from '../components/AppLayout';
 import { StitchIcon } from '../components/common/StitchIcon';
+import { WeightReps } from '../components/common/WeightReps';
 import { StrengthCurve } from '../components/workout/StrengthCurve';
 import { HistoryFilters } from '../components/workout/history/HistoryFilters';
 import {
@@ -59,64 +60,46 @@ function groupByDay(sessions: WorkoutSession[]): [string, WorkoutSession[]][] {
 }
 
 /**
- * One logged set: `65 kg × 12`.
+ * One logged set: `65 kg × 12`, then any drops under it.
  *
- * `dir="ltr"` is the whole point of this being its own element. The chip is a
- * run of digits, a Hebrew unit and a neutral ×, and under a right-to-left
- * paragraph the bidi algorithm reorders those into a single number — 65 and
- * 12 came out of the log reading "6512". Isolating the chip pins weight,
- * unit and reps in that order in both languages, which is also the order
- * everyone writes a set in.
+ * The weight and reps are a `WeightReps`, which keeps each part its own flex
+ * item (so bidi cannot fold 65 and 12 into "6512") while the row follows the
+ * page direction. The chip used to be pinned `dir="ltr"`, which a Hebrew
+ * reader scanning from the right met as "12 × ק"ג 65".
  */
 function SetChip({
   set,
   ordinal,
-  kg,
 }: {
   set: PerformedSet;
   ordinal: number;
-  kg: string;
 }) {
   return (
-    <div
-      dir="ltr"
-      className="flex items-center gap-1.5 rounded-lg bg-surface-container-high px-2 py-1.5"
-    >
+    <div className="flex items-center gap-1.5 rounded-lg bg-surface-container-high px-2 py-1.5">
       {/* The set number, kept clear of the digits it sits next to so it does
           not read as part of the weight. */}
       <span className="w-4 shrink-0 text-center text-[10px] font-black tabular-nums text-on-surface-variant">
         {ordinal}
       </span>
-
       <span className="min-w-0 flex-1">
-        <span className="flex flex-wrap items-baseline gap-x-1 text-sm font-bold tabular-nums text-on-surface">
-          <span>{set.weight}</span>
-          <span className="text-[10px] font-semibold text-on-surface-variant">
-            {kg}
-          </span>
-          <span className="font-normal text-on-surface-variant">×</span>
-          <span>{set.reps}</span>
+        <span className="flex flex-wrap items-baseline gap-x-1 text-sm font-bold text-on-surface">
+          <WeightReps weight={set.weight} reps={set.reps} />
           {/* Subdued rather than a separate chip: RPE qualifies the set, it is
               not another number of the same kind. */}
           {set.rpe != null && (
-            <span className="text-[10px] font-semibold text-on-surface-variant">
+            <bdi className="text-[10px] font-semibold text-on-surface-variant">
               @{set.rpe}
-            </span>
+            </bdi>
           )}
         </span>
 
-        {/* Drops were logged but never shown here, so a drop set read as an
-            ordinary one. Indented under the top portion, which is what they
-            hang off. */}
+        {/* Indented under the top portion, which is what they hang off. */}
         {set.drops?.length ? (
-          <span className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 text-[10px] font-semibold tabular-nums text-on-surface-variant">
+          <span className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 text-[10px] font-semibold text-on-surface-variant">
             {set.drops.map((drop, i) => (
               <span key={i} className="flex items-baseline gap-x-1">
-                <span aria-hidden="true">↳</span>
-                <span>{drop.weight}</span>
-                <span>{kg}</span>
-                <span>×</span>
-                <span>{drop.reps}</span>
+                <span aria-hidden="true" className="flip-x inline-block">↳</span>
+                <WeightReps weight={drop.weight} reps={drop.reps} compact />
               </span>
             ))}
           </span>
@@ -157,11 +140,13 @@ function SessionCard({
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate text-base font-extrabold tracking-tight text-on-surface">
-            {session.dayName || session.planTitle || t('workout.freeSession')}
+            {/* <bdi>: "3-Day Strength & Cut" inside the RTL card read
+                "Day Strength & Cut-3" without isolation. */}
+            <bdi>{session.dayName || session.planTitle || t('workout.freeSession')}</bdi>
           </h3>
           {session.dayName && session.planTitle && (
             <p className="truncate text-xs text-on-surface-variant">
-              {session.planTitle}
+              <bdi>{session.planTitle}</bdi>
             </p>
           )}
         </div>
@@ -215,7 +200,6 @@ function SessionCard({
                   key={setIndex}
                   set={set}
                   ordinal={setIndex + 1}
-                  kg={t('common.kg')}
                 />
               ))}
             </div>
