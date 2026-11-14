@@ -216,8 +216,8 @@
     "modifiedWeeksAgo_one": "Modified: {{count}} week ago",
     "modifiedWeeksAgo_other": "Modified: {{count}} weeks ago",
     "modifiedOn": "Modified: {{date}}",
-    "aiCardTitle": "AI Optimized Training Load",
-    "aiCardText": "Your current training plans average a <strong>84% recovery compliance rate</strong>. FitAi recommends adding a Restorative Flow day to your Peak Power block.",
+    "aiCardTitle": "A new plan in two minutes",
+    "aiCardText": "A proven ready-made template, or a plan built around your days and equipment.",
     "applySuggestion": "Apply Suggestion",
     "trainingVolume": "Training Volume",
     "monSun": "Mon—Sun",
@@ -308,7 +308,11 @@
       "endDate": "End Date",
       "selectEndDate": "Select end date"
     },
-    "exerciseSearchPlaceholder": "Search the catalogue, or just type"
+    "exerciseSearchPlaceholder": "Search the catalogue, or just type",
+    "setsSummary": "{{sets}} × {{reps}}",
+    "setsSummaryWeight": "{{sets}} × {{reps}} · {{weight}} kg",
+    "showSets": "Show sets",
+    "hideSets": "Hide sets"
   },
   "nutrition": {
     "title": "My Nutrition Plans",
@@ -443,7 +447,8 @@
     "meal_breakfast": "Breakfast",
     "meal_lunch": "Lunch",
     "meal_dinner": "Dinner",
-    "meal_snack": "Snack"
+    "meal_snack": "Snack",
+    "activeForYou": "Active"
   },
   "dashboard": {
     "loading": "Loading your dashboard...",
@@ -528,8 +533,8 @@
     "noNutritionPlansYet": "You don't have any nutrition plans yet.",
     "dayCount_one": "{{count}} day",
     "dayCount_other": "{{count}} days",
-    "viewAllPlans_one": "View all {{count}} plan →",
-    "viewAllPlans_other": "View all {{count}} plans →",
+    "viewAllPlans_one": "View {{count}} plan",
+    "viewAllPlans_other": "View all {{count}} plans",
     "upcomingSchedule": "Upcoming Schedule",
     "viewAll": "View All",
     "loadingSchedule": "Loading schedule...",
@@ -760,7 +765,8 @@
       "healthyRange": "Healthy Range",
       "overweight": "Overweight",
       "obese": "Obese"
-    }
+    },
+    "trendSince": "{{sign}}{{diff}}{{unit}} since {{date}}"
   },
   "physicalTargets": {
     "setTarget": "Set Target",
@@ -820,8 +826,8 @@
     "clientNoTargetsText": "Set a goal for this client — they'll see it on their Physical Data page and can track it from there."
   },
   "calendar": {
-    "previous": "← Previous",
-    "next": "Next →",
+    "previous": "Previous week",
+    "next": "Next week",
     "today": "Today",
     "weekOf": "Week of {{start}} - {{end}}",
     "disconnectGoogle": "Disconnect Google",
@@ -1103,8 +1109,8 @@
       "resultCount_other": "{{count}} workouts",
       "noResults": "No workouts match these filters.",
       "tabLog": "Log",
-      "tabTypes": "By workout type",
-      "tabExercises": "Exercise progress",
+      "tabTypes": "By type",
+      "tabExercises": "Exercises",
       "typesTitle": "Your workout types",
       "typesSubtitle": "Pick one to see its insights and compare sessions of it.",
       "typesFailed": "Couldn't load the workout types.",
@@ -1317,7 +1323,7 @@
     "u_g": "g",
     "loggedToday": "Logged today",
     "searchSource": "Values from USDA FoodData Central, per 100g. The amount you enter scales them.",
-    "addWholeMeal": "Whole meal",
+    "addWholeMeal": "Add all",
     "addItem": "Add {{name}}",
     "itemsAndCalories": "{{count}} items · {{calories}} kcal",
     "savedTo": "Added to {{meal}}",
@@ -1549,7 +1555,10 @@
     "summaryRest": "Rest day on your plan",
     "summaryDone": "Today's workout is behind you",
     "summaryNoPlan": "Pick a plan to get started",
-    "title": "Today"
+    "title": "Today",
+    "ofTotal": "{{eaten}} of {{goal}}",
+    "gramsOf": "{{eaten}} of {{goal}} g",
+    "nothingLogged": "Nothing logged yet today. Your first meal starts the count."
   },
   "progress": {
     "tabBody": "Body",

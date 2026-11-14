@@ -271,6 +271,13 @@
 /* One UI split on Today: the large title owns the top of the screen (reading
    area), pushing the first tappable card down toward the thumb. When it
    scrolls out, its short form fades into the app bar. */
+/* Phones: pages open with Container py="xl", which on top of the header's
+   own clearance left ~48px of nothing between the app bar and the title.
+   Desktop keeps it. */
+@media (max-width: 61.99em) {
+  .mantine-AppShell-main > .mantine-Container-root:first-child { padding-top: var(--space-3); }
+}
+
 .today-head { min-height: 132px; }
 @media (min-width: 62em) { .today-head { min-height: 0; padding-top: var(--space-4); } }
 .header-title--collapsing {
@@ -351,38 +358,14 @@
 }
 .bottom-tab[data-active] .bottom-tab__label { font-weight: 700; }
 
-/* Extended FAB (M3): end side, floating above the navigation bar. In RTL the
-   end side is the left, which is where a Hebrew-reading thumb expects it. */
-.log-fab {
-  position: fixed;
-  z-index: 150;
-  inset-inline-end: var(--page-gutter);
-  bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + var(--space-4));
-  height: 56px;
-  padding-inline: var(--space-4) var(--space-5);
-  border-radius: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-weight: 700;
-  font-size: var(--text-md);
-  color: var(--color-on-primary-container);
-  background: var(--color-primary-container);
-  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.35);
-  transition: transform var(--duration-fast) var(--ease-standard);
-  user-select: none;
-  -webkit-user-select: none;
+/* The Log tab: same slot as a destination, but its icon pill is always filled
+   so it reads as the bar's one action rather than a fifth place to go. */
+.bottom-tab--log .bottom-tab__icon {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
-.log-fab:active { transform: scale(0.96); }
-.log-fab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-@media (min-width: 62em) {
-  .log-fab { display: none; }
-}
-
-/* Room under the last card so the FAB never sits on top of it. */
-@media (max-width: 61.99em) {
-  .has-log-fab .mantine-AppShell-main { padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 88px) !important; }
-}
+.bottom-tab--log { color: var(--color-on-surface); }
+.bottom-tab--log:active .bottom-tab__icon { transform: scale(0.94); }
 
 /* ── Quick-add sheet ── */
 .quick-grid {

@@ -11,9 +11,11 @@
 
 import { Card, Text, Group, Badge, Table, Box, Button } from '@mantine/core';
 import { IconVideo } from '@tabler/icons-react';
-import { Activity } from 'react';
+import { Activity, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ExerciseCardProps } from '../../../types/trainings-components.types';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { muscleLabel } from '../../workout/history/labels';
 
 const exerciseTypeColors: Record<string, string> = {
   regular: 'blue',
@@ -23,20 +25,36 @@ const exerciseTypeColors: Record<string, string> = {
 
 export function ExerciseCard({ exercise, exerciseNumber, onVideoClick }: ExerciseCardProps) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const [setsOpen, setSetsOpen] = useState(false);
+
+  // On a phone, three identical rows of "10 · 0 kg" were a 250px table per
+  // exercise and ~2,500px to scroll through one day. When every set is the
+  // same, one line says it all; the table stays a tap away. Desktop keeps the
+  // table as it was.
+  const first = exercise.sets[0];
+  const uniform =
+    !!first &&
+    exercise.sets.every(
+      (set) => set.targetReps === first.targetReps && set.targetWeight === first.targetWeight,
+    );
+  const compact = isMobile && uniform && !setsOpen;
 
   return (
     <Card shadow="sm" p="md" withBorder>
       <Group justify="space-between" mb="md" wrap="wrap">
         <Group gap="md">
           <Text fw={600} size="md">
-            {exerciseNumber}. {exercise.name}
+            {exerciseNumber}. <bdi>{exercise.name}</bdi>
           </Text>
           <Badge color={exerciseTypeColors[exercise.type]} size="sm">
             {t(`trainings.type_${exercise.type}`, { defaultValue: exercise.type })}
           </Badge>
-          <Badge variant="light" color="cyan" size="sm">
-            {exercise.muscleGroup}
-          </Badge>
+          {exercise.muscleGroup && (
+            <Badge variant="light" color="cyan" size="sm" tt="none">
+              {muscleLabel(t, exercise.muscleGroup)}
+            </Badge>
+          )}
         </Group>
         {exercise.video && (
           <Button
@@ -56,7 +74,24 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick }: Exercis
         </Text>
       </Activity>
 
-      <Activity mode={exercise.sets.length > 0 ? "visible" : "hidden"}>
+      {compact && (
+        <Group justify="space-between" wrap="nowrap" gap="sm">
+          <Text fw={700} size="sm">
+            {first.targetWeight > 0
+              ? t('trainings.setsSummaryWeight', {
+                  sets: exercise.sets.length,
+                  reps: first.targetReps,
+                  weight: first.targetWeight,
+                })
+              : t('trainings.setsSummary', { sets: exercise.sets.length, reps: first.targetReps })}
+          </Text>
+          <Button size="compact-sm" variant="subtle" onClick={() => setSetsOpen(true)}>
+            {t('trainings.showSets')}
+          </Button>
+        </Group>
+      )}
+
+      <Activity mode={exercise.sets.length > 0 && !compact ? "visible" : "hidden"}>
         <Box style={{ overflowX: 'auto' }}>
           <Table striped highlightOnHover>
             <Table.Thead>
@@ -73,12 +108,20 @@ export function ExerciseCard({ exercise, exerciseNumber, onVideoClick }: Exercis
                     <Text fw={500}>{setIndex + 1}</Text>
                   </Table.Td>
                   <Table.Td>{set.targetReps}</Table.Td>
-                  <Table.Td>{set.targetWeight} {t('common.kg')}</Table.Td>
+                  {/* No target is "—", not "0 kg", which reads as a typo. */}
+                  <Table.Td>
+                    {set.targetWeight > 0 ? `${set.targetWeight} ${t('common.kg')}` : '—'}
+                  </Table.Td>
                 </Table.Tr>
               ))}
             </Table.Tbody>
           </Table>
         </Box>
+        {isMobile && uniform && setsOpen && (
+          <Button size="compact-sm" variant="subtle" mt="xs" onClick={() => setSetsOpen(false)}>
+            {t('trainings.hideSets')}
+          </Button>
+        )}
       </Activity>
 
       <Activity mode={exercise.sets.length === 0 ? "visible" : "hidden"}>

@@ -22,6 +22,11 @@ export interface LatestRecordCardProps {
   record: PhysicalData;
   previousRecord?: PhysicalData | null;
   bmi?: { bmi: number; category: string };
+  /**
+   * From the active target: true when it aims below the current weight, false
+   * above it, undefined with no weight target (the change is then shown neutral).
+   */
+  weightLowerIsBetter?: boolean;
 }
 
 export interface MetricInfoTooltipProps {

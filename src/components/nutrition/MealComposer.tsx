@@ -54,7 +54,15 @@ export function MealComposer({
   searchEnabled: boolean;
 }) {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<Tab>('manual');
+  const [tab, setTab] = useState<Tab>(searchEnabled ? 'search' : 'manual');
+  // Search is the faster path when it is available, so it opens first. The
+  // flag arrives after a request, so it is applied once it does, unless the
+  // user has already picked a tab themselves.
+  const [tabTouched, setTabTouched] = useState(false);
+  const pickTab = (next: Tab) => {
+    setTabTouched(true);
+    setTab(next);
+  };
   const [draft, setDraft] = useState(EMPTY_DRAFT);
 
   const [query, setQuery] = useState('');
@@ -66,7 +74,8 @@ export function MealComposer({
   // the screen is open, fall back rather than leaving the user on a dead tab.
   useEffect(() => {
     if (!searchEnabled && tab === 'search') setTab('manual');
-  }, [searchEnabled, tab]);
+    else if (searchEnabled && !tabTouched && tab === 'manual') setTab('search');
+  }, [searchEnabled, tab, tabTouched]);
 
   const addFood = (food: LoggedFood, source: MealSource) => {
     onChange([...foods, food]);
@@ -148,12 +157,13 @@ export function MealComposer({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Tabs. Manual first — it is the path that always works. */}
+      {/* Tabs. Manual stays first in the row (it is the path that always
+          works); search is the one selected when available. */}
       <div className="flex gap-2">
         <button
           type="button"
           aria-pressed={tab === 'manual'}
-          onClick={() => setTab('manual')}
+          onClick={() => pickTab('manual')}
           className={`min-h-10 flex-1 rounded-lg border text-sm font-bold ${
             tab === 'manual'
               ? 'border-primary bg-primary/10 text-primary'
@@ -167,7 +177,7 @@ export function MealComposer({
           <button
             type="button"
             aria-pressed={tab === 'search'}
-            onClick={() => setTab('search')}
+            onClick={() => pickTab('search')}
             className={`min-h-10 flex-1 rounded-lg border text-sm font-bold ${
               tab === 'search'
                 ? 'border-primary bg-primary/10 text-primary'

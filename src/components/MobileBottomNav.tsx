@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { Box, Divider, Drawer, Portal, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Box, Divider, Drawer, SegmentedControl, Stack, Text, UnstyledButton } from '@mantine/core';
 import { IconDots, IconLogout, IconMoon, IconPlus, IconSun, IconUser } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import type { NavItem } from '../types/layout.types';
@@ -34,7 +34,7 @@ interface MobileBottomNavProps {
   /** Prefix-aware match, so a detail screen still lights up its list's tab. */
   isActive?: (path: string) => boolean;
   onNavigate: (path: string) => void;
-  /** When present, a centre FAB opens these as a sheet. */
+  /** When present, a "Log" tab in the middle of the bar opens these as a sheet. */
   quickActions?: QuickAction[];
   /**
    * Account actions the sheet owns on mobile. The design puts the theme and
@@ -52,8 +52,8 @@ interface MobileBottomNavProps {
    */
   moreOpen?: boolean;
   onMoreOpenChange?: (open: boolean) => void;
-  /** Hide the floating quick-add (the in-session workout owns the thumb zone). */
-  showFab?: boolean;
+  /** Hide the Log tab (the in-session workout and the meal page own the thumb zone). */
+  showQuickAdd?: boolean;
 }
 
 /**
@@ -132,7 +132,7 @@ export function MobileBottomNav({
   onLogout,
   moreOpen: moreOpenProp,
   onMoreOpenChange,
-  showFab = true,
+  showQuickAdd = true,
 }: MobileBottomNavProps) {
   const { t } = useTranslation();
   const [moreOpenState, setMoreOpenState] = useState(false);
@@ -168,10 +168,33 @@ export function MobileBottomNav({
     />
   ));
 
+  // The Log action sits in the middle of the bar, between the first two
+  // destinations and the last two. It used to be an extended FAB floating
+  // above the bar, which covered whatever card was under it while scrolling
+  // (set chips in the log, the meal form's fields) — a slot in the bar costs
+  // no content.
+  const showLog = hasFab && showQuickAdd;
+  const middle = Math.ceil(tabs.length / 2);
+
   return (
     <>
       <nav className="bottom-nav" aria-label={t('nav.primaryNav')}>
-        {tabs}
+        {showLog ? tabs.slice(0, middle) : tabs}
+        {showLog && (
+          <UnstyledButton
+            className="bottom-tab bottom-tab--log"
+            onClick={() => setQuickOpen(true)}
+            aria-label={t('nav.quickAdd')}
+            aria-haspopup="dialog"
+            aria-expanded={quickOpen}
+          >
+            <span className="bottom-tab__icon" aria-hidden="true">
+              <IconPlus size={22} stroke={2.25} />
+            </span>
+            <span className="bottom-tab__label" aria-hidden="true">{t('nav.log')}</span>
+          </UnstyledButton>
+        )}
+        {showLog && tabs.slice(middle)}
 
         {/* Athletes reach the overflow from the avatar in the app bar. */}
         {!hasFab && overflow.length > 0 && (
@@ -188,22 +211,6 @@ export function MobileBottomNav({
         )}
       </nav>
 
-      {hasFab && showFab && (
-        // Portalled: the AppShell footer is fixed and can be transformed when
-        // it collapses, which would re-anchor a fixed child to it.
-        <Portal>
-          <UnstyledButton
-            className="log-fab"
-            onClick={() => setQuickOpen(true)}
-            aria-label={t('nav.quickAdd')}
-            aria-haspopup="dialog"
-            aria-expanded={quickOpen}
-          >
-            <IconPlus size={22} stroke={2.25} aria-hidden="true" />
-            <span>{t('nav.log')}</span>
-          </UnstyledButton>
-        </Portal>
-      )}
 
       {hasFab ? (
         <Drawer

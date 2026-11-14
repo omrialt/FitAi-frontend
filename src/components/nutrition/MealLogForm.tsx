@@ -135,7 +135,14 @@ export function MealLogForm({
         ))}
       </div>
 
-      <PlanFoodPicker plan={plan} onAddFoods={addFromPlan} />
+      {/* Keyed on the meal type and the plan, so switching tabs or the plan
+          arriving after mount re-opens the matching meal. */}
+      <PlanFoodPicker
+        key={`${mealType}-${plan?._id ?? 'none'}`}
+        plan={plan}
+        onAddFoods={addFromPlan}
+        currentMealType={mealType}
+      />
 
       <MealComposer
         foods={foods}

@@ -50,19 +50,25 @@ export function PlateCalculator({
       </span>
 
       {grouped.length === 0 ? (
-        <span className="tabular-nums">{t('workout.barOnly')}</span>
+        <span>{t('workout.barOnly')}</span>
       ) : (
         grouped.map(({ weight, count }) => (
           <span
             key={weight}
-            className="rounded bg-surface-container-high px-1.5 py-0.5 font-bold tabular-nums text-on-surface"
+            className="rounded bg-surface-container-high px-1.5 py-0.5 font-bold text-on-surface"
           >
-            {count > 1 ? <bdi dir="ltr">{`${count}×${weight}`}</bdi> : weight}
+            {/* Count first in the reading direction: "2×20" reads as two
+                twenties from the right in Hebrew and from the left in English.
+                Pinning it LTR (or giving it the numeric class, which isolates
+                a digits-only run as LTR) made Hebrew read it "20×2". */}
+            {count > 1 ? `${count}×${weight}` : weight}
           </span>
         ))
       )}
 
-      <span className="tabular-nums opacity-70">
+      {/* No tabular-nums: the line is Hebrew with a number in it, and the
+          figure is isolated in the string itself. */}
+      <span className="opacity-70">
         {t('workout.plusBar', { weight: load.barWeight })}
       </span>
 

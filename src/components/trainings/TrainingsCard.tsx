@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import { StitchIcon } from '../common/StitchIcon';
 import { TrainingsActionsMenu } from './TrainingsActionsMenu';
+import { focusLabel } from '../../utils/planLabels';
+import { formatDate } from '../../utils/formatDate';
 import type { TrainingsCardProps } from '../../types/trainings-components.types';
 
 const getDifficultyPill = (difficulty: string) => {
@@ -51,7 +53,7 @@ export function TrainingsCard({
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface min-w-0">
-          {training.title}
+          <bdi>{training.title}</bdi>
         </h3>
         <TrainingsActionsMenu
           training={training}
@@ -86,7 +88,7 @@ export function TrainingsCard({
         )}
         {training.focus && (
           <span className="text-xs font-semibold text-on-surface bg-surface-container-low rounded-full px-2.5 py-1">
-            {training.focus}
+            {focusLabel(t, training.focus)}
           </span>
         )}
       </div>
@@ -105,9 +107,7 @@ export function TrainingsCard({
         <span>
           {t('trainings.created')}{' '}
           {training.createdAt
-            ? new Date(training.createdAt).toLocaleDateString(
-                i18n.language === 'he' ? 'he-IL' : 'en-GB',
-              )
+            ? formatDate(training.createdAt, i18n.language)
             : t('common.none')}
         </span>
       </p>

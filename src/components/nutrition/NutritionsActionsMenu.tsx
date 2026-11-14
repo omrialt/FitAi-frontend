@@ -42,7 +42,7 @@ export function NutritionsActionsMenu({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <ActionIcon variant="subtle" color="gray">
+        <ActionIcon variant="subtle" color="gray" className="tap">
           <IconDotsVertical size={16} />
         </ActionIcon>
       </DropdownMenu.Trigger>

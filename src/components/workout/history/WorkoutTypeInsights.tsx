@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WorkoutTypeInsight } from '../../../types/workout-session.types';
 import { StitchIcon } from '../../common/StitchIcon';
+import { WeightReps } from '../../common/WeightReps';
 import { Delta, TrendBadge } from './shared';
 import { shortDate, typeLabel } from './labels';
 
@@ -118,7 +119,6 @@ function MiniStat({ label, children }: { label: string; children: ReactNode }) {
 export function TypeInsights({ insight }: { insight: WorkoutTypeInsight }) {
   const { t, i18n } = useTranslation();
   const name = typeLabel(t, insight.dayName);
-  const kg = t('common.kg');
 
   const sentences: { icon: 'trending_up' | 'trending_down' | 'trending_flat' | 'warning' | 'info'; text: string }[] = [];
 
@@ -244,16 +244,14 @@ export function TypeInsights({ insight }: { insight: WorkoutTypeInsight }) {
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-on-surface">
-                  {exercise.name}
+                  <bdi>{exercise.name}</bdi>
                 </p>
                 <p className="text-[11px] text-on-surface-variant">
                   {t('workout.history.sessions', { count: exercise.sessions })}
                   {exercise.bestE1rm > 0 && (
                     <>
                       {' · '}
-                      <span dir="ltr" className="tabular-nums">
-                        {exercise.bestSet.weight} {kg} × {exercise.bestSet.reps}
-                      </span>
+                      <WeightReps weight={exercise.bestSet.weight} reps={exercise.bestSet.reps} />
                     </>
                   )}
                 </p>

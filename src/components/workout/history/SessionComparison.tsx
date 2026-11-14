@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WorkoutSession } from '../../../types/workout-session.types';
 import { StitchIcon } from '../../common/StitchIcon';
+import { WeightReps } from '../../common/WeightReps';
 import { compareSessions, type ExerciseSnapshot } from './compareSessions';
 import { Delta } from './shared';
 
@@ -95,9 +96,7 @@ export function SessionComparison({ sessions, name }: SessionComparisonProps) {
         {t('workout.history.compareNotDone')}
       </span>
     ) : snap.topSet ? (
-      <span dir="ltr" className="tabular-nums">
-        {snap.topSet.weight} {kg} × {snap.topSet.reps}
-      </span>
+      <WeightReps weight={snap.topSet.weight} reps={snap.topSet.reps} />
     ) : (
       '—'
     );

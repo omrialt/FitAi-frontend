@@ -166,8 +166,18 @@ function NextWorkoutCard({
         })
       : t('today.todaysWorkout');
 
+  // On a rest day the workout is an option, not the headline: a quieter card
+  // and an outlined button, so nutrition and weigh-in read as the day's job.
+  const quiet = isRest && !doneToday;
+
   return (
-    <section className="flex flex-col gap-4 rounded-[var(--radius-card)] bg-primary-container px-4 pb-4 pt-5 text-on-primary-container">
+    <section
+      className={`flex flex-col gap-4 rounded-[var(--radius-card)] px-4 pb-4 pt-5 ${
+        quiet
+          ? 'border border-outline-variant/40 bg-surface-container-low text-on-surface'
+          : 'bg-primary-container text-on-primary-container'
+      }`}
+    >
       <div className="flex flex-col gap-1">
         <span className="text-sm opacity-85">{eyebrow}</span>
         {/* <bdi>: plan and day names are often Latin inside Hebrew text, and
@@ -188,7 +198,11 @@ function NextWorkoutCard({
       <button
         type="button"
         onClick={() => navigate(`/workout/${plan._id}/${isRest ? 0 : nextIdx}`)}
-        className="bg-primary-gradient flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[var(--radius-control)] text-base font-bold transition-transform active:scale-[0.97]"
+        className={`flex w-full items-center justify-center gap-2 rounded-[var(--radius-control)] font-bold transition-transform active:scale-[0.97] ${
+          quiet
+            ? 'min-h-12 border border-primary/50 text-sm text-primary'
+            : 'bg-primary-gradient min-h-[52px] text-base'
+        }`}
       >
         <IconPlayerPlayFilled size={18} aria-hidden="true" />
         {isRest ? t('today.trainAnyway') : doneToday ? t('today.trainAgain') : t('today.start')}
@@ -219,7 +233,7 @@ const RING_R = 38;
 const RING_C = 2 * Math.PI * RING_R;
 
 function NutritionToday({ intake }: { intake: DailyIntake | null }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   if (!intake) {
@@ -228,6 +242,9 @@ function NutritionToday({ intake }: { intake: DailyIntake | null }) {
 
   const { consumed, target, remaining } = intake;
   const kcalTarget = target?.calories ?? 0;
+  // Whole numbers only: "202.6 g" of protein is precision nobody can eat to.
+  const fmt = (n: number) => Math.round(n).toLocaleString(i18n.language);
+  const nothingYet = kcalTarget > 0 && consumed.calories === 0;
   const pct = kcalTarget ? Math.min(1, consumed.calories / kcalTarget) : 0;
   const left = remaining?.calories ?? null;
 
@@ -242,8 +259,8 @@ function NutritionToday({ intake }: { intake: DailyIntake | null }) {
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-base font-bold text-on-surface">{t('today.nutrition')}</h2>
         {kcalTarget > 0 && (
-          <span className="text-sm text-on-surface-variant tabular-nums" dir="ltr">
-            {consumed.calories.toLocaleString()} / {kcalTarget.toLocaleString()}
+          <span className="text-sm text-on-surface-variant">
+            {t('today.ofTotal', { eaten: fmt(consumed.calories), goal: fmt(kcalTarget) })}
           </span>
         )}
       </div>
@@ -268,7 +285,7 @@ function NutritionToday({ intake }: { intake: DailyIntake | null }) {
             </svg>
             <div className="absolute inset-0 grid place-content-center text-center leading-tight">
               <span className="text-lg font-extrabold tabular-nums text-on-surface">
-                {Math.abs(left ?? 0).toLocaleString()}
+                {fmt(Math.abs(left ?? 0))}
               </span>
               <span className="text-[11px] text-on-surface-variant">
                 {left !== null && left < 0 ? t('today.over') : t('today.left')}
@@ -283,8 +300,8 @@ function NutritionToday({ intake }: { intake: DailyIntake | null }) {
                 <li key={key} className="flex flex-col gap-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-on-surface">{label}</span>
-                    <span className="text-on-surface-variant tabular-nums" dir="ltr">
-                      {eaten} / {goal} g
+                    <span className="text-on-surface-variant">
+                      {t('today.gramsOf', { eaten: fmt(eaten), goal: fmt(goal) })}
                     </span>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-surface-container-highest">
@@ -297,6 +314,19 @@ function NutritionToday({ intake }: { intake: DailyIntake | null }) {
               );
             })}
           </ul>
+          {/* An empty ring says nothing about what to do; this does. */}
+          {nothingYet && (
+            <div className="col-span-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="min-w-0 flex-1 text-sm text-on-surface-variant">{t('today.nothingLogged')}</p>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event(OPEN_MEAL_SHEET_EVENT))}
+                className="min-h-11 rounded-[var(--radius-control)] bg-primary px-4 text-sm font-bold text-on-primary"
+              >
+                {t('today.logMeal')}
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-3">
