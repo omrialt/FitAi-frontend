@@ -612,6 +612,8 @@
     "lastNamePlaceholder": "Doe",
     "completeProfileButton": "Complete Profile",
     "googleAuthFailed": "Google authentication failed",
+    "googleStateExpired": "The Google sign-in expired or was started in another browser. Please try again.",
+    "googleAccessDenied": "Google sign-in was cancelled",
     "pleaseCompleteProfile": "Please complete your profile",
     "googleSignInSuccess": "Successfully signed in with Google!",
     "authenticatingGoogle": "Authenticating with Google...",

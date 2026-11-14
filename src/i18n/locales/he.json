@@ -642,6 +642,8 @@
     "lastNamePlaceholder": "ישראלי",
     "completeProfileButton": "השלמת פרופיל",
     "googleAuthFailed": "ההתחברות עם Google נכשלה",
+    "googleStateExpired": "ניסיון ההתחברות עם Google פג או התחיל בדפדפן אחר. נסה שוב.",
+    "googleAccessDenied": "ההתחברות עם Google בוטלה",
     "pleaseCompleteProfile": "אנא השלימו את הפרופיל",
     "googleSignInSuccess": "התחברתם בהצלחה עם Google!",
     "authenticatingGoogle": "מתחברים עם Google...",
